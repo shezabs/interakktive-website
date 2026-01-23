@@ -45,7 +45,7 @@ export default function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/images/logo_final.png"
+              src="/images/logo.png"
               alt="Interakktive"
               width={300}
               height={300}

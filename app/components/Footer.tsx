@@ -25,7 +25,7 @@ export default function Footer() {
           <div className="space-y-2">
             <div className="h-12 overflow-hidden flex items-center">
               <Image
-                src="/images/logo_final.png"
+                src="/images/logo.png"
                 alt="Interakktive"
                 width={200}
                 height={200}
