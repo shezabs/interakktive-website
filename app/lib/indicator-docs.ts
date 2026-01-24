@@ -368,7 +368,7 @@ Adjusted_Mult = Base_Mult × (1 + (Volatility_Ratio - 1) × Sensitivity)</pre>
 
   'market-state-intelligence': {
     title: 'Market State Intelligence',
-    subtitle: 'Multi-dimensional regime classifier synthesizing trend, momentum, volatility, and structure into unified market state awareness.',
+    subtitle: 'Diagnostic market-context indicator that classifies behavioral regimes through three core forces: Drive, Opposition, and Stability.',
     tradingViewUrl: 'https://www.tradingview.com/script/I1eqEIHI-Market-State-Intelligence-Interakktive/',
     sections: [
       {
@@ -376,33 +376,46 @@ Adjusted_Mult = Base_Mult × (1 + (Volatility_Ratio - 1) × Sensitivity)</pre>
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p>The <strong>Market State Intelligence (MSI)</strong> indicator is a multi-dimensional regime classifier that answers the fundamental question: <em>"What kind of market am I trading right now?"</em></p>
+          <p><strong>Market State Intelligence (MSI)</strong> is a diagnostic market-context indicator designed to reveal <em>how</em> the market is behaving — not where price "should" go. Rather than generating buy/sell signals, MSI classifies the market into clear behavioral regimes.</p>
 
-          <p>Markets aren't always the same. A strategy that works in trending conditions fails in choppy ranges. MSI synthesizes four key dimensions — Trend, Momentum, Volatility, and Structure — into a unified state classification that helps you adapt to current conditions.</p>
-
-          <h3>The Four Dimensions</h3>
+          <h3>What MSI Answers</h3>
           <ul>
-            <li><strong>Trend</strong> — Is there directional bias? How strong? (ADX-based)</li>
-            <li><strong>Momentum</strong> — Is the move accelerating or decelerating? (RSI-derived)</li>
-            <li><strong>Volatility</strong> — Is the market calm or explosive? (ATR states)</li>
-            <li><strong>Structure</strong> — Is price making higher highs or lower lows? (Swing analysis)</li>
+            <li><strong>What state is the market currently in?</strong></li>
+            <li><strong>Is energy building, releasing, or decaying?</strong></li>
+            <li><strong>Is participation aligned or opposing price?</strong></li>
           </ul>
 
-          <h3>Regime Classifications</h3>
+          <h3>The Three Forces</h3>
+          <p>MSI continuously evaluates three core forces (0-100 each):</p>
           <ul>
-            <li><strong>Trending</strong> — Strong directional move with aligned momentum</li>
-            <li><strong>Ranging</strong> — Sideways consolidation, mean-reversion favored</li>
-            <li><strong>Volatile</strong> — Explosive moves, increased risk, wider stops needed</li>
-            <li><strong>Calm</strong> — Low volatility, compression, potential breakout setup</li>
-            <li><strong>Transitional</strong> — Regime changing, wait for clarity</li>
+            <li><strong>Drive</strong> — Directional effort engine. How much directional energy exists?</li>
+            <li><strong>Opposition</strong> — Absorption & resistance engine. How much effort is being absorbed?</li>
+            <li><strong>Stability</strong> — Structural persistence engine. How consistent is the current state?</li>
+          </ul>
+
+          <h3>Five Regimes</h3>
+          <ul>
+            <li><strong>COMPRESSION</strong> (Slate) — Low drive, low opposition, high stability. Pressure building.</li>
+            <li><strong>EXPANSION</strong> (Teal) — High drive, low opposition. Directional energy release.</li>
+            <li><strong>TREND</strong> (Green) — Medium-high drive, sustained stability. Aligned continuation.</li>
+            <li><strong>DISTRIBUTION</strong> (Amber) — Medium drive, high opposition. Effort without progress.</li>
+            <li><strong>TRANSITION</strong> (Purple) — Rapid opposition rise, low stability. Regime shift underway.</li>
           </ul>
 
           <h3>Visual System</h3>
           <ul>
-            <li><strong>Regime Label</strong> — Current classified state</li>
-            <li><strong>Dimension Bars</strong> — Individual strength of each dimension</li>
-            <li><strong>Composite Score</strong> — Overall regime confidence</li>
-            <li><strong>Transition Alerts</strong> — When regime changes</li>
+            <li><strong>Regime Ribbon</strong> — Thin band at chart bottom showing current regime color</li>
+            <li><strong>HUD Panel</strong> — Regime name and execution gate status (LONG OK / SHORT OK)</li>
+            <li><strong>Time-to-Decision Meter (TDM)</strong> — Pressure gauge that fills during compression, drains during expansion</li>
+            <li><strong>Structural Memory</strong> — Faint background stains where regimes previously failed</li>
+            <li><strong>Effort vs Result Halo</strong> — Candle highlight when effort is being absorbed</li>
+          </ul>
+
+          <h3>Core Principles</h3>
+          <ul>
+            <li>Diagnostic > Signal (no buy/sell recommendations)</li>
+            <li>Continuous states > Binary events</li>
+            <li>Non-repainting (closed-bar data only)</li>
           </ul>
         `,
       },
@@ -411,60 +424,81 @@ Adjusted_Mult = Base_Mult × (1 + (Volatility_Ratio - 1) × Sensitivity)</pre>
         title: 'Calculation Methodology',
         icon: 'calculation',
         content: `
-          <p>MSI calculates each dimension independently, then synthesizes them into regime classification.</p>
+          <p>MSI calculates three independent forces, then synthesizes them into regime classification.</p>
 
-          <h3>Dimension Calculations</h3>
+          <h3>Force 1: DRIVE (0-100)</h3>
+          <p>Measures directional effort — how efficiently is price moving?</p>
 
-          <h4>1. Trend Dimension (ADX-Based)</h4>
-          <p>Measures directional strength regardless of direction:</p>
-          <pre>+DI = 100 × EMA(+DM) / ATR
--DI = 100 × EMA(-DM) / ATR
-DX = 100 × |+DI - -DI| / (+DI + -DI)
-ADX = EMA(DX, period)
+          <h4>Components:</h4>
+          <pre>// Net Progress Ratio (45% weight)
+Displacement = |Close - Close[lookback]|
+StepSum = Σ|Close - Close[1]| over lookback
+NetProgressRatio = Displacement / StepSum
 
-Trend_Score:
-  ADX > 25 = Strong Trend
-  ADX 20-25 = Moderate Trend
-  ADX < 20 = Weak/No Trend</pre>
+// Range Expansion Quality (30% weight)
+RangeSpan = Highest(High) - Lowest(Low)
+ExpectedRange = ATR × √(lookback)
+RangeExpansion = RangeSpan / (ExpectedRange × 1.5)
 
-          <h4>2. Momentum Dimension (RSI-Based)</h4>
-          <p>Measures momentum strength and direction:</p>
-          <pre>RSI = 100 - (100 / (1 + RS))
-RS = Average Gain / Average Loss
+// Body Dominance (25% weight)
+BodySize = |Close - Open|
+CandleRange = High - Low
+BodyDominance = BodySize / CandleRange
 
-Momentum_Score:
-  RSI > 60 or < 40 = Strong Momentum
-  RSI 45-55 = Neutral Momentum
-  RSI Rate of Change = Acceleration</pre>
+Drive = (NetProgress × 0.45) + (RangeExpansion × 0.30) +
+        (BodyDominance × 0.25)</pre>
 
-          <h4>3. Volatility Dimension (ATR-Based)</h4>
-          <p>Classifies current volatility state:</p>
-          <pre>ATR_Current = ATR(14)
-ATR_Average = SMA(ATR, 100)
-Volatility_Ratio = ATR_Current / ATR_Average
+          <h3>Force 2: OPPOSITION (0-100)</h3>
+          <p>Measures absorption & resistance — how much effort is being rejected?</p>
 
-Volatility_State:
-  Ratio > 1.5 = High Volatility
-  Ratio 0.8-1.2 = Normal Volatility
-  Ratio < 0.8 = Low Volatility (Compression)</pre>
+          <h4>Components:</h4>
+          <pre>// Wick Pressure (35% weight)
+TotalWick = UpperWick + LowerWick
+WickPressure = TotalWick / CandleRange
 
-          <h4>4. Structure Dimension (Swing Analysis)</h4>
-          <p>Analyzes price structure via swing points:</p>
-          <pre>Higher_High = High > Previous_Swing_High
-Higher_Low = Low > Previous_Swing_Low
-Lower_Low = Low < Previous_Swing_Low
-Lower_High = High < Previous_Swing_High
+// Effort-Result Gap (40% weight)
+EffortRatio = Volume / SMA(Volume, 20)
+PriceProgress = |Close - Close[1]| / ATR
+EffortResultGap = max(0, EffortRatio - PriceProgress) / 2
 
-Structure_Score:
-  HH + HL = Bullish Structure
-  LL + LH = Bearish Structure
-  Mixed = Ranging Structure</pre>
+// Reversal Density (25% weight)
+ReversalCount = Count of direction changes over lookback
+ReversalDensity = ReversalCount / (lookback × 0.5)
 
-          <h3>Regime Synthesis</h3>
-          <pre>Composite = (Trend × W1) + (Momentum × W2) +
-            (Volatility × W3) + (Structure × W4)
+Opposition = (WickPressure × 0.35) + (EffortResultGap × 0.40) +
+             (ReversalDensity × 0.25)</pre>
 
-Regime = Classify(Composite, Individual_Scores)</pre>
+          <h3>Force 3: STABILITY (0-100)</h3>
+          <p>Measures structural persistence — how consistent is current state?</p>
+
+          <h4>Components:</h4>
+          <pre>// Persistence Score (30% weight)
+DriveStable = |Drive - Drive[1]| < 5 ? 1 : 0
+OppStable = |Opposition - Opposition[1]| < 5 ? 1 : 0
+PersistenceScore = (DriveStable + OppStable) / 2
+
+// Variance Score (35% weight)
+FlipCount = Count of Drive/Opp crossing 50 over lookback
+VarianceScore = 1 - (FlipCount / lookback)
+
+// Reaction Consistency (35% weight)
+FollowThrough = Count of same-direction closes
+ReactionConsistency = FollowThrough / lookback
+
+Stability = (Persistence × 0.30) + (Variance × 0.35) +
+            (Consistency × 0.35)</pre>
+
+          <h3>Regime Classification</h3>
+          <pre>if Opposition rising fast AND Stability low:
+    Regime = TRANSITION
+else if Drive high AND Opposition low:
+    Regime = EXPANSION
+else if Drive medium+ AND Opposition low-med AND Stability high:
+    Regime = TREND
+else if Drive medium AND Opposition high:
+    Regime = DISTRIBUTION
+else if Drive low AND Opposition low:
+    Regime = COMPRESSION</pre>
         `,
       },
       {
@@ -472,44 +506,41 @@ Regime = Classify(Composite, Individual_Scores)</pre>
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <h3>Dimension Settings</h3>
+          <h3>Preset Mode</h3>
           <ul>
-            <li><strong>ADX Period</strong> (default: 14) — Period for trend calculation. Higher = smoother, slower signals.</li>
-            <li><strong>ADX Threshold</strong> (default: 25) — Level above which trend is considered "strong".</li>
-            <li><strong>RSI Period</strong> (default: 14) — Period for momentum calculation.</li>
-            <li><strong>ATR Period</strong> (default: 14) — Period for volatility measurement.</li>
-            <li><strong>ATR Baseline</strong> (default: 100) — Lookback for average volatility comparison.</li>
-            <li><strong>Swing Lookback</strong> (default: 10) — Bars to identify swing highs/lows.</li>
+            <li><strong>Scalper</strong> — Fast response, quick decay. Sensitivity: 1.3, Smoothing: 0.7, Decay: 1.5</li>
+            <li><strong>Swing</strong> (default) — Balanced. Sensitivity: 1.0, Smoothing: 1.0, Decay: 1.0</li>
+            <li><strong>Position</strong> — Slow, stable regimes. Sensitivity: 0.7, Smoothing: 1.4, Decay: 0.6</li>
           </ul>
 
-          <h3>Dimension Weights</h3>
+          <h3>Core Toggles</h3>
           <ul>
-            <li><strong>Trend Weight</strong> (default: 0.30) — Importance of trend in classification.</li>
-            <li><strong>Momentum Weight</strong> (default: 0.25) — Importance of momentum.</li>
-            <li><strong>Volatility Weight</strong> (default: 0.25) — Importance of volatility state.</li>
-            <li><strong>Structure Weight</strong> (default: 0.20) — Importance of price structure.</li>
+            <li><strong>Analysis Mode</strong> (default: ON) — Subtle, muted visuals. OFF = full intensity.</li>
+            <li><strong>Regime Ribbon</strong> (default: ON) — Thin horizontal band showing current regime.</li>
+            <li><strong>Structural Memory</strong> (default: OFF) — Faint stains where regimes previously failed.</li>
+            <li><strong>HUD Panel</strong> (default: ON) — Panel showing regime name and gate status.</li>
+            <li><strong>Time-to-Decision Meter</strong> (default: OFF) — Pressure gauge bar.</li>
+            <li><strong>Effort vs Result Halo</strong> (default: OFF) — Candle highlight when effort absorbed.</li>
           </ul>
 
-          <h3>Classification Thresholds</h3>
+          <h3>Visual Options</h3>
           <ul>
-            <li><strong>Trending Threshold</strong> (default: 0.65) — Score above which regime = Trending.</li>
-            <li><strong>Ranging Threshold</strong> (default: 0.35) — Score below which regime = Ranging.</li>
-            <li><strong>Volatility Multiplier</strong> (default: 1.5) — ATR ratio for "High Volatility" state.</li>
+            <li><strong>Show Regime Changes</strong> (default: ON) — Markers when regime transitions (e.g., COMP → EXP).</li>
+            <li><strong>Show Regime Legend</strong> (default: OFF) — Diagnostic details with Drive/Opp/Stability values.</li>
+            <li><strong>Panel Position</strong> — Top/Middle/Bottom + Left/Center/Right.</li>
           </ul>
 
-          <h3>Visual Settings</h3>
+          <h3>Advanced Tuning</h3>
           <ul>
-            <li><strong>Show Regime Label</strong> (default: true) — Display current regime classification.</li>
-            <li><strong>Show Dimension Bars</strong> (default: true) — Show individual dimension strengths.</li>
-            <li><strong>Show Transition Alerts</strong> (default: true) — Alert on regime changes.</li>
-            <li><strong>Bar Colors</strong> (default: true) — Color bars based on regime.</li>
+            <li><strong>Sensitivity</strong> (0.5-2.0, default: 1.0) — Higher = more responsive regime detection.</li>
+            <li><strong>Smoothing</strong> (0.5-2.0, default: 1.0) — Higher = more stable, slower transitions.</li>
+            <li><strong>Memory Decay</strong> (0.5-2.0, default: 1.0) — Higher = faster structural memory fade.</li>
+            <li><strong>Visual Intensity</strong> — Low / Medium / High opacity.</li>
           </ul>
 
-          <h3>Recommended Settings by Timeframe</h3>
+          <h3>Data Window</h3>
           <ul>
-            <li><strong>Intraday (1-15min)</strong> — ADX: 10, RSI: 7, faster response</li>
-            <li><strong>Swing (1H-4H)</strong> — Default settings work well</li>
-            <li><strong>Position (Daily+)</strong> — ADX: 20, longer baselines</li>
+            <li><strong>Show Data Window Values</strong> (default: OFF) — Export MSI Contract v1 values for analysis.</li>
           </ul>
         `,
       },
@@ -520,51 +551,57 @@ Regime = Classify(Composite, Individual_Scores)</pre>
         content: `
           <h3>Regime Interpretations</h3>
 
-          <h4>Trending Regime</h4>
+          <h4>COMPRESSION (Slate)</h4>
           <ul>
-            <li>ADX elevated (>25), clear structure direction</li>
-            <li>Momentum aligned with trend direction</li>
-            <li><strong>Strategy:</strong> Trend-following, breakout continuation</li>
-            <li><strong>Avoid:</strong> Mean-reversion, counter-trend trades</li>
+            <li>Drive low, Opposition low, Stability high</li>
+            <li>Energy is building — pressure accumulating</li>
+            <li>TDM gauge filling up</li>
+            <li><strong>Implication:</strong> Prepare for breakout. Don't expect continuation of quiet.</li>
           </ul>
 
-          <h4>Ranging Regime</h4>
+          <h4>EXPANSION (Teal)</h4>
           <ul>
-            <li>ADX low (<20), mixed swing structure</li>
-            <li>Momentum oscillating around neutral</li>
-            <li><strong>Strategy:</strong> Range trading, mean-reversion, fade extremes</li>
-            <li><strong>Avoid:</strong> Breakout trades, trend following</li>
+            <li>Drive high, Opposition low</li>
+            <li>Directional energy releasing — clean moves</li>
+            <li>TDM draining rapidly</li>
+            <li><strong>Implication:</strong> Momentum trades favored. Trail stops, ride the move.</li>
           </ul>
 
-          <h4>Volatile Regime</h4>
+          <h4>TREND (Green)</h4>
           <ul>
-            <li>ATR ratio elevated (>1.5x average)</li>
-            <li>Wide swings, increased noise</li>
-            <li><strong>Strategy:</strong> Wider stops, reduced size, momentum plays</li>
-            <li><strong>Avoid:</strong> Tight stops, scalping, precision entries</li>
+            <li>Medium-high Drive, sustained Stability</li>
+            <li>Aligned continuation — healthy trending</li>
+            <li><strong>Implication:</strong> Follow the trend. Pullbacks are opportunities, not reversals.</li>
           </ul>
 
-          <h4>Calm Regime</h4>
+          <h4>DISTRIBUTION (Amber)</h4>
           <ul>
-            <li>ATR ratio compressed (<0.8x average)</li>
-            <li>Narrow ranges, consolidation</li>
-            <li><strong>Strategy:</strong> Prepare for breakout, accumulate position</li>
-            <li><strong>Avoid:</strong> Expecting continuation of calm</li>
+            <li>Medium Drive, high Opposition</li>
+            <li>Effort without progress — absorption occurring</li>
+            <li>Halo may appear on candles</li>
+            <li><strong>Implication:</strong> Be cautious. Effort is being absorbed, potential reversal brewing.</li>
           </ul>
 
-          <h4>Transitional Regime</h4>
+          <h4>TRANSITION (Purple)</h4>
           <ul>
-            <li>Dimensions conflicting, no clear classification</li>
-            <li>Regime changing, uncertainty elevated</li>
-            <li><strong>Strategy:</strong> Reduce exposure, wait for clarity</li>
-            <li><strong>Avoid:</strong> Large positions, high conviction trades</li>
+            <li>Opposition rising rapidly, Stability low</li>
+            <li>Regime shift underway — uncertainty elevated</li>
+            <li><strong>Implication:</strong> Reduce exposure. Wait for new regime to establish.</li>
           </ul>
 
-          <h3>Dimension Bar Interpretation</h3>
+          <h3>Execution Gates</h3>
           <ul>
-            <li><strong>All bars aligned</strong> — High conviction regime, trade with confidence</li>
-            <li><strong>Mixed bars</strong> — Lower conviction, reduce size</li>
-            <li><strong>Diverging bars</strong> — Potential transition, caution</li>
+            <li><strong>LONG • OK</strong> — Expansion or Trend regime, Drive > Opposition, Stability > 35, bias up</li>
+            <li><strong>SHORT • OK</strong> — Expansion or Trend regime, Drive > Opposition, Stability > 35, bias down</li>
+            <li><strong>Blocked</strong> — Distribution, Compression, or Transition regime (or conditions not met)</li>
+          </ul>
+
+          <h3>Force Relationships</h3>
+          <ul>
+            <li><strong>Drive > Opposition</strong> — Directional energy winning, moves more likely to continue</li>
+            <li><strong>Opposition > Drive</strong> — Absorption winning, moves more likely to fail</li>
+            <li><strong>Stability high</strong> — Current state likely to persist</li>
+            <li><strong>Stability low</strong> — Change is imminent</li>
           </ul>
         `,
       },
@@ -573,55 +610,54 @@ Regime = Classify(Composite, Individual_Scores)</pre>
         title: 'Trading Applications',
         icon: 'trading',
         content: `
-          <h3>Strategy 1: Regime Filter</h3>
-          <p>Use MSI to filter signals from other indicators.</p>
+          <h3>Strategy 1: Regime-Based Strategy Selection</h3>
+          <p>Match your trading approach to the current regime.</p>
           <ul>
-            <li><strong>Trending regime</strong> — Only take trend-following signals</li>
-            <li><strong>Ranging regime</strong> — Only take mean-reversion signals</li>
-            <li><strong>Volatile regime</strong> — Widen stops on all signals</li>
-            <li><strong>Transitional</strong> — Skip signals, wait</li>
+            <li><strong>COMPRESSION</strong> — Prepare for breakout, set alerts, tighten ranges</li>
+            <li><strong>EXPANSION</strong> — Momentum trades, trail stops aggressively</li>
+            <li><strong>TREND</strong> — Trend-following, buy pullbacks in direction</li>
+            <li><strong>DISTRIBUTION</strong> — Take profits, avoid new entries, watch for reversal</li>
+            <li><strong>TRANSITION</strong> — Reduce/close positions, wait for clarity</li>
           </ul>
 
-          <h3>Strategy 2: Regime Transition Trading</h3>
-          <p>Trade the shift from one regime to another.</p>
+          <h3>Strategy 2: Gate-Based Filtering</h3>
+          <p>Only take trades when gates are open.</p>
           <ul>
-            <li><strong>Calm → Volatile</strong> — Position for breakout</li>
-            <li><strong>Ranging → Trending</strong> — Enter trend early</li>
-            <li><strong>Trending → Ranging</strong> — Take profits, prepare to fade</li>
-            <li><strong>Volatile → Calm</strong> — Tighten stops, let trend continue</li>
+            <li><strong>LONG • OK</strong> — Clear to take long signals from other systems</li>
+            <li><strong>SHORT • OK</strong> — Clear to take short signals from other systems</li>
+            <li><strong>Both blocked</strong> — Skip all signals, regardless of how good they look</li>
           </ul>
 
-          <h3>Strategy 3: Dimension Divergence</h3>
-          <p>When dimensions diverge, anticipate regime change.</p>
+          <h3>Strategy 3: TDM Pressure Trading</h3>
+          <p>Use Time-to-Decision Meter for timing.</p>
           <ul>
-            <li><strong>Trend strong, Momentum weak</strong> — Trend exhaustion possible</li>
-            <li><strong>Volatility high, Trend weak</strong> — Choppy conditions, stand aside</li>
-            <li><strong>Structure bullish, Momentum bearish</strong> — Potential reversal</li>
+            <li><strong>TDM filling (70%+)</strong> — Compression extreme, breakout imminent</li>
+            <li><strong>TDM draining rapidly</strong> — Expansion in progress, ride the move</li>
+            <li><strong>TDM near zero after expansion</strong> — Move exhausted, take profits</li>
           </ul>
 
-          <h3>Strategy 4: Position Sizing by Regime</h3>
-          <p>Adjust position size based on regime.</p>
+          <h3>Strategy 4: Structural Memory Awareness</h3>
+          <p>Learn from where regimes failed before.</p>
           <ul>
-            <li><strong>Trending + Aligned</strong> — Full size (100%)</li>
-            <li><strong>Ranging</strong> — Reduced size (50-75%)</li>
-            <li><strong>Volatile</strong> — Reduced size (50%)</li>
-            <li><strong>Transitional</strong> — Minimal or no position (25% or skip)</li>
+            <li><strong>Memory stains</strong> — Price zones where expansion/trend failed previously</li>
+            <li><strong>Approaching stain</strong> — Extra caution, may fail again</li>
+            <li><strong>Breaking through stain</strong> — Significant if price clears the failure zone</li>
           </ul>
 
-          <h3>Strategy 5: Multi-Timeframe Regime</h3>
-          <p>Align regimes across timeframes.</p>
+          <h3>Strategy 5: Force Divergence Detection</h3>
+          <p>Watch for forces diverging from price.</p>
           <ul>
-            <li><strong>HTF Trending + LTF Trending</strong> — High conviction trend trades</li>
-            <li><strong>HTF Trending + LTF Ranging</strong> — Pullback entries in HTF direction</li>
-            <li><strong>HTF Ranging + LTF Trending</strong> — Fade LTF extremes</li>
+            <li><strong>Price rising, Opposition rising</strong> — Rally being absorbed, caution</li>
+            <li><strong>Price rising, Drive falling</strong> — Momentum fading, potential top</li>
+            <li><strong>Stability collapsing</strong> — Regime change incoming regardless of price</li>
           </ul>
 
           <h3>What NOT to Do</h3>
           <ul>
-            <li>Don't trend-follow in Ranging regime</li>
-            <li>Don't mean-revert in Trending regime</li>
-            <li>Don't use tight stops in Volatile regime</li>
-            <li>Don't take high conviction positions in Transitional</li>
+            <li>Don't trade against blocked gates</li>
+            <li>Don't hold through Transition regime</li>
+            <li>Don't expect Distribution to resolve in your favor</li>
+            <li>Don't ignore Compression building — it will release</li>
           </ul>
         `,
       },
@@ -630,38 +666,46 @@ Regime = Classify(Composite, Individual_Scores)</pre>
         title: 'Data Window Values',
         icon: 'settings',
         content: `
-          <h3>Exported Values</h3>
-          <p>The indicator exports the following values to TradingView's Data Window:</p>
+          <h3>MSI Export Contract v1</h3>
+          <p>When "Show Data Window Values" is enabled, MSI exports the following values:</p>
 
           <h4>Regime Information</h4>
           <ul>
-            <li><strong>Regime</strong> — Current classification (Trending/Ranging/Volatile/Calm/Transitional)</li>
-            <li><strong>Composite Score</strong> — Overall regime confidence (0.00-1.00)</li>
-            <li><strong>Regime Duration</strong> — Bars since last regime change</li>
+            <li><strong>msi_regime_id</strong> — Current regime (0=Compression, 1=Expansion, 2=Trend, 3=Distribution, 4=Transition)</li>
+            <li><strong>msi_regime_conf</strong> — Regime confidence (0-100)</li>
           </ul>
 
-          <h4>Individual Dimensions</h4>
+          <h4>Three Forces</h4>
           <ul>
-            <li><strong>Trend Score</strong> — ADX-based trend strength (0-100)</li>
-            <li><strong>Momentum Score</strong> — RSI-based momentum (0-100)</li>
-            <li><strong>Volatility Score</strong> — ATR ratio normalized (0-100)</li>
-            <li><strong>Structure Score</strong> — Swing structure strength (0-100)</li>
+            <li><strong>msi_drive</strong> — Drive force (0-100)</li>
+            <li><strong>msi_opp</strong> — Opposition force (0-100)</li>
+            <li><strong>msi_stability</strong> — Stability force (0-100)</li>
           </ul>
 
-          <h4>Raw Indicators</h4>
+          <h4>Derived Metrics</h4>
           <ul>
-            <li><strong>ADX</strong> — Raw ADX value</li>
-            <li><strong>RSI</strong> — Raw RSI value</li>
-            <li><strong>ATR Ratio</strong> — Current ATR / Average ATR</li>
-            <li><strong>Structure</strong> — Bullish/Bearish/Neutral</li>
+            <li><strong>msi_tdm</strong> — Time-to-Decision Meter (0-100)</li>
+            <li><strong>msi_gate_long</strong> — Long gate status (1=OK, 0=Blocked)</li>
+            <li><strong>msi_gate_short</strong> — Short gate status (1=OK, 0=Blocked)</li>
+            <li><strong>msi_memory</strong> — Structural memory score (0-100)</li>
+            <li><strong>msi_effort_gap</strong> — Effort vs Result gap (0-100)</li>
+            <li><strong>msi_bias</strong> — Directional bias (1=Up, -1=Down, 0=Neutral)</li>
           </ul>
 
-          <h3>Using Data Window Values</h3>
+          <h4>Status Line</h4>
           <ul>
-            <li><strong>Regime confirmation</strong> — Check Composite Score for confidence</li>
-            <li><strong>Weakness detection</strong> — Identify which dimension is lagging</li>
-            <li><strong>Transition anticipation</strong> — Watch for dimension divergence</li>
-            <li><strong>Strategy selection</strong> — Use raw values to fine-tune approach</li>
+            <li><strong>Drive (0-100)</strong></li>
+            <li><strong>Opposition (0-100)</strong></li>
+            <li><strong>Stability (0-100)</strong></li>
+            <li><strong>Regime (0-4)</strong></li>
+            <li><strong>TDM (0-100)</strong></li>
+          </ul>
+
+          <h3>Using Export Values</h3>
+          <ul>
+            <li><strong>Pro integration</strong> — Use values in custom scripts or ATLAS PRO</li>
+            <li><strong>Spreadsheet analysis</strong> — Export for regime performance tracking</li>
+            <li><strong>Alert conditions</strong> — Build alerts based on specific thresholds</li>
           </ul>
         `,
       },
@@ -670,29 +714,29 @@ Regime = Classify(Composite, Individual_Scores)</pre>
         title: 'Common Mistakes',
         icon: 'warning',
         content: `
-          <h3>Mistake 1: Fighting the Regime</h3>
-          <p><strong>Problem:</strong> Applying the wrong strategy for the current regime.</p>
-          <p><strong>Solution:</strong> Match your strategy to the regime. Trend-follow in trends, mean-revert in ranges.</p>
+          <h3>Mistake 1: Treating MSI as Signal Generator</h3>
+          <p><strong>Problem:</strong> Looking for buy/sell signals from MSI.</p>
+          <p><strong>Solution:</strong> MSI is diagnostic, not prescriptive. Use it to understand context, then apply signals from other tools appropriately.</p>
 
-          <h3>Mistake 2: Ignoring Transitions</h3>
-          <p><strong>Problem:</strong> Not recognizing when regime is changing.</p>
-          <p><strong>Solution:</strong> Watch for dimension divergence and Transitional classification. Reduce exposure during shifts.</p>
+          <h3>Mistake 2: Ignoring Blocked Gates</h3>
+          <p><strong>Problem:</strong> Taking trades when gates show blocked status.</p>
+          <p><strong>Solution:</strong> Respect the gates. When LONG/SHORT shows "—", the regime doesn't support directional trades.</p>
 
-          <h3>Mistake 3: Over-Relying on Single Dimension</h3>
-          <p><strong>Problem:</strong> Only watching ADX or only watching RSI.</p>
-          <p><strong>Solution:</strong> Use all four dimensions together. The synthesis is more powerful than any single indicator.</p>
+          <h3>Mistake 3: Fighting Distribution</h3>
+          <p><strong>Problem:</strong> Adding to positions during Distribution regime.</p>
+          <p><strong>Solution:</strong> Distribution means effort is being absorbed. Take profits, don't add. The market is telling you something.</p>
 
-          <h3>Mistake 4: Same Position Size Across Regimes</h3>
-          <p><strong>Problem:</strong> Taking same size in volatile vs calm conditions.</p>
-          <p><strong>Solution:</strong> Scale position size inversely with volatility and directly with regime confidence.</p>
+          <h3>Mistake 4: Expecting Compression to Continue</h3>
+          <p><strong>Problem:</strong> Assuming low volatility will persist indefinitely.</p>
+          <p><strong>Solution:</strong> Watch TDM. When it fills past 70%, breakout is imminent. Compression always resolves.</p>
 
-          <h3>Mistake 5: Expecting Instant Regime Changes</h3>
-          <p><strong>Problem:</strong> Expecting immediate classification after a single bar.</p>
-          <p><strong>Solution:</strong> Regimes take time to establish. Wait for confirmation bars after initial classification change.</p>
+          <h3>Mistake 5: Not Using Presets Correctly</h3>
+          <p><strong>Problem:</strong> Using Scalper preset for swing trading (or vice versa).</p>
+          <p><strong>Solution:</strong> Match preset to your trading style. Scalper = fast, Position = slow. Mismatch causes whipsaw or late signals.</p>
 
-          <h3>Mistake 6: Not Adapting Stops to Volatility</h3>
-          <p><strong>Problem:</strong> Using same stop distance regardless of volatility state.</p>
-          <p><strong>Solution:</strong> In Volatile regime, widen stops. In Calm regime, tighter stops are valid.</p>
+          <h3>Mistake 6: Overcomplicating with All Visuals</h3>
+          <p><strong>Problem:</strong> Enabling all visual features at once.</p>
+          <p><strong>Solution:</strong> Start with Ribbon + HUD only. Add TDM, Memory, and Halo as you learn what each provides.</p>
         `,
       },
       {
@@ -700,29 +744,29 @@ Regime = Classify(Composite, Individual_Scores)</pre>
         title: 'Pro Tips',
         icon: 'tips',
         content: `
-          <h3>Tip 1: Regime Duration Matters</h3>
-          <p>The longer a regime persists, the more likely a change. Watch Regime Duration in Data Window. Extended regimes often precede sharp transitions.</p>
+          <h3>Tip 1: Drive vs Opposition is the Core Signal</h3>
+          <p>When Drive > Opposition, directional moves succeed. When Opposition > Drive, they fail. This single relationship predicts more than any other metric.</p>
 
-          <h3>Tip 2: Use Calm Regime for Preparation</h3>
-          <p>Calm regimes (low volatility) are the best time to plan, set alerts, and prepare orders. Breakouts from calm states are often the most powerful moves.</p>
+          <h3>Tip 2: TDM Predicts Breakout Timing</h3>
+          <p>The Time-to-Decision Meter is your breakout countdown. When it exceeds 80% during Compression, start preparing entry orders in both directions.</p>
 
-          <h3>Tip 3: Trend + Momentum Alignment</h3>
-          <p>When Trend Score and Momentum Score both exceed 60, you have a high-probability trend continuation setup. These aligned conditions rarely fail immediately.</p>
+          <h3>Tip 3: Stability Predicts Regime Duration</h3>
+          <p>High Stability means the current regime will persist. Low Stability means change is coming — regardless of what Drive and Opposition say.</p>
 
-          <h3>Tip 4: Structure Leads, Others Confirm</h3>
-          <p>Often, Structure dimension changes first (new swing high/low), then other dimensions follow. Use Structure as an early warning system.</p>
+          <h3>Tip 4: Regime Transitions Are Tradeable</h3>
+          <p>The shift from COMPRESSION → EXPANSION often produces the cleanest moves. Watch for TDM drain combined with Drive spike.</p>
 
-          <h3>Tip 5: Volatile Ranging is Dangerous</h3>
-          <p>When both Volatile and Ranging signals are present, it's a chopfest. This is the worst environment for most strategies. Stand aside completely.</p>
+          <h3>Tip 5: Use Memory Stains as Caution Zones</h3>
+          <p>When price approaches areas where previous regimes failed (memory stains), reduce position size or tighten stops. These zones have history of absorbing moves.</p>
 
-          <h3>Tip 6: Combine with Market Acceptance Zones</h3>
-          <p>Use MSI to know HOW to trade (trend vs range), and MAZ to know WHERE to trade (acceptance levels). Together they answer "what" and "where".</p>
+          <h3>Tip 6: Effort Halo is an Early Warning</h3>
+          <p>When the Halo appears on candles, effort is being absorbed even if price is still moving. This often precedes Distribution regime by several bars.</p>
 
-          <h3>Tip 7: Journal Your Regime Performance</h3>
-          <p>Track your win rate by regime. Most traders find they excel in one regime and struggle in others. Specialize in your best regime.</p>
+          <h3>Tip 7: Combine with MAZ for Complete Picture</h3>
+          <p>MSI tells you WHAT regime you're in. MAZ tells you WHERE price is accepted. Together: trade acceptance zones in the direction permitted by MSI gates.</p>
 
-          <h3>Tip 8: Transitional = Opportunity</h3>
-          <p>While Transitional means "don't trade with size," it also means opportunity is coming. Watch which dimension strengthens to anticipate the new regime.</p>
+          <h3>Tip 8: Journal by Regime</h3>
+          <p>Track your trading performance separately for each regime. Most traders discover they perform well in 1-2 regimes and poorly in others. Specialize in your best regimes.</p>
         `,
       },
     ],
