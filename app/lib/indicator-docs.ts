@@ -1,7 +1,7 @@
 export interface DocSection {
   id: string;
   title: string;
-  icon: 'overview' | 'settings' | 'concept' | 'usage' | 'warning' | 'tips';
+  icon: 'overview' | 'settings' | 'concept' | 'usage' | 'warning' | 'tips' | 'calculation' | 'interpretation' | 'trading';
   content: string;
 }
 
@@ -193,8 +193,74 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will contain a comprehensive overview of the Effort-Result Divergence indicator.</p>
+          <p>The <strong>Effort-Result Divergence (ERD)</strong> is a Wyckoff-inspired indicator that answers a critical question: <em>"Is the volume (effort) producing proportional price movement (result)?"</em></p>
+
+          <p>This concept comes from Richard Wyckoff's analysis methodology. Wyckoff observed that when large players accumulate or distribute, volume patterns often diverge from price behavior. The ERD quantifies this relationship mathematically.</p>
+
+          <h3>Core Concept</h3>
+          <p>The indicator compares two normalized measurements:</p>
+          <ul>
+            <li><strong>Effort</strong> — Current volume relative to average volume (how much energy is being expended)</li>
+            <li><strong>Result</strong> — Current price movement relative to ATR (how much the market actually moved)</li>
+          </ul>
+
+          <p><strong>ERD Score = Result - Effort</strong></p>
+
+          <h3>What It Tells You</h3>
+          <ul>
+            <li><strong>Positive ERD (Teal)</strong> — Result exceeds effort. Price moved significantly on relatively low volume. This is a "vacuum" condition — thin liquidity, easy movement.</li>
+            <li><strong>Negative ERD (Magenta)</strong> — Effort exceeds result. High volume produced little price movement. This is "absorption" — someone is absorbing the selling/buying pressure.</li>
+            <li><strong>Near Zero</strong> — Effort and result are balanced. Normal market conditions.</li>
+          </ul>
+
+          <h3>Why This Matters</h3>
+          <p>Absorption is one of the most powerful signals in Wyckoff analysis. When heavy volume fails to move price, it often indicates:</p>
+          <ul>
+            <li>Institutional accumulation (absorbing selling pressure)</li>
+            <li>Institutional distribution (absorbing buying pressure)</li>
+            <li>Potential reversal zones forming</li>
+            <li>Support/resistance being established</li>
+          </ul>
+
+          <p>Vacuum conditions (positive ERD) reveal when markets can move easily — useful for breakout confirmation or identifying thin liquidity zones.</p>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'How It\'s Calculated',
+        icon: 'concept',
+        content: `
+          <p>Understanding the calculation helps you interpret signals correctly and adjust settings for your market.</p>
+
+          <h3>Step 1: Calculate Effort (Volume Normalized)</h3>
+          <p>Effort measures how much volume is being expended relative to the norm:</p>
+          <pre>Effort Ratio = Current Volume ÷ Average Volume (SMA)
+Effort (0-100) = (Effort Ratio ÷ Effort Cap) × 100</pre>
+          <p><strong>Example:</strong> If average volume is 1M shares and current volume is 2M, effort ratio = 2.0. With default effort cap of 3.0, this maps to 66.7 on the 0-100 scale.</p>
+
+          <h3>Step 2: Calculate Result (Price Move Normalized)</h3>
+          <p>Result measures how much price actually moved relative to typical volatility:</p>
+          <pre>Price Move = |Close - Previous Close|
+Result Ratio = Price Move ÷ ATR
+Result (0-100) = (Result Ratio ÷ Result Cap) × 100</pre>
+          <p><strong>Example:</strong> If ATR is $2 and price moved $1.5, result ratio = 0.75. With default result cap of 1.0, this maps to 75 on the 0-100 scale.</p>
+
+          <h3>Step 3: Calculate ERD Score</h3>
+          <pre>ERD = Result - Effort</pre>
+          <p>Using the examples above: ERD = 75 - 66.7 = +8.3 (slight vacuum — result exceeded effort)</p>
+
+          <h3>Step 4: Statistical Divergence Detection</h3>
+          <p>To identify significant divergence events, ERD uses z-score analysis:</p>
+          <pre>ERD Mean = SMA(ERD, Z-Score Lookback)
+ERD StdDev = Standard Deviation(ERD, Z-Score Lookback)
+Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
+
+          <h3>Step 5: Flag Divergence Events</h3>
+          <ul>
+            <li><strong>Absorption Event:</strong> Z-Score ≤ -Threshold (significant negative divergence)</li>
+            <li><strong>Vacuum Event:</strong> Z-Score ≥ +Threshold (significant positive divergence)</li>
+          </ul>
+          <p>Default threshold is 2.0 standard deviations — meaning these events are statistically significant (occurring roughly 5% of the time).</p>
         `,
       },
       {
@@ -202,8 +268,313 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>Detailed input parameters documentation will be added here.</p>
+          <h3>Core Settings</h3>
+
+          <h4>Volume Average Length (Default: 20)</h4>
+          <p><strong>Range:</strong> 5–200 bars</p>
+          <p>Lookback period for calculating average volume baseline.</p>
+          <ul>
+            <li><strong>Lower values (5-10):</strong> More reactive to recent volume changes. Better for fast-moving markets or shorter timeframes.</li>
+            <li><strong>Default (20):</strong> Standard baseline that captures roughly one month of daily data or one trading day of hourly data.</li>
+            <li><strong>Higher values (50-100+):</strong> Smoother baseline, less sensitive to short-term volume spikes. Better for filtering noise.</li>
+          </ul>
+
+          <h4>ATR Length (Default: 14)</h4>
+          <p><strong>Range:</strong> 5–100 bars</p>
+          <p>Period for Average True Range calculation used to normalize price movement.</p>
+          <ul>
+            <li><strong>Lower values:</strong> More responsive to recent volatility changes.</li>
+            <li><strong>Default (14):</strong> Industry standard ATR period.</li>
+            <li><strong>Higher values:</strong> Smoother volatility baseline.</li>
+          </ul>
+
+          <h4>Effort Cap (Default: 3.0)</h4>
+          <p><strong>Range:</strong> 0.5–10.0</p>
+          <p>The volume ratio that maps to 100 on the effort scale. When volume is 3× average, effort reads 100.</p>
+          <ul>
+            <li><strong>Lower values:</strong> Volume spikes hit 100 faster. Use for low-volume markets where 2× is significant.</li>
+            <li><strong>Higher values:</strong> Allows for bigger volume spikes. Use for volatile markets with frequent high-volume bars.</li>
+          </ul>
+
+          <h4>Result Cap (Default: 1.0)</h4>
+          <p><strong>Range:</strong> 0.1–5.0</p>
+          <p>The ATR multiple that maps to 100 on the result scale. When price moves 1× ATR, result reads 100.</p>
+          <ul>
+            <li><strong>Lower values:</strong> Smaller moves register as significant. Use for range-bound markets.</li>
+            <li><strong>Higher values:</strong> Only large moves register high. Use for trending markets with extended runs.</li>
+          </ul>
+
+          <h3>Divergence Detection</h3>
+
+          <h4>Z-Score Lookback (Default: 100)</h4>
+          <p><strong>Range:</strong> 20–500 bars</p>
+          <p>Lookback for calculating ERD mean and standard deviation for z-score analysis.</p>
+          <ul>
+            <li><strong>Lower values (20-50):</strong> More frequent divergence signals, adapts faster to regime changes.</li>
+            <li><strong>Default (100):</strong> Balanced statistical significance.</li>
+            <li><strong>Higher values (200+):</strong> Fewer, more significant divergence signals. Better for identifying major institutional events.</li>
+          </ul>
+
+          <h4>Z-Score Threshold (Default: 2.0)</h4>
+          <p><strong>Range:</strong> 1.0–4.0</p>
+          <p>Standard deviations required to flag a divergence event.</p>
+          <ul>
+            <li><strong>1.0-1.5:</strong> More signals, but many may be noise.</li>
+            <li><strong>2.0:</strong> Statistically significant (~5% occurrence rate).</li>
+            <li><strong>2.5-3.0:</strong> High confidence signals only (~1-2% occurrence rate).</li>
+          </ul>
+
+          <h3>Visual Settings</h3>
+
+          <h4>Show ERD Histogram (Default: On)</h4>
+          <p>Display the main ERD histogram. Teal bars for positive (vacuum), magenta for negative (absorption).</p>
+
+          <h4>Show Zero Line (Default: On)</h4>
+          <p>Display horizontal reference line at zero.</p>
+
+          <h4>Show Divergence Markers (Default: On)</h4>
+          <p>Display circle markers when absorption or vacuum events are detected based on z-score threshold.</p>
+
+          <h4>Show Effort/Result Lines (Default: Off)</h4>
+          <p>Display separate Effort (orange) and Result (blue) lines. Useful for understanding which component is driving ERD.</p>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Reading the Indicator',
+        icon: 'usage',
+        content: `
+          <h3>Histogram Color Coding</h3>
+          <ul>
+            <li><strong>Teal Bars (Positive ERD):</strong> Result exceeds effort. Price moved easily — vacuum/thin liquidity.</li>
+            <li><strong>Magenta Bars (Negative ERD):</strong> Effort exceeds result. Volume failed to move price — absorption.</li>
+          </ul>
+
+          <h3>Understanding Absorption (Negative ERD)</h3>
+          <p>When you see large magenta bars or absorption event markers:</p>
+
+          <h4>At Support Levels</h4>
+          <ul>
+            <li>Heavy selling volume, but price doesn't drop</li>
+            <li>Suggests buying absorption — institutions accumulating</li>
+            <li>Potential bullish reversal signal</li>
+          </ul>
+
+          <h4>At Resistance Levels</h4>
+          <ul>
+            <li>Heavy buying volume, but price doesn't rise</li>
+            <li>Suggests selling absorption — institutions distributing</li>
+            <li>Potential bearish reversal signal</li>
+          </ul>
+
+          <h3>Understanding Vacuum (Positive ERD)</h3>
+          <p>When you see large teal bars or vacuum event markers:</p>
+
+          <h4>During Breakouts</h4>
+          <ul>
+            <li>Price moves easily on relatively light volume</li>
+            <li>Suggests thin liquidity in the direction of movement</li>
+            <li>Breakout may extend further or reverse quickly (no support)</li>
+          </ul>
+
+          <h4>During Trends</h4>
+          <ul>
+            <li>Efficient price movement — trend has room to run</li>
+            <li>Low resistance to price advancement</li>
+          </ul>
+
+          <h3>Divergence Event Markers</h3>
+
+          <h4>Absorption Event (Magenta Circle)</h4>
+          <p>Statistically significant effort > result divergence. High confidence institutional absorption detected.</p>
+
+          <h4>Vacuum Event (Teal Circle)</h4>
+          <p>Statistically significant result > effort divergence. Market moved on air — thin liquidity zone.</p>
+
+          <h3>Component Lines Analysis</h3>
+          <p>When "Show Effort/Result Lines" is enabled:</p>
+          <ul>
+            <li><strong>Orange line (Effort) above Blue line (Result):</strong> Absorption conditions</li>
+            <li><strong>Blue line (Result) above Orange line (Effort):</strong> Vacuum conditions</li>
+            <li><strong>Lines crossing:</strong> Transition between regimes</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'tips',
+        content: `
+          <h3>Reversal Detection at Key Levels</h3>
+          <p>The most powerful ERD application is identifying institutional absorption at support/resistance:</p>
+
+          <h4>Bullish Absorption Setup</h4>
+          <ul>
+            <li>Price at or near support level</li>
+            <li>ERD showing strong negative readings (magenta bars)</li>
+            <li>Absorption event marker appears</li>
+            <li><strong>Interpretation:</strong> Heavy selling being absorbed. Look for bullish reversal.</li>
+          </ul>
+
+          <h4>Bearish Absorption Setup</h4>
+          <ul>
+            <li>Price at or near resistance level</li>
+            <li>ERD showing strong negative readings</li>
+            <li>Absorption event marker appears</li>
+            <li><strong>Interpretation:</strong> Heavy buying being absorbed. Look for bearish reversal.</li>
+          </ul>
+
+          <h3>Breakout Confirmation</h3>
+          <ul>
+            <li><strong>Healthy Breakout:</strong> Moderate positive ERD — price moving with some volume support</li>
+            <li><strong>Unsustained Breakout Warning:</strong> Extreme positive ERD (vacuum) — price moving on air, may reverse</li>
+            <li><strong>Breakout Failure Warning:</strong> Breakout attempt with negative ERD — effort not producing result</li>
+          </ul>
+
+          <h3>Trend Quality Assessment</h3>
+          <ul>
+            <li><strong>Healthy Trend:</strong> ERD fluctuates around zero or slightly positive. Balanced effort and result.</li>
+            <li><strong>Climax Warning:</strong> Extreme positive ERD during trend. Price moving too easily — potential exhaustion.</li>
+            <li><strong>Accumulation in Trend:</strong> Negative ERD pullbacks during uptrend may indicate accumulation.</li>
+          </ul>
+
+          <h3>Combining with Other Indicators</h3>
+          <p>ERD works best when combined with:</p>
+          <ul>
+            <li><strong>Market Acceptance Zones:</strong> Identify key levels, then use ERD to detect absorption at those levels</li>
+            <li><strong>Market Efficiency Ratio:</strong> MER shows trend quality, ERD shows institutional activity</li>
+            <li><strong>Volume Profile:</strong> High volume nodes + ERD absorption = strong institutional interest</li>
+          </ul>
+
+          <h3>Position Management</h3>
+          <ul>
+            <li><strong>Entry:</strong> Look for absorption events at key support/resistance for reversal entries</li>
+            <li><strong>Exit:</strong> Watch for absorption against your position (e.g., selling absorption during longs)</li>
+            <li><strong>Stop Placement:</strong> Absorption zones often become support/resistance — place stops beyond them</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'datawindow',
+        title: 'Data Window Values',
+        icon: 'settings',
+        content: `
+          <p>When "Show Data Window Values" is enabled, access these metrics by hovering over any bar:</p>
+
+          <h3>Effort (0-100)</h3>
+          <p>Normalized volume effort score. Shows how much volume is being expended relative to the average.</p>
+          <ul>
+            <li><strong>0-30:</strong> Below-average volume</li>
+            <li><strong>30-70:</strong> Normal volume range</li>
+            <li><strong>70-100:</strong> High volume (approaching or at effort cap)</li>
+          </ul>
+
+          <h3>Result (0-100)</h3>
+          <p>Normalized price movement score. Shows how much price moved relative to ATR.</p>
+          <ul>
+            <li><strong>0-30:</strong> Small price movement (less than 0.3× ATR with default settings)</li>
+            <li><strong>30-70:</strong> Moderate price movement</li>
+            <li><strong>70-100:</strong> Large price movement (approaching or at result cap)</li>
+          </ul>
+
+          <h3>ERD Score</h3>
+          <p>The difference between Result and Effort. Range is theoretically -100 to +100.</p>
+          <ul>
+            <li><strong>Positive:</strong> Result exceeds effort (vacuum)</li>
+            <li><strong>Negative:</strong> Effort exceeds result (absorption)</li>
+            <li><strong>Near zero:</strong> Balanced conditions</li>
+          </ul>
+
+          <h3>Z-Score</h3>
+          <p>Statistical measure of how unusual the current ERD reading is relative to recent history.</p>
+          <ul>
+            <li><strong>±1:</strong> Within normal range</li>
+            <li><strong>±2:</strong> Unusual (default threshold for events)</li>
+            <li><strong>±3:</strong> Very unusual</li>
+          </ul>
+
+          <h3>Absorption Event</h3>
+          <p>Binary value: 1 = absorption event triggered, 0 = no event.</p>
+          <p>Use for scanning or alerts when significant effort > result divergence occurs.</p>
+
+          <h3>Vacuum Event</h3>
+          <p>Binary value: 1 = vacuum event triggered, 0 = no event.</p>
+          <p>Use for scanning or alerts when significant result > effort divergence occurs.</p>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake #1: Ignoring Context</h3>
+          <p><strong>Problem:</strong> Trading absorption signals without considering price location.</p>
+          <p><strong>Result:</strong> Absorption in the middle of nowhere may just be consolidation, not reversal.</p>
+          <p><strong>Solution:</strong> Only act on absorption signals at significant support/resistance levels, trend lines, or volume nodes.</p>
+
+          <h3>Mistake #2: Confusing Direction</h3>
+          <p><strong>Problem:</strong> Assuming negative ERD (absorption) is bearish.</p>
+          <p><strong>Result:</strong> Missing that absorption at support is actually bullish.</p>
+          <p><strong>Solution:</strong> Remember — ERD measures effort vs result, not direction. Context determines bullish/bearish implications.</p>
+
+          <h3>Mistake #3: Wrong Cap Settings</h3>
+          <p><strong>Problem:</strong> Using default effort/result caps on markets with different characteristics.</p>
+          <p><strong>Result:</strong> ERD readings are always skewed one direction.</p>
+          <p><strong>Solution:</strong> Observe your market. If effort rarely exceeds 50, lower the effort cap. If result regularly hits 100, raise the result cap.</p>
+
+          <h3>Mistake #4: Over-Relying on Event Markers</h3>
+          <p><strong>Problem:</strong> Only looking for absorption/vacuum events, ignoring regular ERD readings.</p>
+          <p><strong>Result:</strong> Missing gradual absorption patterns that don't trigger event thresholds.</p>
+          <p><strong>Solution:</strong> Use event markers as confirmation, but watch the histogram for persistent patterns.</p>
+
+          <h3>Mistake #5: Ignoring Volume Quality</h3>
+          <p><strong>Problem:</strong> Using ERD on assets with unreliable volume data (forex pairs on retail platforms, some CFDs).</p>
+          <p><strong>Result:</strong> Effort calculation is based on tick volume, not actual volume, reducing reliability.</p>
+          <p><strong>Solution:</strong> ERD works best on assets with real volume data: stocks, futures, crypto on major exchanges.</p>
+
+          <h3>Mistake #6: Too Short Z-Score Lookback</h3>
+          <p><strong>Problem:</strong> Using z-score lookback of 20-30, generating frequent event signals.</p>
+          <p><strong>Result:</strong> Events lose statistical significance; too many false positives.</p>
+          <p><strong>Solution:</strong> Keep z-score lookback at 100+ for meaningful statistical signals. Lower only if you understand the trade-off.</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip #1: Look for Absorption Clusters</h3>
+          <p>Single absorption bars can be noise. Multiple consecutive or clustered absorption readings at a level indicate genuine institutional activity.</p>
+
+          <h3>Tip #2: Wyckoff Phases</h3>
+          <p>ERD is particularly powerful during Wyckoff accumulation/distribution phases:</p>
+          <ul>
+            <li><strong>Accumulation:</strong> Look for absorption during selling climax and tests</li>
+            <li><strong>Distribution:</strong> Look for absorption during buying climax and upthrusts</li>
+          </ul>
+
+          <h3>Tip #3: Use Component Lines for Analysis</h3>
+          <p>Enable "Show Effort/Result Lines" to see exactly what's driving ERD. Sometimes result dropping causes positive ERD (low volatility), not volume dropping.</p>
+
+          <h3>Tip #4: Vacuum After Absorption</h3>
+          <p>A powerful pattern: Absorption at a level followed by vacuum in the breakout direction. This suggests institutions accumulated/distributed, then price moves easily once they're done.</p>
+
+          <h3>Tip #5: Calibrate to Your Market</h3>
+          <p>Spend time observing ERD on your specific market before trading it. Note:</p>
+          <ul>
+            <li>What effort/result readings are normal?</li>
+            <li>What readings precede significant moves?</li>
+            <li>How often do event markers occur?</li>
+          </ul>
+
+          <h3>Tip #6: Multi-Timeframe Confirmation</h3>
+          <p>Absorption on a higher timeframe is more significant than on lower timeframes. Check for absorption on daily before trading reversals on hourly.</p>
+
+          <h3>Tip #7: News and Events</h3>
+          <p>ERD readings during major news can be distorted. High volume + high movement = balanced ERD, even though the move is significant. Consider the event context.</p>
+
+          <h3>Tip #8: Divergence from Price</h3>
+          <p>Watch for persistent absorption during price advances — institutions may be distributing into strength. This is a classic Wyckoff warning sign.</p>
         `,
       },
     ],
