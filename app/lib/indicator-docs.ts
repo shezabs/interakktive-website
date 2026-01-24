@@ -45,7 +45,7 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
 
   'market-state-intelligence': {
     title: 'Market State Intelligence',
-    subtitle: 'Multi-dimensional regime classifier synthesizing trend, momentum, volatility, and structure.',
+    subtitle: 'Multi-dimensional regime classifier synthesizing trend, momentum, volatility, and structure into unified market state awareness.',
     tradingViewUrl: 'https://www.tradingview.com/script/I1eqEIHI-Market-State-Intelligence-Interakktive/',
     sections: [
       {
@@ -53,8 +53,95 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will contain a comprehensive overview of the Market State Intelligence indicator.</p>
+          <p>The <strong>Market State Intelligence (MSI)</strong> indicator is a multi-dimensional regime classifier that answers the fundamental question: <em>"What kind of market am I trading right now?"</em></p>
+
+          <p>Markets aren't always the same. A strategy that works in trending conditions fails in choppy ranges. MSI synthesizes four key dimensions — Trend, Momentum, Volatility, and Structure — into a unified state classification that helps you adapt to current conditions.</p>
+
+          <h3>The Four Dimensions</h3>
+          <ul>
+            <li><strong>Trend</strong> — Is there directional bias? How strong? (ADX-based)</li>
+            <li><strong>Momentum</strong> — Is the move accelerating or decelerating? (RSI-derived)</li>
+            <li><strong>Volatility</strong> — Is the market calm or explosive? (ATR states)</li>
+            <li><strong>Structure</strong> — Is price making higher highs or lower lows? (Swing analysis)</li>
+          </ul>
+
+          <h3>Regime Classifications</h3>
+          <ul>
+            <li><strong>Trending</strong> — Strong directional move with aligned momentum</li>
+            <li><strong>Ranging</strong> — Sideways consolidation, mean-reversion favored</li>
+            <li><strong>Volatile</strong> — Explosive moves, increased risk, wider stops needed</li>
+            <li><strong>Calm</strong> — Low volatility, compression, potential breakout setup</li>
+            <li><strong>Transitional</strong> — Regime changing, wait for clarity</li>
+          </ul>
+
+          <h3>Visual System</h3>
+          <ul>
+            <li><strong>Regime Label</strong> — Current classified state</li>
+            <li><strong>Dimension Bars</strong> — Individual strength of each dimension</li>
+            <li><strong>Composite Score</strong> — Overall regime confidence</li>
+            <li><strong>Transition Alerts</strong> — When regime changes</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'Calculation Methodology',
+        icon: 'calculation',
+        content: `
+          <p>MSI calculates each dimension independently, then synthesizes them into regime classification.</p>
+
+          <h3>Dimension Calculations</h3>
+
+          <h4>1. Trend Dimension (ADX-Based)</h4>
+          <p>Measures directional strength regardless of direction:</p>
+          <pre>+DI = 100 × EMA(+DM) / ATR
+-DI = 100 × EMA(-DM) / ATR
+DX = 100 × |+DI - -DI| / (+DI + -DI)
+ADX = EMA(DX, period)
+
+Trend_Score:
+  ADX > 25 = Strong Trend
+  ADX 20-25 = Moderate Trend
+  ADX < 20 = Weak/No Trend</pre>
+
+          <h4>2. Momentum Dimension (RSI-Based)</h4>
+          <p>Measures momentum strength and direction:</p>
+          <pre>RSI = 100 - (100 / (1 + RS))
+RS = Average Gain / Average Loss
+
+Momentum_Score:
+  RSI > 60 or < 40 = Strong Momentum
+  RSI 45-55 = Neutral Momentum
+  RSI Rate of Change = Acceleration</pre>
+
+          <h4>3. Volatility Dimension (ATR-Based)</h4>
+          <p>Classifies current volatility state:</p>
+          <pre>ATR_Current = ATR(14)
+ATR_Average = SMA(ATR, 100)
+Volatility_Ratio = ATR_Current / ATR_Average
+
+Volatility_State:
+  Ratio > 1.5 = High Volatility
+  Ratio 0.8-1.2 = Normal Volatility
+  Ratio < 0.8 = Low Volatility (Compression)</pre>
+
+          <h4>4. Structure Dimension (Swing Analysis)</h4>
+          <p>Analyzes price structure via swing points:</p>
+          <pre>Higher_High = High > Previous_Swing_High
+Higher_Low = Low > Previous_Swing_Low
+Lower_Low = Low < Previous_Swing_Low
+Lower_High = High < Previous_Swing_High
+
+Structure_Score:
+  HH + HL = Bullish Structure
+  LL + LH = Bearish Structure
+  Mixed = Ranging Structure</pre>
+
+          <h3>Regime Synthesis</h3>
+          <pre>Composite = (Trend × W1) + (Momentum × W2) +
+            (Volatility × W3) + (Structure × W4)
+
+Regime = Classify(Composite, Individual_Scores)</pre>
         `,
       },
       {
@@ -62,8 +149,257 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>Detailed input parameters documentation will be added here.</p>
+          <h3>Dimension Settings</h3>
+          <ul>
+            <li><strong>ADX Period</strong> (default: 14) — Period for trend calculation. Higher = smoother, slower signals.</li>
+            <li><strong>ADX Threshold</strong> (default: 25) — Level above which trend is considered "strong".</li>
+            <li><strong>RSI Period</strong> (default: 14) — Period for momentum calculation.</li>
+            <li><strong>ATR Period</strong> (default: 14) — Period for volatility measurement.</li>
+            <li><strong>ATR Baseline</strong> (default: 100) — Lookback for average volatility comparison.</li>
+            <li><strong>Swing Lookback</strong> (default: 10) — Bars to identify swing highs/lows.</li>
+          </ul>
+
+          <h3>Dimension Weights</h3>
+          <ul>
+            <li><strong>Trend Weight</strong> (default: 0.30) — Importance of trend in classification.</li>
+            <li><strong>Momentum Weight</strong> (default: 0.25) — Importance of momentum.</li>
+            <li><strong>Volatility Weight</strong> (default: 0.25) — Importance of volatility state.</li>
+            <li><strong>Structure Weight</strong> (default: 0.20) — Importance of price structure.</li>
+          </ul>
+
+          <h3>Classification Thresholds</h3>
+          <ul>
+            <li><strong>Trending Threshold</strong> (default: 0.65) — Score above which regime = Trending.</li>
+            <li><strong>Ranging Threshold</strong> (default: 0.35) — Score below which regime = Ranging.</li>
+            <li><strong>Volatility Multiplier</strong> (default: 1.5) — ATR ratio for "High Volatility" state.</li>
+          </ul>
+
+          <h3>Visual Settings</h3>
+          <ul>
+            <li><strong>Show Regime Label</strong> (default: true) — Display current regime classification.</li>
+            <li><strong>Show Dimension Bars</strong> (default: true) — Show individual dimension strengths.</li>
+            <li><strong>Show Transition Alerts</strong> (default: true) — Alert on regime changes.</li>
+            <li><strong>Bar Colors</strong> (default: true) — Color bars based on regime.</li>
+          </ul>
+
+          <h3>Recommended Settings by Timeframe</h3>
+          <ul>
+            <li><strong>Intraday (1-15min)</strong> — ADX: 10, RSI: 7, faster response</li>
+            <li><strong>Swing (1H-4H)</strong> — Default settings work well</li>
+            <li><strong>Position (Daily+)</strong> — ADX: 20, longer baselines</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Interpretation Guide',
+        icon: 'interpretation',
+        content: `
+          <h3>Regime Interpretations</h3>
+
+          <h4>Trending Regime</h4>
+          <ul>
+            <li>ADX elevated (>25), clear structure direction</li>
+            <li>Momentum aligned with trend direction</li>
+            <li><strong>Strategy:</strong> Trend-following, breakout continuation</li>
+            <li><strong>Avoid:</strong> Mean-reversion, counter-trend trades</li>
+          </ul>
+
+          <h4>Ranging Regime</h4>
+          <ul>
+            <li>ADX low (<20), mixed swing structure</li>
+            <li>Momentum oscillating around neutral</li>
+            <li><strong>Strategy:</strong> Range trading, mean-reversion, fade extremes</li>
+            <li><strong>Avoid:</strong> Breakout trades, trend following</li>
+          </ul>
+
+          <h4>Volatile Regime</h4>
+          <ul>
+            <li>ATR ratio elevated (>1.5x average)</li>
+            <li>Wide swings, increased noise</li>
+            <li><strong>Strategy:</strong> Wider stops, reduced size, momentum plays</li>
+            <li><strong>Avoid:</strong> Tight stops, scalping, precision entries</li>
+          </ul>
+
+          <h4>Calm Regime</h4>
+          <ul>
+            <li>ATR ratio compressed (<0.8x average)</li>
+            <li>Narrow ranges, consolidation</li>
+            <li><strong>Strategy:</strong> Prepare for breakout, accumulate position</li>
+            <li><strong>Avoid:</strong> Expecting continuation of calm</li>
+          </ul>
+
+          <h4>Transitional Regime</h4>
+          <ul>
+            <li>Dimensions conflicting, no clear classification</li>
+            <li>Regime changing, uncertainty elevated</li>
+            <li><strong>Strategy:</strong> Reduce exposure, wait for clarity</li>
+            <li><strong>Avoid:</strong> Large positions, high conviction trades</li>
+          </ul>
+
+          <h3>Dimension Bar Interpretation</h3>
+          <ul>
+            <li><strong>All bars aligned</strong> — High conviction regime, trade with confidence</li>
+            <li><strong>Mixed bars</strong> — Lower conviction, reduce size</li>
+            <li><strong>Diverging bars</strong> — Potential transition, caution</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'trading',
+        content: `
+          <h3>Strategy 1: Regime Filter</h3>
+          <p>Use MSI to filter signals from other indicators.</p>
+          <ul>
+            <li><strong>Trending regime</strong> — Only take trend-following signals</li>
+            <li><strong>Ranging regime</strong> — Only take mean-reversion signals</li>
+            <li><strong>Volatile regime</strong> — Widen stops on all signals</li>
+            <li><strong>Transitional</strong> — Skip signals, wait</li>
+          </ul>
+
+          <h3>Strategy 2: Regime Transition Trading</h3>
+          <p>Trade the shift from one regime to another.</p>
+          <ul>
+            <li><strong>Calm → Volatile</strong> — Position for breakout</li>
+            <li><strong>Ranging → Trending</strong> — Enter trend early</li>
+            <li><strong>Trending → Ranging</strong> — Take profits, prepare to fade</li>
+            <li><strong>Volatile → Calm</strong> — Tighten stops, let trend continue</li>
+          </ul>
+
+          <h3>Strategy 3: Dimension Divergence</h3>
+          <p>When dimensions diverge, anticipate regime change.</p>
+          <ul>
+            <li><strong>Trend strong, Momentum weak</strong> — Trend exhaustion possible</li>
+            <li><strong>Volatility high, Trend weak</strong> — Choppy conditions, stand aside</li>
+            <li><strong>Structure bullish, Momentum bearish</strong> — Potential reversal</li>
+          </ul>
+
+          <h3>Strategy 4: Position Sizing by Regime</h3>
+          <p>Adjust position size based on regime.</p>
+          <ul>
+            <li><strong>Trending + Aligned</strong> — Full size (100%)</li>
+            <li><strong>Ranging</strong> — Reduced size (50-75%)</li>
+            <li><strong>Volatile</strong> — Reduced size (50%)</li>
+            <li><strong>Transitional</strong> — Minimal or no position (25% or skip)</li>
+          </ul>
+
+          <h3>Strategy 5: Multi-Timeframe Regime</h3>
+          <p>Align regimes across timeframes.</p>
+          <ul>
+            <li><strong>HTF Trending + LTF Trending</strong> — High conviction trend trades</li>
+            <li><strong>HTF Trending + LTF Ranging</strong> — Pullback entries in HTF direction</li>
+            <li><strong>HTF Ranging + LTF Trending</strong> — Fade LTF extremes</li>
+          </ul>
+
+          <h3>What NOT to Do</h3>
+          <ul>
+            <li>Don't trend-follow in Ranging regime</li>
+            <li>Don't mean-revert in Trending regime</li>
+            <li>Don't use tight stops in Volatile regime</li>
+            <li>Don't take high conviction positions in Transitional</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'data-window',
+        title: 'Data Window Values',
+        icon: 'settings',
+        content: `
+          <h3>Exported Values</h3>
+          <p>The indicator exports the following values to TradingView's Data Window:</p>
+
+          <h4>Regime Information</h4>
+          <ul>
+            <li><strong>Regime</strong> — Current classification (Trending/Ranging/Volatile/Calm/Transitional)</li>
+            <li><strong>Composite Score</strong> — Overall regime confidence (0.00-1.00)</li>
+            <li><strong>Regime Duration</strong> — Bars since last regime change</li>
+          </ul>
+
+          <h4>Individual Dimensions</h4>
+          <ul>
+            <li><strong>Trend Score</strong> — ADX-based trend strength (0-100)</li>
+            <li><strong>Momentum Score</strong> — RSI-based momentum (0-100)</li>
+            <li><strong>Volatility Score</strong> — ATR ratio normalized (0-100)</li>
+            <li><strong>Structure Score</strong> — Swing structure strength (0-100)</li>
+          </ul>
+
+          <h4>Raw Indicators</h4>
+          <ul>
+            <li><strong>ADX</strong> — Raw ADX value</li>
+            <li><strong>RSI</strong> — Raw RSI value</li>
+            <li><strong>ATR Ratio</strong> — Current ATR / Average ATR</li>
+            <li><strong>Structure</strong> — Bullish/Bearish/Neutral</li>
+          </ul>
+
+          <h3>Using Data Window Values</h3>
+          <ul>
+            <li><strong>Regime confirmation</strong> — Check Composite Score for confidence</li>
+            <li><strong>Weakness detection</strong> — Identify which dimension is lagging</li>
+            <li><strong>Transition anticipation</strong> — Watch for dimension divergence</li>
+            <li><strong>Strategy selection</strong> — Use raw values to fine-tune approach</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake 1: Fighting the Regime</h3>
+          <p><strong>Problem:</strong> Applying the wrong strategy for the current regime.</p>
+          <p><strong>Solution:</strong> Match your strategy to the regime. Trend-follow in trends, mean-revert in ranges.</p>
+
+          <h3>Mistake 2: Ignoring Transitions</h3>
+          <p><strong>Problem:</strong> Not recognizing when regime is changing.</p>
+          <p><strong>Solution:</strong> Watch for dimension divergence and Transitional classification. Reduce exposure during shifts.</p>
+
+          <h3>Mistake 3: Over-Relying on Single Dimension</h3>
+          <p><strong>Problem:</strong> Only watching ADX or only watching RSI.</p>
+          <p><strong>Solution:</strong> Use all four dimensions together. The synthesis is more powerful than any single indicator.</p>
+
+          <h3>Mistake 4: Same Position Size Across Regimes</h3>
+          <p><strong>Problem:</strong> Taking same size in volatile vs calm conditions.</p>
+          <p><strong>Solution:</strong> Scale position size inversely with volatility and directly with regime confidence.</p>
+
+          <h3>Mistake 5: Expecting Instant Regime Changes</h3>
+          <p><strong>Problem:</strong> Expecting immediate classification after a single bar.</p>
+          <p><strong>Solution:</strong> Regimes take time to establish. Wait for confirmation bars after initial classification change.</p>
+
+          <h3>Mistake 6: Not Adapting Stops to Volatility</h3>
+          <p><strong>Problem:</strong> Using same stop distance regardless of volatility state.</p>
+          <p><strong>Solution:</strong> In Volatile regime, widen stops. In Calm regime, tighter stops are valid.</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Regime Duration Matters</h3>
+          <p>The longer a regime persists, the more likely a change. Watch Regime Duration in Data Window. Extended regimes often precede sharp transitions.</p>
+
+          <h3>Tip 2: Use Calm Regime for Preparation</h3>
+          <p>Calm regimes (low volatility) are the best time to plan, set alerts, and prepare orders. Breakouts from calm states are often the most powerful moves.</p>
+
+          <h3>Tip 3: Trend + Momentum Alignment</h3>
+          <p>When Trend Score and Momentum Score both exceed 60, you have a high-probability trend continuation setup. These aligned conditions rarely fail immediately.</p>
+
+          <h3>Tip 4: Structure Leads, Others Confirm</h3>
+          <p>Often, Structure dimension changes first (new swing high/low), then other dimensions follow. Use Structure as an early warning system.</p>
+
+          <h3>Tip 5: Volatile Ranging is Dangerous</h3>
+          <p>When both Volatile and Ranging signals are present, it's a chopfest. This is the worst environment for most strategies. Stand aside completely.</p>
+
+          <h3>Tip 6: Combine with Market Acceptance Zones</h3>
+          <p>Use MSI to know HOW to trade (trend vs range), and MAZ to know WHERE to trade (acceptance levels). Together they answer "what" and "where".</p>
+
+          <h3>Tip 7: Journal Your Regime Performance</h3>
+          <p>Track your win rate by regime. Most traders find they excel in one regime and struggle in others. Specialize in your best regime.</p>
+
+          <h3>Tip 8: Transitional = Opportunity</h3>
+          <p>While Transitional means "don't trade with size," it also means opportunity is coming. Watch which dimension strengthens to anticipate the new regime.</p>
         `,
       },
     ],
