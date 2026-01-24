@@ -129,7 +129,7 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
 
   'market-pressure-regime': {
     title: 'Market Pressure Regime',
-    subtitle: 'Multi-dimensional pressure state classifier identifying buyer, seller, or equilibrium dominance.',
+    subtitle: 'Multi-dimensional pressure state classifier identifying release, suppression, trap, or transition conditions.',
     tradingViewUrl: 'https://www.tradingview.com/script/V3jfGrc1-Market-Pressure-Regime-Interakktive/',
     sections: [
       {
@@ -137,8 +137,88 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will contain a comprehensive overview of the Market Pressure Regime indicator.</p>
+          <p>The <strong>Market Pressure Regime (MPR)</strong> is a multi-dimensional state classifier that answers: <em>"What type of pressure is the market experiencing right now?"</em></p>
+
+          <p>Markets don't just trend or range — they experience different types of pressure. Price can be compressed and ready to spring, releasing energy in a directional move, trapped in absorption, or flickering between states. MPR identifies which regime you're in.</p>
+
+          <h3>Four Pressure States</h3>
+          <ul>
+            <li><strong>Release (Teal)</strong> — Directional pressure is dominant. Price has follow-through, moving efficiently in a direction. Trends are healthy.</li>
+            <li><strong>Suppressed (Grey)</strong> — Price is compressed/pinned. Ranges are tight, volatility is low. Potential energy building.</li>
+            <li><strong>Trap (Magenta)</strong> — High effort with low result. Volume or range expansion fails to produce directional movement. Classic absorption/trap pattern.</li>
+            <li><strong>Transition (Amber)</strong> — Pressure is unclear or unstable. Market is between regimes or flickering. Caution zone.</li>
+          </ul>
+
+          <h3>Core Components</h3>
+          <p>MPR synthesizes three dimensions of market behavior:</p>
+          <ul>
+            <li><strong>Compression</strong> — How tight is price action relative to normal? (Pinning proxy)</li>
+            <li><strong>Follow-Through</strong> — How efficiently does price travel? (Release proxy, similar to MER)</li>
+            <li><strong>Stress</strong> — Is effort producing result? (Trap proxy, similar to ERD)</li>
+          </ul>
+
+          <h3>Why This Matters</h3>
+          <ul>
+            <li><strong>Release:</strong> Trend-following strategies have an edge. Let winners run.</li>
+            <li><strong>Suppressed:</strong> Energy building — prepare for breakout. Range-bound until release.</li>
+            <li><strong>Trap:</strong> Dangerous for directional trades. Absorption is occurring — potential reversal zone.</li>
+            <li><strong>Transition:</strong> Reduce exposure. Wait for clarity.</li>
+          </ul>
+
+          <p>MPR combines concepts from Market Efficiency Ratio (follow-through), Effort-Result Divergence (stress), and volatility compression into a single unified state classifier.</p>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'How It\'s Calculated',
+        icon: 'concept',
+        content: `
+          <p>MPR uses a six-stage process combining multiple analytical dimensions.</p>
+
+          <h3>Stage 1: Compression Score (Pinning Proxy)</h3>
+          <p>Measures how tight price action is relative to ATR:</p>
+          <pre>Range Ratio = Candle Range ÷ ATR
+Compression Raw = 1 - Range Ratio
+Compression Score = normalized to 0-1</pre>
+          <p><strong>Interpretation:</strong> High compression (score near 1) = tight ranges, price is pinned. Low compression (score near 0) = wide ranges, price is expanding.</p>
+
+          <h3>Stage 2: Follow-Through Score (Release Proxy)</h3>
+          <p>Measures directional efficiency over the lookback period (similar to MER):</p>
+          <pre>Net Displacement = |Close - Close[N bars ago]|
+Path Length = Sum of |Close - Previous Close| over N bars
+Follow-Through = Net Displacement ÷ Path Length</pre>
+          <p><strong>Interpretation:</strong> High follow-through (near 1) = price is moving efficiently in one direction. Low follow-through (near 0) = price is oscillating, going nowhere.</p>
+
+          <h3>Stage 3: Stress Score (Trap Proxy)</h3>
+          <p>Measures effort vs. result (similar to ERD):</p>
+          <pre>Effort = Volume ÷ Average Volume (or Range Ratio if volume unavailable)
+Result = Price Move ÷ ATR
+Stress = (Effort - Result) × 100</pre>
+          <p><strong>Interpretation:</strong> High stress = lots of effort, little result. This is the absorption/trap signal.</p>
+
+          <h3>Stage 4: Composite Pressure Score</h3>
+          <p>The main output value:</p>
+          <pre>Pressure Score = Follow-Through Component - Compression Component</pre>
+          <ul>
+            <li><strong>Positive pressure:</strong> Follow-through dominates — release conditions</li>
+            <li><strong>Negative pressure:</strong> Compression dominates — suppressed conditions</li>
+          </ul>
+
+          <h3>Stage 5: Stability Filter</h3>
+          <p>Measures how consistently pressure maintains direction:</p>
+          <pre>Flip Rate = How often pressure changes sign
+Stability Score = 1 - Flip Rate</pre>
+          <p>Low stability triggers Transition state regardless of pressure score.</p>
+
+          <h3>Stage 6: State Classification</h3>
+          <p>Final state determined by:</p>
+          <ul>
+            <li><strong>Trap:</strong> Stress ≥ Trap Threshold AND Follow-Through < 0.3</li>
+            <li><strong>Release:</strong> Pressure Score ≥ Release Threshold</li>
+            <li><strong>Suppressed:</strong> Pressure Score ≤ Suppress Threshold</li>
+            <li><strong>Transition:</strong> Between thresholds OR unstable</li>
+          </ul>
+          <p>Persistence filter requires state to hold for N bars before confirming.</p>
         `,
       },
       {
@@ -146,8 +226,345 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>Detailed input parameters documentation will be added here.</p>
+          <h3>Core Settings</h3>
+
+          <h4>ATR Length (Default: 14)</h4>
+          <p><strong>Range:</strong> 5–100 bars</p>
+          <p>Period for ATR calculation used in normalization throughout the indicator.</p>
+          <ul>
+            <li><strong>Lower values:</strong> More responsive to recent volatility.</li>
+            <li><strong>Default (14):</strong> Industry standard.</li>
+            <li><strong>Higher values:</strong> Smoother baseline.</li>
+          </ul>
+
+          <h4>Baseline Lookback (Default: 20)</h4>
+          <p><strong>Range:</strong> 10–100 bars</p>
+          <p>Period for measuring compression and follow-through efficiency.</p>
+          <ul>
+            <li><strong>Lower values (10-15):</strong> More responsive, captures shorter-term regimes.</li>
+            <li><strong>Default (20):</strong> Balanced for swing trading.</li>
+            <li><strong>Higher values (30-50):</strong> Captures longer-term pressure regimes.</li>
+          </ul>
+
+          <h4>Volume Average Length (Default: 20)</h4>
+          <p><strong>Range:</strong> 5–100 bars</p>
+          <p>Period for volume baseline in stress calculation.</p>
+          <ul>
+            <li>Match to your typical trading horizon</li>
+            <li>If volume data is unreliable, stress will use range expansion instead</li>
+          </ul>
+
+          <h3>State Classification</h3>
+
+          <h4>Release Threshold (Default: 5.0)</h4>
+          <p><strong>Range:</strong> 1–50</p>
+          <p>Pressure score must exceed this to trigger Release state.</p>
+          <ul>
+            <li><strong>Lower values (1-3):</strong> More Release signals, lower bar for directional moves.</li>
+            <li><strong>Default (5):</strong> Balanced — requires meaningful directional pressure.</li>
+            <li><strong>Higher values (10+):</strong> Only strong directional pressure qualifies.</li>
+          </ul>
+
+          <h4>Suppressed Threshold (Default: -5.0)</h4>
+          <p><strong>Range:</strong> -50 to -1</p>
+          <p>Pressure score must fall below this to trigger Suppressed state.</p>
+          <ul>
+            <li><strong>Values closer to 0:</strong> More Suppressed signals.</li>
+            <li><strong>Default (-5):</strong> Balanced — requires meaningful compression.</li>
+            <li><strong>More negative:</strong> Only strong compression qualifies.</li>
+          </ul>
+
+          <h4>Trap Threshold (Default: 30.0)</h4>
+          <p><strong>Range:</strong> 10–50</p>
+          <p>Stress score must exceed this (with low follow-through) to trigger Trap state.</p>
+          <ul>
+            <li><strong>Lower values (15-20):</strong> More trap signals, catches subtle absorption.</li>
+            <li><strong>Default (30):</strong> High-conviction trap detection.</li>
+            <li><strong>Higher values (40+):</strong> Only extreme absorption events qualify.</li>
+          </ul>
+
+          <h4>Persistence Bars (Default: 3)</h4>
+          <p><strong>Range:</strong> 1–10 bars</p>
+          <p>Number of consecutive bars a state must hold before confirmation.</p>
+          <ul>
+            <li><strong>1:</strong> Immediate changes (may flicker).</li>
+            <li><strong>Default (3):</strong> Filters noise while staying responsive.</li>
+            <li><strong>Higher (5+):</strong> Very stable but slower to react.</li>
+          </ul>
+
+          <h4>Stability Lookback (Default: 20)</h4>
+          <p><strong>Range:</strong> 5–100 bars</p>
+          <p>Period for measuring pressure direction consistency.</p>
+
+          <h4>Stability Threshold (Default: 0.5)</h4>
+          <p><strong>Range:</strong> 0.1–1.0</p>
+          <p>Below this, Transition state triggers regardless of pressure level.</p>
+
+          <h3>Visual Settings</h3>
+
+          <h4>Show Pressure Histogram (Default: On)</h4>
+          <p>Display the pressure score histogram colored by state.</p>
+
+          <h4>Show Zero Line (Default: On)</h4>
+          <p>Display horizontal reference at zero.</p>
+
+          <h4>Show Background Tint (Default: Off)</h4>
+          <p>Subtle background during Release (teal), Trap (magenta), or Transition (amber).</p>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Reading the Indicator',
+        icon: 'usage',
+        content: `
+          <h3>Histogram Color Coding</h3>
+          <ul>
+            <li><strong>Teal Bars:</strong> Release state — directional pressure, healthy trend.</li>
+            <li><strong>Grey Bars:</strong> Suppressed state — compressed, energy building.</li>
+            <li><strong>Magenta Bars:</strong> Trap state — absorption, effort without result.</li>
+            <li><strong>Amber Bars:</strong> Transition state — unclear, unstable.</li>
+          </ul>
+
+          <h3>Understanding Release (Teal)</h3>
+          <p><strong>What it means:</strong> Follow-through dominates compression. Price is moving efficiently.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Trends are developing or continuing</li>
+            <li>Breakouts have follow-through</li>
+            <li>Momentum is clean</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Trend-following works. Let winners run. Trail stops.</p>
+
+          <h3>Understanding Suppressed (Grey)</h3>
+          <p><strong>What it means:</strong> Compression dominates. Price is tight, ranges are narrow.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Consolidation or balance</li>
+            <li>Potential energy building</li>
+            <li>Breakout setup forming</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Wait for release. Prepare breakout entries. Range trading viable until break.</p>
+
+          <h3>Understanding Trap (Magenta)</h3>
+          <p><strong>What it means:</strong> High stress with low follow-through. Effort isn't producing result.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Volume/range expansion without price progress</li>
+            <li>Absorption occurring — institutions accumulating or distributing</li>
+            <li>Potential reversal zone</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Dangerous for trend trades. Look for reversals. Trap often precedes significant direction change.</p>
+
+          <h3>Understanding Transition (Amber)</h3>
+          <p><strong>What it means:</strong> Pressure is unclear or flickering unstably.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Market between regimes</li>
+            <li>No dominant pressure</li>
+            <li>Higher uncertainty</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Reduce size or stand aside. Wait for clearer state.</p>
+
+          <h3>Histogram Height</h3>
+          <ul>
+            <li><strong>Tall positive bars:</strong> Strong release pressure — robust directional move</li>
+            <li><strong>Tall negative bars:</strong> Strong suppression — highly compressed</li>
+            <li><strong>Bars near zero:</strong> Balanced pressure — watch for regime shift</li>
+          </ul>
+
+          <h3>State Sequence Patterns</h3>
+          <ul>
+            <li><strong>Suppressed → Release:</strong> Classic coil-and-spring breakout.</li>
+            <li><strong>Release → Suppressed:</strong> Trend exhaustion, consolidation beginning.</li>
+            <li><strong>Trap → Release:</strong> Absorption complete, directional move starting.</li>
+            <li><strong>Any → Transition:</strong> Uncertainty — be cautious.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'tips',
+        content: `
+          <h3>Strategy Selection by State</h3>
+          <ul>
+            <li><strong>Release:</strong> Trend-following, momentum, breakout continuation</li>
+            <li><strong>Suppressed:</strong> Range trading, breakout preparation, mean-reversion</li>
+            <li><strong>Trap:</strong> Reversal setups, fade momentum, wait for direction</li>
+            <li><strong>Transition:</strong> Reduce exposure, neutral strategies</li>
+          </ul>
+
+          <h3>Breakout Trading</h3>
+          <p>MPR excels at breakout timing:</p>
+          <ul>
+            <li><strong>Best setup:</strong> Extended Suppressed state (4+ bars) followed by first Release bar</li>
+            <li><strong>Confirmation:</strong> Positive pressure score increasing</li>
+            <li><strong>Warning:</strong> If Trap appears during breakout attempt, breakout may fail</li>
+          </ul>
+
+          <h3>Reversal Detection</h3>
+          <p>Trap state is the key reversal signal:</p>
+          <ul>
+            <li><strong>At highs:</strong> Trap = buying absorption = potential top forming</li>
+            <li><strong>At lows:</strong> Trap = selling absorption = potential bottom forming</li>
+            <li><strong>Confirmation:</strong> Watch for Trap → Release in opposite direction</li>
+          </ul>
+
+          <h3>Trend Quality Assessment</h3>
+          <ul>
+            <li><strong>Healthy trend:</strong> Sustained Release state with consistent positive pressure</li>
+            <li><strong>Weakening trend:</strong> Release declining or shifting to Transition</li>
+            <li><strong>Trend exhaustion:</strong> Trap appearing after extended Release</li>
+          </ul>
+
+          <h3>Position Sizing</h3>
+          <ul>
+            <li><strong>Release:</strong> Full position — high-conviction directional</li>
+            <li><strong>Suppressed:</strong> Standard position — breakout potential</li>
+            <li><strong>Trap:</strong> Reduced or reversed position — absorption in progress</li>
+            <li><strong>Transition:</strong> Minimal position — uncertainty</li>
+          </ul>
+
+          <h3>Stop Placement</h3>
+          <ul>
+            <li><strong>Release:</strong> Trail stops with trend</li>
+            <li><strong>Suppressed:</strong> Place stops outside compression zone</li>
+            <li><strong>Trap:</strong> Tight stops or reversal-style entries</li>
+          </ul>
+
+          <h3>Combining with Other Indicators</h3>
+          <ul>
+            <li><strong>Market Efficiency Ratio:</strong> Validates Release — both should agree on trend quality</li>
+            <li><strong>Effort-Result Divergence:</strong> Validates Trap — both should show absorption</li>
+            <li><strong>Volatility State Index:</strong> Suppressed often aligns with VSI Decay</li>
+            <li><strong>Support/Resistance:</strong> Trap at key levels is high-probability reversal</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'datawindow',
+        title: 'Data Window Values',
+        icon: 'settings',
+        content: `
+          <p>When "Show Data Window Values" is enabled, access these metrics by hovering over any bar:</p>
+
+          <h3>Compression Score (0-1)</h3>
+          <p>How tight is current price action relative to ATR baseline?</p>
+          <ul>
+            <li><strong>0.7-1.0:</strong> Highly compressed — tight ranges, pinned price</li>
+            <li><strong>0.3-0.7:</strong> Normal compression</li>
+            <li><strong>0.0-0.3:</strong> Low compression — expanded ranges</li>
+          </ul>
+
+          <h3>Follow-Through Score (0-1)</h3>
+          <p>How efficiently has price traveled over the lookback?</p>
+          <ul>
+            <li><strong>0.7-1.0:</strong> High efficiency — directional progress</li>
+            <li><strong>0.3-0.7:</strong> Moderate efficiency</li>
+            <li><strong>0.0-0.3:</strong> Low efficiency — oscillating, going nowhere</li>
+          </ul>
+
+          <h3>Stress Score</h3>
+          <p>Effort minus result, scaled to ±100. Measures absorption/trap potential.</p>
+          <ul>
+            <li><strong>Positive (high):</strong> Effort exceeding result — absorption</li>
+            <li><strong>Near zero:</strong> Balanced effort and result</li>
+            <li><strong>Negative:</strong> Result exceeding effort — efficient movement</li>
+          </ul>
+
+          <h3>Stability Score (0-1)</h3>
+          <p>How consistently has pressure maintained direction?</p>
+          <ul>
+            <li><strong>0.7-1.0:</strong> Very stable — consistent pressure direction</li>
+            <li><strong>0.5-0.7:</strong> Moderate stability</li>
+            <li><strong>Below 0.5:</strong> Unstable — triggers Transition</li>
+          </ul>
+
+          <h3>Pressure Score</h3>
+          <p>The composite output: Follow-Through minus Compression, scaled.</p>
+          <ul>
+            <li><strong>Positive:</strong> Release pressure dominates</li>
+            <li><strong>Negative:</strong> Suppression pressure dominates</li>
+            <li><strong>Near zero:</strong> Balanced</li>
+          </ul>
+
+          <h3>State (-1/0/1/2)</h3>
+          <p>Numeric state identifier:</p>
+          <ul>
+            <li><strong>1:</strong> Release</li>
+            <li><strong>-1:</strong> Suppressed</li>
+            <li><strong>0:</strong> Transition</li>
+            <li><strong>2:</strong> Trap</li>
+          </ul>
+
+          <h3>Is Release / Is Suppressed / Is Transition / Is Trap</h3>
+          <p>Binary flags (1 = true, 0 = false) for each state. Useful for alerts and automation.</p>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake #1: Ignoring Trap Signals</h3>
+          <p><strong>Problem:</strong> Holding trend positions through Trap state.</p>
+          <p><strong>Result:</strong> Absorption completes and price reverses against you.</p>
+          <p><strong>Solution:</strong> Trap is a warning. At minimum, tighten stops. Better: take profits or hedge.</p>
+
+          <h3>Mistake #2: Trading Breakouts in Transition</h3>
+          <p><strong>Problem:</strong> Taking breakout signals when MPR shows Transition.</p>
+          <p><strong>Result:</strong> False breakouts and whipsaws.</p>
+          <p><strong>Solution:</strong> Wait for Suppressed → Release transition, not Transition → anything.</p>
+
+          <h3>Mistake #3: Misinterpreting Suppressed as Bearish</h3>
+          <p><strong>Problem:</strong> Assuming Suppressed (grey) means negative/bearish.</p>
+          <p><strong>Result:</strong> Missing that compression is neutral — just energy building.</p>
+          <p><strong>Solution:</strong> Suppressed is not directional. It means price is coiled. The next state determines direction.</p>
+
+          <h3>Mistake #4: Chasing Extended Release</h3>
+          <p><strong>Problem:</strong> Entering trend trades after 10+ bars of Release.</p>
+          <p><strong>Result:</strong> Entering at the tail end of a move.</p>
+          <p><strong>Solution:</strong> Best entries are early Release, especially after Suppressed. Late Release is for trailing, not entering.</p>
+
+          <h3>Mistake #5: Wrong Trap Threshold</h3>
+          <p><strong>Problem:</strong> Trap threshold too low, seeing Trap signals constantly.</p>
+          <p><strong>Result:</strong> Oversensitive, too many false traps.</p>
+          <p><strong>Solution:</strong> Keep trap threshold at 25-35. Lower only for specific high-volume markets.</p>
+
+          <h3>Mistake #6: Ignoring Context for Trap</h3>
+          <p><strong>Problem:</strong> Trading Trap signals without considering price location.</p>
+          <p><strong>Result:</strong> Trap in the middle of a trend may just be a pause, not reversal.</p>
+          <p><strong>Solution:</strong> Trap is most significant at extremes, support/resistance, or after extended moves.</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip #1: Suppressed → Release is Gold</h3>
+          <p>The most reliable setup: Extended Suppressed (compression building) followed by Release (breakout). This is the "coil and spring" pattern with MPR confirmation.</p>
+
+          <h3>Tip #2: Trap at Extremes is High-Probability</h3>
+          <p>Trap state at obvious support/resistance or after extended trends has high reversal probability. Combine with price action for entries.</p>
+
+          <h3>Tip #3: Watch Stress Score in Release</h3>
+          <p>Even during Release, monitor stress score in data window. Rising stress warns that Release may be ending — absorption beginning.</p>
+
+          <h3>Tip #4: Use Compression Score for Range Trading</h3>
+          <p>High compression score (>0.7) during Suppressed state means range is tight. Good for range-bound strategies until Release occurs.</p>
+
+          <h3>Tip #5: Multi-Timeframe Confluence</h3>
+          <p>Higher timeframe in Release + lower timeframe Suppressed = pullback in trend. Look for lower timeframe Release for continuation entry.</p>
+
+          <h3>Tip #6: Trap Often Precedes Significant Moves</h3>
+          <p>Absorption (Trap) is institutions positioning. After Trap resolves, the next Release often produces a significant move. Watch for Trap → Release transitions.</p>
+
+          <h3>Tip #7: State Persistence Indicates Conviction</h3>
+          <p>A state holding for many bars (especially Release or Suppressed) indicates strong regime. Single-bar states are less reliable.</p>
+
+          <h3>Tip #8: Combine with Volume Analysis</h3>
+          <p>MPR uses volume for stress calculation, but also watch raw volume. High volume + Release = strong conviction. High volume + Trap = significant absorption.</p>
         `,
       },
     ],
