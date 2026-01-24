@@ -73,7 +73,7 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
 
   'market-acceptance-zones': {
     title: 'Market Acceptance Zones',
-    subtitle: 'Identifies institutional acceptance levels with significant volume concentration and price equilibrium.',
+    subtitle: 'Identifies institutional acceptance levels where price has been statistically accepted through volume concentration and efficiency balance.',
     tradingViewUrl: 'https://www.tradingview.com/script/yZ4KaZk4-Market-Acceptance-Zones-Interakktive/',
     sections: [
       {
@@ -81,8 +81,74 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will contain a comprehensive overview of the Market Acceptance Zones indicator.</p>
+          <p>The <strong>Market Acceptance Zones (MAZ)</strong> indicator identifies price levels where institutional participants have demonstrated statistical acceptance. Unlike simple support/resistance, these zones represent areas where price has been absorbed with balanced activity — indicating genuine acceptance rather than rejection.</p>
+
+          <p>MAZ answers the question: <em>"Where has price been truly accepted by market participants, not just paused?"</em></p>
+
+          <h3>Zone Types</h3>
+          <ul>
+            <li><strong>MAZ (Teal)</strong> — Current timeframe acceptance zone with high acceptance score</li>
+            <li><strong>MAZ•HTF (Purple)</strong> — Higher timeframe acceptance zone (weekly context on daily chart)</li>
+            <li><strong>H•MAZ (White)</strong> — Historic high-score zones that proved significant</li>
+          </ul>
+
+          <h3>What Makes a Zone "Accepted"</h3>
+          <p>The indicator calculates an <em>Acceptance Score</em> combining four components:</p>
+          <ul>
+            <li><strong>Efficiency</strong> — Movement quality (not too choppy, not too explosive)</li>
+            <li><strong>ERD Balance</strong> — Effort-Result Divergence near equilibrium</li>
+            <li><strong>Volatility Decay</strong> — Volatility settling, not expanding</li>
+            <li><strong>Participation</strong> — Volume confirming the acceptance</li>
+          </ul>
+
+          <h3>Visual System</h3>
+          <ul>
+            <li><strong>Zone Boxes</strong> — Visual representation of acceptance areas</li>
+            <li><strong>Labels</strong> — Show zone type and acceptance score</li>
+            <li><strong>Gradient Intensity</strong> — Stronger scores = more opaque zones</li>
+            <li><strong>Historic Markers</strong> — Past zones that had high acceptance</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'Calculation Methodology',
+        icon: 'calculation',
+        content: `
+          <p>MAZ uses a multi-component scoring system to identify genuine acceptance versus temporary pauses.</p>
+
+          <h3>Acceptance Score Components</h3>
+
+          <h4>1. Efficiency Component (25%)</h4>
+          <p>Measures how efficiently price moved within the lookback period:</p>
+          <pre>Displacement = |Close - Close[lookback]|
+Path = Sum of all |Close - Open| over lookback
+Efficiency = Displacement / Path (bounded 0-1)</pre>
+          <p>Mid-range efficiency (0.3-0.7) indicates balanced acceptance. Too high = trending, too low = choppy.</p>
+
+          <h4>2. ERD Balance Component (25%)</h4>
+          <p>Effort-Result Divergence measures if effort matches result:</p>
+          <pre>Effort = Current range vs average range
+Result = Current body vs average body
+ERD = |Effort - Result|</pre>
+          <p>Low ERD (effort equals result) suggests natural, accepted price action.</p>
+
+          <h4>3. Volatility Decay Component (25%)</h4>
+          <p>Checks if volatility is contracting (settling into acceptance):</p>
+          <pre>ATR_Fast = ATR over short period
+ATR_Slow = ATR over longer period
+Decay = ATR_Slow > ATR_Fast ? Bullish : Bearish</pre>
+          <p>Volatility decay = price finding equilibrium.</p>
+
+          <h4>4. Participation Component (25%)</h4>
+          <p>Volume must confirm the acceptance:</p>
+          <pre>Volume_Ratio = Volume / SMA(Volume, 20)
+Participation = Normalized(Volume_Ratio)</pre>
+          <p>Higher participation = stronger acceptance validation.</p>
+
+          <h3>Final Score Calculation</h3>
+          <pre>Acceptance_Score = (Efficiency + ERD_Balance + Vol_Decay + Participation) / 4
+Zone_Created = Score > Threshold AND Confirmation_Met</pre>
         `,
       },
       {
@@ -90,8 +156,261 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>Detailed input parameters documentation will be added here.</p>
+          <h3>Zone Settings</h3>
+          <ul>
+            <li><strong>Lookback Period</strong> (default: 20) — Bars analyzed for acceptance calculation. Higher = more stable zones, fewer updates.</li>
+            <li><strong>Acceptance Threshold</strong> (default: 0.65) — Minimum score to create a zone. Higher = fewer but higher quality zones.</li>
+            <li><strong>Zone Extension</strong> (default: 50) — How many bars forward zones extend.</li>
+          </ul>
+
+          <h3>Higher Timeframe Settings</h3>
+          <ul>
+            <li><strong>HTF Enabled</strong> (default: true) — Show weekly zones on daily (or equivalent).</li>
+            <li><strong>HTF Multiplier</strong> (default: 5) — Timeframe multiplier for HTF calculation.</li>
+            <li><strong>HTF Threshold</strong> (default: 0.70) — Separate threshold for HTF zones.</li>
+          </ul>
+
+          <h3>Visual Settings</h3>
+          <ul>
+            <li><strong>Show Current Zones</strong> (default: true) — Display active MAZ zones.</li>
+            <li><strong>Show HTF Zones</strong> (default: true) — Display MAZ•HTF zones.</li>
+            <li><strong>Show Historic</strong> (default: true) — Display H•MAZ historic markers.</li>
+            <li><strong>Zone Transparency</strong> (default: 85) — Base transparency for zone boxes.</li>
+            <li><strong>Label Size</strong> (default: small) — Size of zone labels.</li>
+          </ul>
+
+          <h3>Component Weights</h3>
+          <ul>
+            <li><strong>Efficiency Weight</strong> (default: 0.25) — Weight of efficiency in total score.</li>
+            <li><strong>ERD Weight</strong> (default: 0.25) — Weight of ERD balance in total score.</li>
+            <li><strong>Volatility Weight</strong> (default: 0.25) — Weight of volatility decay in total score.</li>
+            <li><strong>Participation Weight</strong> (default: 0.25) — Weight of volume participation in total score.</li>
+          </ul>
+
+          <h3>Recommended Settings by Style</h3>
+          <ul>
+            <li><strong>Day Trading</strong> — Lookback: 14, Threshold: 0.60, Extension: 30</li>
+            <li><strong>Swing Trading</strong> — Lookback: 20, Threshold: 0.65, Extension: 50 (default)</li>
+            <li><strong>Position Trading</strong> — Lookback: 30, Threshold: 0.70, Extension: 100</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Interpretation Guide',
+        icon: 'interpretation',
+        content: `
+          <h3>Zone Colors & Types</h3>
+
+          <h4>MAZ (Teal Zones)</h4>
+          <ul>
+            <li>Current timeframe acceptance areas</li>
+            <li>Higher score = more opaque appearance</li>
+            <li>Acts as dynamic support/resistance</li>
+            <li>Best for entries and exits on your trading timeframe</li>
+          </ul>
+
+          <h4>MAZ•HTF (Purple Zones)</h4>
+          <ul>
+            <li>Higher timeframe acceptance (institutional context)</li>
+            <li>More significant than current TF zones</li>
+            <li>Price often reacts strongly at these levels</li>
+            <li>Use for major swing targets and key levels</li>
+          </ul>
+
+          <h4>H•MAZ (White Markers)</h4>
+          <ul>
+            <li>Historic high-score zones</li>
+            <li>Proven significant in the past</li>
+            <li>May still act as memory levels</li>
+            <li>Context for understanding price structure</li>
+          </ul>
+
+          <h3>Score Interpretation</h3>
+          <ul>
+            <li><strong>0.85+ (Exceptional)</strong> — Extremely high acceptance, major institutional activity</li>
+            <li><strong>0.75-0.85 (Strong)</strong> — High quality zone, reliable for trading</li>
+            <li><strong>0.65-0.75 (Moderate)</strong> — Valid acceptance, use with confirmation</li>
+            <li><strong>Below 0.65</strong> — Does not qualify as accepted (no zone created)</li>
+          </ul>
+
+          <h3>Zone Lifecycle</h3>
+          <ol>
+            <li><strong>Formation</strong> — Score exceeds threshold, zone created</li>
+            <li><strong>Active</strong> — Zone extends forward, acts as S/R</li>
+            <li><strong>Test</strong> — Price returns to zone, watch for reaction</li>
+            <li><strong>Validation/Break</strong> — Zone holds = validated, breaks = invalidated</li>
+            <li><strong>Historic</strong> — High-score zones become H•MAZ markers</li>
+          </ol>
+
+          <h3>Confluence Signals</h3>
+          <ul>
+            <li><strong>MAZ + MAZ•HTF overlap</strong> — Extremely strong level</li>
+            <li><strong>Multiple H•MAZ at same level</strong> — Historic significance</li>
+            <li><strong>Zone at round number</strong> — Psychological + statistical acceptance</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'trading',
+        content: `
+          <h3>Strategy 1: Value Area Trading</h3>
+          <p>Trade within acceptance zones when price is ranging.</p>
+          <ul>
+            <li><strong>Setup</strong> — Price oscillating within or near MAZ zone</li>
+            <li><strong>Entry</strong> — Fade moves to zone edges with confirmation</li>
+            <li><strong>Target</strong> — Opposite edge of the zone</li>
+            <li><strong>Stop</strong> — Beyond zone boundary with buffer</li>
+          </ul>
+
+          <h3>Strategy 2: Breakout Trading</h3>
+          <p>Trade when price breaks out of acceptance zones.</p>
+          <ul>
+            <li><strong>Setup</strong> — Price consolidating in high-score zone (0.80+)</li>
+            <li><strong>Entry</strong> — Strong close beyond zone with volume</li>
+            <li><strong>Target</strong> — Next HTF zone or measured move</li>
+            <li><strong>Stop</strong> — Back inside the broken zone</li>
+          </ul>
+
+          <h3>Strategy 3: HTF Confluence</h3>
+          <p>Use HTF zones for high-probability setups.</p>
+          <ul>
+            <li><strong>Setup</strong> — Price approaching MAZ•HTF zone</li>
+            <li><strong>Wait</strong> — Current TF MAZ forms at HTF level</li>
+            <li><strong>Entry</strong> — When both timeframes align</li>
+            <li><strong>Target</strong> — Major swing based on HTF structure</li>
+          </ul>
+
+          <h3>Strategy 4: Retest Entries</h3>
+          <p>Enter on retests of broken zones.</p>
+          <ul>
+            <li><strong>Setup</strong> — Zone broken with strong momentum</li>
+            <li><strong>Wait</strong> — Price returns to test broken zone</li>
+            <li><strong>Entry</strong> — Rejection candle at former zone</li>
+            <li><strong>Target</strong> — 1:2 or 1:3 risk:reward to next zone</li>
+          </ul>
+
+          <h3>Strategy 5: Zone-to-Zone Trading</h3>
+          <p>Use zones as natural targets.</p>
+          <ul>
+            <li><strong>Entry</strong> — From one acceptance zone</li>
+            <li><strong>Target</strong> — Next acceptance zone in direction</li>
+            <li><strong>Management</strong> — Trail stop as new zones form</li>
+          </ul>
+
+          <h3>What NOT to Do</h3>
+          <ul>
+            <li>Don't trade against HTF zone direction</li>
+            <li>Don't ignore zone scores (quality matters)</li>
+            <li>Don't hold through clean zone breaks</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'data-window',
+        title: 'Data Window Values',
+        icon: 'settings',
+        content: `
+          <h3>Exported Values</h3>
+          <p>The indicator exports the following values to TradingView's Data Window:</p>
+
+          <h4>Zone Information</h4>
+          <ul>
+            <li><strong>Zone High</strong> — Upper boundary of current zone</li>
+            <li><strong>Zone Low</strong> — Lower boundary of current zone</li>
+            <li><strong>Zone Mid</strong> — Midpoint (equilibrium) of current zone</li>
+            <li><strong>Zone Score</strong> — Acceptance score (0.00-1.00)</li>
+          </ul>
+
+          <h4>HTF Zone Information</h4>
+          <ul>
+            <li><strong>HTF Zone High</strong> — Upper boundary of HTF zone</li>
+            <li><strong>HTF Zone Low</strong> — Lower boundary of HTF zone</li>
+            <li><strong>HTF Score</strong> — HTF acceptance score</li>
+          </ul>
+
+          <h4>Component Scores</h4>
+          <ul>
+            <li><strong>Efficiency</strong> — Current efficiency component (0-1)</li>
+            <li><strong>ERD Balance</strong> — ERD component score (0-1)</li>
+            <li><strong>Vol Decay</strong> — Volatility decay component (0-1)</li>
+            <li><strong>Participation</strong> — Volume participation score (0-1)</li>
+          </ul>
+
+          <h3>Using Data Window Values</h3>
+          <ul>
+            <li><strong>Precise Entries</strong> — Use Zone Mid for equilibrium entries</li>
+            <li><strong>Stop Placement</strong> — Reference Zone High/Low for stops</li>
+            <li><strong>Quality Assessment</strong> — Check component scores for weak links</li>
+            <li><strong>HTF Context</strong> — Compare TF vs HTF scores for confluence</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake 1: Treating All Zones Equally</h3>
+          <p><strong>Problem:</strong> Trading every zone regardless of score.</p>
+          <p><strong>Solution:</strong> Prioritize high-score zones (0.75+). Lower scores need additional confirmation.</p>
+
+          <h3>Mistake 2: Ignoring HTF Context</h3>
+          <p><strong>Problem:</strong> Taking current TF zones against HTF zones.</p>
+          <p><strong>Solution:</strong> Always check MAZ•HTF zones. Align with, not against, higher timeframe acceptance.</p>
+
+          <h3>Mistake 3: Expecting Zones to Hold Forever</h3>
+          <p><strong>Problem:</strong> Holding losing positions expecting zone to hold.</p>
+          <p><strong>Solution:</strong> Zones have expiration. Clean breaks with volume invalidate zones.</p>
+
+          <h3>Mistake 4: Ignoring Component Weakness</h3>
+          <p><strong>Problem:</strong> Only looking at total score, not components.</p>
+          <p><strong>Solution:</strong> Check Data Window. A zone with weak participation but high efficiency may fail on volume spike.</p>
+
+          <h3>Mistake 5: Over-Reliance on Historic Zones</h3>
+          <p><strong>Problem:</strong> Trading H•MAZ as if they're active zones.</p>
+          <p><strong>Solution:</strong> H•MAZ are context markers. Wait for current TF confirmation before trading historic levels.</p>
+
+          <h3>Mistake 6: Using Wrong Threshold for Market</h3>
+          <p><strong>Problem:</strong> Using same threshold in all conditions.</p>
+          <p><strong>Solution:</strong> Raise threshold in volatile markets (fewer, better zones). Lower in quiet markets if needed.</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Zone Score as Position Size Guide</h3>
+          <p>Higher zone scores = larger position sizes. A 0.85 zone deserves more size than a 0.68 zone. Let the math guide your risk.</p>
+
+          <h3>Tip 2: Watch for "Zone Stacking"</h3>
+          <p>When multiple zones form at similar levels over time, it creates a "stacked" area. These multi-validated levels are exceptionally strong.</p>
+
+          <h3>Tip 3: Use Zone Width for Volatility</h3>
+          <p>Wide zones = volatile acceptance. Narrow zones = tight acceptance. Match your stop distances to zone width.</p>
+
+          <h3>Tip 4: Component Analysis for Edge</h3>
+          <p>Before entering at a zone, check which component is strongest:</p>
+          <ul>
+            <li><strong>High efficiency</strong> — Expect clean reactions</li>
+            <li><strong>High participation</strong> — Expect strong holds</li>
+            <li><strong>High volatility decay</strong> — Expect tight ranges</li>
+          </ul>
+
+          <h3>Tip 5: HTF Zones as "No Trade" Areas</h3>
+          <p>When price is between HTF zones, current TF trading is valid. When price is AT an HTF zone, wait for resolution before taking current TF signals.</p>
+
+          <h3>Tip 6: Combine with Market Pressure Regime</h3>
+          <p>Use MPR to know if you should trade zone bounces (neutral/ranging) or zone breaks (trending regimes).</p>
+
+          <h3>Tip 7: Zone Midpoint Strategy</h3>
+          <p>The zone midpoint often acts as an equilibrium magnet. Price tends to return to mid before continuing. Use this for entries and targets.</p>
+
+          <h3>Tip 8: Fresh vs. Tested Zones</h3>
+          <p>A fresh (untested) zone often provides the strongest first reaction. Each subsequent test weakens the zone. Track test count mentally.</p>
         `,
       },
     ],
