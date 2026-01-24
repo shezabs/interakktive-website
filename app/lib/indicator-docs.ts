@@ -165,8 +165,71 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will contain a comprehensive overview of the Volatility State Index indicator.</p>
+          <p>The <strong>Volatility State Index (VSI)</strong> is a regime detection tool that answers a fundamental question: <em>"Is volatility expanding, contracting, or in transition?"</em></p>
+
+          <p>Understanding volatility state is crucial because different market conditions require different trading approaches. A breakout strategy that works in expanding volatility will fail in decaying volatility. The VSI tells you which regime you're in.</p>
+
+          <h3>Core Concept</h3>
+          <p>The indicator tracks <strong>volatility momentum</strong> — not just how volatile the market is, but whether volatility is increasing or decreasing and how stable that trend is.</p>
+
+          <h3>Three Volatility States</h3>
+          <ul>
+            <li><strong>Expansion (Teal)</strong> — Volatility is increasing. Bars are getting larger, ranges are widening. Markets are waking up.</li>
+            <li><strong>Decay (Grey)</strong> — Volatility is contracting. Bars are getting smaller, ranges are narrowing. Markets are quieting down.</li>
+            <li><strong>Transition (Amber)</strong> — Volatility momentum is unclear or unstable. The market is between regimes or flickering erratically.</li>
+          </ul>
+
+          <h3>Why This Matters</h3>
+          <ul>
+            <li><strong>Strategy Selection:</strong> Breakout strategies work best in expansion. Mean-reversion works best in decay. Transition is danger zone.</li>
+            <li><strong>Position Sizing:</strong> Larger positions in stable regimes, smaller in transition.</li>
+            <li><strong>Stop Placement:</strong> Tighter stops in decay (less noise), wider in expansion (more movement).</li>
+            <li><strong>Entry Timing:</strong> Expansion often follows prolonged decay. Decay often follows climactic expansion.</li>
+          </ul>
+
+          <h3>Key Innovation: Stability Filter</h3>
+          <p>Unlike simple volatility momentum indicators, VSI includes a stability filter that detects when volatility momentum is flickering — changing direction too rapidly to be reliable. This triggers the Transition state, warning you that the market hasn't committed to a regime.</p>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'How It\'s Calculated',
+        icon: 'concept',
+        content: `
+          <p>VSI uses a five-stage process to produce clean, actionable volatility state readings.</p>
+
+          <h3>Stage 1: Base Volatility</h3>
+          <p>Starts with Average True Range (ATR) as the foundation:</p>
+          <pre>Base Volatility = ATR(Length)</pre>
+          <p>ATR captures the average bar range, accounting for gaps.</p>
+
+          <h3>Stage 2: Smoothed Volatility</h3>
+          <p>Apply EMA smoothing to reduce noise:</p>
+          <pre>Smoothed Volatility = EMA(Base Volatility, Smoothing Length)</pre>
+          <p>This creates a cleaner volatility series for momentum calculation.</p>
+
+          <h3>Stage 3: Volatility Momentum</h3>
+          <p>Calculate rate of change in smoothed volatility:</p>
+          <pre>Volatility Momentum = (Current Smoothed - Previous Smoothed) ÷ Previous Smoothed
+Volatility Momentum (%) = Volatility Momentum × 100</pre>
+          <p><strong>Example:</strong> If smoothed ATR was 2.0 ten bars ago and is now 2.2, momentum = (2.2 - 2.0) / 2.0 = 0.10 or +10%.</p>
+
+          <h3>Stage 4: Stability Filter</h3>
+          <p>Measures how often volatility momentum changes direction:</p>
+          <pre>Momentum Sign = +1 if momentum ≥ 0, else -1
+Flip = 1 if sign changed from previous bar, else 0
+Flip Rate = SMA(Flip, Stability Lookback)
+Stability Score = 1 - Flip Rate</pre>
+          <p><strong>Interpretation:</strong> Stability of 0.9 means momentum only flipped 10% of the time — very stable. Stability of 0.4 means it flipped 60% of the time — very unstable.</p>
+
+          <h3>Stage 5: State Classification with Persistence</h3>
+          <p>Raw state is determined by momentum thresholds:</p>
+          <ul>
+            <li><strong>Expansion:</strong> Volatility Momentum % ≥ Expansion Threshold</li>
+            <li><strong>Decay:</strong> Volatility Momentum % ≤ Decay Threshold</li>
+            <li><strong>Transition:</strong> Between thresholds OR Stability Score < Stability Threshold</li>
+          </ul>
+          <p>Persistence filter requires a state to hold for N consecutive bars before confirming, preventing flickering on the output.</p>
         `,
       },
       {
@@ -174,8 +237,324 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>Detailed input parameters documentation will be added here.</p>
+          <h3>Core Settings</h3>
+
+          <h4>ATR Length (Default: 14)</h4>
+          <p><strong>Range:</strong> 5–100 bars</p>
+          <p>Base volatility measurement period. Standard ATR lookback.</p>
+          <ul>
+            <li><strong>Lower values (5-10):</strong> More responsive to recent volatility changes.</li>
+            <li><strong>Default (14):</strong> Industry standard, balanced responsiveness.</li>
+            <li><strong>Higher values (20-50):</strong> Smoother base volatility, less reactive to short-term spikes.</li>
+          </ul>
+
+          <h4>Smoothing Length (Default: 10)</h4>
+          <p><strong>Range:</strong> 3–50 bars</p>
+          <p>EMA smoothing applied to the ATR before momentum calculation.</p>
+          <ul>
+            <li><strong>Lower values (3-5):</strong> Minimal smoothing, more reactive momentum readings.</li>
+            <li><strong>Default (10):</strong> Good balance between responsiveness and noise reduction.</li>
+            <li><strong>Higher values (15-30):</strong> Very smooth, but lags behind actual volatility changes.</li>
+          </ul>
+
+          <h4>Momentum Length (Default: 10)</h4>
+          <p><strong>Range:</strong> 3–50 bars</p>
+          <p>Period for comparing current vs. past smoothed volatility.</p>
+          <ul>
+            <li><strong>Lower values:</strong> Faster detection of volatility changes, but noisier.</li>
+            <li><strong>Default (10):</strong> Captures meaningful volatility momentum without excessive noise.</li>
+            <li><strong>Higher values:</strong> Slower, smoother momentum — good for longer-term regime detection.</li>
+          </ul>
+
+          <h3>State Classification</h3>
+
+          <h4>Expansion Threshold (Default: 5%)</h4>
+          <p><strong>Range:</strong> 0.1–50%</p>
+          <p>Volatility momentum must exceed this percentage to trigger Expansion state.</p>
+          <ul>
+            <li><strong>Lower values (1-3%):</strong> More sensitive, more expansion signals.</li>
+            <li><strong>Default (5%):</strong> Balanced — requires meaningful volatility increase.</li>
+            <li><strong>Higher values (8-15%):</strong> Only significant volatility expansions qualify.</li>
+          </ul>
+
+          <h4>Decay Threshold (Default: -5%)</h4>
+          <p><strong>Range:</strong> -50% to -0.1%</p>
+          <p>Volatility momentum must fall below this percentage to trigger Decay state.</p>
+          <ul>
+            <li><strong>Values closer to 0:</strong> More sensitive to volatility contraction.</li>
+            <li><strong>Default (-5%):</strong> Balanced — requires meaningful volatility decrease.</li>
+            <li><strong>More negative values:</strong> Only significant volatility contractions qualify.</li>
+          </ul>
+
+          <h4>Persistence Bars (Default: 3)</h4>
+          <p><strong>Range:</strong> 1–10 bars</p>
+          <p>Number of consecutive bars a raw state must hold before becoming confirmed.</p>
+          <ul>
+            <li><strong>1:</strong> No persistence filter — immediate state changes (may flicker).</li>
+            <li><strong>Default (3):</strong> Requires state to hold 3 bars — filters most noise.</li>
+            <li><strong>Higher values (5-7):</strong> Very stable output, but slower to react.</li>
+          </ul>
+
+          <h4>Stability Lookback (Default: 20)</h4>
+          <p><strong>Range:</strong> 5–100 bars</p>
+          <p>Period for measuring how often volatility momentum changes direction.</p>
+
+          <h4>Stability Threshold (Default: 0.5)</h4>
+          <p><strong>Range:</strong> 0.1–1.0</p>
+          <p>Below this stability score, Transition state is triggered regardless of momentum level.</p>
+          <ul>
+            <li><strong>Lower values (0.3):</strong> Only trigger Transition on very unstable conditions.</li>
+            <li><strong>Default (0.5):</strong> Balanced — catches meaningfully unstable regimes.</li>
+            <li><strong>Higher values (0.7):</strong> Stricter — requires high stability to avoid Transition.</li>
+          </ul>
+
+          <h3>Visual Settings</h3>
+
+          <h4>Show State Histogram (Default: On)</h4>
+          <p>Display the main volatility momentum histogram colored by state.</p>
+
+          <h4>Show Momentum Line (Default: Off)</h4>
+          <p>Display a line plot of volatility momentum for additional visual reference.</p>
+
+          <h4>Show Zero Line (Default: On)</h4>
+          <p>Display horizontal reference at zero.</p>
+
+          <h4>Show Background Tint (Default: Off)</h4>
+          <p>Subtle background color during Expansion (teal) and Transition (amber) states.</p>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Reading the Indicator',
+        icon: 'usage',
+        content: `
+          <h3>Histogram Color Coding</h3>
+          <ul>
+            <li><strong>Teal Bars:</strong> Expansion state — volatility is increasing.</li>
+            <li><strong>Grey Bars:</strong> Decay state — volatility is decreasing.</li>
+            <li><strong>Amber Bars:</strong> Transition state — momentum unclear or unstable.</li>
+          </ul>
+
+          <h3>Understanding Expansion (Teal)</h3>
+          <p><strong>What it means:</strong> Volatility momentum is above the expansion threshold and stable.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Bars are getting larger</li>
+            <li>Ranges are widening</li>
+            <li>Breakouts more likely to follow through</li>
+            <li>Trends tend to accelerate</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Favor breakout and momentum strategies. Use trend-following approaches. Allow positions room to run.</p>
+
+          <h3>Understanding Decay (Grey)</h3>
+          <p><strong>What it means:</strong> Volatility momentum is below the decay threshold and stable.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Bars are getting smaller</li>
+            <li>Ranges are narrowing</li>
+            <li>Consolidation forming</li>
+            <li>Breakouts more likely to fail</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Favor mean-reversion and range strategies. Tighten profit targets. Consider reducing position size (less movement to capture).</p>
+
+          <h3>Understanding Transition (Amber)</h3>
+          <p><strong>What it means:</strong> Either volatility momentum is in the neutral zone (between thresholds) OR the stability filter triggered (momentum is flickering).</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Volatility direction is unclear</li>
+            <li>Market may be shifting between regimes</li>
+            <li>Higher uncertainty</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Reduce position size or stand aside. Wait for clearer regime before committing. Transition often precedes significant regime change.</p>
+
+          <h3>Histogram Height</h3>
+          <p>The histogram shows volatility momentum as a percentage:</p>
+          <ul>
+            <li><strong>Tall positive bars:</strong> Strong volatility expansion (e.g., +15% momentum)</li>
+            <li><strong>Tall negative bars:</strong> Strong volatility decay (e.g., -12% momentum)</li>
+            <li><strong>Short bars near zero:</strong> Minimal volatility change</li>
+          </ul>
+
+          <h3>State Transitions to Watch</h3>
+          <ul>
+            <li><strong>Decay → Expansion:</strong> Often precedes breakout moves. "Coil and release" pattern.</li>
+            <li><strong>Expansion → Decay:</strong> Often follows climactic moves. Time to take profits.</li>
+            <li><strong>Any state → Transition:</strong> Caution — regime is uncertain.</li>
+            <li><strong>Prolonged Decay:</strong> Building energy — significant move often follows.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'tips',
+        content: `
+          <h3>Strategy Selection Filter</h3>
+          <p>Use VSI to choose which strategy to deploy:</p>
+          <ul>
+            <li><strong>Expansion (Teal):</strong> Breakout strategies, momentum trading, trend following</li>
+            <li><strong>Decay (Grey):</strong> Mean reversion, range trading, option selling strategies</li>
+            <li><strong>Transition (Amber):</strong> Reduce exposure, wait for clarity, or use market-neutral approaches</li>
+          </ul>
+
+          <h3>Position Sizing</h3>
+          <ul>
+            <li><strong>Expansion:</strong> Full position size — volatility supports larger moves</li>
+            <li><strong>Decay:</strong> Reduced size — less movement means smaller profit potential</li>
+            <li><strong>Transition:</strong> Minimal size — uncertainty warrants caution</li>
+          </ul>
+
+          <h3>Stop Loss Adjustment</h3>
+          <ul>
+            <li><strong>Expansion:</strong> Wider stops — expect larger swings, avoid getting stopped by noise</li>
+            <li><strong>Decay:</strong> Tighter stops — smaller ranges mean stops can be closer</li>
+            <li><strong>Transition:</strong> Consider time-based exits rather than price-based</li>
+          </ul>
+
+          <h3>Breakout Trading Filter</h3>
+          <p>For breakout strategies:</p>
+          <ul>
+            <li><strong>Take breakouts:</strong> When VSI is in Decay transitioning to Expansion (coil releasing)</li>
+            <li><strong>Avoid breakouts:</strong> When VSI is in late Expansion (move already extended) or Transition</li>
+            <li><strong>Best setup:</strong> Prolonged Decay (4+ bars) followed by first teal bar = volatility expanding from compressed state</li>
+          </ul>
+
+          <h3>Mean Reversion Filter</h3>
+          <p>For mean reversion strategies:</p>
+          <ul>
+            <li><strong>Best conditions:</strong> Stable Decay state — price oscillates in narrowing range</li>
+            <li><strong>Avoid:</strong> Expansion state — fade trades get run over by momentum</li>
+          </ul>
+
+          <h3>Combining with Other Indicators</h3>
+          <p>VSI works well with:</p>
+          <ul>
+            <li><strong>Market Efficiency Ratio:</strong> VSI shows volatility regime, MER shows trend efficiency</li>
+            <li><strong>Market State Intelligence:</strong> Complete picture — volatility + trend + momentum</li>
+            <li><strong>Bollinger Band Width:</strong> Similar concept — VSI adds state classification</li>
+          </ul>
+
+          <h3>Timeframe Considerations</h3>
+          <ul>
+            <li>Higher timeframe VSI shows broader volatility regime</li>
+            <li>Lower timeframe shows intraday volatility cycles</li>
+            <li>Consider using higher TF regime to filter lower TF trades</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'datawindow',
+        title: 'Data Window Values',
+        icon: 'settings',
+        content: `
+          <p>When "Show Data Window Values" is enabled, access these metrics by hovering over any bar:</p>
+
+          <h3>ATR (Raw)</h3>
+          <p>The unsmoothed Average True Range value. Shows base volatility in price units.</p>
+          <p><strong>Use:</strong> Compare to historical ATR to understand absolute volatility level.</p>
+
+          <h3>ATR (Smoothed)</h3>
+          <p>The EMA-smoothed ATR used for momentum calculation.</p>
+          <p><strong>Use:</strong> Watch for divergence between raw and smoothed — indicates short-term volatility spike or dip.</p>
+
+          <h3>Volatility Momentum (%)</h3>
+          <p>Rate of change in smoothed volatility, expressed as percentage.</p>
+          <ul>
+            <li><strong>Positive:</strong> Volatility is expanding</li>
+            <li><strong>Negative:</strong> Volatility is contracting</li>
+            <li><strong>Near zero:</strong> Volatility is stable</li>
+          </ul>
+
+          <h3>Stability Score</h3>
+          <p>Measures consistency of volatility momentum direction (0 to 1).</p>
+          <ul>
+            <li><strong>0.8-1.0:</strong> Very stable — momentum direction is consistent</li>
+            <li><strong>0.5-0.8:</strong> Moderate stability</li>
+            <li><strong>Below 0.5:</strong> Unstable — triggers Transition state</li>
+          </ul>
+
+          <h3>State (-1/0/1)</h3>
+          <p>Numeric state identifier:</p>
+          <ul>
+            <li><strong>1:</strong> Expansion</li>
+            <li><strong>0:</strong> Transition</li>
+            <li><strong>-1:</strong> Decay</li>
+          </ul>
+
+          <h3>Is Expansion / Is Decay / Is Transition</h3>
+          <p>Binary flags (1 = true, 0 = false) for each state.</p>
+          <p><strong>Use:</strong> Useful for alerting or strategy automation — check specific state conditions.</p>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake #1: Breakout Trading in Late Expansion</h3>
+          <p><strong>Problem:</strong> Taking breakout trades when VSI has been in Expansion for many bars.</p>
+          <p><strong>Result:</strong> Entering at the tail end of a volatility expansion cycle — move exhausts.</p>
+          <p><strong>Solution:</strong> Best breakouts occur when VSI transitions from Decay to Expansion, not after prolonged Expansion.</p>
+
+          <h3>Mistake #2: Ignoring Transition Warnings</h3>
+          <p><strong>Problem:</strong> Trading through Transition state as if it doesn't matter.</p>
+          <p><strong>Result:</strong> Whipsawed by unstable volatility conditions.</p>
+          <p><strong>Solution:</strong> Respect Transition as a "caution" signal. Reduce size or wait for clarity.</p>
+
+          <h3>Mistake #3: Expecting Immediate State Changes</h3>
+          <p><strong>Problem:</strong> Expecting VSI to change state the instant volatility changes.</p>
+          <p><strong>Result:</strong> Frustration when persistence filter delays state confirmation.</p>
+          <p><strong>Solution:</strong> The delay is intentional — it prevents false signals. Watch the momentum reading for early warning.</p>
+
+          <h3>Mistake #4: Using Same Settings Across All Markets</h3>
+          <p><strong>Problem:</strong> Default thresholds may not fit all markets.</p>
+          <p><strong>Result:</strong> Some markets never trigger Expansion, others rarely show Decay.</p>
+          <p><strong>Solution:</strong> Observe your specific market's volatility momentum distribution. Adjust thresholds so you see balanced state occurrence.</p>
+
+          <h3>Mistake #5: Confusing Volatility with Direction</h3>
+          <p><strong>Problem:</strong> Assuming Expansion means bullish and Decay means bearish.</p>
+          <p><strong>Result:</strong> Wrong directional assumptions.</p>
+          <p><strong>Solution:</strong> VSI measures volatility regime, not direction. Expansion can occur in crashes or rallies. Use directional indicators separately.</p>
+
+          <h3>Mistake #6: Oversmoothing</h3>
+          <p><strong>Problem:</strong> Setting smoothing and momentum lengths too high.</p>
+          <p><strong>Result:</strong> VSI lags significantly behind actual volatility changes.</p>
+          <p><strong>Solution:</strong> Keep settings moderate. If VSI state changes feel consistently late, reduce smoothing/momentum lengths.</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip #1: Watch for "Coil and Release"</h3>
+          <p>Extended Decay periods build energy. When VSI finally shifts to Expansion after 10+ bars of Decay, the resulting move is often significant. This is volatility "coiling" then "releasing."</p>
+
+          <h3>Tip #2: Use Stability Score Proactively</h3>
+          <p>Watch the stability score in the data window even when not in Transition. Falling stability during Expansion warns that the regime may be ending.</p>
+
+          <h3>Tip #3: Volatility Cycles</h3>
+          <p>Volatility tends to cycle: Expansion → Decay → Expansion → Decay. Prolonged states in one direction often precede the opposite. Use this for anticipation.</p>
+
+          <h3>Tip #4: Combine with Volatility Products</h3>
+          <p>If trading VIX futures, options, or volatility ETFs, VSI provides regime context. Expansion favors long volatility, Decay favors short volatility strategies.</p>
+
+          <h3>Tip #5: News and Events</h3>
+          <p>Scheduled events (FOMC, earnings, etc.) often trigger volatility expansion. Use VSI to confirm when the expansion has started and when it's decaying post-event.</p>
+
+          <h3>Tip #6: Multi-Timeframe Context</h3>
+          <p>Check higher timeframe VSI for regime context before taking trades on lower timeframe. Daily Expansion with hourly Decay may just be a pullback in a volatile market.</p>
+
+          <h3>Tip #7: Transition as Opportunity</h3>
+          <p>While Transition is a caution zone, it also signals potential regime change. Monitor Transition closely — the next confirmed state often presents good opportunities.</p>
+
+          <h3>Tip #8: Options Strategies</h3>
+          <p>VSI is particularly useful for options traders:</p>
+          <ul>
+            <li><strong>Decay:</strong> Sell premium (strangles, iron condors)</li>
+            <li><strong>Expansion:</strong> Buy premium or directional plays</li>
+            <li><strong>Transition:</strong> Neutral strategies with defined risk</li>
+          </ul>
         `,
       },
     ],
