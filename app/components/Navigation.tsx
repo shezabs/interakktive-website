@@ -65,6 +65,9 @@ export default function Navigation() {
             <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
               About
             </Link>
+            <Link href="/learn" className="text-gray-300 hover:text-white transition-colors">
+              Learn
+            </Link>
 
             {!loading && (
               <>
@@ -136,6 +139,13 @@ export default function Navigation() {
               onClick={() => setIsMenuOpen(false)}
             >
               About
+            </Link>
+            <Link
+              href="/learn"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Learn
             </Link>
 
             {!loading && (
