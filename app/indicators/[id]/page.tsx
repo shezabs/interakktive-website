@@ -2,7 +2,7 @@
 
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ExternalLink, TrendingUp, Target, Lightbulb } from 'lucide-react';
+import { ArrowLeft, ExternalLink, TrendingUp, Target, Lightbulb, BookOpen } from 'lucide-react';
 import { getIndicatorById, getFreeIndicators } from '@/app/lib/indicators-data';
 import { ImageLightbox, AnimatedCounter, FadeIn, FadeInView, StaggerContainer, StaggerItem, SectionWrapper, GradientDivider } from '@/app/components/animations';
 
@@ -67,6 +67,13 @@ export default function IndicatorDetailPage({ params }: { params: { id: string }
                 Add to TradingView
                 <ExternalLink className="w-5 h-5" />
               </a>
+              <Link
+                href={`/learn/free-indicators/${indicator.id}`}
+                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all flex items-center gap-2 font-semibold"
+              >
+                <BookOpen className="w-5 h-5" />
+                Read Documentation
+              </Link>
             </div>
 
             {/* Publication Info */}

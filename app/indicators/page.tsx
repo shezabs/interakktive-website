@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight, ExternalLink, BookOpen } from 'lucide-react';
 import { getFreeIndicators } from '@/app/lib/indicators-data';
 import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, AnimatedCounter, ImageLightbox, SectionWrapper, GradientDivider } from '@/app/components/animations';
 
@@ -103,14 +103,23 @@ export default function IndicatorsPage() {
                       </ul>
                     </div>
 
-                    {/* Learn More Link */}
-                    <Link
-                      href={`/indicators/${indicator.id}`}
-                      className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors"
-                    >
-                      Learn more
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    {/* Action Links */}
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <Link
+                        href={`/indicators/${indicator.id}`}
+                        className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors"
+                      >
+                        Learn more
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                      <Link
+                        href={`/learn/free-indicators/${indicator.id}`}
+                        className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        Documentation
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </HoverScale>
