@@ -18,7 +18,7 @@ export interface IndicatorDoc {
 export const indicatorDocs: Record<string, IndicatorDoc> = {
   'market-acceptance-envelope': {
     title: 'Market Acceptance Envelope',
-    subtitle: 'Dynamic envelope system identifying institutional acceptance zones through probabilistic boundaries.',
+    subtitle: 'Dynamic envelope system identifying institutional acceptance zones through probabilistic boundaries and statistical price bands.',
     tradingViewUrl: 'https://www.tradingview.com/script/ZICs0t70-Market-Acceptance-Envelope-Interakktive/',
     sections: [
       {
@@ -26,8 +26,82 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will contain a comprehensive overview of the Market Acceptance Envelope indicator, including its purpose, methodology, and key benefits.</p>
+          <p>The <strong>Market Acceptance Envelope (MAE)</strong> is a probabilistic boundary system that answers: <em>"Where does price statistically belong right now?"</em></p>
+
+          <p>Unlike simple moving average envelopes, MAE uses adaptive standard deviation bands that respond to realized volatility. This creates dynamic zones where price is statistically "accepted" versus "extreme" — revealing genuine support/resistance levels formed by market consensus.</p>
+
+          <h3>The Envelope Structure</h3>
+          <ul>
+            <li><strong>Baseline</strong> — Central moving average (price equilibrium)</li>
+            <li><strong>Inner Bands (1σ)</strong> — ~68% of price action occurs here</li>
+            <li><strong>Middle Bands (2σ)</strong> — ~95% of price action contained</li>
+            <li><strong>Outer Bands (3σ)</strong> — ~99.7% containment (extreme levels)</li>
+          </ul>
+
+          <h3>What MAE Reveals</h3>
+          <ul>
+            <li><strong>Price Position</strong> — Where price sits relative to statistical norm</li>
+            <li><strong>Volatility State</strong> — Wide bands = volatile, narrow = compressed</li>
+            <li><strong>Mean Reversion Levels</strong> — Statistical boundaries for fade entries</li>
+            <li><strong>Breakout Validation</strong> — When price sustains beyond bands</li>
+            <li><strong>Trend Strength</strong> — Price riding upper/lower band = strong trend</li>
+          </ul>
+
+          <h3>Visual System</h3>
+          <ul>
+            <li><strong>Teal fills</strong> — Inner acceptance zones (high probability)</li>
+            <li><strong>Lighter fills</strong> — Outer zones (lower probability extremes)</li>
+            <li><strong>Band lines</strong> — Precise boundary levels</li>
+            <li><strong>Baseline</strong> — Central equilibrium reference</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'Calculation Methodology',
+        icon: 'calculation',
+        content: `
+          <p>MAE calculates probabilistic boundaries using statistical standard deviation from a central baseline.</p>
+
+          <h3>Core Calculation</h3>
+
+          <h4>1. Baseline Calculation</h4>
+          <p>The central reference point (mean price):</p>
+          <pre>Baseline = SMA(Source, Period)
+// or EMA(Source, Period) if smoothing enabled
+// Default: SMA of Close over 20 periods</pre>
+
+          <h4>2. Standard Deviation</h4>
+          <p>Measures price dispersion around the baseline:</p>
+          <pre>StdDev = √(Σ(Price - Baseline)² / Period)
+
+// Standard deviation adapts to volatility:
+// High volatility → Wider bands
+// Low volatility → Narrower bands</pre>
+
+          <h4>3. Band Calculations</h4>
+          <p>Multiple envelope layers at different sigma levels:</p>
+          <pre>Upper_1σ = Baseline + (1.0 × StdDev)
+Lower_1σ = Baseline - (1.0 × StdDev)
+
+Upper_2σ = Baseline + (2.0 × StdDev)
+Lower_2σ = Baseline - (2.0 × StdDev)
+
+Upper_3σ = Baseline + (3.0 × StdDev)
+Lower_3σ = Baseline - (3.0 × StdDev)</pre>
+
+          <h4>4. Statistical Interpretation</h4>
+          <ul>
+            <li><strong>Within 1σ</strong> — 68.27% probability (normal accepted range)</li>
+            <li><strong>Within 2σ</strong> — 95.45% probability (extended but normal)</li>
+            <li><strong>Within 3σ</strong> — 99.73% probability (extreme, likely reversion)</li>
+            <li><strong>Beyond 3σ</strong> — <0.3% probability (highly unusual, major event)</li>
+          </ul>
+
+          <h3>Adaptive Width Feature</h3>
+          <pre>// Optional volatility-adjusted multipliers
+Volatility_Ratio = ATR / SMA(ATR, 100)
+Adjusted_Mult = Base_Mult × (1 + (Volatility_Ratio - 1) × Sensitivity)</pre>
         `,
       },
       {
@@ -35,8 +109,257 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will detail every input parameter, including default values, recommended ranges, and how each setting affects the indicator's behavior.</p>
+          <h3>Core Settings</h3>
+          <ul>
+            <li><strong>Period</strong> (default: 20) — Lookback for baseline and standard deviation. Higher = smoother, slower response.</li>
+            <li><strong>Source</strong> (default: Close) — Price input for calculations. Options: Close, HL2, HLC3, OHLC4.</li>
+            <li><strong>MA Type</strong> (default: SMA) — Baseline calculation method. SMA for classic, EMA for faster response.</li>
+          </ul>
+
+          <h3>Band Multipliers</h3>
+          <ul>
+            <li><strong>Inner Multiplier</strong> (default: 1.0) — Standard deviations for inner band (1σ).</li>
+            <li><strong>Middle Multiplier</strong> (default: 2.0) — Standard deviations for middle band (2σ).</li>
+            <li><strong>Outer Multiplier</strong> (default: 3.0) — Standard deviations for outer band (3σ).</li>
+          </ul>
+
+          <h3>Adaptive Settings</h3>
+          <ul>
+            <li><strong>Adaptive Width</strong> (default: false) — Adjust band width based on volatility.</li>
+            <li><strong>ATR Period</strong> (default: 14) — Period for volatility measurement (if adaptive).</li>
+            <li><strong>Sensitivity</strong> (default: 0.5) — How much volatility affects band width (0-1).</li>
+          </ul>
+
+          <h3>Visual Settings</h3>
+          <ul>
+            <li><strong>Show Baseline</strong> (default: true) — Display central moving average.</li>
+            <li><strong>Show Inner Bands</strong> (default: true) — Display 1σ envelope.</li>
+            <li><strong>Show Middle Bands</strong> (default: true) — Display 2σ envelope.</li>
+            <li><strong>Show Outer Bands</strong> (default: true) — Display 3σ envelope.</li>
+            <li><strong>Fill Zones</strong> (default: true) — Color fill between band levels.</li>
+            <li><strong>Fill Transparency</strong> (default: 90) — Transparency of zone fills.</li>
+          </ul>
+
+          <h3>Recommended Settings by Style</h3>
+          <ul>
+            <li><strong>Scalping</strong> — Period: 10, Multipliers: 1.5/2.0/2.5 (tighter)</li>
+            <li><strong>Day Trading</strong> — Period: 20, Multipliers: 1.0/2.0/3.0 (default)</li>
+            <li><strong>Swing Trading</strong> — Period: 50, Multipliers: 2.0/2.5/3.0 (wider)</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Interpretation Guide',
+        icon: 'interpretation',
+        content: `
+          <h3>Price Position Analysis</h3>
+
+          <h4>Price Near Baseline</h4>
+          <ul>
+            <li>Price is at equilibrium</li>
+            <li>No directional bias indicated</li>
+            <li>Waiting for next move</li>
+            <li>Good for range trading if oscillating</li>
+          </ul>
+
+          <h4>Price at Inner Band (1σ)</h4>
+          <ul>
+            <li>Price slightly extended but normal</li>
+            <li>68% of action occurs here</li>
+            <li>Not yet a reversal signal</li>
+            <li>Watch for continuation or rejection</li>
+          </ul>
+
+          <h4>Price at Middle Band (2σ)</h4>
+          <ul>
+            <li>Price statistically extended</li>
+            <li>95% containment level</li>
+            <li>Mean reversion probability increasing</li>
+            <li>Good area for profit taking</li>
+          </ul>
+
+          <h4>Price at Outer Band (3σ)</h4>
+          <ul>
+            <li>Price at statistical extreme</li>
+            <li>99.7% containment level</li>
+            <li>High probability of reversion</li>
+            <li>Ideal for counter-trend entries</li>
+          </ul>
+
+          <h3>Band Width Interpretation</h3>
+          <ul>
+            <li><strong>Expanding bands</strong> — Volatility increasing, breakout in progress</li>
+            <li><strong>Contracting bands</strong> — Volatility decreasing, compression forming</li>
+            <li><strong>Tight squeeze</strong> — Major move imminent (direction unknown)</li>
+            <li><strong>Wide bands</strong> — Volatile market, wider stops needed</li>
+          </ul>
+
+          <h3>Trend Identification</h3>
+          <ul>
+            <li><strong>Price hugging upper band</strong> — Strong uptrend</li>
+            <li><strong>Price hugging lower band</strong> — Strong downtrend</li>
+            <li><strong>Price oscillating baseline</strong> — Range/consolidation</li>
+            <li><strong>Band walk ending</strong> — Trend exhaustion</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'trading',
+        content: `
+          <h3>Strategy 1: Mean Reversion at Extremes</h3>
+          <p>Fade price at outer bands expecting reversion.</p>
+          <ul>
+            <li><strong>Setup</strong> — Price touches or pierces 2σ or 3σ band</li>
+            <li><strong>Entry</strong> — Reversal candle at band with confirmation</li>
+            <li><strong>Target</strong> — Baseline (conservative) or opposite inner band (aggressive)</li>
+            <li><strong>Stop</strong> — Beyond the band with ATR buffer</li>
+          </ul>
+
+          <h3>Strategy 2: Trend Riding</h3>
+          <p>Stay with trend while price rides the band.</p>
+          <ul>
+            <li><strong>Setup</strong> — Price breaks above/below baseline with momentum</li>
+            <li><strong>Entry</strong> — Pullback to baseline or inner band</li>
+            <li><strong>Target</strong> — Trail with opposite inner band as stop</li>
+            <li><strong>Exit</strong> — Price closes beyond baseline against trend</li>
+          </ul>
+
+          <h3>Strategy 3: Squeeze Breakout</h3>
+          <p>Trade the expansion after band compression.</p>
+          <ul>
+            <li><strong>Setup</strong> — Bands narrow to historical tight level</li>
+            <li><strong>Wait</strong> — For decisive close beyond inner band</li>
+            <li><strong>Entry</strong> — In direction of break</li>
+            <li><strong>Stop</strong> — Opposite band (initially tight, widens with expansion)</li>
+          </ul>
+
+          <h3>Strategy 4: Band Walk Continuation</h3>
+          <p>Add to positions during strong trends.</p>
+          <ul>
+            <li><strong>Setup</strong> — Price continuously touches outer band</li>
+            <li><strong>Entry</strong> — Each pullback to inner band (in trend direction)</li>
+            <li><strong>Target</strong> — Trail with baseline</li>
+            <li><strong>Exit</strong> — Price fails to reach outer band again</li>
+          </ul>
+
+          <h3>Strategy 5: Double Bottom/Top at Bands</h3>
+          <p>Classic pattern at statistical extremes.</p>
+          <ul>
+            <li><strong>Setup</strong> — Price touches outer band, pulls back, returns to test</li>
+            <li><strong>Entry</strong> — If second touch doesn't exceed first (divergence)</li>
+            <li><strong>Target</strong> — Baseline initially, then opposite band</li>
+          </ul>
+
+          <h3>What NOT to Do</h3>
+          <ul>
+            <li>Don't fade 1σ bands — not extreme enough</li>
+            <li>Don't fight strong band walks</li>
+            <li>Don't use fixed stops in volatile conditions</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'data-window',
+        title: 'Data Window Values',
+        icon: 'settings',
+        content: `
+          <h3>Exported Values</h3>
+          <p>The indicator exports the following values to TradingView's Data Window:</p>
+
+          <h4>Band Levels</h4>
+          <ul>
+            <li><strong>Upper 3σ</strong> — Outer upper band (extreme resistance)</li>
+            <li><strong>Upper 2σ</strong> — Middle upper band (extended)</li>
+            <li><strong>Upper 1σ</strong> — Inner upper band (normal high)</li>
+            <li><strong>Baseline</strong> — Central equilibrium (mean)</li>
+            <li><strong>Lower 1σ</strong> — Inner lower band (normal low)</li>
+            <li><strong>Lower 2σ</strong> — Middle lower band (extended)</li>
+            <li><strong>Lower 3σ</strong> — Outer lower band (extreme support)</li>
+          </ul>
+
+          <h4>Derived Values</h4>
+          <ul>
+            <li><strong>Band Width</strong> — Distance between upper and lower 2σ</li>
+            <li><strong>Band Width %</strong> — Width as percentage of price</li>
+            <li><strong>Price Position</strong> — Where price sits (-3 to +3 sigma)</li>
+            <li><strong>StdDev</strong> — Raw standard deviation value</li>
+          </ul>
+
+          <h3>Using Data Window Values</h3>
+          <ul>
+            <li><strong>Precise entries</strong> — Use exact band levels for limit orders</li>
+            <li><strong>Stop calculation</strong> — Reference opposite band for stops</li>
+            <li><strong>Volatility tracking</strong> — Monitor Band Width % for compression</li>
+            <li><strong>Position sizing</strong> — Use StdDev for volatility-adjusted sizing</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake 1: Fading Every Band Touch</h3>
+          <p><strong>Problem:</strong> Blindly shorting upper band / buying lower band.</p>
+          <p><strong>Solution:</strong> Only fade with confirmation (reversal candle, divergence). Strong trends walk the bands without reversing.</p>
+
+          <h3>Mistake 2: Ignoring Band Width Context</h3>
+          <p><strong>Problem:</strong> Using same strategy in wide vs narrow bands.</p>
+          <p><strong>Solution:</strong> Narrow bands = breakout focus. Wide bands = reversion focus. Adapt strategy to volatility state.</p>
+
+          <h3>Mistake 3: Expecting 3σ to Hold Always</h3>
+          <p><strong>Problem:</strong> Assuming 3σ is guaranteed reversal.</p>
+          <p><strong>Solution:</strong> 3σ is rare but not impossible. During major moves, price can stay extended. Use stops always.</p>
+
+          <h3>Mistake 4: Using Wrong Period for Market</h3>
+          <p><strong>Problem:</strong> Same period on all instruments and timeframes.</p>
+          <p><strong>Solution:</strong> Faster instruments (crypto) may need shorter periods. Slower markets (stocks) may need longer.</p>
+
+          <h3>Mistake 5: Ignoring the Squeeze</h3>
+          <p><strong>Problem:</strong> Not recognizing band compression as setup.</p>
+          <p><strong>Solution:</strong> Track Band Width %. When at historical lows, prepare for breakout. Don't trade range strategies during squeeze.</p>
+
+          <h3>Mistake 6: Fixed Risk Regardless of Width</h3>
+          <p><strong>Problem:</strong> Same stop distance in all conditions.</p>
+          <p><strong>Solution:</strong> Scale stop distance with band width. Wide bands = wider stops (smaller size). Narrow bands = tighter stops (larger size).</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Percentile-Based Squeeze Detection</h3>
+          <p>Track Band Width % over time. When current width is in the bottom 10% of its historical range, a major move is likely. Set alerts for squeeze conditions.</p>
+
+          <h3>Tip 2: Sigma as Position Size Guide</h3>
+          <p>Position size inversely proportional to sigma extension:</p>
+          <ul>
+            <li><strong>Entry at 3σ</strong> — Full size (high probability reversion)</li>
+            <li><strong>Entry at 2σ</strong> — 75% size</li>
+            <li><strong>Entry at 1σ</strong> — 50% size (less edge)</li>
+          </ul>
+
+          <h3>Tip 3: Baseline as Trend Filter</h3>
+          <p>Use price position relative to baseline as trend filter for other signals. Above baseline = favor longs. Below baseline = favor shorts.</p>
+
+          <h3>Tip 4: Multi-Timeframe Confluence</h3>
+          <p>When lower timeframe reaches 2σ while higher timeframe is at 1σ in same direction, the extension has more room. When both at 2σ = high reversal probability.</p>
+
+          <h3>Tip 5: Band Width for Volatility Timing</h3>
+          <p>Don't just use width for entry. Use contracting width to time when volatility will expand. Enter positions during compression, profit during expansion.</p>
+
+          <h3>Tip 6: Combine with Volume</h3>
+          <p>Band touches with high volume = more significant. Band touches with low volume = less reliable. Use volume to confirm or dismiss band signals.</p>
+
+          <h3>Tip 7: The "False Break" Pattern</h3>
+          <p>Price pierces outer band but immediately snaps back. This "false breakout" often leads to strong moves in the opposite direction. Enter on the snap-back.</p>
+
+          <h3>Tip 8: Use with Market State Intelligence</h3>
+          <p>MAE shows WHERE price is relative to acceptance. MSI shows WHAT regime you're in. Together: fade bands in Ranging regime, ride bands in Trending regime.</p>
         `,
       },
     ],
