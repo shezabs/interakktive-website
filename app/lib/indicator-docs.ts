@@ -101,7 +101,7 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
 
   'market-participation-gradient': {
     title: 'Market Participation Gradient',
-    subtitle: 'Tracks the intensity and directional bias of market participation through momentum pressure analysis.',
+    subtitle: 'Tracks the intensity and quality of market participation through efficiency and activity analysis.',
     tradingViewUrl: 'https://www.tradingview.com/script/CxnjSZB9-Market-Participation-Gradient-Interakktive/',
     sections: [
       {
@@ -109,8 +109,99 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>This section will contain a comprehensive overview of the Market Participation Gradient indicator.</p>
+          <p>The <strong>Market Participation Gradient (MPG)</strong> is a diagnostic tool that answers: <em>"How much quality participation exists in this market right now?"</em></p>
+
+          <p>Not all market activity is equal. High volume with no directional progress is different from clean, efficient movement. MPG synthesizes both dimensions — efficiency and activity — into a single participation quality score.</p>
+
+          <h3>What MPG Measures</h3>
+          <ul>
+            <li><strong>Efficiency</strong> — How direct is price movement? (Displacement vs. total path traveled)</li>
+            <li><strong>Activity</strong> — Is volume confirming the move? (Current volume vs. average)</li>
+          </ul>
+
+          <h3>The Oscillator Shows</h3>
+          <ul>
+            <li><strong>Level (0-100)</strong> — How much participation exists</li>
+            <li><strong>Color</strong> — Quality of that participation:
+              <ul>
+                <li><strong>Teal</strong> = Clean participation (efficient moves with volume confirmation)</li>
+                <li><strong>Magenta</strong> = Absorbed participation (high volume, low efficiency — trapped)</li>
+                <li><strong>Amber</strong> = Building participation (transitional)</li>
+                <li><strong>Grey</strong> = Thin/Neutral (low participation)</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h3>Four Participation Tiers</h3>
+          <ul>
+            <li><strong>Thin (0-20)</strong> — Low participation. Market drifting, no conviction.</li>
+            <li><strong>Building (20-40)</strong> — Participation emerging. Transitional phase.</li>
+            <li><strong>Strong (40-65)</strong> — Solid participation. Healthy activity.</li>
+            <li><strong>Extreme (65+)</strong> — Climactic participation. Potential exhaustion warning.</li>
+          </ul>
+
+          <h3>Why This Matters</h3>
+          <ul>
+            <li><strong>Thin markets:</strong> Avoid trend trading — market is drifting without conviction</li>
+            <li><strong>Building markets:</strong> Watch for breakout — participation is gathering</li>
+            <li><strong>Strong + Clean:</strong> Best conditions for trend-following</li>
+            <li><strong>Extreme:</strong> Climactic moves often precede reversals or pauses</li>
+            <li><strong>High participation + Absorbed:</strong> Trap conditions — volume failing to produce result</li>
+          </ul>
+
+          <p><em>Note: MPG is a diagnostic primitive, not a signal generator. It tells you about market conditions to inform your strategy selection.</em></p>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'How It\'s Calculated',
+        icon: 'concept',
+        content: `
+          <p>MPG synthesizes efficiency and activity into a single quality-weighted participation score.</p>
+
+          <h3>Step 1: Calculate Efficiency (0-1)</h3>
+          <p>Measures how direct price movement is over the lookback period:</p>
+          <pre>Displacement = |Close - Close[N bars ago]|
+Path Length = Sum of |Close - Previous Close| over N bars
+Efficiency = Displacement ÷ Path Length</pre>
+          <p><strong>Example:</strong> If price traveled $10 in total bar-to-bar moves but only ended up $7 from where it started, efficiency = 0.70 (70%).</p>
+          <p>This is similar to Market Efficiency Ratio logic.</p>
+
+          <h3>Step 2: Calculate Activity (centered at 1.0)</h3>
+          <p>Measures volume relative to its average:</p>
+          <pre>Activity = Current Volume ÷ Average Volume</pre>
+          <ul>
+            <li><strong>Activity = 1.0:</strong> Normal volume</li>
+            <li><strong>Activity = 2.0:</strong> Double normal volume</li>
+            <li><strong>Activity = 0.5:</strong> Half normal volume</li>
+          </ul>
+          <p><strong>FX Fallback:</strong> If volume data is unreliable, uses range/ATR as activity proxy.</p>
+
+          <h3>Step 3: Calculate Participation Score (0-100)</h3>
+          <pre>Activity Factor = √(Activity)  // Diminishing returns on volume
+Participation Raw = Efficiency × Activity Factor
+Participation = Clamp(Participation Raw, 0, 1) × 100</pre>
+          <p>The square root on activity creates diminishing returns — doubling volume doesn't double participation. Efficiency is the primary driver.</p>
+
+          <h3>Step 4: Apply Smoothing</h3>
+          <pre>MPG = EMA(Participation, Smoothing Length)</pre>
+          <p>Smoothing reduces noise while maintaining responsiveness.</p>
+
+          <h3>Step 5: Quality Assessment</h3>
+          <p>Color is determined by participation quality:</p>
+          <ul>
+            <li><strong>Absorbed (Magenta):</strong> Activity > 1.5 AND Efficiency < 0.30 (high volume, low progress)</li>
+            <li><strong>Clean (Teal):</strong> Efficiency > 0.55 (good directional progress)</li>
+            <li><strong>Neutral (Grey):</strong> Moderate efficiency</li>
+          </ul>
+
+          <h3>Step 6: Tier Classification</h3>
+          <ul>
+            <li><strong>Tier 0 (Thin):</strong> MPG < 20</li>
+            <li><strong>Tier 1 (Building):</strong> 20 ≤ MPG < 40</li>
+            <li><strong>Tier 2 (Strong):</strong> 40 ≤ MPG < 65</li>
+            <li><strong>Tier 3 (Extreme):</strong> MPG ≥ 65</li>
+          </ul>
         `,
       },
       {
@@ -118,8 +209,320 @@ export const indicatorDocs: Record<string, IndicatorDoc> = {
         title: 'Input Settings',
         icon: 'settings',
         content: `
-          <p><strong>Documentation coming soon.</strong></p>
-          <p>Detailed input parameters documentation will be added here.</p>
+          <h3>Core Settings</h3>
+
+          <h4>ATR Length (Default: 14)</h4>
+          <p><strong>Range:</strong> 5–50 bars</p>
+          <p>Period for ATR calculation used in normalization (mainly for FX fallback).</p>
+
+          <h4>Efficiency Lookback (Default: 10)</h4>
+          <p><strong>Range:</strong> 5–50 bars</p>
+          <p>Bars used to calculate directional efficiency.</p>
+          <ul>
+            <li><strong>Lower values (5-7):</strong> More responsive, captures short-term efficiency changes.</li>
+            <li><strong>Default (10):</strong> Balanced for swing trading.</li>
+            <li><strong>Higher values (15-25):</strong> Smoother, captures broader efficiency trends.</li>
+          </ul>
+
+          <h4>Volume Average Length (Default: 14)</h4>
+          <p><strong>Range:</strong> 5–50 bars</p>
+          <p>Period for volume baseline calculation.</p>
+          <ul>
+            <li><strong>Lower values:</strong> More reactive to recent volume changes.</li>
+            <li><strong>Default (14):</strong> Standard baseline.</li>
+            <li><strong>Higher values:</strong> Smoother volume baseline.</li>
+          </ul>
+
+          <h4>Smoothing Length (Default: 5)</h4>
+          <p><strong>Range:</strong> 1–20 bars</p>
+          <p>EMA smoothing applied to the final MPG value.</p>
+          <ul>
+            <li><strong>1:</strong> No smoothing — raw values.</li>
+            <li><strong>Default (5):</strong> Balanced smoothness.</li>
+            <li><strong>Higher (10+):</strong> Very smooth but lags.</li>
+          </ul>
+
+          <h3>Visual Settings</h3>
+
+          <h4>Show Histogram (Default: On)</h4>
+          <p>Display the participation histogram colored by quality.</p>
+
+          <h4>Show Trend Line (Default: On)</h4>
+          <p>Display smoothed MPG line overlay on histogram.</p>
+
+          <h4>Show Tier Bands (Default: On)</h4>
+          <p>Display horizontal reference lines at tier boundaries (20, 40, 65).</p>
+
+          <h4>Show Pane Background (Default: Off)</h4>
+          <p>Subtle background tint matching current quality state.</p>
+
+          <h4>Theme (Default: Cinematic)</h4>
+          <p>Color intensity:</p>
+          <ul>
+            <li><strong>Cinematic:</strong> Subtle, professional appearance.</li>
+            <li><strong>Vivid:</strong> Brighter, more visible colors.</li>
+          </ul>
+
+          <h3>HUD Settings</h3>
+
+          <h4>Show Status Line HUD (Default: On)</h4>
+          <p>Display MPG values in TradingView's status line (top bar).</p>
+
+          <h4>HUD Detail (Default: Minimal)</h4>
+          <ul>
+            <li><strong>Minimal:</strong> Shows MPG level and tier only.</li>
+            <li><strong>Full:</strong> Adds direction and quality indicators.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Reading the Indicator',
+        icon: 'usage',
+        content: `
+          <h3>Color Interpretation</h3>
+          <ul>
+            <li><strong>Teal:</strong> Clean participation — efficient directional movement. Good quality.</li>
+            <li><strong>Magenta:</strong> Absorbed participation — high effort, low result. Trap/absorption.</li>
+            <li><strong>Amber:</strong> Building participation — transitional, emerging activity.</li>
+            <li><strong>Grey:</strong> Thin/Neutral — low participation, market drifting.</li>
+          </ul>
+
+          <h3>Tier Interpretation</h3>
+
+          <h4>Thin (0-20) — Grey</h4>
+          <p><strong>What it means:</strong> Very low participation. Market lacks conviction.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Drifting, low-volume moves</li>
+            <li>No clear direction or commitment</li>
+            <li>Holiday/overnight sessions often show this</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Avoid trend trading. Wait for participation to build.</p>
+
+          <h4>Building (20-40) — Amber</h4>
+          <p><strong>What it means:</strong> Participation is emerging but not yet strong.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Activity starting to pick up</li>
+            <li>Often seen at start of sessions or before breakouts</li>
+            <li>Transitional phase</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Watch for breakout. Prepare entries but wait for Strong tier.</p>
+
+          <h4>Strong (40-65) — Quality-Colored</h4>
+          <p><strong>What it means:</strong> Solid participation. Healthy market activity.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Good volume and efficiency</li>
+            <li>Trends have conviction</li>
+            <li>Best conditions for directional trading</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Trend-following works. Pay attention to quality color (Teal = clean, Magenta = absorbed).</p>
+
+          <h4>Extreme (65+) — Quality-Colored</h4>
+          <p><strong>What it means:</strong> Climactic participation. High activity levels.</p>
+          <p><strong>Market character:</strong></p>
+          <ul>
+            <li>Surge in volume and/or efficiency</li>
+            <li>Often seen at climactic moves</li>
+            <li>Can precede reversals or pauses</li>
+          </ul>
+          <p><strong>Strategy implication:</strong> Potential exhaustion. Consider taking profits. If Magenta (absorbed), reversal more likely.</p>
+
+          <h3>Quality in Strong/Extreme Tiers</h3>
+          <ul>
+            <li><strong>Teal (Clean):</strong> Participation is producing directional progress. Trend is healthy.</li>
+            <li><strong>Magenta (Absorbed):</strong> High volume but low efficiency. Effort isn't producing result — potential trap.</li>
+            <li><strong>Grey (Neutral):</strong> Moderate quality — watch for shift.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'tips',
+        content: `
+          <h3>Trend Quality Filter</h3>
+          <p>Use MPG to validate trend conditions:</p>
+          <ul>
+            <li><strong>Best trends:</strong> Strong tier (40-65) + Teal color = clean directional participation</li>
+            <li><strong>Weak trends:</strong> Thin or Building tier = lack of conviction</li>
+            <li><strong>Exhausting trends:</strong> Extreme tier, especially with Magenta = climax</li>
+          </ul>
+
+          <h3>Entry Timing</h3>
+          <ul>
+            <li><strong>Wait for Building → Strong:</strong> Enter when participation confirms breakout</li>
+            <li><strong>Avoid Thin:</strong> Low participation = low conviction = higher failure rate</li>
+            <li><strong>Be cautious in Extreme:</strong> Entry at climax often leads to reversal</li>
+          </ul>
+
+          <h3>Exit Timing</h3>
+          <ul>
+            <li><strong>Strong → Thin:</strong> Participation fading, consider exit</li>
+            <li><strong>Extreme + Magenta:</strong> Climactic absorption, take profits</li>
+            <li><strong>Color shift Teal → Magenta:</strong> Quality deteriorating, tighten stops</li>
+          </ul>
+
+          <h3>Breakout Validation</h3>
+          <ul>
+            <li><strong>Valid breakout:</strong> Building → Strong with Teal color</li>
+            <li><strong>Suspicious breakout:</strong> Breakout on Thin or Magenta = lack of conviction or absorption</li>
+            <li><strong>Best breakouts:</strong> Extended Building phase followed by jump to Strong</li>
+          </ul>
+
+          <h3>Trap Detection</h3>
+          <p>Magenta color in Strong/Extreme tiers signals absorption:</p>
+          <ul>
+            <li>High volume failing to produce directional progress</li>
+            <li>Classic trap pattern — retail pushing, institutions absorbing</li>
+            <li>Often precedes reversal, especially at extremes</li>
+          </ul>
+
+          <h3>Combining with Other Indicators</h3>
+          <ul>
+            <li><strong>Market Efficiency Ratio:</strong> MPG efficiency component is similar — use for confirmation</li>
+            <li><strong>Effort-Result Divergence:</strong> MPG "absorbed" aligns with ERD absorption signals</li>
+            <li><strong>Volatility State Index:</strong> VSI Expansion + MPG Strong = high-conviction move</li>
+            <li><strong>Support/Resistance:</strong> Magenta at key levels = absorption/reversal zone</li>
+          </ul>
+
+          <h3>Timeframe Considerations</h3>
+          <ul>
+            <li>Higher timeframe MPG shows broader participation context</li>
+            <li>Lower timeframe catches intraday participation shifts</li>
+            <li>Use higher TF for regime, lower TF for entry timing</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'datawindow',
+        title: 'Data Window Values',
+        icon: 'settings',
+        content: `
+          <p>When "Show Data Window Values" is enabled, access these metrics by hovering over any bar:</p>
+
+          <h3>MPG Level (0-100)</h3>
+          <p>The main smoothed participation score.</p>
+          <ul>
+            <li><strong>0-20:</strong> Thin participation</li>
+            <li><strong>20-40:</strong> Building participation</li>
+            <li><strong>40-65:</strong> Strong participation</li>
+            <li><strong>65+:</strong> Extreme participation</li>
+          </ul>
+
+          <h3>Efficiency %</h3>
+          <p>How direct price movement has been (0-100%).</p>
+          <ul>
+            <li><strong>70%+:</strong> Very efficient — clean directional progress</li>
+            <li><strong>40-70%:</strong> Moderate efficiency</li>
+            <li><strong>Below 40%:</strong> Low efficiency — oscillating, going nowhere</li>
+          </ul>
+
+          <h3>Activity Ratio</h3>
+          <p>Current volume relative to average (centered at 1.0).</p>
+          <ul>
+            <li><strong>Above 1.5:</strong> High activity — above-average volume</li>
+            <li><strong>0.7-1.3:</strong> Normal activity range</li>
+            <li><strong>Below 0.7:</strong> Low activity — quiet market</li>
+          </ul>
+
+          <h3>Momentum</h3>
+          <p>Rate of change in MPG level.</p>
+          <ul>
+            <li><strong>Positive:</strong> Participation increasing</li>
+            <li><strong>Negative:</strong> Participation decreasing</li>
+            <li><strong>Near zero:</strong> Stable participation</li>
+          </ul>
+
+          <h3>Quality (-1/0/1)</h3>
+          <p>Quality classification:</p>
+          <ul>
+            <li><strong>1:</strong> Clean (Teal) — efficient participation</li>
+            <li><strong>0:</strong> Neutral (Grey) — moderate quality</li>
+            <li><strong>-1:</strong> Absorbed (Magenta) — trapped participation</li>
+          </ul>
+
+          <h3>Tier (0-3)</h3>
+          <p>Current participation tier:</p>
+          <ul>
+            <li><strong>0:</strong> Thin</li>
+            <li><strong>1:</strong> Building</li>
+            <li><strong>2:</strong> Strong</li>
+            <li><strong>3:</strong> Extreme</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake #1: Trading Thin Markets</h3>
+          <p><strong>Problem:</strong> Taking directional trades when MPG is in Thin tier.</p>
+          <p><strong>Result:</strong> Market drifts without conviction, stops get hit by noise.</p>
+          <p><strong>Solution:</strong> Wait for at least Building tier before taking directional positions.</p>
+
+          <h3>Mistake #2: Ignoring Quality Color</h3>
+          <p><strong>Problem:</strong> Only watching MPG level, ignoring whether it's Teal or Magenta.</p>
+          <p><strong>Result:</strong> Trading into absorption zones, getting trapped.</p>
+          <p><strong>Solution:</strong> Strong/Extreme with Magenta is a warning, not a green light.</p>
+
+          <h3>Mistake #3: Chasing Extreme</h3>
+          <p><strong>Problem:</strong> Entering new positions when MPG hits Extreme tier.</p>
+          <p><strong>Result:</strong> Entering at climax, reversal follows.</p>
+          <p><strong>Solution:</strong> Extreme is for profit-taking, not new entries. Best entries are Building → Strong.</p>
+
+          <h3>Mistake #4: Confusing Participation with Direction</h3>
+          <p><strong>Problem:</strong> Assuming high MPG = bullish or low MPG = bearish.</p>
+          <p><strong>Result:</strong> Wrong directional assumptions.</p>
+          <p><strong>Solution:</strong> MPG measures participation quality, not direction. Use price or other indicators for direction.</p>
+
+          <h3>Mistake #5: Over-Smoothing</h3>
+          <p><strong>Problem:</strong> Setting smoothing length too high (15+).</p>
+          <p><strong>Result:</strong> MPG lags significantly, missing tier transitions.</p>
+          <p><strong>Solution:</strong> Keep smoothing at 3-7 for most applications.</p>
+
+          <h3>Mistake #6: Using on Low-Volume Assets</h3>
+          <p><strong>Problem:</strong> Relying on MPG for assets with unreliable volume (some forex, CFDs).</p>
+          <p><strong>Result:</strong> Activity component is based on range proxy, less reliable.</p>
+          <p><strong>Solution:</strong> MPG works best on assets with real volume data. On FX, weight efficiency more heavily.</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip #1: Building Phase is Key</h3>
+          <p>The Building tier (20-40) is where opportunities develop. Extended Building followed by jump to Strong often produces the best moves.</p>
+
+          <h3>Tip #2: Watch for Color Transitions</h3>
+          <p>Color shifts are significant:</p>
+          <ul>
+            <li><strong>Grey → Teal:</strong> Quality improving, trend strengthening</li>
+            <li><strong>Teal → Magenta:</strong> Quality deteriorating, absorption starting</li>
+            <li><strong>Magenta → Teal:</strong> Absorption resolving, direction resuming</li>
+          </ul>
+
+          <h3>Tip #3: Extreme + Teal is Powerful</h3>
+          <p>When Extreme tier shows Teal (clean), the move has strong conviction. But watch for any color shift — it often precedes reversal.</p>
+
+          <h3>Tip #4: Thin Markets Have Their Uses</h3>
+          <p>While trend trading fails in Thin, range-bound strategies may work. Thin often occurs in overnight sessions — range trade until activity picks up.</p>
+
+          <h3>Tip #5: Use Efficiency Component Directly</h3>
+          <p>The Efficiency % in data window is essentially a real-time MER reading. If efficiency is high but overall MPG is low, volume is the issue, not directional quality.</p>
+
+          <h3>Tip #6: Session Transitions</h3>
+          <p>Watch MPG during session transitions (Asia → London → NY). Rising from Thin to Building often signals session kickoff — prepare for moves.</p>
+
+          <h3>Tip #7: Combine with Volume Profile</h3>
+          <p>MPG Absorbed (Magenta) at high-volume nodes in profile = strong institutional activity. These levels often become significant support/resistance.</p>
+
+          <h3>Tip #8: MPG Divergence</h3>
+          <p>If price makes new high/low but MPG fails to reach Strong tier, participation is lacking. Classic divergence warning that move may fail.</p>
         `,
       },
     ],
