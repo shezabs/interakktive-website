@@ -18,11 +18,15 @@ export default function AboutPage() {
         {/* Mission */}
         <section className="mb-16 glass p-8 rounded-lg">
           <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
-          <p className="text-lg text-gray-300 leading-relaxed">
+          <p className="text-lg text-gray-300 leading-relaxed mb-4">
             At Interakktive, we're revolutionizing technical analysis by combining cutting-edge
             artificial intelligence and machine learning with proven trading methodologies. Our mission
             is to democratize institutional-grade trading analytics, making advanced tools accessible
             to traders at all levels.
+          </p>
+          <p className="text-lg text-gray-300 leading-relaxed">
+            Starting with TradingView, we're building a complete trading ecosystem — from indicators
+            to automated strategies — designed to evolve with the markets and the traders who navigate them.
           </p>
         </section>
 
