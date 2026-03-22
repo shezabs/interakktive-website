@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, TrendingUp, Target, Lightbulb, BookOpen } from 'lucide-react';
 import { getIndicatorById, getFreeIndicators } from '@/app/lib/indicators-data';
-import { ImageLightbox, AnimatedCounter, FadeIn, FadeInView, StaggerContainer, StaggerItem, SectionWrapper, GradientDivider } from '@/app/components/animations';
+import { ImageLightbox, FadeIn, FadeInView, StaggerContainer, StaggerItem, SectionWrapper, GradientDivider } from '@/app/components/animations';
 
 export default function IndicatorDetailPage({ params }: { params: { id: string } }) {
   const indicator = getIndicatorById(params.id);
@@ -32,32 +32,8 @@ export default function IndicatorDetailPage({ params }: { params: { id: string }
             <h1 className="text-4xl md:text-5xl font-bold mb-4">{indicator.title}</h1>
             <p className="text-xl text-gray-300 mb-6">{indicator.description}</p>
 
-            {/* Stats and CTA */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 mb-6">
-              <div className="flex items-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400">Favorites:</span>
-                  <span className="text-white font-semibold">
-                    <AnimatedCounter value={indicator.stats.favorites} />
-                  </span>
-                </div>
-                {indicator.stats.uses && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400">Uses:</span>
-                    <span className="text-white font-semibold">
-                      <AnimatedCounter value={indicator.stats.uses} />
-                    </span>
-                  </div>
-                )}
-                {indicator.stats.views && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-400">Views:</span>
-                    <span className="text-white font-semibold">
-                      <AnimatedCounter value={indicator.stats.views} />
-                    </span>
-                  </div>
-                )}
-              </div>
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
               <a
                 href={indicator.tradingViewUrl}
                 target="_blank"
@@ -74,12 +50,6 @@ export default function IndicatorDetailPage({ params }: { params: { id: string }
                 <BookOpen className="w-5 h-5" />
                 Read Documentation
               </Link>
-            </div>
-
-            {/* Publication Info */}
-            <div className="text-sm text-gray-400">
-              Published on {indicator.stats.publishedDate}
-              {indicator.stats.updatedDate && ` • Updated ${indicator.stats.updatedDate}`}
             </div>
           </div>
 

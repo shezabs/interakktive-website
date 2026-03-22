@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, ExternalLink, BookOpen } from 'lucide-react';
 import { getFreeIndicators } from '@/app/lib/indicators-data';
-import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, AnimatedCounter, ImageLightbox, SectionWrapper, GradientDivider } from '@/app/components/animations';
+import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, ImageLightbox, SectionWrapper, GradientDivider } from '@/app/components/animations';
 
 export default function IndicatorsPage() {
   const indicators = getFreeIndicators();
@@ -63,32 +63,6 @@ export default function IndicatorsPage() {
 
                     {/* Description */}
                     <p className="text-gray-300 mb-6 line-clamp-3">{indicator.description}</p>
-
-                    {/* Stats */}
-                    <div className="flex items-center gap-6 mb-6 text-sm flex-wrap">
-                      <div className="flex items-center gap-2">
-                        <span className="text-gray-400">Favorites:</span>
-                        <span className="text-white font-semibold">
-                          <AnimatedCounter value={indicator.stats.favorites} />
-                        </span>
-                      </div>
-                      {indicator.stats.uses && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-400">Uses:</span>
-                          <span className="text-white font-semibold">
-                            <AnimatedCounter value={indicator.stats.uses} />
-                          </span>
-                        </div>
-                      )}
-                      {indicator.stats.views && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-400">Views:</span>
-                          <span className="text-white font-semibold">
-                            <AnimatedCounter value={indicator.stats.views} />
-                          </span>
-                        </div>
-                      )}
-                    </div>
 
                     {/* Features Preview */}
                     <div className="mb-6">
