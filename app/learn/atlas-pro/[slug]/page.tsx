@@ -65,7 +65,7 @@ export default function ProIndicatorDocPage({ params }: { params: { slug: string
           </FadeInView>
 
           <FadeInView delay={0.2}>
-            <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white to-gray-400 bg-clip-text text-transparent">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 text-white">
               {doc.title}
             </h1>
           </FadeInView>
