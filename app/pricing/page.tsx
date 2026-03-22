@@ -32,30 +32,34 @@ export default function PricingPage() {
 
           {/* Billing Toggle */}
           <FadeIn delay={0.2}>
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <span className={`text-sm font-medium ${!isAnnual ? 'text-white' : 'text-gray-400'}`}>
-                Monthly
-              </span>
-              <button
-                onClick={() => setIsAnnual(!isAnnual)}
-                className={`relative w-14 h-7 rounded-full transition-colors ${
-                  isAnnual ? 'bg-primary-500' : 'bg-gray-600'
-                }`}
-              >
-                <div
-                  className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white transition-transform ${
-                    isAnnual ? 'translate-x-7' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-              <span className={`text-sm font-medium ${isAnnual ? 'text-white' : 'text-gray-400'}`}>
-                Annual
-              </span>
-              {isAnnual && (
-                <span className="text-xs px-2 py-1 rounded-full bg-primary-500/20 text-primary-400 border border-primary-500/30 font-semibold">
-                  Save up to 17%
+            <div className="flex flex-col items-center gap-2 mb-4">
+              <div className="flex items-center justify-center gap-4">
+                <span className={`text-sm font-medium ${!isAnnual ? 'text-white' : 'text-gray-400'}`}>
+                  Monthly
                 </span>
-              )}
+                <button
+                  onClick={() => setIsAnnual(!isAnnual)}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${
+                    isAnnual ? 'bg-primary-500' : 'bg-gray-600'
+                  }`}
+                >
+                  <div
+                    className={`absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white transition-transform ${
+                      isAnnual ? 'translate-x-7' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium ${isAnnual ? 'text-white' : 'text-gray-400'}`}>
+                  Annual
+                </span>
+              </div>
+              <div className="h-6">
+                {isAnnual && (
+                  <span className="text-xs px-2 py-1 rounded-full bg-primary-500/20 text-primary-400 border border-primary-500/30 font-semibold">
+                    Save up to 17%
+                  </span>
+                )}
+              </div>
             </div>
           </FadeIn>
         </div>

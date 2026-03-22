@@ -75,7 +75,7 @@ export default function ChatWidget() {
     const message = userMessage.toLowerCase();
 
     if (message.includes('free') || message.includes('indicator')) {
-      return "We offer 8 free professional-grade indicators on TradingView! They include Market Acceptance Envelope, Market State Intelligence, Volatility State Index, and more. Visit our Indicators page to explore them all and add them to your charts instantly.";
+      return "We offer 9 free professional-grade indicators on TradingView! They include Sessions+, Market Acceptance Envelope, Market State Intelligence, Volatility State Index, and more. Visit our Indicators page to explore them all and add them to your charts instantly.";
     }
     if (message.includes('atlas') || message.includes('pro')) {
       return "ATLAS PRO is our premium suite of AI and ML-enabled indicators. It combines multi-timeframe analysis, adaptive intelligence, and risk assessment into a unified trading system. It's currently invite-only during our beta phase. Sign up to request early access!";
@@ -87,7 +87,7 @@ export default function ChatWidget() {
       return "You can reach our support team at support@interakktive.com. We typically respond within 24 hours. You can also join our Discord community for faster assistance and to connect with other traders!";
     }
     if (message.includes('price') || message.includes('cost') || message.includes('pay')) {
-      return "Our 8 core indicators are completely free! ATLAS PRO is also free during our beta/early access phase. We want to gather feedback and refine the indicators before considering any pricing.";
+      return "Our 9 free indicators are completely free — no signup, no paywall. ATLAS PRO indicators require a paid subscription. Visit the Pricing page for details.";
     }
     if (message.includes('tradingview') || message.includes('trading view')) {
       return "All our indicators are built for TradingView. To use them, simply visit our Indicators page, click 'Add to Chart' on any indicator, and it will open directly in TradingView. No coding required!";

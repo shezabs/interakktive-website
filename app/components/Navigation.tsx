@@ -57,7 +57,7 @@ export default function Navigation() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/atlas-pro" className="text-gray-300 hover:text-white transition-colors">
-              ATLAS Suite
+              ATLAS PRO Suite
             </Link>
             <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">
               Pricing
@@ -127,7 +127,7 @@ export default function Navigation() {
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
-              ATLAS Suite
+              ATLAS PRO Suite
             </Link>
             <Link
               href="/pricing"

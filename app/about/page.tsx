@@ -78,7 +78,7 @@ export default function AboutPage() {
             <div className="glass p-8 rounded-lg">
               <h3 className="text-2xl font-bold mb-3">Free Indicators</h3>
               <p className="text-gray-300 mb-4">
-                We've published 8 professional-grade indicators on TradingView, completely free for
+                We've published 9 professional-grade indicators on TradingView, completely free for
                 the trading community. These tools cover regime detection, volatility analysis, efficiency
                 measurement, and institutional activity tracking.
               </p>

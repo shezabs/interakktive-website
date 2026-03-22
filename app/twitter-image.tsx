@@ -113,7 +113,7 @@ export default async function Image() {
                 fontSize: 18,
               }}
             >
-              8 Free Indicators
+              9 Free Indicators
             </div>
             <div
               style={{

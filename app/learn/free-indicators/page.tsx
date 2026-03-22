@@ -90,7 +90,7 @@ export default function FreeIndicatorsDocsPage() {
           <FadeInView>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/10 border border-primary-500/20 rounded-full text-primary-400 text-sm mb-6">
               <BookOpen className="w-4 h-4" />
-              8 Free Indicators + Sessions+
+              9 Free Indicators
             </div>
           </FadeInView>
 
