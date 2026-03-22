@@ -3,8 +3,8 @@ import { Indicator } from '@/app/types/indicator';
 export const freeIndicators: Indicator[] = [
   {
     id: 'sessions-plus',
-    title: 'Sessions+ [Interakktive]',
-    shortTitle: 'Sessions+',
+    title: 'Sessions + [Interakktive]',
+    shortTitle: 'Sessions +',
     description: 'A standalone session intelligence indicator with DNA predictor narrative, adaptive multi-timeframe level degradation, and session-based structure analysis. Built as the gateway to the ATLAS suite — full diagnostic transparency with zero cost.',
     features: [
       'Session high/low tracking with adaptive level degradation',

@@ -59,7 +59,7 @@ export default function LearnPage() {
                     <li>• Market Acceptance Envelope</li>
                     <li>• Market State Intelligence</li>
                     <li>• Volatility State Index</li>
-                    <li>• Sessions+</li>
+                    <li>• Sessions +</li>
                     <li>• And 5 more...</li>
                   </ul>
                   <span className="inline-flex items-center gap-2 text-primary-400 font-medium mt-auto">

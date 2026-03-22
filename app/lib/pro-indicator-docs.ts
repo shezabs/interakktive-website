@@ -395,7 +395,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Combining with Other ATLAS Indicators</h3>
           <ul>
-            <li><strong>CIPHER + Sessions+</strong> — Check if the killzone is active and ADR is not exhausted before taking a CIPHER signal</li>
+            <li><strong>CIPHER + Sessions +</strong> — Check if the killzone is active and ADR is not exhausted before taking a CIPHER signal</li>
             <li><strong>CIPHER + PHANTOM PRO</strong> — CIPHER fires the signal, PHANTOM confirms the structure (order blocks, BOS/CHoCH alignment)</li>
             <li><strong>CIPHER + PULSE PRO</strong> — CIPHER fires the signal, PULSE PRO confirms momentum health and checks for divergences</li>
             <li><strong>CIPHER + RADAR PRO</strong> — RADAR screens for tickers with confluence, CIPHER executes on the best setups</li>
@@ -1151,8 +1151,8 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <h3>Tip 5: Pressure Bands in Squeeze = Maximum Sensitivity</h3>
           <p>When the market is in a squeeze (volatility compression), Pressure Bands tighten to 0.6x their normal width. This means FLOW entering the pressure zone during a squeeze is an especially strong exhaustion signal — even a small move is extreme relative to the compressed conditions.</p>
 
-          <h3>Tip 6: Combine Pulse Memory with Sessions+</h3>
-          <p>If Pulse Memory says "last time → +1.2%" AND Sessions+ shows you're in a London KZ with DNA bullish: that's historical precedent + session timing + multi-TF alignment. Stack the confluences.</p>
+          <h3>Tip 6: Combine Pulse Memory with Sessions +</h3>
+          <p>If Pulse Memory says "last time → +1.2%" AND Sessions + shows you're in a London KZ with DNA bullish: that's historical precedent + session timing + multi-TF alignment. Stack the confluences.</p>
         `,
       },
     ],

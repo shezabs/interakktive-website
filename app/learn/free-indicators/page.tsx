@@ -66,7 +66,7 @@ const indicators = [
   },
   {
     id: 'sessions-plus',
-    title: 'Sessions+',
+    title: 'Sessions +',
     description: 'The most comprehensive session analysis tool for TradingView. Sessions, levels, ICT concepts, analytics, and a live DNA predictor.',
     icon: Activity,
     category: 'Session Intelligence',

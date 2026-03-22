@@ -18,7 +18,7 @@ export default function HomePage() {
           <div className="text-center space-y-8">
             <FadeIn delay={0}>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold">
-                <span className="block bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400 bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400 bg-clip-text text-transparent pb-2">
                   Trading Intelligence
                 </span>
                 <span className="block text-white mt-2">You Can See</span>

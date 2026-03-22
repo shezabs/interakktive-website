@@ -3158,11 +3158,11 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
       },
     ],
     prevIndicator: { slug: 'effort-result-divergence', title: 'Effort-Result Divergence' },
-    nextIndicator: { slug: 'sessions-plus', title: 'Sessions+' },
+    nextIndicator: { slug: 'sessions-plus', title: 'Sessions +' },
   },
 
   'sessions-plus': {
-    title: 'Sessions+',
+    title: 'Sessions +',
     subtitle: 'The most comprehensive session analysis tool for TradingView. 4,500+ lines covering sessions, levels, ICT concepts, analytics, and a live DNA predictor — all in one free indicator.',
     tradingViewUrl: 'https://www.tradingview.com/script/g3aVrzmp-Sessions-Interakktive/',
     sections: [
@@ -3171,10 +3171,10 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Sessions+</strong> is a professional-grade session intelligence indicator that goes far beyond simple session boxes. It is the most feature-rich session tool published on TradingView — 4,500+ lines of Pine Script v6 covering four distinct layers of analysis.</p>
+          <p><strong>Sessions +</strong> is a professional-grade session intelligence indicator that goes far beyond simple session boxes. It is the most feature-rich session tool published on TradingView — 4,500+ lines of Pine Script v6 covering four distinct layers of analysis.</p>
 
-          <h3>What Sessions+ Does</h3>
-          <p>Sessions+ answers the questions every intraday trader should be asking:</p>
+          <h3>What Sessions + Does</h3>
+          <p>Sessions + answers the questions every intraday trader should be asking:</p>
           <ul>
             <li><strong>Which session is active right now?</strong> — Asian, London, New York, or the LDN-NY overlap</li>
             <li><strong>Where are the key levels?</strong> — Previous day/week/month/quarter highs and lows, ADR projections, session VWAP, opening range</li>
@@ -3191,7 +3191,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
           </ul>
 
           <h3>The Dashboard</h3>
-          <p>Sessions+ includes a multi-mode dashboard with six views:</p>
+          <p>Sessions + includes a multi-mode dashboard with six views:</p>
           <ul>
             <li><strong>Off</strong> — No dashboard</li>
             <li><strong>Minimal</strong> — Session name + Verdict only</li>
@@ -3203,7 +3203,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
           <p>The dashboard adapts by timeframe — on Daily and above, session-specific rows are replaced with level-based context (price vs previous week/month/quarter).</p>
 
           <h3>Asset Class Intelligence</h3>
-          <p>Sessions+ auto-detects the asset class (Forex, Crypto, Stocks, Commodities, Indices/CFDs) and adjusts which sessions, features, and analytics are relevant. You can override the detection manually.</p>
+          <p>Sessions + auto-detects the asset class (Forex, Crypto, Stocks, Commodities, Indices/CFDs) and adjusts which sessions, features, and analytics are relevant. You can override the detection manually.</p>
 
           <h3>Key Properties</h3>
           <ul>
@@ -3428,7 +3428,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
           <ul>
             <li>Don't trade against a strong DNA reading + killzone confluence</li>
             <li>Don't ignore the ADR exhaustion warning — extending beyond 80% ADR usage is statistically unlikely</li>
-            <li>Don't use Sessions+ on Daily or Weekly timeframes for session-specific features (use it for levels only)</li>
+            <li>Don't use Sessions + on Daily or Weekly timeframes for session-specific features (use it for levels only)</li>
             <li>Don't treat every killzone equally — use the effectiveness grades to focus on what works for YOUR instrument</li>
           </ul>
         `,
@@ -3438,7 +3438,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
         title: 'Alert System',
         icon: 'settings',
         content: `
-          <p>Sessions+ includes 39 alert conditions covering every feature layer. All alerts are always active — no toggle needed.</p>
+          <p>Sessions + includes 39 alert conditions covering every feature layer. All alerts are always active — no toggle needed.</p>
 
           <h3>Session Alerts (3)</h3>
           <ul>
@@ -3516,7 +3516,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
         title: 'Timeframe Behaviour',
         icon: 'concept',
         content: `
-          <p>Sessions+ is designed for intraday timeframes but gracefully degrades on higher TFs so the indicator remains useful everywhere.</p>
+          <p>Sessions + is designed for intraday timeframes but gracefully degrades on higher TFs so the indicator remains useful everywhere.</p>
 
           <h3>Sub-Hourly (1m to 45m) — Full Feature Set</h3>
           <ul>
@@ -3577,7 +3577,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
 
           <h3>Mistake 4: Relying on Sessions on Daily+ Timeframes</h3>
           <p><strong>Problem:</strong> Expecting session boxes and killzones on the Daily chart.</p>
-          <p><strong>Solution:</strong> Sessions are intraday concepts. On Daily and above, Sessions+ shifts to level-based intelligence (PDH/PDL, PWH/PWL, etc.) and the dashboard provides period-vs-period context instead.</p>
+          <p><strong>Solution:</strong> Sessions are intraday concepts. On Daily and above, Sessions + shifts to level-based intelligence (PDH/PDL, PWH/PWL, etc.) and the dashboard provides period-vs-period context instead.</p>
 
           <h3>Mistake 5: Treating DNA as a Signal Generator</h3>
           <p><strong>Problem:</strong> Entering trades purely because DNA shows 80% bullish probability.</p>
@@ -3599,8 +3599,8 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
           <h3>Tip 2: ADR Exhaustion is Powerful for Mean Reversion</h3>
           <p>When ADR Used hits 80%+, statistically the day's range is nearly complete. This is one of the highest-probability mean reversion setups available. Combine with session VWAP as a target.</p>
 
-          <h3>Tip 3: Combine Sessions+ with ATLAS PRO Indicators</h3>
-          <p>Sessions+ is designed as the contextual layer for the ATLAS suite. CIPHER PRO fires a Long signal? Check Sessions+ for: Is the killzone active? Is the DNA bullish? Is ADR consumed? This context turns signals into informed decisions.</p>
+          <h3>Tip 3: Combine Sessions + with ATLAS PRO Indicators</h3>
+          <p>Sessions + is designed as the contextual layer for the ATLAS suite. CIPHER PRO fires a Long signal? Check Sessions + for: Is the killzone active? Is the DNA bullish? Is ADR consumed? This context turns signals into informed decisions.</p>
 
           <h3>Tip 4: Flow Analysis Sets Pre-Session Bias</h3>
           <p>Check the flow percentage before the next session opens. If London continues Asian 70% of the time on your instrument, and Asian was bullish, you have a statistical edge for London direction before it even starts.</p>

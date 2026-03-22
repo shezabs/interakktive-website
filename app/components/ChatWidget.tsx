@@ -75,7 +75,7 @@ export default function ChatWidget() {
     const message = userMessage.toLowerCase();
 
     if (message.includes('free') || message.includes('indicator')) {
-      return "We offer 9 free professional-grade indicators on TradingView! They include Sessions+, Market Acceptance Envelope, Market State Intelligence, Volatility State Index, and more. Visit our Indicators page to explore them all and add them to your charts instantly.";
+      return "We offer 9 free professional-grade indicators on TradingView! They include Sessions +, Market Acceptance Envelope, Market State Intelligence, Volatility State Index, and more. Visit our Indicators page to explore them all and add them to your charts instantly.";
     }
     if (message.includes('atlas') || message.includes('pro')) {
       return "ATLAS PRO is our premium suite of AI and ML-enabled indicators. It combines multi-timeframe analysis, adaptive intelligence, and risk assessment into a unified trading system. It's currently invite-only during our beta phase. Sign up to request early access!";
