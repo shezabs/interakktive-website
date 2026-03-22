@@ -33,7 +33,7 @@ const proIndicators = [
     description: 'Pure momentum diagnostics. Dual FLOW/WAVE oscillator, Pressure Bands, Rhythm, Fatigue, Divergence, and Pulse Score.',
     icon: Activity,
     lines: '~1,304',
-    available: false,
+    available: true,
   },
   {
     slug: 'atlas-radar-pro',

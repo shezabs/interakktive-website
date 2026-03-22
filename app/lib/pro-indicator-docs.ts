@@ -833,7 +833,334 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
     nextIndicator: { slug: 'atlas-pulse-pro', title: 'Atlas Pulse Pro' },
   },
 
-  // PULSE PRO, RADAR PRO — to be added in follow-up sessions
+  'atlas-pulse-pro': {
+    title: 'Atlas Pulse Pro',
+    subtitle: 'Momentum Intelligence — the momentum diagnostic pillar of the ATLAS suite. Dual FLOW/WAVE oscillator, Pressure Bands, Rhythm acceleration, Fatigue detection, Divergence lifecycle, 6-component Pulse Score with consensus penalty, Pulse Memory, DNA multi-timeframe strip, Edge Bars, and Exhaustion signals. No trade signals — pure intelligence.',
+    tradingViewUrl: 'https://www.tradingview.com/script/nHfT0sXk/',
+    role: 'Momentum Intelligence',
+    lines: '~1,304',
+    sections: [
+      {
+        id: 'overview',
+        title: 'Overview',
+        icon: 'overview',
+        content: `
+          <p><strong>Atlas Pulse Pro</strong> is the momentum intelligence pillar of the ATLAS suite. It answers the question every trader needs answered: <em>What is momentum DOING right now, and what will it do NEXT?</em></p>
+
+          <h3>What PULSE PRO Is NOT</h3>
+          <p>PULSE PRO deliberately does not generate trade signals. After extensive testing, trend/reversal signals were removed because oscillator crossovers cannot match the accuracy of price-structure signals (CIPHER PRO handles that). PULSE PRO is a pure diagnostic tool — it tells you the momentum health so you can make better decisions with signals from other indicators.</p>
+
+          <h3>Dual-Layer Architecture</h3>
+          <ul>
+            <li><strong>PULSE FLOW</strong> — Institutional momentum. Volume-weighted, efficiency-adaptive. Captures the bigger picture of where smart money is pushing. Slow to turn but highly reliable when it does.</li>
+            <li><strong>PULSE WAVE</strong> — Reactive momentum. ROC-based, ATR-normalised. Captures short-term momentum shifts. Faster but noisier.</li>
+            <li><strong>When they AGREE</strong> → High conviction directional move.</li>
+            <li><strong>When they DIVERGE</strong> → Caution — layers are in conflict.</li>
+          </ul>
+
+          <h3>Feature Stack</h3>
+          <ul>
+            <li><strong>Pressure Bands</strong> — Adaptive overbought/oversold that breathe with the volatility regime. In a squeeze: bands tighten. In a trend: bands widen.</li>
+            <li><strong>Rhythm Histogram</strong> — Momentum acceleration. Is the move speeding up or slowing down?</li>
+            <li><strong>Fatigue Detection</strong> — Amber diamonds when momentum acceleration inverts. The earliest possible warning that a move is running out of energy.</li>
+            <li><strong>Divergence Engine</strong> — Regular and Hidden divergences between price and FLOW, with lifecycle tracking (Forming → Confirmed → Active → Swept).</li>
+            <li><strong>Exhaustion Signals</strong> — Three types: Pulse Velocity (both layers extreme), Pulse Flow (institutional overextended), Pulse Trap (momentum against divergence).</li>
+            <li><strong>Pulse Score</strong> — Single 0-100 number that collapses all momentum intelligence into one reading, with consensus penalty when FLOW and WAVE disagree.</li>
+            <li><strong>Pulse Memory</strong> — "Last time FLOW was at this level, price did X." Historical context for the current reading.</li>
+            <li><strong>DNA Strip</strong> — Multi-timeframe momentum alignment across 4 higher timeframes with auto-adaptive TF selection.</li>
+            <li><strong>Edge Bars</strong> — Score-driven colour strips at pane edges acting as a momentum thermometer.</li>
+          </ul>
+
+          <h3>Key Properties</h3>
+          <ul>
+            <li><strong>~1,304 lines</strong> of Pine Script v6</li>
+            <li><strong>49/64 outputs</strong> (15 headroom remaining)</li>
+            <li><strong>19 alert conditions</strong></li>
+            <li><strong>Non-repainting</strong> — all calculations use closed-bar data</li>
+            <li><strong>Timeframe-adaptive</strong> — signal sensitivity auto-adjusts by chart timeframe</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'oscillator',
+        title: 'FLOW & WAVE Oscillator',
+        icon: 'calculation',
+        content: `
+          <h3>PULSE FLOW — The Institutional Layer</h3>
+          <p>FLOW measures where institutional money is pushing. It combines three proprietary components:</p>
+          <ul>
+            <li><strong>Volume-Weighted ROC</strong> — Rate of change multiplied by a volume factor. High-volume bars carry more "truth" than low-volume bars.</li>
+            <li><strong>Efficiency Ratio</strong> — Measures directional efficiency (net progress / total movement). High efficiency = clean trend. Low efficiency = choppy noise.</li>
+            <li><strong>Adaptive Smoothing (KAMA)</strong> — When efficiency is high, FLOW responds fast. When efficiency is low, FLOW smooths heavily, filtering out the chop.</li>
+          </ul>
+          <p>The result is normalised to 0-100. Above 50 = bullish institutional momentum. Below 50 = bearish. The colour of the FLOW line changes at the 50 midline.</p>
+
+          <h3>PULSE WAVE — The Reactive Layer</h3>
+          <p>WAVE captures short-term momentum shifts using ATR-normalised Rate of Change. It is deliberately simpler and faster than FLOW — its job is to detect turns early, even at the cost of occasional false signals.</p>
+
+          <h3>Consensus & Conviction</h3>
+          <p>The fill between FLOW and WAVE shows their agreement:</p>
+          <ul>
+            <li><strong>Teal fill</strong> — Both bullish. High conviction long.</li>
+            <li><strong>Magenta fill</strong> — Both bearish. High conviction short.</li>
+            <li><strong>Amber fill</strong> — Mixed. One bullish, one bearish. Caution zone.</li>
+          </ul>
+          <p>The <strong>Consensus Strip</strong> at the top of the pane shows this at a glance — teal, magenta, or amber bar.</p>
+
+          <h3>Settings</h3>
+          <ul>
+            <li><strong>Flow Length</strong> (default: 35) — Smoothing of institutional layer. Higher = smoother, captures bigger moves.</li>
+            <li><strong>Volume Influence</strong> (default: 0.7) — How much volume affects FLOW. 1.0 = fully institutional. 0.0 = pure price.</li>
+            <li><strong>Adaptive Smoothing</strong> (default: ON) — FLOW auto-adjusts speed. ON for swing trading, OFF for scalping.</li>
+            <li><strong>Wave Length</strong> (default: 10) — Speed of reactive layer. Lower = faster but noisier.</li>
+            <li><strong>Wave Smoothing</strong> (default: 3) — Additional noise reduction. 1 = raw.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'intelligence',
+        title: 'Pressure, Rhythm, Fatigue & Divergence',
+        icon: 'interpretation',
+        content: `
+          <h3>Pressure Bands (Adaptive OB/OS)</h3>
+          <p>Unlike static 70/30 levels, Pressure Bands breathe with the market. They detect the current volatility regime and adapt:</p>
+          <ul>
+            <li><strong>Squeeze regime</strong> (ATR at 20th percentile) — Bands at 0.6x width. Even small moves are extreme.</li>
+            <li><strong>Ranging regime</strong> — Bands at 1.0x (default width).</li>
+            <li><strong>Trending regime</strong> — Bands at 1.2x. Strong readings are normal in trends.</li>
+            <li><strong>Volatile regime</strong> (ATR at 80th percentile) — Bands at 1.4x. Only truly extreme moves register.</li>
+          </ul>
+          <p>When FLOW enters the Pressure Zone (above upper band or below lower band), the zone glows bright — this is the exhaustion zone where reversal probability spikes.</p>
+
+          <h3>Rhythm Histogram</h3>
+          <p>The rate of change of WAVE momentum — momentum's acceleration. Positive bars = momentum speeding up. Negative bars = momentum slowing down. Colour intensity scales with magnitude. Peak bars (brighter) show maximum acceleration.</p>
+
+          <h3>Fatigue Detection</h3>
+          <p>Amber diamond markers fire when momentum acceleration inverts — the earliest possible signal that a move is running out of energy. Appears BEFORE the oscillator lines turn.</p>
+          <ul>
+            <li><strong>Bull fatigue</strong> — Rhythm turns negative while WAVE is above 50 (uptrend losing steam)</li>
+            <li><strong>Bear fatigue</strong> — Rhythm turns positive while WAVE is below 50 (downtrend losing steam)</li>
+            <li><strong>Double fatigue</strong> — Both FLOW and WAVE showing fatigue simultaneously (strongest warning)</li>
+          </ul>
+
+          <h3>Divergence Engine</h3>
+          <p>Detects four divergence types between price and FLOW with full lifecycle tracking:</p>
+          <ul>
+            <li><strong>Regular Bullish</strong> — Price makes lower low, FLOW makes higher low → reversal UP expected</li>
+            <li><strong>Regular Bearish</strong> — Price makes higher high, FLOW makes lower high → reversal DOWN expected</li>
+            <li><strong>Hidden Bullish</strong> — Price makes higher low, FLOW makes lower low → trend continuation UP</li>
+            <li><strong>Hidden Bearish</strong> — Price makes lower high, FLOW makes higher high → trend continuation DOWN</li>
+          </ul>
+          <p>Lifecycle: <strong>Forming</strong> → <strong>Confirmed</strong> → <strong>Active</strong> → <strong>Swept</strong>. Visual: background glow (cyan for bullish, pink for bearish) + labels at detection point.</p>
+        `,
+      },
+      {
+        id: 'pulse-score',
+        title: 'Pulse Score & Pulse Memory',
+        icon: 'concept',
+        content: `
+          <h3>Pulse Score (0-100)</h3>
+          <p>A single number that collapses all momentum intelligence into one reading. Users who don't understand oscillators can follow this one number.</p>
+
+          <h3>6-Component Weighted Composite</h3>
+          <ul>
+            <li><strong>FLOW position (30%)</strong> — Where is institutional momentum? The core reading.</li>
+            <li><strong>Price Trend (30%)</strong> — Is price actually going up or down? Grounds the score in reality.</li>
+            <li><strong>WAVE confirmation (10%)</strong> — Does the reactive layer agree with FLOW?</li>
+            <li><strong>Rhythm (10%)</strong> — Is momentum accelerating or decelerating?</li>
+            <li><strong>DNA alignment (10%)</strong> — How many higher timeframes agree?</li>
+            <li><strong>Divergence modifier (10%)</strong> — Active divergences push the score toward reversal.</li>
+          </ul>
+
+          <h3>Consensus Penalty</h3>
+          <p>When FLOW and WAVE disagree, the score is mathematically dampened toward 50 (neutral). This is critical — without it, the Score might say "LEAN BULL" while the Narrative says "layers disagree." The penalty uses a sqrt curve with 90% maximum pull, ensuring the score honestly reflects disagreement.</p>
+
+          <h3>Score Classification</h3>
+          <ul>
+            <li><strong>80-100</strong> — STRONG BULL (deep teal)</li>
+            <li><strong>65-79</strong> — BULLISH (teal)</li>
+            <li><strong>55-64</strong> — LEAN BULL (light teal)</li>
+            <li><strong>45-54</strong> — NEUTRAL (amber)</li>
+            <li><strong>35-44</strong> — LEAN BEAR (light magenta)</li>
+            <li><strong>20-34</strong> — BEARISH (magenta)</li>
+            <li><strong>0-19</strong> — STRONG BEAR (deep magenta)</li>
+          </ul>
+
+          <h3>Pulse Memory</h3>
+          <p>"Last time FLOW was at this level, price did X." Uses a ring buffer of 200 snapshots (every 5 bars = 1,000 bars of history). Searches for the most recent snapshot where FLOW was within ±3 points of the current level, then reports what price did 15 bars later.</p>
+          <p>Examples: "Flow at 72 → +0.8%" (last time FLOW was at 72, price rallied 0.8%) or "Flow at 28 → -1.2%" (last time at 28, price dropped 1.2%). Gives historical context to the current momentum reading.</p>
+        `,
+      },
+      {
+        id: 'exhaustion-signals',
+        title: 'Exhaustion Signals & Ghost Performance',
+        icon: 'trading',
+        content: `
+          <h3>Three Exhaustion Types</h3>
+          <ul>
+            <li><strong>Pulse Velocity (VEL)</strong> — Both FLOW and WAVE hit the pressure zone together. Full consensus exhaustion. The strongest reversal signal in the system.</li>
+            <li><strong>Pulse Flow (FL)</strong> — Institutional momentum overextended (FLOW in pressure zone alone). Smart money has pushed too far.</li>
+            <li><strong>Pulse Trap (TRAP)</strong> — Momentum erupted AGAINST an active divergence. Price is moving one way but the divergence says the opposite. Highest caution.</li>
+          </ul>
+
+          <h3>Multi-Factor Scoring</h3>
+          <p>Each exhaustion signal is scored by up to 6 factors: exhaustion type (2 pts), velocity type bonus, rhythm alignment, divergence support, and session trust. Thresholds are timeframe-adaptive — scalp needs 3+ factors, swing needs 2+.</p>
+
+          <h3>Session Awareness</h3>
+          <p>Signals in the London-NY overlap get full trust (1.0x). Asian session signals get reduced trust (0.6x). This prevents false exhaustion signals during low-liquidity periods.</p>
+
+          <h3>Ghost Performance™</h3>
+          <p>Tracks every exhaustion signal's outcome: did price hit the 1-ATR target within 15 bars? Shows cumulative win rate in the Narrative Engine. If Ghost™ shows 65% win rate, 65% of exhaustion signals on this instrument led to a meaningful reversal.</p>
+        `,
+      },
+      {
+        id: 'dna-edge',
+        title: 'DNA Strip & Edge Bars',
+        icon: 'concept',
+        content: `
+          <h3>Pulse DNA Strip</h3>
+          <p>A horizontal strip above the oscillator showing FLOW direction on 4 higher timeframes. Each cell is coloured: teal = bullish, magenta = bearish, amber = near midline (45-55 neutral zone).</p>
+
+          <h3>Auto-Adaptive Timeframes</h3>
+          <p>When Auto-Select is ON, the 4 timeframes are automatically chosen above your chart:</p>
+          <ul>
+            <li><strong>1m chart</strong> → 5m, 15m, 1H, 4H</li>
+            <li><strong>5m chart</strong> → 15m, 1H, 4H, Daily</li>
+            <li><strong>15m chart</strong> → 1H, 4H, Daily, Weekly</li>
+            <li><strong>1H chart</strong> → 4H, Daily, Weekly, Monthly</li>
+            <li><strong>4H chart</strong> → Daily, Weekly, Monthly, 3-Month</li>
+          </ul>
+
+          <h3>DNA Alignment Score</h3>
+          <ul>
+            <li><strong>FULL BULL</strong> — All 4 timeframes bullish. Maximum conviction long.</li>
+            <li><strong>FULL BEAR</strong> — All 4 bearish. Maximum conviction short.</li>
+            <li><strong>MOSTLY BULL/BEAR</strong> — 3 of 4 agree.</li>
+            <li><strong>MIXED</strong> — No clear alignment. Stay cautious.</li>
+          </ul>
+
+          <h3>Edge Bars</h3>
+          <p>Thin coloured strips at the top and bottom edges of the oscillator pane. Bottom edge glows teal when Pulse Score is bullish. Top edge glows magenta when bearish. Brightness scales with conviction strength — the brighter the edge, the stronger the directional reading. Acts as a momentum thermometer you can see at a glance.</p>
+        `,
+      },
+      {
+        id: 'settings',
+        title: 'Input Settings',
+        icon: 'settings',
+        content: `
+          <h3>Pulse Flow</h3>
+          <ul>
+            <li><strong>Flow Length</strong> (default: 35) — Institutional momentum smoothing</li>
+            <li><strong>Volume Influence</strong> (default: 0.7) — Volume weighting (0=none, 1=full)</li>
+            <li><strong>Adaptive Smoothing</strong> (default: ON) — Faster in trends, slower in chop</li>
+          </ul>
+
+          <h3>Pulse Wave</h3>
+          <ul>
+            <li><strong>Wave Length</strong> (default: 10) — Reactive layer speed</li>
+            <li><strong>Wave Smoothing</strong> (default: 3) — Noise reduction</li>
+          </ul>
+
+          <h3>Pressure Bands</h3>
+          <ul>
+            <li><strong>Band Width</strong> (default: 10) — Base distance from 50 midline</li>
+            <li><strong>Regime Lookback</strong> (default: 50) — Bars to assess volatility regime</li>
+          </ul>
+
+          <h3>Divergence</h3>
+          <ul>
+            <li><strong>Pivot Depth</strong> (default: 5) — Bars each side for pivot confirmation</li>
+            <li><strong>Max Lookback</strong> (default: 80) — Maximum bars between divergence pivots</li>
+            <li><strong>Divergence Glow / Labels</strong> — Toggle visual elements</li>
+          </ul>
+
+          <h3>DNA Strip</h3>
+          <ul>
+            <li><strong>Auto-Select Timeframes</strong> (default: ON) — Auto-picks 4 TFs above your chart</li>
+            <li><strong>DNA Strip Size</strong> — Tiny or Small</li>
+            <li><strong>Manual TF1-TF4</strong> — Override when Auto-Select is OFF</li>
+          </ul>
+
+          <h3>Display</h3>
+          <ul>
+            <li><strong>Pulse Score</strong> (default: ON) — The single 0-100 number</li>
+            <li><strong>Pulse Memory</strong> (default: ON) — Historical context</li>
+            <li><strong>Edge Bars</strong> (default: ON) — Score-driven strips</li>
+            <li><strong>Consensus Strip</strong> (default: ON) — FLOW/WAVE agreement bar</li>
+            <li><strong>Conviction Gauge</strong> (default: ON) — Right-edge marker</li>
+            <li><strong>Momentum Fill</strong> (default: ON) — Fill between FLOW and WAVE</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'how-to',
+        title: 'How To Use PULSE PRO',
+        icon: 'usage',
+        content: `
+          <h3>The One-Number Approach</h3>
+          <p>If you only look at one thing: the <strong>Pulse Score</strong>. Above 65 = bullish momentum. Below 35 = bearish. Between 35-65 = neutral/conflicting. This single number integrates FLOW, WAVE, Rhythm, DNA, Price Trend, and Divergence into one reading.</p>
+
+          <h3>Confirming CIPHER PRO Signals</h3>
+          <ol>
+            <li>CIPHER PRO fires a Long signal</li>
+            <li>Check PULSE PRO: Is the Score above 55? Is FLOW above 50? Are Pressure Bands NOT in overbought?</li>
+            <li>If all yes: momentum confirms the signal. Enter with confidence.</li>
+            <li>If Score is below 45 or FLOW is in the pressure zone: momentum is against you. Skip or reduce size.</li>
+          </ol>
+
+          <h3>Detecting Momentum Exhaustion</h3>
+          <ol>
+            <li>Watch for Fatigue markers (amber diamonds) — earliest warning</li>
+            <li>Then Exhaustion signals (VEL/FL/TRAP labels) — confirmed overextension</li>
+            <li>Then Divergence glow — structural disagreement between price and momentum</li>
+            <li>Each layer adds conviction to the reversal thesis</li>
+          </ol>
+
+          <h3>Reading the DNA Strip for Swing Trades</h3>
+          <p>Before entering a swing trade, check the DNA strip. If all 4 timeframes are teal (FULL BULL), you have multi-timeframe momentum alignment. If the strip is MIXED, the higher timeframes haven't confirmed — your trade is fighting the current on at least one level.</p>
+
+          <h3>Using Pulse Memory for Context</h3>
+          <p>When the Score says "LEAN BULL" but Memory says "Last time at this level → -0.9%", you have a historical warning. Memory doesn't override the Score, but it adds context that the current reading has historically led to a drop.</p>
+
+          <h3>What NOT to Do</h3>
+          <ul>
+            <li>Don't use PULSE PRO as a signal generator — it deliberately doesn't have buy/sell signals</li>
+            <li>Don't trade FLOW/WAVE crossovers as entries — they fire late, during noise, and miss real moves (this was tested extensively and removed)</li>
+            <li>Don't ignore the consensus penalty — when the Score reads "NEUTRAL" it often means FLOW and WAVE disagree, not that nothing is happening</li>
+            <li>Don't expect Pulse Memory to match on every bar — it searches for historical FLOW matches, which may not exist for every reading</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Pulse VEL is the Strongest Reversal Signal</h3>
+          <p>When both FLOW and WAVE hit the pressure zone simultaneously (Pulse Velocity exhaustion), the reversal probability is at its highest. This is the single most reliable momentum signal in the system.</p>
+
+          <h3>Tip 2: Double Fatigue = Exit NOW</h3>
+          <p>When both FLOW and WAVE show fatigue at the same time, the move is definitively over. If you're in a position, this is your exit signal — don't wait for the oscillator to actually turn.</p>
+
+          <h3>Tip 3: DNA Full Alignment is Rare — Trade It</h3>
+          <p>FULL BULL or FULL BEAR on the DNA strip (all 4 timeframes aligned) happens maybe a few times per week. When it does, momentum is aligned from the shortest to the longest timeframe. These are the highest-conviction trending conditions.</p>
+
+          <h3>Tip 4: The Consensus Penalty is a Feature, Not a Bug</h3>
+          <p>When the Score reads 48 (near neutral) and you see FLOW at 65 but WAVE at 35, the penalty is correctly telling you "the layers disagree." This is more valuable than a false directional reading.</p>
+
+          <h3>Tip 5: Pressure Bands in Squeeze = Maximum Sensitivity</h3>
+          <p>When the market is in a squeeze (volatility compression), Pressure Bands tighten to 0.6x their normal width. This means FLOW entering the pressure zone during a squeeze is an especially strong exhaustion signal — even a small move is extreme relative to the compressed conditions.</p>
+
+          <h3>Tip 6: Combine Pulse Memory with Sessions+</h3>
+          <p>If Pulse Memory says "last time → +1.2%" AND Sessions+ shows you're in a London KZ with DNA bullish: that's historical precedent + session timing + multi-TF alignment. Stack the confluences.</p>
+        `,
+      },
+    ],
+    prevIndicator: { slug: 'atlas-phantom-pro', title: 'Atlas Phantom Pro' },
+    nextIndicator: { slug: 'atlas-radar-pro', title: 'Atlas Radar Pro' },
+  },
+
+  // RADAR PRO — to be added in follow-up session
 };
 
 export function getProIndicatorDoc(slug: string): ProIndicatorDoc | undefined {
