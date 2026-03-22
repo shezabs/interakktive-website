@@ -18,21 +18,22 @@ export default function HomePage() {
           <div className="text-center space-y-8">
             <FadeIn delay={0}>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold">
-                <span className="block text-white">Trading Intelligence</span>
-                <span className="block bg-gradient-to-r from-primary-400 via-amber-400 to-accent-400 bg-clip-text text-transparent mt-2">
-                  You Can See
+                <span className="block bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400 bg-clip-text text-transparent">
+                  Trading Intelligence
                 </span>
+                <span className="block text-white mt-2">You Can See</span>
               </h1>
             </FadeIn>
             <FadeIn delay={0.2}>
               <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-                The ATLAS suite tells you not just what to trade, but why. Diagnostic indicators for
-                TradingView that show signals, structure, momentum, and screening — all in plain English.
+                Our indicators tell you not just what to trade, but why.
+                Diagnostic tools that show signals, structure, momentum,
+                and screening — all explained in plain English.
               </p>
             </FadeIn>
             <FadeIn delay={0.3}>
               <p className="text-base text-gray-500 max-w-2xl mx-auto">
-                5 published indicators &middot; 14,000+ lines of proprietary Pine Script &middot; Zero black-box signals
+                13 published indicators &middot; 25,000+ lines of proprietary code &middot; Zero black-box signals
               </p>
             </FadeIn>
             <FadeIn delay={0.4}>
@@ -40,7 +41,7 @@ export default function HomePage() {
                 <HoverScale>
                   <Link
                     href="/pricing"
-                    className="px-8 py-4 bg-gradient-to-r from-primary-400 to-primary-500 rounded-lg hover:from-primary-500 hover:to-primary-600 transition-all text-lg font-semibold flex items-center gap-2 text-white"
+                    className="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-lg font-semibold flex items-center gap-2"
                   >
                     View Pricing
                     <ArrowRight className="w-5 h-5" />
@@ -67,7 +68,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <FadeInView>
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-              The <span className="bg-gradient-to-r from-primary-400 to-amber-400 bg-clip-text text-transparent">ATLAS</span> Suite
+              The <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">ATLAS</span> Suite
             </h2>
             <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
               Four dimensions of market intelligence. Each indicator is a specialist.
@@ -79,8 +80,8 @@ export default function HomePage() {
               const iconMap: Record<string, React.ReactNode> = {
                 'atlas-cipher-pro': <Crosshair className="w-8 h-8 text-primary-400" />,
                 'atlas-phantom-pro': <Eye className="w-8 h-8 text-accent-400" />,
-                'atlas-pulse-pro': <Activity className="w-8 h-8 text-amber-400" />,
-                'atlas-radar-pro': <Radio className="w-8 h-8 text-primary-400" />,
+                'atlas-pulse-pro': <Activity className="w-8 h-8 text-primary-400" />,
+                'atlas-radar-pro': <Radio className="w-8 h-8 text-accent-400" />,
               };
               const roleMap: Record<string, string> = {
                 'atlas-cipher-pro': 'Signal Intelligence',
@@ -101,7 +102,7 @@ export default function HomePage() {
                             <h3 className="text-xl font-bold group-hover:text-primary-400 transition-colors">
                               {indicator.shortTitle}
                             </h3>
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary-400/10 text-primary-400 border border-primary-400/20">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/20">
                               {roleMap[indicator.id]}
                             </span>
                           </div>
@@ -152,7 +153,7 @@ export default function HomePage() {
             <StaggerItem>
               <HoverScale>
                 <div className="glass-card p-6 rounded-lg h-full">
-                  <BarChart3 className="w-10 h-10 text-amber-400 mb-4" />
+                  <BarChart3 className="w-10 h-10 text-accent-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Ghost Performance&trade;</h3>
                   <p className="text-gray-400 text-sm">
                     Historical validation built into every indicator. See win rates,
@@ -164,7 +165,7 @@ export default function HomePage() {
             <StaggerItem>
               <HoverScale>
                 <div className="glass-card p-6 rounded-lg h-full">
-                  <Activity className="w-10 h-10 text-accent-400 mb-4" />
+                  <Activity className="w-10 h-10 text-primary-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Narrative Engine</h3>
                   <p className="text-gray-400 text-sm">
                     Every ATLAS indicator includes a Narrative Engine that translates
@@ -187,7 +188,7 @@ export default function HomePage() {
               Free Diagnostic Tools
             </h2>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              {freeIndicators.length} open-source indicators on TradingView.
+              {freeIndicators.length} open-source indicators available now.
               No signup, no paywall — add them to your charts right now.
             </p>
           </FadeInView>
@@ -206,7 +207,7 @@ export default function HomePage() {
                       {indicator.description}
                     </p>
                     <span className="text-primary-400 text-sm flex items-center gap-1">
-                      View on TradingView <ArrowRight className="w-3 h-3" />
+                      Learn more <ArrowRight className="w-3 h-3" />
                     </span>
                   </Link>
                 </HoverScale>
@@ -232,7 +233,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative">
           <FadeInView>
             <h2 className="text-3xl md:text-4xl font-bold">
-              Ready to see the <span className="bg-gradient-to-r from-primary-400 to-amber-400 bg-clip-text text-transparent">full picture</span>?
+              Ready to see the <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">full picture</span>?
             </h2>
           </FadeInView>
           <FadeInView delay={0.1}>
@@ -246,7 +247,7 @@ export default function HomePage() {
               <HoverScale className="inline-block">
                 <Link
                   href="/pricing"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-400 to-primary-500 rounded-lg hover:from-primary-500 hover:to-primary-600 transition-all text-lg font-semibold text-white"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-lg font-semibold"
                 >
                   View Pricing
                   <ArrowRight className="w-5 h-5" />

@@ -23,8 +23,8 @@ export default function CheckoutSuccessPage() {
 
               <div className="bg-black/30 rounded-lg p-4 mb-8 border border-white/5">
                 <div className="flex items-center gap-3 mb-2">
-                  <Clock className="w-5 h-5 text-amber-400" />
-                  <h3 className="font-semibold text-amber-400">What happens next?</h3>
+                  <Clock className="w-5 h-5 text-accent-400" />
+                  <h3 className="font-semibold text-accent-400">What happens next?</h3>
                 </div>
                 <p className="text-gray-400 text-sm text-left">
                   We&apos;ll grant access to your TradingView account within 24 hours (usually much faster).

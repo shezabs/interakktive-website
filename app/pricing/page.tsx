@@ -18,7 +18,7 @@ export default function PricingPage() {
           <FadeIn>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Simple, Transparent{' '}
-              <span className="bg-gradient-to-r from-primary-400 to-amber-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
                 Pricing
               </span>
             </h1>
@@ -168,7 +168,7 @@ export default function PricingPage() {
           <FadeInView>
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
               What You Get with{' '}
-              <span className="bg-gradient-to-r from-primary-400 to-amber-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
                 ATLAS Pro
               </span>
             </h2>
@@ -229,7 +229,7 @@ export default function PricingPage() {
             </StaggerItem>
             <StaggerItem>
               <div className="text-center">
-                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-black">
+                <div className="w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-black">
                   2
                 </div>
                 <h3 className="font-semibold mb-2">Enter TradingView Username</h3>

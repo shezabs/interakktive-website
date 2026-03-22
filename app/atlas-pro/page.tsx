@@ -29,8 +29,8 @@ const indicatorMeta: Record<string, {
   'atlas-pulse-pro': {
     icon: <Activity className="w-10 h-10" />,
     role: 'Momentum Intelligence',
-    color: 'text-amber-400',
-    tagColor: 'bg-amber-400/10 text-amber-400 border-amber-400/20',
+    color: 'text-accent-400',
+    tagColor: 'bg-accent-400/10 text-accent-400 border-accent-400/20',
     highlight: '~1,304 lines · Dual oscillator · 6-component Pulse Score · Pure intelligence',
   },
   'atlas-radar-pro': {
@@ -53,7 +53,7 @@ export default function AtlasProPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
           <FadeIn>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-primary-400 via-amber-400 to-accent-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary-400 via-accent-400 to-accent-400 bg-clip-text text-transparent">
                 The ATLAS Suite
               </span>
             </h1>
@@ -217,7 +217,7 @@ export default function AtlasProPage() {
           <FadeInView>
             <h2 className="text-3xl font-bold mb-4">
               Ready to see the{' '}
-              <span className="bg-gradient-to-r from-primary-400 to-amber-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
                 full picture
               </span>
               ?
