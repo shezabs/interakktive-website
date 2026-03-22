@@ -128,6 +128,13 @@ export default function AtlasProPage() {
                           <ExternalLink className="w-4 h-4" />
                         </a>
                       )}
+                      <Link
+                        href={`/learn/atlas-pro/${indicator.id}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/10 hover:bg-primary-500/20 border border-primary-500/20 rounded-lg transition-all text-sm text-primary-400"
+                      >
+                        Read Documentation
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
                     </div>
 
                     {/* Description */}

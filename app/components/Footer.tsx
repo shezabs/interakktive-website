@@ -64,6 +64,21 @@ export default function Footer() {
             <h4 className="font-semibold text-white">Resources</h4>
             <ul className="space-y-2">
               <li>
+                <Link href="/learn" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Documentation
+                </Link>
+              </li>
+              <li>
+                <Link href="/learn/atlas-pro" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Pro Docs
+                </Link>
+              </li>
+              <li>
+                <Link href="/learn/free-indicators" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Free Indicator Docs
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="text-gray-400 hover:text-white text-sm transition-colors">
                   About
                 </Link>

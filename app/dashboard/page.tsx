@@ -288,7 +288,7 @@ export default function DashboardPage() {
             <div className="glass p-8 rounded-lg">
               <h2 className="text-2xl font-bold mb-4">Free Indicators</h2>
               <p className="text-gray-300 mb-6">
-                Access all 8 free indicators on TradingView. No approval needed.
+                Access all 9 free indicators on TradingView. No approval needed.
               </p>
               <Link
                 href="/indicators"

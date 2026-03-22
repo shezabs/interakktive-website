@@ -65,6 +65,9 @@ export default function Navigation() {
             <Link href="/indicators" className="text-gray-300 hover:text-white transition-colors">
               Free Indicators
             </Link>
+            <Link href="/learn" className="text-gray-300 hover:text-white transition-colors">
+              Docs
+            </Link>
             <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
               About
             </Link>
@@ -139,6 +142,13 @@ export default function Navigation() {
               onClick={() => setIsMenuOpen(false)}
             >
               Free Indicators
+            </Link>
+            <Link
+              href="/learn"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Docs
             </Link>
             <Link
               href="/about"
