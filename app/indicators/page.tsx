@@ -141,7 +141,7 @@ export default function IndicatorsPage() {
                   Want the Full Intelligence Stack?
                 </h2>
                 <p className="text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
-                  The ATLAS Pro suite adds signal intelligence, market structure, momentum analysis, and multi-ticker screening — all with plain English explanations.
+                  The ATLAS PRO suite adds signal intelligence, market structure, momentum analysis, and multi-ticker screening — all with plain English explanations.
                 </p>
                 <HoverScale className="inline-block">
                   <Link

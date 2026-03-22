@@ -84,7 +84,7 @@ export default function LearnPage() {
                     ATLAS PRO Suite
                   </h2>
                   <p className="text-gray-400 mb-4">
-                    Extensive documentation for the ATLAS Pro trading intelligence suite.
+                    Extensive documentation for the ATLAS PRO trading intelligence suite.
                     Every feature, every setting, every strategy — explained in detail.
                   </p>
                   <ul className="text-sm text-gray-500 space-y-1 mb-6 flex-1">

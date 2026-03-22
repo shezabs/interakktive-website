@@ -449,11 +449,11 @@ export const pricingTiers: PricingTier[] = [
   {
     id: 'single',
     name: 'Single Indicator',
-    description: 'Access to any one ATLAS Pro indicator of your choice.',
+    description: 'Access to any one ATLAS PRO indicator of your choice.',
     monthlyPrice: 50,
     annualPrice: 500,
     annualOriginalPrice: 600,
-    indicators: ['Any 1 ATLAS Pro indicator'],
+    indicators: ['Any 1 ATLAS PRO indicator'],
     features: [
       'Full indicator access with all features',
       'All future updates included',
@@ -464,11 +464,11 @@ export const pricingTiers: PricingTier[] = [
   {
     id: 'duo',
     name: 'Duo Pack',
-    description: 'Choose any two ATLAS Pro indicators.',
+    description: 'Choose any two ATLAS PRO indicators.',
     monthlyPrice: 75,
     annualPrice: 750,
     annualOriginalPrice: 900,
-    indicators: ['Any 2 ATLAS Pro indicators'],
+    indicators: ['Any 2 ATLAS PRO indicators'],
     features: [
       'Everything in Single, plus:',
       'Save vs buying individually',
@@ -478,15 +478,15 @@ export const pricingTiers: PricingTier[] = [
   },
   {
     id: 'suite',
-    name: 'ATLAS Pro Suite',
-    description: 'Complete access to the entire ATLAS Pro suite with all future updates.',
+    name: 'ATLAS PRO Suite',
+    description: 'Complete access to the entire ATLAS PRO suite with all future updates.',
     monthlyPrice: 100,
     annualPrice: 1000,
     annualOriginalPrice: 1200,
     indicators: ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'],
     features: [
       'Everything in Duo, plus:',
-      'All current ATLAS Pro indicators',
+      'All current ATLAS PRO indicators',
       'All future updates included',
       'Priority feature requests',
       'Early access to beta features',

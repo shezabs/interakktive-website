@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   metadataBase: new URL('https://interakktive.com'),
   title: {
-    default: 'Interakktive - Trading Intelligence You Can See | ATLAS Suite for TradingView',
+    default: 'Interakktive - Trading Intelligence You Can See | ATLAS PRO Suite',
     template: '%s | Interakktive'
   },
   description: 'The ATLAS suite: diagnostic trading indicators for TradingView that show you WHY, not just what. Signal intelligence, market structure, momentum analysis, and multi-ticker screening — all in plain English.',

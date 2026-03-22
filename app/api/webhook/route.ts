@@ -40,7 +40,7 @@ async function sendNotificationEmail(data: {
   //   to: process.env.ADMIN_EMAIL || 'shezab@interakktive.com',
   //   subject: `New Subscription: ${data.tradingViewUsername} — ${data.plan}`,
   //   html: `
-  //     <h2>New ATLAS Pro Subscription</h2>
+  //     <h2>New ATLAS PRO Subscription</h2>
   //     <p><strong>TradingView Username:</strong> ${data.tradingViewUsername}</p>
   //     <p><strong>Email:</strong> ${data.email}</p>
   //     <p><strong>Plan:</strong> ${data.plan} (${data.billing})</p>

@@ -3,8 +3,8 @@ import { ArrowLeft, ArrowRight, Crown, Crosshair, Eye, Activity, Radio } from 'l
 import { SectionWrapper, GradientDivider, FadeInView, StaggerContainer, StaggerItem, HoverScale } from '@/app/components/animations';
 
 export const metadata = {
-  title: 'ATLAS Pro Suite Documentation',
-  description: 'Complete documentation for the ATLAS Pro trading intelligence suite. CIPHER PRO, PHANTOM PRO, PULSE PRO, and RADAR PRO.',
+  title: 'ATLAS PRO Suite Documentation',
+  description: 'Complete documentation for the ATLAS PRO trading intelligence suite. CIPHER PRO, PHANTOM PRO, PULSE PRO, and RADAR PRO.',
 };
 
 const proIndicators = [
@@ -58,15 +58,15 @@ export default function AtlasProDocsPage() {
           <FadeInView>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent-500/10 border border-accent-500/20 rounded-full text-accent-400 text-sm mb-6">
               <Crown className="w-4 h-4" />
-              ATLAS Pro Documentation
+              ATLAS PRO Documentation
             </div>
           </FadeInView>
           <FadeInView delay={0.1}>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">ATLAS Pro Suite</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">ATLAS PRO Suite</h1>
           </FadeInView>
           <FadeInView delay={0.2}>
             <p className="text-xl text-gray-300 max-w-3xl">
-              Complete documentation for every ATLAS Pro indicator. Every feature, every setting, every strategy — explained in detail.
+              Complete documentation for every ATLAS PRO indicator. Every feature, every setting, every strategy — explained in detail.
             </p>
           </FadeInView>
         </div>
@@ -127,7 +127,7 @@ export default function AtlasProDocsPage() {
       <SectionWrapper variant="gradient" className="py-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <FadeInView>
-            <p className="text-gray-400 mb-4">Ready to get started with the ATLAS Pro suite?</p>
+            <p className="text-gray-400 mb-4">Ready to get started with the ATLAS PRO suite?</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/pricing" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all font-semibold">
                 View Pricing <ArrowRight className="w-4 h-4" />

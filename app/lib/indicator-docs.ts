@@ -3599,7 +3599,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
           <h3>Tip 2: ADR Exhaustion is Powerful for Mean Reversion</h3>
           <p>When ADR Used hits 80%+, statistically the day's range is nearly complete. This is one of the highest-probability mean reversion setups available. Combine with session VWAP as a target.</p>
 
-          <h3>Tip 3: Combine Sessions+ with ATLAS Pro Indicators</h3>
+          <h3>Tip 3: Combine Sessions+ with ATLAS PRO Indicators</h3>
           <p>Sessions+ is designed as the contextual layer for the ATLAS suite. CIPHER PRO fires a Long signal? Check Sessions+ for: Is the killzone active? Is the DNA bullish? Is ADR consumed? This context turns signals into informed decisions.</p>
 
           <h3>Tip 4: Flow Analysis Sets Pre-Session Bias</h3>

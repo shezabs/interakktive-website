@@ -285,14 +285,14 @@ export default function PricingPage() {
               },
               {
                 q: 'Can I switch which indicators I have access to?',
-                a: 'Duo plan subscribers can swap their indicator selection once per billing cycle. Single plan selections are locked for the billing period — upgrade to Duo or Suite if you want flexibility. ATLAS Pro Suite subscribers have access to the full suite, so no swapping needed.',
+                a: 'Duo plan subscribers can swap their indicator selection once per billing cycle. Single plan selections are locked for the billing period — upgrade to Duo or Suite if you want flexibility. ATLAS PRO Suite subscribers have access to the full suite, so no swapping needed.',
               },
               {
                 q: 'What happens if I cancel?',
                 a: 'Your access continues until the end of your current billing period. After that, TradingView access is revoked. You can re-subscribe at any time. All purchases are final — we do not offer refunds.',
               },
               {
-                q: 'What does the ATLAS Pro Suite include?',
+                q: 'What does the ATLAS PRO Suite include?',
                 a: 'The Suite gives you access to every indicator that is part of the ATLAS suite — currently CIPHER PRO, PHANTOM PRO, PULSE PRO, and RADAR PRO. As we add new indicators to the suite, you get access to those too, plus all future updates.',
               },
               {

@@ -96,7 +96,7 @@ export default function SignUpPage() {
         <div className="glass p-8 rounded-lg">
           <h1 className="text-3xl font-bold mb-2">Create Account</h1>
           <p className="text-gray-400 mb-8">
-            Sign up to get access to ATLAS Pro indicators on TradingView
+            Sign up to get access to ATLAS PRO indicators on TradingView
           </p>
 
           <form onSubmit={handleSignUp} className="space-y-6">

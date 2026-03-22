@@ -55,7 +55,7 @@ export default function AtlasProPage() {
           <FadeIn>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="bg-gradient-to-r from-primary-400 via-accent-400 to-accent-400 bg-clip-text text-transparent">
-                The ATLAS Suite
+                The ATLAS PRO Suite
               </span>
             </h1>
           </FadeIn>

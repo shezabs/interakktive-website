@@ -48,7 +48,7 @@ export default function ProIndicatorDocPage({ params }: { params: { slug: string
               className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8 group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Back to ATLAS Pro Documentation
+              Back to ATLAS PRO Documentation
             </Link>
           </FadeInView>
 
@@ -222,7 +222,7 @@ export default function ProIndicatorDocPage({ params }: { params: { slug: string
                 className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to all ATLAS Pro documentation
+                Back to all ATLAS PRO documentation
               </Link>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
                 <Link
