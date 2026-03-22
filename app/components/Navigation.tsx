@@ -56,17 +56,17 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
+            <Link href="/atlas-pro" className="text-gray-300 hover:text-white transition-colors">
+              ATLAS Suite
+            </Link>
+            <Link href="/pricing" className="text-gray-300 hover:text-white transition-colors">
+              Pricing
+            </Link>
             <Link href="/indicators" className="text-gray-300 hover:text-white transition-colors">
               Free Indicators
             </Link>
-            <Link href="/atlas-pro" className="text-gray-300 hover:text-white transition-colors">
-              ATLAS PRO
-            </Link>
             <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
               About
-            </Link>
-            <Link href="/learn" className="text-gray-300 hover:text-white transition-colors">
-              Learn
             </Link>
 
             {!loading && (
@@ -120,6 +120,20 @@ export default function Navigation() {
         {isMenuOpen && (
           <div className="md:hidden py-4 space-y-4">
             <Link
+              href="/atlas-pro"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              ATLAS Suite
+            </Link>
+            <Link
+              href="/pricing"
+              className="block text-gray-300 hover:text-white transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Pricing
+            </Link>
+            <Link
               href="/indicators"
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => setIsMenuOpen(false)}
@@ -127,25 +141,11 @@ export default function Navigation() {
               Free Indicators
             </Link>
             <Link
-              href="/atlas-pro"
-              className="block text-gray-300 hover:text-white transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              ATLAS PRO
-            </Link>
-            <Link
               href="/about"
               className="block text-gray-300 hover:text-white transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               About
-            </Link>
-            <Link
-              href="/learn"
-              className="block text-gray-300 hover:text-white transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Learn
             </Link>
 
             {!loading && (

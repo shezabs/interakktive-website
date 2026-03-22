@@ -33,7 +33,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-400 text-sm">
-              AI-powered trading indicators for the modern trader.
+              Intelligence You Can See.
             </p>
           </div>
 
@@ -42,13 +42,18 @@ export default function Footer() {
             <h4 className="font-semibold text-white">Products</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/indicators" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Free Indicators
+                <Link href="/atlas-pro" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  ATLAS Pro Suite
                 </Link>
               </li>
               <li>
-                <Link href="/atlas-pro" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  ATLAS PRO Suite
+                <Link href="/pricing" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link href="/indicators" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Free Indicators
                 </Link>
               </li>
             </ul>
@@ -124,7 +129,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-gray-400 text-sm">
-            © 2026 Shezab Mediaworx Ltd. All Rights Reserved.
+            © 2026 Interakktive Ltd. All Rights Reserved.
           </p>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">

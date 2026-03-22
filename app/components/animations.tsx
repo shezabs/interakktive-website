@@ -478,12 +478,14 @@ export function SectionWrapper({
   children,
   variant = 'default',
   className = '',
-  showDecoration = true
+  showDecoration = true,
+  id
 }: {
   children: ReactNode;
   variant?: 'default' | 'dark' | 'gradient';
   className?: string;
   showDecoration?: boolean;
+  id?: string;
 }) {
   const bgClasses = {
     default: 'bg-transparent',
@@ -492,7 +494,7 @@ export function SectionWrapper({
   };
 
   return (
-    <section className={`relative overflow-hidden ${bgClasses[variant]} ${className}`}>
+    <section id={id} className={`relative overflow-hidden ${bgClasses[variant]} ${className}`}>
       {/* Decorative corner elements */}
       {showDecoration && (
         <>

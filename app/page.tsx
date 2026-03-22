@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, TrendingUp, Zap, Brain, Shield } from 'lucide-react';
-import { getFreeIndicators } from './lib/indicators-data';
-import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, AnimatedBackground, AnimatedCounter, SectionWrapper, GradientDivider } from './components/animations';
+import { ArrowRight, Activity, Layers, Radio, Crosshair, Eye, BarChart3 } from 'lucide-react';
+import { getProIndicators, getFreeIndicators } from './lib/indicators-data';
+import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, AnimatedBackground, SectionWrapper, GradientDivider } from './components/animations';
 
 export default function HomePage() {
+  const proIndicators = getProIndicators();
   const freeIndicators = getFreeIndicators();
 
   return (
@@ -17,26 +18,31 @@ export default function HomePage() {
           <div className="text-center space-y-8">
             <FadeIn delay={0}>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold">
-                <span className="block bg-gradient-to-r from-primary-400 via-accent-400 to-primary-400 bg-clip-text text-transparent">
-                  AI-Powered Trading
+                <span className="block text-white">Trading Intelligence</span>
+                <span className="block bg-gradient-to-r from-primary-400 via-amber-400 to-accent-400 bg-clip-text text-transparent mt-2">
+                  You Can See
                 </span>
-                <span className="block text-white mt-2">Indicators</span>
               </h1>
             </FadeIn>
             <FadeIn delay={0.2}>
               <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto">
-                Advanced machine learning and AI-enabled indicators for TradingView.
-                Make smarter trading decisions with institutional-grade analytics.
+                The ATLAS suite tells you not just what to trade, but why. Diagnostic indicators for
+                TradingView that show signals, structure, momentum, and screening — all in plain English.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.3}>
+              <p className="text-base text-gray-500 max-w-2xl mx-auto">
+                5 published indicators &middot; 14,000+ lines of proprietary Pine Script &middot; Zero black-box signals
               </p>
             </FadeIn>
             <FadeIn delay={0.4}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <HoverScale>
                   <Link
-                    href="/indicators"
-                    className="px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-lg font-semibold flex items-center gap-2"
+                    href="/pricing"
+                    className="px-8 py-4 bg-gradient-to-r from-primary-400 to-primary-500 rounded-lg hover:from-primary-500 hover:to-primary-600 transition-all text-lg font-semibold flex items-center gap-2 text-white"
                   >
-                    Explore Free Indicators
+                    View Pricing
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                 </HoverScale>
@@ -45,7 +51,7 @@ export default function HomePage() {
                     href="/atlas-pro"
                     className="px-8 py-4 glass rounded-lg hover:bg-white/10 transition-all text-lg font-semibold"
                   >
-                    View ATLAS PRO
+                    Explore the Suite
                   </Link>
                 </HoverScale>
               </div>
@@ -56,55 +62,113 @@ export default function HomePage() {
 
       <GradientDivider />
 
-      {/* Features Grid */}
+      {/* The ATLAS Suite */}
       <SectionWrapper variant="dark" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <FadeInView>
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-              Why <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">Interakktive</span>?
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+              The <span className="bg-gradient-to-r from-primary-400 to-amber-400 bg-clip-text text-transparent">ATLAS</span> Suite
             </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Four dimensions of market intelligence. Each indicator is a specialist.
+              Together, they give you the complete picture.
+            </p>
           </FadeInView>
-          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {proIndicators.map((indicator) => {
+              const iconMap: Record<string, React.ReactNode> = {
+                'atlas-cipher-pro': <Crosshair className="w-8 h-8 text-primary-400" />,
+                'atlas-phantom-pro': <Eye className="w-8 h-8 text-accent-400" />,
+                'atlas-pulse-pro': <Activity className="w-8 h-8 text-amber-400" />,
+                'atlas-radar-pro': <Radio className="w-8 h-8 text-primary-400" />,
+              };
+              const roleMap: Record<string, string> = {
+                'atlas-cipher-pro': 'Signal Intelligence',
+                'atlas-phantom-pro': 'Structure Intelligence',
+                'atlas-pulse-pro': 'Momentum Intelligence',
+                'atlas-radar-pro': 'Screening Intelligence',
+              };
+              return (
+                <StaggerItem key={indicator.id}>
+                  <HoverScale scale={1.01}>
+                    <Link href={`/atlas-pro#${indicator.id}`} className="glass-card p-6 rounded-lg block h-full group">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0 mt-1">
+                          {iconMap[indicator.id]}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h3 className="text-xl font-bold group-hover:text-primary-400 transition-colors">
+                              {indicator.shortTitle}
+                            </h3>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-primary-400/10 text-primary-400 border border-primary-400/20">
+                              {roleMap[indicator.id]}
+                            </span>
+                          </div>
+                          <p className="text-gray-400 text-sm line-clamp-2 mb-3">
+                            {indicator.description}
+                          </p>
+                          <span className="text-primary-400 text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                            Learn more <ArrowRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </HoverScale>
+                </StaggerItem>
+              );
+            })}
+          </StaggerContainer>
+        </div>
+      </SectionWrapper>
+
+      <GradientDivider />
+
+      {/* Why ATLAS — Philosophy */}
+      <SectionWrapper variant="gradient" className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <FadeInView>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
+              We Show You <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">Why</span>, Not Just What
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Every ATLAS indicator explains its reasoning in plain English.
+              No raw numbers. No cryptic scores. Just clear intelligence.
+            </p>
+          </FadeInView>
+          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <StaggerItem>
               <HoverScale>
-                <div className="glass-card p-6 rounded-lg space-y-4 h-full">
-                  <Brain className="w-12 h-12 text-primary-400" />
-                  <h3 className="text-xl font-semibold">AI & ML Powered</h3>
-                  <p className="text-gray-400">
-                    Advanced algorithms analyze market conditions in real-time for smarter insights.
+                <div className="glass-card p-6 rounded-lg h-full">
+                  <Layers className="w-10 h-10 text-primary-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Diagnostic Transparency</h3>
+                  <p className="text-gray-400 text-sm">
+                    Every signal comes with a plain English explanation of why it fired,
+                    what confirmed it, and what could invalidate it. No black boxes.
                   </p>
                 </div>
               </HoverScale>
             </StaggerItem>
             <StaggerItem>
               <HoverScale>
-                <div className="glass-card p-6 rounded-lg space-y-4 h-full">
-                  <TrendingUp className="w-12 h-12 text-accent-400" />
-                  <h3 className="text-xl font-semibold">Regime Detection</h3>
-                  <p className="text-gray-400">
-                    Adapt your strategy based on current market conditions and volatility states.
+                <div className="glass-card p-6 rounded-lg h-full">
+                  <BarChart3 className="w-10 h-10 text-amber-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Ghost Performance&trade;</h3>
+                  <p className="text-gray-400 text-sm">
+                    Historical validation built into every indicator. See win rates,
+                    accuracy stats, and first-touch validation — not just the current signal.
                   </p>
                 </div>
               </HoverScale>
             </StaggerItem>
             <StaggerItem>
               <HoverScale>
-                <div className="glass-card p-6 rounded-lg space-y-4 h-full">
-                  <Zap className="w-12 h-12 text-primary-400" />
-                  <h3 className="text-xl font-semibold">Real-Time Signals</h3>
-                  <p className="text-gray-400">
-                    Get instant notifications for high-probability trading setups.
-                  </p>
-                </div>
-              </HoverScale>
-            </StaggerItem>
-            <StaggerItem>
-              <HoverScale>
-                <div className="glass-card p-6 rounded-lg space-y-4 h-full">
-                  <Shield className="w-12 h-12 text-accent-400" />
-                  <h3 className="text-xl font-semibold">Risk Management</h3>
-                  <p className="text-gray-400">
-                    Built-in risk assessment and position sizing recommendations.
+                <div className="glass-card p-6 rounded-lg h-full">
+                  <Activity className="w-10 h-10 text-accent-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Narrative Engine</h3>
+                  <p className="text-gray-400 text-sm">
+                    Every ATLAS indicator includes a Narrative Engine that translates
+                    complex analytics into sentences you can act on immediately.
                   </p>
                 </div>
               </HoverScale>
@@ -115,15 +179,16 @@ export default function HomePage() {
 
       <GradientDivider />
 
-      {/* Free Indicators Showcase */}
-      <SectionWrapper variant="gradient" className="py-20">
+      {/* Free Indicators */}
+      <SectionWrapper variant="dark" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <FadeInView className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Free Indicators
+              Free Diagnostic Tools
             </h2>
-            <p className="text-xl text-gray-300">
-              8 professional-grade indicators available now on TradingView
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+              {freeIndicators.length} open-source indicators on TradingView.
+              No signup, no paywall — add them to your charts right now.
             </p>
           </FadeInView>
           <StaggerContainer staggerDelay={0.08} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -134,18 +199,15 @@ export default function HomePage() {
                     href={`/indicators/${indicator.id}`}
                     className="glass-card p-6 rounded-lg transition-all group block h-full"
                   >
-                    <h3 className="text-xl font-semibold mb-3 group-hover:text-primary-400 transition-colors">
+                    <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-400 transition-colors">
                       {indicator.shortTitle}
                     </h3>
-                    <p className="text-gray-400 mb-4 line-clamp-3">
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                       {indicator.description}
                     </p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">
-                        <AnimatedCounter value={indicator.stats.favorites} /> favorites
-                      </span>
-                      <ArrowRight className="w-4 h-4 text-primary-400 group-hover:translate-x-1 transition-transform" />
-                    </div>
+                    <span className="text-primary-400 text-sm flex items-center gap-1">
+                      View on TradingView <ArrowRight className="w-3 h-3" />
+                    </span>
                   </Link>
                 </HoverScale>
               </StaggerItem>
@@ -165,31 +227,40 @@ export default function HomePage() {
 
       <GradientDivider />
 
-      {/* ATLAS PRO CTA */}
-      <SectionWrapper variant="dark" className="py-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/20 via-transparent to-accent-900/20 pointer-events-none" />
+      {/* CTA */}
+      <SectionWrapper variant="gradient" className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative">
           <FadeInView>
             <h2 className="text-3xl md:text-4xl font-bold">
-              Ready for <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">Pro-Level</span> Analytics?
+              Ready to see the <span className="bg-gradient-to-r from-primary-400 to-amber-400 bg-clip-text text-transparent">full picture</span>?
             </h2>
           </FadeInView>
           <FadeInView delay={0.1}>
             <p className="text-xl text-gray-300">
-              ATLAS PRO combines AI, machine learning, and multi-timeframe analysis into a comprehensive trading system.
-              Request early access to our invite-only indicators.
+              Join traders using the ATLAS suite to understand not just what to trade,
+              but why the setup exists, how strong it is, and what could break it.
             </p>
           </FadeInView>
           <FadeInView delay={0.2}>
-            <HoverScale className="inline-block">
-              <Link
-                href="/atlas-pro"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-lg font-semibold"
-              >
-                Explore ATLAS PRO
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-            </HoverScale>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <HoverScale className="inline-block">
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-400 to-primary-500 rounded-lg hover:from-primary-500 hover:to-primary-600 transition-all text-lg font-semibold text-white"
+                >
+                  View Pricing
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </HoverScale>
+              <HoverScale className="inline-block">
+                <Link
+                  href="/indicators"
+                  className="inline-flex items-center gap-2 px-8 py-4 glass rounded-lg hover:bg-white/10 transition-all text-lg font-semibold"
+                >
+                  Try Free Indicators First
+                </Link>
+              </HoverScale>
+            </div>
           </FadeInView>
         </div>
       </SectionWrapper>

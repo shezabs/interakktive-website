@@ -138,17 +138,17 @@ export default function IndicatorsPage() {
             <HoverScale scale={1.01}>
               <div className="text-center glass-card p-12 rounded-lg">
                 <h2 className="text-3xl font-bold mb-4">
-                  Want More Power?
+                  Want the Full Intelligence Stack?
                 </h2>
                 <p className="text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
-                  ATLAS PRO combines AI, ML, and multi-timeframe analysis for institutional-grade trading signals.
+                  The ATLAS Pro suite adds signal intelligence, market structure, momentum analysis, and multi-ticker screening — all with plain English explanations.
                 </p>
                 <HoverScale className="inline-block">
                   <Link
-                    href="/atlas-pro"
-                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-lg font-semibold"
+                    href="/pricing"
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-400 to-primary-500 rounded-lg hover:from-primary-500 hover:to-primary-600 transition-all text-lg font-semibold text-white"
                   >
-                    Explore ATLAS PRO
+                    View Pricing
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                 </HoverScale>

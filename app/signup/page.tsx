@@ -96,7 +96,7 @@ export default function SignUpPage() {
         <div className="glass p-8 rounded-lg">
           <h1 className="text-3xl font-bold mb-2">Create Account</h1>
           <p className="text-gray-400 mb-8">
-            Sign up to request access to ATLAS PRO indicators
+            Sign up to get access to ATLAS Pro indicators on TradingView
           </p>
 
           <form onSubmit={handleSignUp} className="space-y-6">
@@ -122,7 +122,7 @@ export default function SignUpPage() {
             {/* TradingView Username */}
             <div>
               <label htmlFor="tradingview" className="block text-sm font-medium mb-2">
-                TradingView Username <span className="text-gray-500">(optional)</span>
+                TradingView Username <span className="text-accent-400">*</span>
               </label>
               <div className="relative">
                 <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -131,8 +131,9 @@ export default function SignUpPage() {
                   type="text"
                   value={tradingViewUsername}
                   onChange={(e) => setTradingViewUsername(e.target.value)}
+                  required
                   className="w-full pl-10 pr-4 py-3 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors"
-                  placeholder="Your TradingView username"
+                  placeholder="Your TradingView username (required for access)"
                 />
               </div>
             </div>

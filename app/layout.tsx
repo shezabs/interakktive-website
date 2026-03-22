@@ -10,14 +10,14 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   metadataBase: new URL('https://interakktive.com'),
   title: {
-    default: 'Interakktive - AI-Powered Trading Indicators for TradingView',
+    default: 'Interakktive - Trading Intelligence You Can See | ATLAS Suite for TradingView',
     template: '%s | Interakktive'
   },
-  description: 'Advanced AI and machine learning-enabled trading indicators for TradingView. 8 free professional-grade indicators plus ATLAS PRO suite for institutional-quality analytics.',
-  keywords: ['trading indicators', 'TradingView', 'AI trading', 'machine learning trading', 'technical analysis', 'market analysis', 'ATLAS PRO', 'regime detection', 'risk management', 'trading signals'],
+  description: 'The ATLAS suite: diagnostic trading indicators for TradingView that show you WHY, not just what. Signal intelligence, market structure, momentum analysis, and multi-ticker screening — all in plain English.',
+  keywords: ['trading indicators', 'TradingView', 'ATLAS suite', 'smart money concepts', 'market structure', 'trading signals', 'momentum analysis', 'order blocks', 'Pine Script', 'diagnostic trading', 'Ghost Performance', 'narrative engine'],
   authors: [{ name: 'Interakktive' }],
   creator: 'Interakktive',
-  publisher: 'Interakktive',
+  publisher: 'Interakktive Ltd',
   robots: {
     index: true,
     follow: true,
@@ -34,13 +34,13 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://interakktive.com',
     siteName: 'Interakktive',
-    title: 'Interakktive - AI-Powered Trading Indicators for TradingView',
-    description: 'Advanced AI and machine learning-enabled trading indicators for TradingView. 8 free professional-grade indicators plus ATLAS PRO suite.',
+    title: 'Interakktive - Trading Intelligence You Can See',
+    description: 'The ATLAS suite: diagnostic trading indicators for TradingView. Signals, structure, momentum, and screening — all explained in plain English.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Interakktive - AI-Powered Trading Indicators',
-    description: 'Advanced AI and ML-enabled trading indicators for TradingView. Free and Pro indicators for technical analysis.',
+    title: 'Interakktive - Trading Intelligence You Can See',
+    description: 'The ATLAS suite for TradingView. We show you WHY, not just what.',
   },
   alternates: {
     canonical: 'https://interakktive.com',
