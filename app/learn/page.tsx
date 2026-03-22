@@ -40,11 +40,11 @@ export default function LearnPage() {
       {/* Documentation Categories */}
       <SectionWrapper variant="dark" className="py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             {/* Free Indicators */}
             <StaggerItem>
-              <Link href="/learn/free-indicators" className="block group">
-                <div className="glass-card p-8 rounded-xl h-full hover:border-primary-500/50 transition-all">
+              <Link href="/learn/free-indicators" className="block group h-full">
+                <div className="glass-card p-8 rounded-xl h-full hover:border-primary-500/50 transition-all flex flex-col">
                   <div className="w-14 h-14 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl flex items-center justify-center mb-6">
                     <Zap className="w-7 h-7 text-white" />
                   </div>
@@ -55,13 +55,14 @@ export default function LearnPage() {
                     Complete documentation for all 9 free professional-grade indicators.
                     Learn every setting, understand the calculations, and see practical examples.
                   </p>
-                  <ul className="text-sm text-gray-500 space-y-1 mb-6">
+                  <ul className="text-sm text-gray-500 space-y-1 mb-6 flex-1">
                     <li>• Market Acceptance Envelope</li>
                     <li>• Market State Intelligence</li>
                     <li>• Volatility State Index</li>
+                    <li>• Sessions+</li>
                     <li>• And 5 more...</li>
                   </ul>
-                  <span className="inline-flex items-center gap-2 text-primary-400 font-medium">
+                  <span className="inline-flex items-center gap-2 text-primary-400 font-medium mt-auto">
                     View Documentation
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -71,8 +72,8 @@ export default function LearnPage() {
 
             {/* ATLAS PRO */}
             <StaggerItem>
-              <Link href="/learn/atlas-pro" className="block group">
-                <div className="glass-card p-8 rounded-xl h-full hover:border-accent-500/50 transition-all relative overflow-hidden">
+              <Link href="/learn/atlas-pro" className="block group h-full">
+                <div className="glass-card p-8 rounded-xl h-full hover:border-accent-500/50 transition-all relative overflow-hidden flex flex-col">
                   <div className="absolute top-4 right-4 px-3 py-1 bg-accent-500/20 border border-accent-500/30 rounded-full text-accent-400 text-xs font-medium">
                     PRO
                   </div>
@@ -83,16 +84,17 @@ export default function LearnPage() {
                     ATLAS PRO Suite
                   </h2>
                   <p className="text-gray-400 mb-4">
-                    Advanced documentation for our AI/ML-enabled trading system.
-                    Master Ghost Performance, Adaptive Quality, Multi-Timeframe Confluence, and more.
+                    Extensive documentation for the ATLAS Pro trading intelligence suite.
+                    Every feature, every setting, every strategy — explained in detail.
                   </p>
-                  <ul className="text-sm text-gray-500 space-y-1 mb-6">
-                    <li>• ATLAS CIPHER PRO</li>
-                    <li>• Ghost Performance System</li>
-                    <li>• Risk Ribbon Analysis</li>
-                    <li>• Coming soon...</li>
+                  <ul className="text-sm text-gray-500 space-y-1 mb-6 flex-1">
+                    <li>• CIPHER PRO — Signal Intelligence</li>
+                    <li>• PHANTOM PRO — Structure Intelligence</li>
+                    <li>• PULSE PRO — Momentum Intelligence</li>
+                    <li>• RADAR PRO — Screening Intelligence</li>
+                    <li>• How-to guides &amp; strategies</li>
                   </ul>
-                  <span className="inline-flex items-center gap-2 text-accent-400 font-medium">
+                  <span className="inline-flex items-center gap-2 text-accent-400 font-medium mt-auto">
                     View Documentation
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>

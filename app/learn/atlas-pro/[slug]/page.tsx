@@ -65,24 +65,29 @@ export default function ProIndicatorDocPage({ params }: { params: { slug: string
           </FadeInView>
 
           <FadeInView delay={0.2}>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{doc.title}</h1>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-white to-gray-400 bg-clip-text text-transparent">
+              {doc.title}
+            </h1>
           </FadeInView>
 
           <FadeInView delay={0.3}>
-            <p className="text-lg text-gray-300 mb-6">{doc.subtitle}</p>
+            <p className="text-lg md:text-xl text-gray-300 leading-relaxed">
+              {doc.subtitle}
+            </p>
           </FadeInView>
 
           <FadeInView delay={0.4}>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">{doc.lines} lines</span>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <a
                 href={doc.tradingViewUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors text-sm"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all font-semibold shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40"
               >
-                View on TradingView <ExternalLink className="w-3 h-3" />
+                Open on TradingView
+                <ExternalLink className="w-4 h-4" />
               </a>
+              <span className="text-sm text-gray-500">{doc.lines} lines of Pine Script v6</span>
             </div>
           </FadeInView>
         </div>
@@ -91,101 +96,145 @@ export default function ProIndicatorDocPage({ params }: { params: { slug: string
       <GradientDivider />
 
       {/* Table of Contents */}
-      <SectionWrapper variant="dark" className="py-8">
+      <SectionWrapper variant="dark" className="py-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInView>
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Contents</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              {doc.sections.map((section) => (
-                <a
-                  key={section.id}
-                  href={`#${section.id}`}
-                  className="text-sm text-gray-400 hover:text-primary-400 transition-colors py-1"
-                >
-                  {section.title}
-                </a>
-              ))}
+            <div className="glass-card p-6 md:p-8 rounded-2xl border border-white/10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-accent-500/5 rounded-full blur-3xl" />
+
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+                <span className="w-8 h-8 bg-gradient-to-r from-accent-500 to-primary-500 rounded-lg flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 text-white" />
+                </span>
+                Table of Contents
+              </h2>
+              <nav className="grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10">
+                {doc.sections.map((section, idx) => (
+                  <a
+                    key={idx}
+                    href={`#${section.id}`}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-accent-500/30 transition-all group"
+                  >
+                    <span className="text-accent-400 group-hover:text-accent-300 transition-colors">
+                      {String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-gray-300 group-hover:text-white transition-colors">
+                      {section.title}
+                    </span>
+                  </a>
+                ))}
+              </nav>
             </div>
           </FadeInView>
         </div>
       </SectionWrapper>
 
+      {/* Documentation Sections */}
+      <SectionWrapper variant="dark" className="py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <StaggerContainer className="space-y-8">
+            {doc.sections.map((section, idx) => (
+              <StaggerItem key={idx}>
+                <section id={section.id} className="scroll-mt-28">
+                  <div className="glass-card rounded-2xl border border-white/10 overflow-hidden relative">
+                    {/* Section header with gradient */}
+                    <div className={`p-6 md:p-8 bg-gradient-to-r ${sectionColors[section.icon] || sectionColors.overview} bg-opacity-10 border-b border-white/10 relative`}>
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+                      <div className="relative flex items-center gap-4">
+                        <div className={`w-12 h-12 bg-gradient-to-r ${sectionColors[section.icon] || sectionColors.overview} rounded-xl flex items-center justify-center shadow-lg`}>
+                          <span className="text-white">
+                            {sectionIcons[section.icon] || sectionIcons.overview}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-xs text-gray-400 uppercase tracking-wider">
+                            Section {String(idx + 1).padStart(2, '0')}
+                          </span>
+                          <h2 className="text-2xl md:text-3xl font-bold text-white">
+                            {section.title}
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Section content */}
+                    <div className="p-6 md:p-8">
+                      <div
+                        className="doc-content"
+                        dangerouslySetInnerHTML={{ __html: section.content }}
+                      />
+                    </div>
+                  </div>
+                </section>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </div>
+      </SectionWrapper>
+
       <GradientDivider />
 
-      {/* Documentation Sections */}
-      {doc.sections.map((section, index) => (
-        <div key={section.id}>
-          <SectionWrapper variant={index % 2 === 0 ? 'dark' : 'gradient'} className="py-12">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <FadeInView>
-                <div className="flex items-start gap-4 mb-8" id={section.id}>
-                  <div className={`flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-r ${sectionColors[section.icon] || 'from-gray-500 to-gray-600'} flex items-center justify-center text-white`}>
-                    {sectionIcons[section.icon] || <BookOpen className="w-6 h-6" />}
+      {/* Navigation */}
+      <SectionWrapper variant="gradient" className="py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeInView>
+            <div className="flex flex-col sm:flex-row justify-between gap-4 mb-12">
+              {doc.prevIndicator ? (
+                <Link
+                  href={`/learn/atlas-pro/${doc.prevIndicator.slug}`}
+                  className="glass-card p-5 rounded-xl flex items-center gap-4 hover:border-accent-500/50 transition-all group flex-1"
+                >
+                  <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-accent-500/20 transition-colors">
+                    <ArrowLeft className="w-5 h-5 text-gray-400 group-hover:text-accent-400 group-hover:-translate-x-1 transition-all" />
                   </div>
                   <div>
-                    <h2 className="text-2xl md:text-3xl font-bold">{section.title}</h2>
-                    <p className="text-sm text-gray-500 mt-1">Section {index + 1} of {doc.sections.length}</p>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">Previous</div>
+                    <div className="font-medium text-gray-300 group-hover:text-white transition-colors">
+                      {doc.prevIndicator.title}
+                    </div>
                   </div>
-                </div>
-              </FadeInView>
+                </Link>
+              ) : <div className="flex-1" />}
 
-              <FadeInView delay={0.1}>
-                <div
-                  className="prose prose-invert prose-lg max-w-none
-                    prose-headings:text-white prose-headings:font-semibold
-                    prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-                    prose-h4:text-lg prose-h4:text-gray-300 prose-h4:mt-6 prose-h4:mb-2
-                    prose-p:text-gray-300 prose-p:leading-relaxed
-                    prose-li:text-gray-300
-                    prose-strong:text-white
-                    prose-em:text-gray-200
-                    prose-code:text-primary-400 prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                    prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg
-                    prose-ul:space-y-1
-                    prose-ol:space-y-1"
-                  dangerouslySetInnerHTML={{ __html: section.content }}
-                />
-              </FadeInView>
+              {doc.nextIndicator ? (
+                <Link
+                  href={`/learn/atlas-pro/${doc.nextIndicator.slug}`}
+                  className="glass-card p-5 rounded-xl flex items-center gap-4 hover:border-accent-500/50 transition-all group flex-1 justify-end text-right"
+                >
+                  <div>
+                    <div className="text-xs text-gray-500 uppercase tracking-wider">Next</div>
+                    <div className="font-medium text-gray-300 group-hover:text-white transition-colors">
+                      {doc.nextIndicator.title}
+                    </div>
+                  </div>
+                  <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-accent-500/20 transition-colors">
+                    <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-accent-400 group-hover:translate-x-1 transition-all" />
+                  </div>
+                </Link>
+              ) : <div className="flex-1" />}
             </div>
-          </SectionWrapper>
-          <GradientDivider />
-        </div>
-      ))}
+          </FadeInView>
 
-      {/* Navigation */}
-      <SectionWrapper variant="dark" className="py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            {doc.prevIndicator ? (
+          <FadeInView delay={0.1}>
+            <div className="text-center space-y-4">
               <Link
-                href={`/learn/atlas-pro/${doc.prevIndicator.slug}`}
-                className="group flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
+                href="/learn/atlas-pro"
+                className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
               >
-                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-                <div>
-                  <p className="text-xs text-gray-500">Previous</p>
-                  <p className="font-medium">{doc.prevIndicator.title}</p>
-                </div>
+                <ArrowLeft className="w-4 h-4" />
+                Back to all ATLAS Pro documentation
               </Link>
-            ) : (
-              <div />
-            )}
-
-            {doc.nextIndicator ? (
-              <Link
-                href={`/learn/atlas-pro/${doc.nextIndicator.slug}`}
-                className="group flex items-center gap-3 text-gray-400 hover:text-white transition-colors text-right"
-              >
-                <div>
-                  <p className="text-xs text-gray-500">Next</p>
-                  <p className="font-medium">{doc.nextIndicator.title}</p>
-                </div>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            ) : (
-              <div />
-            )}
-          </div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+                <Link
+                  href="/pricing"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all font-semibold"
+                >
+                  View Pricing
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </FadeInView>
         </div>
       </SectionWrapper>
     </div>
