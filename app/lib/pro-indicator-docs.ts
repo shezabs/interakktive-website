@@ -444,7 +444,396 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
     nextIndicator: { slug: 'atlas-phantom-pro', title: 'Atlas Phantom Pro' },
   },
 
-  // PHANTOM PRO, PULSE PRO, RADAR PRO — to be added in follow-up sessions
+  'atlas-phantom-pro': {
+    title: 'Atlas Phantom Pro',
+    subtitle: 'Structure Intelligence — the institutional footprint engine. Dual-layer market structure (BOS/CHoCH), Three-Eye Order Blocks with Zone DNA grading, Fair Value Gaps, Liquidity detection, Institutional Levels with sweep lifecycle, Smart Money Sequence, and a Narrative Engine that reads the market in plain English.',
+    tradingViewUrl: 'https://www.tradingview.com/script/fMZJJ8FQ/',
+    role: 'Structure Intelligence',
+    lines: '~4,563',
+    sections: [
+      {
+        id: 'overview',
+        title: 'Overview',
+        icon: 'overview',
+        content: `
+          <p><strong>Atlas Phantom Pro</strong> is the structure intelligence engine of the ATLAS suite. It maps the institutional footprint — order blocks, structure breaks, liquidity pools, fair value gaps, and institutional levels — then synthesises everything into plain English intelligence via the Narrative Engine.</p>
+
+          <h3>What PHANTOM PRO Does</h3>
+          <p>PHANTOM PRO answers the structural question: <em>Where are institutions positioned, what structure has formed, and where is the market likely to move next?</em></p>
+          <ul>
+            <li><strong>Dual-Layer Market Structure</strong> — Internal (short-term, 3-bar lookback) and Swing (long-term, 14-bar lookback) structure detected simultaneously. BOS, CHoCH, CHoCH+, and CHoCH- events classified with 4-factor strength scoring.</li>
+            <li><strong>Three-Eye Order Blocks</strong> — Zones graded by Zone DNA (5-factor A+ to D scoring) with lifecycle tracking (Fresh → Tested → Weak → Critical → Broken → Breaker). POC line shows the actual institutional entry level.</li>
+            <li><strong>Fair Value Gaps</strong> — Standard FVG and Inverse FVG (IFVG) detection with fill probability, ETA estimation, and CE (Consequent Encroachment) midpoint lines.</li>
+            <li><strong>Liquidity Engine</strong> — Equal Highs/Lows, Liquidity Grabs, and diagonal BSL/SSL trendlines with sweep detection.</li>
+            <li><strong>Institutional Levels™</strong> — Previous Day/Week/Month/Quarter highs and lows with live status lifecycle: Untested → Approaching → Testing → Swept.</li>
+            <li><strong>Narrative Engine™</strong> — Synthesises all signals into a 3-line plain English market read. No numbers, no codes — just clear intelligence.</li>
+          </ul>
+
+          <h3>Architecture</h3>
+          <p>PHANTOM PRO is built across 7 phases and 23 features, unified by the ZoneState schema — a single source of truth for every zone's grade, status, and priority:</p>
+          <ul>
+            <li><strong>Phase 1</strong> — Foundation (constants, inputs, UDTs, global variables)</li>
+            <li><strong>Phase 2</strong> — Structure Engine + Structural Flow (dual-layer swing detection, BOS/CHoCH classification, strength scoring, structure grade)</li>
+            <li><strong>Phase 3</strong> — Order Block Detection (Three-Eye system)</li>
+            <li><strong>Phase 4</strong> — Zone Intelligence (Zone DNA grading, lifecycle, mitigation, trap detection)</li>
+            <li><strong>Phase 5</strong> — Order Block Visualisation</li>
+            <li><strong>Phase 6</strong> — FVG Engine, Liquidity Engine, Confluence Kill Zones</li>
+            <li><strong>Phase 7</strong> — Intelligence Layer (Narrative Engine, Command Center, Ghost Performance, Alerts)</li>
+          </ul>
+
+          <h3>Key Properties</h3>
+          <ul>
+            <li><strong>~4,563 lines</strong> of Pine Script v6</li>
+            <li><strong>17 alert events</strong> via JSON payloads (use "Any alert() function call" in TradingView)</li>
+            <li><strong>9 request.security() calls</strong> — HTF confluence + 4-TF MTF Panel + Institutional Levels</li>
+            <li><strong>Non-repainting</strong> structure detection</li>
+            <li><strong>Asset-adaptive</strong> — age decay, sensitivity, and swing detection adjust per asset class and timeframe</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'market-structure',
+        title: 'Market Structure Engine',
+        icon: 'trading',
+        content: `
+          <h3>Dual-Layer Detection</h3>
+          <p>PHANTOM PRO runs two independent structure layers simultaneously:</p>
+          <ul>
+            <li><strong>Internal Layer</strong> — Short-term swings (default 3-bar lookback). Catches every minor structure shift. Best for scalping and intraday entries.</li>
+            <li><strong>Swing Layer</strong> — Long-term swings (default 14-bar lookback). Captures major structural shifts. Best for swing trading and position context.</li>
+          </ul>
+
+          <h3>Structure Break Types</h3>
+          <ul>
+            <li><strong>BOS (Break of Structure)</strong> — Continuation. Price breaks a swing high in an uptrend or swing low in a downtrend. Confirms the current trend is intact.</li>
+            <li><strong>CHoCH (Change of Character)</strong> — First signal of potential reversal. Price breaks the opposite side — a swing low in an uptrend or swing high in a downtrend.</li>
+            <li><strong>CHoCH+</strong> — Strong reversal. CHoCH with above-average strength score (volume + momentum + wick + displacement all aligned).</li>
+            <li><strong>CHoCH-</strong> — Weak reversal. CHoCH with below-average strength. May be a false break rather than a real reversal.</li>
+          </ul>
+
+          <h3>4-Factor Strength Scoring (0-100)</h3>
+          <p>Every structure break is scored on four independent factors:</p>
+          <ul>
+            <li><strong>Volume (30%)</strong> — Was the break bar backed by institutional volume?</li>
+            <li><strong>Momentum (30%)</strong> — Was the break impulsive or gradual?</li>
+            <li><strong>Wick Rejection (20%)</strong> — Did the bar close near its extreme (strong) or show a large rejection wick (weak)?</li>
+            <li><strong>Displacement (20%)</strong> — How far did price travel past the broken level?</li>
+          </ul>
+
+          <h3>Structure Grade (A+ to F)</h3>
+          <p>The overall structural quality, factoring in trend consistency, swing health, and break quality. A/B grades = trade confidently. D/F grades = reduce size or wait.</p>
+
+          <h3>Structural Flow</h3>
+          <p>A visual line encoding trend health through line width and style. Wider + solid = strong structure. Thin + dashed = deteriorating. Auto mode adapts width from break strength.</p>
+
+          <h3>Cross-Layer Divergence</h3>
+          <p>Compares internal and swing layer directions:</p>
+          <ul>
+            <li><strong>ALIGNED</strong> — Both layers agree. Highest conviction.</li>
+            <li><strong>INT LEADING</strong> — Internal has shifted but swing hasn't. Early warning.</li>
+            <li><strong>DIVERGED</strong> — Layers in opposite directions. Caution zone.</li>
+          </ul>
+
+          <h3>Swing Projection</h3>
+          <p>Price targets from recent swings using three methods: Average (mean swing size), Fibonacci (1.0/1.272/1.618 extensions), or ATR (1.5/2.0/3.0× multiples). Confidence adjusts with grade and trend strength.</p>
+
+          <h3>Shift Risk</h3>
+          <p>A 0-100 probability score for trend reversal based on failed swings, diverging layers, compression, and momentum decay. When Shift Risk exceeds the threshold, the chart background tints amber as a visual warning.</p>
+        `,
+      },
+      {
+        id: 'order-blocks',
+        title: 'Order Blocks & Zone DNA',
+        icon: 'concept',
+        content: `
+          <h3>Three-Eye Detection</h3>
+          <p>Every Order Block is evaluated on three criteria (the "Three Eyes"):</p>
+          <ul>
+            <li><strong>Eye 1: Structure</strong> — Is the OB anchored to a structure break (BOS/CHoCH)?</li>
+            <li><strong>Eye 2: Displacement</strong> — Did price leave the zone with an impulsive candle?</li>
+            <li><strong>Eye 3: Volume</strong> — Is there a volume imbalance confirming institutional activity?</li>
+          </ul>
+          <p>One-Eye zones are weak. Two-Eye zones are tradeable. Three-Eye zones are the highest conviction.</p>
+
+          <h3>Zone DNA Grading (A+ to D)</h3>
+          <p>The ZoneState schema provides a single source of truth for every zone. The base grade is calculated from 5 factors, then modified by real-time events:</p>
+          <ul>
+            <li><strong>Base grade (0-100)</strong> — Eye count, displacement quality, volume imbalance, session context, birth context</li>
+            <li><strong>Trap boost (+15)</strong> — Price returned to zone and rejected (institutional re-entry confirmed)</li>
+            <li><strong>CKZ membership (+8)</strong> — Zone overlaps with a Confluence Kill Zone</li>
+            <li><strong>Reaction boost (+5)</strong> — Currently reacting to the zone</li>
+            <li><strong>Test penalty (-8 per test)</strong> — Cumulative degradation from repeated touches</li>
+            <li><strong>Age decay</strong> — Half-life degradation, asset-adaptive (crypto decays faster than stocks)</li>
+            <li><strong>Breaker penalty (-20)</strong> — If the zone has been broken and flipped</li>
+          </ul>
+
+          <h3>Zone Lifecycle</h3>
+          <p>Every zone progresses through a one-directional lifecycle:</p>
+          <p><strong>Fresh</strong> → <strong>Tested</strong> (1 touch) → <strong>Weak</strong> (2 touches) → <strong>Critical</strong> (3 touches) → <strong>Broken</strong> (price closes through) → <strong>Breaker</strong> (broken zone that may flip as new S/R)</p>
+
+          <h3>POC vs Midpoint</h3>
+          <ul>
+            <li><strong>POC Line</strong> — Volume-weighted Point of Control inside the zone. The actual price level where institutional orders concentrated. More accurate than midpoint.</li>
+            <li><strong>Mid-Line</strong> — Geometric 50% of the zone. Standard reference level.</li>
+          </ul>
+
+          <h3>Power Balance Bar</h3>
+          <p>Visual bar inside each zone showing the bull/bear volume split. If the bullish OB has 70% bull volume and 30% bear volume, the Power Balance Bar visually represents that dominance.</p>
+
+          <h3>Ghost Performance™</h3>
+          <p>Historical validation tracking how often OB zones were respected (first-touch-only counting via ghost_counted flag). Shows React rate, first-touch success, and grade distribution in the Command Center.</p>
+        `,
+      },
+      {
+        id: 'fvg-liquidity',
+        title: 'FVGs, Liquidity & Institutional Levels',
+        icon: 'interpretation',
+        content: `
+          <h3>Fair Value Gaps</h3>
+          <p>Three-candle imbalance detection with two modes:</p>
+          <ul>
+            <li><strong>FVG</strong> — Standard Fair Value Gaps. Bullish FVG = gap between bar[0] low and bar[2] high (demand imbalance).</li>
+            <li><strong>IFVG</strong> — Inverse FVG. Direction-inverted gaps where a bearish gap becomes a bullish demand zone (and vice versa). More advanced ICT concept.</li>
+          </ul>
+          <p>Each FVG includes fill probability (based on size, age, distance, trend alignment), estimated bars until fill (ETA), and a CE (Consequent Encroachment) midpoint line.</p>
+
+          <h3>Liquidity Engine</h3>
+          <ul>
+            <li><strong>Equal Highs/Lows</strong> — Clusters of swing highs or lows at similar prices, indicating resting orders. Short-Term (3-touch) or Medium-Term (5+ touch) clusters.</li>
+            <li><strong>Liquidity Grabs</strong> — Classifies sweeps as grabs (wick through + close back inside = institutional collection) vs breaks (close through = real breakout).</li>
+            <li><strong>BSL/SSL Trendlines</strong> — Diagonal trendlines connecting swing highs (Buy-Side Liquidity) and swing lows (Sell-Side Liquidity). Sweeps detected on close through the projected line.</li>
+          </ul>
+
+          <h3>Liquidity Field™</h3>
+          <p>Heatmap bands at BSL and SSL levels. Magenta band above = buyside stops. Teal band below = sellside stops. Thickness and opacity scale with sweep probability — thicker/darker = higher probability of sweep.</p>
+
+          <h3>Institutional Levels™</h3>
+          <p>Previous period highs and lows with a live status lifecycle:</p>
+          <ul>
+            <li><strong>Untested</strong> — Level exists but hasn't been approached</li>
+            <li><strong>Approaching</strong> — Price is moving toward the level</li>
+            <li><strong>Testing</strong> — Price is at the level</li>
+            <li><strong>Swept</strong> — Level has been taken out</li>
+          </ul>
+          <p>Available periods: Daily (PDH/PDL), Weekly (PWH/PWL), Monthly (PMH/PML), Quarterly (PQH/PQL). Each toggled independently.</p>
+
+          <h3>Confluence Kill Zones (CKZ)</h3>
+          <p>Automatically highlights zones where Order Blocks overlap with FVGs or liquidity levels. These are the highest-probability zones on the chart — two or more institutional concepts converging at the same price.</p>
+        `,
+      },
+      {
+        id: 'narrative-engine',
+        title: 'Narrative Engine & Command Center',
+        icon: 'concept',
+        content: `
+          <h3>Narrative Engine™</h3>
+          <p>The Narrative Engine synthesises all PHANTOM signals into a 3-line plain English market read, displayed as a table on the chart. No raw numbers, no cryptic codes — just clear intelligence.</p>
+          <p>The three lines are:</p>
+          <ul>
+            <li><strong>Line 1: Structural Narrative</strong> — The overall market state: "STRONG UPTREND · healthy pulse · low risk · all layers aligned" or "REVERSAL WARNING ▼ · bearish multiple warnings · high risk · grade deteriorating"</li>
+            <li><strong>Line 2: Zone Intelligence</strong> — What the OBs, FVGs, and liquidity are saying: current bias direction, active zone count, nearest zones</li>
+            <li><strong>Line 3: Action Detail</strong> — Specific context: recent structure events, zone reactions, Smart Money Sequence stage</li>
+          </ul>
+
+          <h3>Narrative States</h3>
+          <p>The engine classifies the market into one of several narrative states, each with its own color and guidance:</p>
+          <ul>
+            <li><strong>STRONG UPTREND / DOWNTREND</strong> — High pulse, low shift risk, layers aligned. Trade with the trend.</li>
+            <li><strong>WEAK UPTREND / DOWNTREND</strong> — Layers diverging, risk rising, or losing steam. Tighten stops.</li>
+            <li><strong>REVERSAL WARNING</strong> — Multiple warning signals firing. Failed swings, diverging layers, high shift risk. Prepare for direction change.</li>
+            <li><strong>BREAKOUT PENDING</strong> — Ranging market with EMAs compressed. Watch for direction.</li>
+            <li><strong>VOLATILE MARKET</strong> — Rapid expansion detected. Trade with caution.</li>
+            <li><strong>CHOPPY / RANGING</strong> — No directional conviction. Consider waiting.</li>
+          </ul>
+
+          <h3>Command Center</h3>
+          <p>Two modes:</p>
+          <ul>
+            <li><strong>Compact</strong> — Zone counts + Bias + Action recommendation only</li>
+            <li><strong>Full</strong> — Adds engine sub-scores (Zone Bias, Gap Bias, Liquidity Pull, Value Zone, Sweep Flow), Ghost™ performance metrics, and structure intelligence rows</li>
+          </ul>
+
+          <h3>Smart Money Sequence™</h3>
+          <p>Detects the 5-step ICT institutional playbook: (1) Accumulation/Distribution → (2) Manipulation/Spring → (3) Expansion → (4) Re-accumulation → (5) Distribution. Alerts fire on sequence completion.</p>
+        `,
+      },
+      {
+        id: 'settings',
+        title: 'Input Settings',
+        icon: 'settings',
+        content: `
+          <h3>Detection Settings</h3>
+          <ul>
+            <li><strong>Master Sensitivity</strong> (1-10, default: 5) — Controls break threshold, OB displacement/volume requirements, and sweep distance. 1=strict (fewer but stronger signals), 10=loose (more setups).</li>
+            <li><strong>ATR Period</strong> (default: 14) — For zone sizing, grading, displacement, and offsets.</li>
+            <li><strong>Auto-Adapt to Timeframe</strong> (default: ON) — Adjusts swing lookback by chart timeframe. Scalp (≤15m): tighter. Position (Daily+): wider.</li>
+          </ul>
+
+          <h3>Market Structure</h3>
+          <ul>
+            <li><strong>Internal / Swing Mode</strong> — All, BOS, CHoCH, CHoCH+, or None. Filter which structure events to display per layer.</li>
+            <li><strong>Internal / Swing Lookback</strong> — Bars left/right for swing detection. Internal default: 3. Swing default: 14.</li>
+            <li><strong>Structure Grade</strong> (default: ON) — A+ to F quality grade shown in Narrative and Command Center.</li>
+            <li><strong>Swing Projection</strong> — Average, Fibonacci, or ATR-based price targets from recent swings.</li>
+            <li><strong>HTF Confluence / 4-TF Panel</strong> — Multi-timeframe structure alignment.</li>
+          </ul>
+
+          <h3>Order Blocks</h3>
+          <ul>
+            <li><strong>Show Last</strong> (default: 5) — Number of most recent active OBs to display.</li>
+            <li><strong>Breakers</strong> (default: ON, 1-3) — Show broken zones that flipped.</li>
+            <li><strong>Mitigation Method</strong> — Close, Wick, or Average.</li>
+            <li><strong>Zone Style</strong> — Extended (to chart edge) or Compact (fixed width).</li>
+            <li><strong>Detail Level</strong> — Minimal (grade+direction), Clean (status+tests), Full (adds eyes+context).</li>
+            <li><strong>POC Line / Mid-Line / Extension Line</strong> — Toggle individual zone reference lines.</li>
+          </ul>
+
+          <h3>Fair Value Gaps</h3>
+          <ul>
+            <li><strong>FVG Type</strong> — FVG (standard) or IFVG (inverse direction).</li>
+            <li><strong>Volatility Threshold</strong> (default: 0) — Minimum gap size in ATR multiples.</li>
+            <li><strong>Fill Probability / Fill ETA</strong> — Estimated chance and timing of gap fill.</li>
+          </ul>
+
+          <h3>Liquidity</h3>
+          <ul>
+            <li><strong>Equal H&L</strong> — Short-Term (3-touch) or Medium-Term (5+ touch).</li>
+            <li><strong>Liquidity Grabs</strong> — Classify sweeps as grabs vs breaks.</li>
+            <li><strong>Liquidity Trendlines</strong> — Diagonal BSL/SSL from Internal or Swing layer.</li>
+          </ul>
+
+          <h3>Narrative & Command Center</h3>
+          <ul>
+            <li><strong>Narrative Engine™</strong> (default: ON) — Plain English market read.</li>
+            <li><strong>Command Center</strong> — Compact or Full mode. Position, size, and optional Ghost™ performance and engine score rows.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'alerts',
+        title: 'Alert System',
+        icon: 'settings',
+        content: `
+          <p>PHANTOM PRO uses <code>alert()</code> with JSON payloads. In TradingView, set your alert to <strong>"Any alert() function call"</strong> to receive all events.</p>
+
+          <h3>Structure Events</h3>
+          <ul>
+            <li><strong>BOS_BULL / BOS_BEAR</strong> — Break of Structure (continuation)</li>
+            <li><strong>CHOCH_BULL / CHOCH_BEAR</strong> — Change of Character (reversal signal)</li>
+            <li><strong>REVERSAL</strong> — Any CHoCH event (shortcut for reversal alerts)</li>
+          </ul>
+
+          <h3>Zone Events</h3>
+          <ul>
+            <li><strong>OB_NEW</strong> — New Order Block formed</li>
+            <li><strong>OB_TEST</strong> — Order Block tested (price touched zone)</li>
+            <li><strong>OB_BREAK</strong> — Order Block broken (zone invalidated)</li>
+            <li><strong>FVG_NEW</strong> — New Fair Value Gap detected</li>
+            <li><strong>FVG_FILL</strong> — Fair Value Gap filled</li>
+            <li><strong>TRAP</strong> — Price trapped inside an OB zone (institutional re-entry)</li>
+          </ul>
+
+          <h3>Liquidity Events</h3>
+          <ul>
+            <li><strong>LIQ_SWEEP</strong> — Liquidity sweep detected</li>
+            <li><strong>CKZ</strong> — Confluence Kill Zone formed (OB + FVG/Liquidity overlap)</li>
+          </ul>
+
+          <h3>Intelligence Events</h3>
+          <ul>
+            <li><strong>SMS_COMPLETE</strong> — Smart Money Sequence completed</li>
+            <li><strong>PATTERN</strong> — ICT/SMC pattern detected (Accumulation, Distribution, Spring, Upthrust)</li>
+            <li><strong>BIAS_FLIP</strong> — Institutional bias flipped (includes direction and score)</li>
+            <li><strong>SHIFT_RISK_HIGH</strong> — Shift Risk exceeded 70% (reversal warning)</li>
+          </ul>
+
+          <h3>JSON Payload Format</h3>
+          <p>Every alert includes: <code>{"event":"TYPE","dir":"BULL/BEAR","price":12345.67,"sym":"BTCUSD"}</code></p>
+          <p>This format is designed for webhook integration — pipe directly to Discord, Telegram, or custom trading systems.</p>
+        `,
+      },
+      {
+        id: 'how-to',
+        title: 'How To Use PHANTOM PRO',
+        icon: 'usage',
+        content: `
+          <h3>Getting Started</h3>
+          <ol>
+            <li>Add PHANTOM PRO to your chart</li>
+            <li>Enable the Narrative Engine (ON by default) — it will immediately tell you the market state in plain English</li>
+            <li>Order Blocks are ON by default — watch for zones forming after structure breaks</li>
+            <li>Enable FVGs and Liquidity as needed for additional context</li>
+          </ol>
+
+          <h3>Reading the Chart</h3>
+          <ul>
+            <li><strong>Teal zones = demand (bullish OBs)</strong> — expect price to bounce UP from these</li>
+            <li><strong>Magenta zones = supply (bearish OBs)</strong> — expect price to bounce DOWN from these</li>
+            <li><strong>Zone grade (A+ to D)</strong> — higher grade = higher probability of reaction</li>
+            <li><strong>Zone lifecycle</strong> — Fresh zones react best. Tested/Weak zones are less reliable. Critical zones are likely to break.</li>
+            <li><strong>Three Eyes indicator</strong> — Look for 2-3 Eye zones for highest conviction</li>
+          </ul>
+
+          <h3>Trading Order Block Reactions</h3>
+          <ol>
+            <li>Identify a high-grade (A/B) demand or supply zone</li>
+            <li>Wait for price to return to the zone (first test is strongest)</li>
+            <li>Look for a rejection candle or CHoCH at the zone</li>
+            <li>Enter with SL beyond the zone, TP at the next opposing zone or structure level</li>
+          </ol>
+
+          <h3>Combining with CIPHER PRO</h3>
+          <ul>
+            <li><strong>CIPHER fires Long</strong> → Check PHANTOM: Is price at a demand OB? Is structure bullish (BOS confirmed)? Is the zone A or B grade? If all three: high-conviction trade.</li>
+            <li><strong>PHANTOM shows CHoCH+</strong> → Check CIPHER: Did a TS (Tension Snap) fire? Is the ribbon crossing? If so: confirmed reversal, enter early.</li>
+            <li><strong>CKZ highlighted</strong> → This is the highest-probability zone. Wait for any signal (CIPHER PX/TS or PHANTOM CHoCH) at this zone for maximum confluence.</li>
+          </ul>
+
+          <h3>What NOT to Do</h3>
+          <ul>
+            <li>Don't trade every OB — focus on A/B grade, Fresh/Tested status, 2-3 Eye zones</li>
+            <li>Don't ignore the Narrative Engine — it synthesises everything for you</li>
+            <li>Don't fight a CHoCH+ with high Shift Risk — the structure is changing</li>
+            <li>Don't use PHANTOM on very low timeframes (1m) with high swing lookbacks — the structure becomes noise</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Three-Eye Zones are Rare — Trade Them</h3>
+          <p>A Three-Eye OB (structure + displacement + volume) appears maybe a few times per day. When one forms at an A+ or A grade, it is the single highest-probability zone on your chart. Set alerts for OB_NEW and check the eye count.</p>
+
+          <h3>Tip 2: Fresh Zones React Best</h3>
+          <p>The first touch of a zone has the highest probability of reaction. Each subsequent test degrades the zone (-8 grade per test). If you missed the first touch, the second is still tradeable on A-grade zones, but don't chase a Weak or Critical zone.</p>
+
+          <h3>Tip 3: Breaker Blocks Are Powerful</h3>
+          <p>When an OB breaks and flips to a Breaker, it often becomes the strongest S/R on the chart. Old demand becomes new supply (and vice versa). Watch for price to return to Breaker zones for reversal entries.</p>
+
+          <h3>Tip 4: Use the 4-TF Panel for Full Alignment</h3>
+          <p>When all 4 timeframes in the MTF Panel agree (all bullish or all bearish), you have maximum structural conviction. These are the highest-probability trending conditions.</p>
+
+          <h3>Tip 5: Shift Risk is Your Early Warning System</h3>
+          <p>Don't wait for the CHoCH to confirm a reversal — Shift Risk often rises above 70% several bars before the actual break. Use it to tighten stops or reduce exposure before the reversal prints.</p>
+
+          <h3>Tip 6: CKZ = Maximum Confluence</h3>
+          <p>Confluence Kill Zones (OB + FVG overlap) are statistically the highest-probability zones. When a CKZ forms at an Institutional Level (PDH/PDL) and the Narrative says "REVERSAL WARNING", you have a multi-dimensional setup that no competitor can replicate.</p>
+
+          <h3>Tip 7: JSON Alerts for Automation</h3>
+          <p>Every alert is a JSON payload with event type, direction, price, and symbol. Pipe these directly to a webhook (Discord, Telegram, or your own system) for real-time notifications with full context.</p>
+
+          <h3>Tip 8: Ghost™ Tells You What Actually Works</h3>
+          <p>Enable Ghost™ Performance in Full Command Center mode. It shows you the historical react rate for OBs, FVG fills, and liquidity sweeps on YOUR specific instrument. If OB React is 30%, the zones aren't working on this asset — switch to FVG-based trading instead.</p>
+        `,
+      },
+    ],
+    prevIndicator: { slug: 'atlas-cipher-pro', title: 'Atlas Cipher Pro' },
+    nextIndicator: { slug: 'atlas-pulse-pro', title: 'Atlas Pulse Pro' },
+  },
+
+  // PULSE PRO, RADAR PRO — to be added in follow-up sessions
 };
 
 export function getProIndicatorDoc(slug: string): ProIndicatorDoc | undefined {

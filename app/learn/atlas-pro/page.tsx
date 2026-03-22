@@ -24,7 +24,7 @@ const proIndicators = [
     description: 'Market structure and Smart Money concepts. BOS/CHoCH, order blocks, FVGs, liquidity, institutional levels, and Ghost Performance.',
     icon: Eye,
     lines: '~4,563',
-    available: false,
+    available: true,
   },
   {
     slug: 'atlas-pulse-pro',
