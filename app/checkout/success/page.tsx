@@ -27,7 +27,7 @@ export default function CheckoutSuccessPage() {
                   <h3 className="font-semibold text-accent-400">What happens next?</h3>
                 </div>
                 <p className="text-gray-400 text-sm text-left">
-                  We&apos;ll grant access to your TradingView account within 24 hours (usually much faster).
+                  We&apos;ll grant access to your TradingView account within 4 hours of payment.
                   You&apos;ll receive an email confirmation once your indicators are live.
                   The indicators will appear in your TradingView Invite-Only Scripts.
                 </p>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Check, ArrowRight, Zap } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 import { pricingTiers, getProIndicators } from '@/app/lib/indicators-data';
 import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, SectionWrapper, GradientDivider } from '@/app/components/animations';
 
@@ -52,8 +52,8 @@ export default function PricingPage() {
                 Annual
               </span>
               {isAnnual && (
-                <span className="text-xs px-2 py-1 rounded-full bg-primary-400/20 text-primary-400 border border-primary-400/30 font-semibold">
-                  Save ~30%
+                <span className="text-xs px-2 py-1 rounded-full bg-primary-500/20 text-primary-400 border border-primary-500/30 font-semibold">
+                  Save up to 17%
                 </span>
               )}
             </div>
@@ -66,18 +66,18 @@ export default function PricingPage() {
       {/* Pricing Cards */}
       <SectionWrapper variant="dark" className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             {pricingTiers.map((tier) => {
               const price = isAnnual ? tier.annualPrice : tier.monthlyPrice;
               const perMonth = isAnnual
-                ? (tier.annualPrice / 12).toFixed(2)
-                : tier.monthlyPrice.toFixed(2);
+                ? Math.round(tier.annualPrice / 12)
+                : tier.monthlyPrice;
 
               return (
                 <StaggerItem key={tier.id}>
                   <HoverScale scale={1.02}>
                     <div
-                      className={`glass-card rounded-xl p-8 h-full flex flex-col relative ${
+                      className={`glass-card rounded-xl p-8 flex flex-col relative h-full ${
                         tier.isPopular
                           ? 'border-primary-400/50 ring-1 ring-primary-400/20'
                           : ''
@@ -106,9 +106,16 @@ export default function PricingPage() {
                           <span className="text-gray-400 text-sm">/month</span>
                         </div>
                         {isAnnual && (
-                          <p className="text-sm text-gray-500 mt-1">
-                            ${price.toFixed(2)} billed annually
-                          </p>
+                          <div className="mt-1">
+                            {tier.annualOriginalPrice && (
+                              <span className="text-sm text-gray-500 line-through mr-2">
+                                ${tier.annualOriginalPrice}/yr
+                              </span>
+                            )}
+                            <span className="text-sm text-primary-400 font-medium">
+                              ${price}/yr
+                            </span>
+                          </div>
                         )}
                       </div>
 
@@ -144,7 +151,7 @@ export default function PricingPage() {
                         href={`/checkout/start?plan=${tier.id}&billing=${isAnnual ? 'annual' : 'monthly'}`}
                         className={`w-full py-3 rounded-lg font-semibold text-center transition-all flex items-center justify-center gap-2 ${
                           tier.isPopular
-                            ? 'bg-gradient-to-r from-primary-400 to-primary-500 hover:from-primary-500 hover:to-primary-600 text-white'
+                            ? 'bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white'
                             : 'bg-white/10 hover:bg-white/20 border border-white/20 text-white'
                         }`}
                       >
@@ -186,7 +193,7 @@ export default function PricingPage() {
                   <div className="glass-card p-6 rounded-lg">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-bold">{indicator.shortTitle}</h3>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-primary-400/10 text-primary-400 border border-primary-400/20">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/20">
                         {roleMap[indicator.id]}
                       </span>
                     </div>
@@ -229,7 +236,7 @@ export default function PricingPage() {
             </StaggerItem>
             <StaggerItem>
               <div className="text-center">
-                <div className="w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold text-black">
+                <div className="w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                   2
                 </div>
                 <h3 className="font-semibold mb-2">Enter TradingView Username</h3>
@@ -245,7 +252,7 @@ export default function PricingPage() {
                 </div>
                 <h3 className="font-semibold mb-2">Start Trading</h3>
                 <p className="text-gray-400 text-sm">
-                  Access is granted within 24 hours. Add the indicators to your charts and go.
+                  Access is granted within 4 hours. Add the indicators to your charts and go.
                 </p>
               </div>
             </StaggerItem>
@@ -267,27 +274,23 @@ export default function PricingPage() {
             {[
               {
                 q: 'How do I get access to the indicators after paying?',
-                a: 'After checkout, you\'ll provide your TradingView username. We grant access within 24 hours (usually much faster). You\'ll receive an email confirmation once your access is live.',
+                a: 'After checkout, you\'ll provide your TradingView username. We grant access within 4 hours of payment. You\'ll receive an email confirmation once your indicators are live.',
               },
               {
                 q: 'Can I switch which indicators I have access to?',
-                a: 'Single and Duo plan subscribers can swap indicators once per billing cycle. Full Suite subscribers have access to everything, so no swapping needed.',
+                a: 'Single and Duo plan subscribers can swap their indicator selection once per billing cycle. ATLAS Pro Suite subscribers have access to the full suite, so no swapping needed.',
               },
               {
                 q: 'What happens if I cancel?',
-                a: 'Your access continues until the end of your current billing period. After that, TradingView access is revoked. You can re-subscribe at any time.',
+                a: 'Your access continues until the end of your current billing period. After that, TradingView access is revoked. You can re-subscribe at any time. All purchases are final — we do not offer refunds.',
               },
               {
-                q: 'Are future indicators included?',
-                a: 'Full Suite subscribers get access to all future ATLAS Pro indicators at no extra cost. Single and Duo subscribers would need to upgrade or swap.',
-              },
-              {
-                q: 'Do you offer refunds?',
-                a: 'We offer a 7-day money-back guarantee if you\'re not satisfied. Contact us within 7 days of your first payment.',
+                q: 'What does the ATLAS Pro Suite include?',
+                a: 'The Suite gives you access to every indicator that is part of the ATLAS suite — currently CIPHER PRO, PHANTOM PRO, PULSE PRO, and RADAR PRO. As we add new indicators to the suite, you get access to those too, plus all future updates.',
               },
               {
                 q: 'Can I try before I buy?',
-                a: 'We have 9 free indicators on TradingView that demonstrate our approach to diagnostic intelligence. Try Sessions+, Market State Intelligence, or any of our open-source tools first.',
+                a: 'We have 9 free indicators that demonstrate our approach to diagnostic intelligence. Try Sessions+, Market State Intelligence, or any of our open-source tools first.',
               },
             ].map((faq, idx) => (
               <FadeInView key={idx} delay={idx * 0.05}>

@@ -22,7 +22,7 @@ export const freeIndicators: Indicator[] = [
       'Set alerts for session level breaks and sweeps',
     ],
     technicalDetails: 'Standalone indicator (no library imports). Hardcoded ATLAS brand colours. Multi-timeframe level degradation via ternary operators. Dashboard adapts rows based on chart timeframe. ~1,200 lines of Pine Script v6.',
-    tradingViewUrl: 'https://www.tradingview.com/u/Interakktive/',
+    tradingViewUrl: 'https://www.tradingview.com/script/g3aVrzmp-Sessions-Interakktive/',
     category: 'free',
     stats: {
       favorites: 0,
@@ -30,7 +30,7 @@ export const freeIndicators: Indicator[] = [
     },
     isPro: false,
     isPublished: true,
-    image: '/images/Screenshot.png',
+    image: '/images/Sessions_Plus_SS.png',
   },
   {
     id: 'market-acceptance-envelope',
@@ -323,7 +323,7 @@ export const proIndicators: Indicator[] = [
     },
     isPro: true,
     isPublished: true,
-    image: '/images/Screenshot.png',
+    image: '/images/Cipher_Pro_SS.png',
   },
   {
     id: 'atlas-phantom-pro',
@@ -358,7 +358,7 @@ export const proIndicators: Indicator[] = [
     },
     isPro: true,
     isPublished: true,
-    image: '/images/Screenshot.png',
+    image: '/images/Phantom_Pro_SS.png',
   },
   {
     id: 'atlas-pulse-pro',
@@ -393,7 +393,7 @@ export const proIndicators: Indicator[] = [
     },
     isPro: true,
     isPublished: true,
-    image: '/images/Screenshot.png',
+    image: '/images/Pulse_Pro_SS.png',
   },
   {
     id: 'atlas-radar-pro',
@@ -418,7 +418,7 @@ export const proIndicators: Indicator[] = [
       'Set alerts for rating transitions to catch emerging setups',
     ],
     technicalDetails: '819 lines | 40 request.security() calls (10 tickers \u00d7 4 fetch loops) | Stateless architecture prevents var state bleed | No competitor has 3 independent engines in a single screener',
-    tradingViewUrl: 'https://www.tradingview.com/u/Interakktive/',
+    tradingViewUrl: 'https://www.tradingview.com/script/V6tg80MI-Atlas-Radar-Pro-Interakktive/',
     category: 'pro',
     stats: {
       favorites: 0,
@@ -426,7 +426,7 @@ export const proIndicators: Indicator[] = [
     },
     isPro: true,
     isPublished: true,
-    image: '/images/Screenshot.png',
+    image: '/images/Radar_Pro_SS.png',
   },
 ];
 
@@ -437,6 +437,7 @@ export interface PricingTier {
   description: string;
   monthlyPrice: number;
   annualPrice: number;
+  annualOriginalPrice?: number;
   indicators: string[];
   features: string[];
   isPopular?: boolean;
@@ -449,8 +450,9 @@ export const pricingTiers: PricingTier[] = [
     id: 'single',
     name: 'Single Indicator',
     description: 'Access to any one ATLAS Pro indicator of your choice.',
-    monthlyPrice: 29.99,
-    annualPrice: 249.99,
+    monthlyPrice: 50,
+    annualPrice: 500,
+    annualOriginalPrice: 600,
     indicators: ['Any 1 ATLAS Pro indicator'],
     features: [
       'Full indicator access with all features',
@@ -463,8 +465,9 @@ export const pricingTiers: PricingTier[] = [
     id: 'duo',
     name: 'Duo Pack',
     description: 'Choose any two ATLAS Pro indicators.',
-    monthlyPrice: 49.99,
-    annualPrice: 449.99,
+    monthlyPrice: 75,
+    annualPrice: 650,
+    annualOriginalPrice: 750,
     indicators: ['Any 2 ATLAS Pro indicators'],
     features: [
       'Everything in Single, plus:',
@@ -475,15 +478,16 @@ export const pricingTiers: PricingTier[] = [
   },
   {
     id: 'suite',
-    name: 'Full Suite',
-    description: 'Complete access to the entire ATLAS Pro suite \u2014 all current and future indicators.',
-    monthlyPrice: 79.99,
-    annualPrice: 699.99,
-    indicators: ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'All future indicators'],
+    name: 'ATLAS Pro Suite',
+    description: 'Complete access to the entire ATLAS Pro suite with all future updates.',
+    monthlyPrice: 100,
+    annualPrice: 1000,
+    annualOriginalPrice: 1200,
+    indicators: ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'],
     features: [
       'Everything in Duo, plus:',
       'All current ATLAS Pro indicators',
-      'All future indicators at no extra cost',
+      'All future updates included',
       'Priority feature requests',
       'Early access to beta features',
     ],

@@ -166,7 +166,7 @@ export default function CheckoutStartPage() {
                 </button>
 
                 <p className="text-xs text-gray-500 text-center">
-                  Secure payment via Stripe. 7-day money-back guarantee.
+                  Secure payment via Stripe. All sales are final.
                 </p>
               </form>
             </div>
