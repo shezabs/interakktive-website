@@ -3158,5 +3158,467 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
       },
     ],
     prevIndicator: { slug: 'effort-result-divergence', title: 'Effort-Result Divergence' },
+    nextIndicator: { slug: 'sessions-plus', title: 'Sessions+' },
+  },
+
+  'sessions-plus': {
+    title: 'Sessions+',
+    subtitle: 'The most comprehensive session analysis tool for TradingView. 4,500+ lines covering sessions, levels, ICT concepts, analytics, and a live DNA predictor — all in one free indicator.',
+    tradingViewUrl: 'https://www.tradingview.com/script/g3aVrzmp-Sessions-Interakktive/',
+    sections: [
+      {
+        id: 'overview',
+        title: 'Overview',
+        icon: 'overview',
+        content: `
+          <p><strong>Sessions+</strong> is a professional-grade session intelligence indicator that goes far beyond simple session boxes. It is the most feature-rich session tool published on TradingView — 4,500+ lines of Pine Script v6 covering four distinct layers of analysis.</p>
+
+          <h3>What Sessions+ Does</h3>
+          <p>Sessions+ answers the questions every intraday trader should be asking:</p>
+          <ul>
+            <li><strong>Which session is active right now?</strong> — Asian, London, New York, or the LDN-NY overlap</li>
+            <li><strong>Where are the key levels?</strong> — Previous day/week/month/quarter highs and lows, ADR projections, session VWAP, opening range</li>
+            <li><strong>Are we in a killzone?</strong> — ICT killzones, Silver Bullet windows, Macro times, Power of 3 detection, CBDR projections</li>
+            <li><strong>What is the session telling me?</strong> — Session DNA prediction, regime classification, inter-session flow, anomaly detection, session scoring</li>
+          </ul>
+
+          <h3>The Four Layers</h3>
+          <ul>
+            <li><strong>Session Layer</strong> — Session boxes (Asian, London, New York, Overlap) with customisable times, colours, and styles. Includes adaptive boundary detection that identifies when a session truly starts based on volatility, not just the clock.</li>
+            <li><strong>Levels Layer</strong> — PDH/PDL/PDC, PWH/PWL, PMH/PML, PQH/PQL, PHH/PHL, ADR projections with exhaustion warnings, session VWAP with bands, opening range, and session range projections with confidence scoring.</li>
+            <li><strong>ICT Layer</strong> — Killzones (Asian, London Open, NY AM, London Close) with effectiveness scoring, Silver Bullet windows (AM + PM), Power of 3 detection, Macro times, CBDR projections, Midnight Open, and Weekly Open.</li>
+            <li><strong>Analytics Layer</strong> — Session DNA predictor, regime detection (Trending/Ranging/Volatile/Dead), inter-session flow analysis, session scoring, anomaly detection (6 types), and momentum phases.</li>
+          </ul>
+
+          <h3>The Dashboard</h3>
+          <p>Sessions+ includes a multi-mode dashboard with six views:</p>
+          <ul>
+            <li><strong>Off</strong> — No dashboard</li>
+            <li><strong>Minimal</strong> — Session name + Verdict only</li>
+            <li><strong>Status</strong> — + Killzone + ADR status</li>
+            <li><strong>Trade</strong> — + Power of 3 + Regime + Session Score</li>
+            <li><strong>Analytics</strong> — + DNA prediction + Flow analysis + Statistics</li>
+            <li><strong>Full</strong> — Everything in one panel</li>
+          </ul>
+          <p>The dashboard adapts by timeframe — on Daily and above, session-specific rows are replaced with level-based context (price vs previous week/month/quarter).</p>
+
+          <h3>Asset Class Intelligence</h3>
+          <p>Sessions+ auto-detects the asset class (Forex, Crypto, Stocks, Commodities, Indices/CFDs) and adjusts which sessions, features, and analytics are relevant. You can override the detection manually.</p>
+
+          <h3>Key Properties</h3>
+          <ul>
+            <li><strong>Open-source</strong> — Full code visible, nothing hidden</li>
+            <li><strong>Non-repainting</strong> — DNA predictions use closed-bar data only</li>
+            <li><strong>~4,500 lines</strong> of Pine Script v6</li>
+            <li><strong>39 alert conditions</strong> covering every feature layer</li>
+            <li><strong>Timeframe-aware</strong> — Features gracefully degrade on higher timeframes</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'settings',
+        title: 'Input Settings',
+        icon: 'settings',
+        content: `
+          <h3>Main Settings</h3>
+          <ul>
+            <li><strong>Asset Class</strong> (default: Auto) — Auto-detects from symbol type. Options: Auto, Forex, Crypto, Stocks, Commodities, Indices/CFDs. Affects which sessions are relevant, ADR calculation, and regime sensitivity.</li>
+            <li><strong>Session History (Days)</strong> (default: 5, range: 1-30) — How many days of session boxes to show. Higher = more historical context but busier chart.</li>
+            <li><strong>Statistics Lookback</strong> (default: 20, range: 5-100) — How many past sessions to use for averages, pattern matching, and flow analysis.</li>
+          </ul>
+
+          <h3>Session Config</h3>
+          <p>All times are UTC. TradingView converts to your chart timezone automatically.</p>
+          <ul>
+            <li><strong>Asian Session</strong> (default: ON, 20:00-04:00 UTC) — Sydney open through Tokyo close</li>
+            <li><strong>London Session</strong> (default: ON, 07:00-16:00 UTC) — European cash equities and London forex hours</li>
+            <li><strong>New York Session</strong> (default: ON, 13:00-22:00 UTC) — US market hours including pre-market</li>
+            <li><strong>Highlight LDN-NY Overlap</strong> (default: OFF) — The highest-volume window of the day</li>
+            <li><strong>Session Box Style</strong> — Filled, Border Only, or Filled + Border</li>
+            <li><strong>Adaptive Boundaries</strong> (default: ON) — Detects when a session truly starts based on volatility, not just the clock. Includes early start detection and extended session detection.</li>
+          </ul>
+
+          <h3>Levels Layer</h3>
+          <ul>
+            <li><strong>Enable Levels Layer</strong> (default: ON) — Master toggle for all level features</li>
+            <li><strong>Previous Hour H/L</strong> — Sub-hourly timeframes only</li>
+            <li><strong>Previous Day H/L</strong> — PDH/PDL reference levels</li>
+            <li><strong>Previous Day Close</strong> — PDC (the "true pivot")</li>
+            <li><strong>Previous Week H/L</strong> — PWH/PWL for swing context</li>
+            <li><strong>Previous Month H/L</strong> — PMH/PML for position context</li>
+            <li><strong>Previous Quarter H/L</strong> — PQH/PQL for macro context</li>
+            <li><strong>ADR Levels</strong> (default: ON) — Average Daily Range projected from day open. Includes ADR exhaustion warnings at 80%+ usage.</li>
+            <li><strong>Opening Range</strong> (default: OFF) — First N minutes of a session. Break above/below signals directional intent.</li>
+            <li><strong>Session VWAP</strong> (default: ON) — Volume-weighted average price for the current session with 1-sigma bands.</li>
+            <li><strong>Session High/Low/Open</strong> — Per-session level lines (toggle per session)</li>
+            <li><strong>Session Equilibrium</strong> — Midpoint of session range</li>
+            <li><strong>Range Projections</strong> (default: OFF) — Projects where the session high and low might reach, based on historical range, regime, ADR remaining, and bias. Includes confidence scoring and dims when targets are hit.</li>
+          </ul>
+
+          <h3>ICT Layer</h3>
+          <ul>
+            <li><strong>Killzones</strong> (default: ON) — Asian KZ, London Open KZ, NY AM KZ, London Close KZ. Each with customisable time windows.</li>
+            <li><strong>KZ Effectiveness Scoring</strong> (default: ON) — Grades each killzone A+ through D based on historical reversal success and move quality for the specific instrument you are charting.</li>
+            <li><strong>Silver Bullet Windows</strong> (default: OFF) — AM (10:00-11:00 NY) and PM (14:00-15:00 NY) high-probability reversal windows.</li>
+            <li><strong>Power of 3 Detection</strong> (default: OFF) — Detects Accumulation, Manipulation, and Distribution phases. Configurable per session (Asian, London, or NY).</li>
+            <li><strong>Macro Times</strong> (default: OFF) — ICT macro reversal windows at :50 and :10 past the hour. Works on timeframes up to 5m only.</li>
+            <li><strong>CBDR Projections</strong> (default: OFF) — Central Bank Dealers Range (20:00-00:00 UTC). Projects 1x, 2x, and 3x expansion targets.</li>
+            <li><strong>Midnight Open</strong> (default: OFF) — The price at 00:00 UTC (True Day Open). Key ICT reference for daily bias.</li>
+            <li><strong>Weekly Open</strong> (default: OFF) — Monday opening price. Institutional weekly bias reference.</li>
+          </ul>
+
+          <h3>Analytics Layer</h3>
+          <ul>
+            <li><strong>Session DNA</strong> (default: ON) — Live session predictor analysing opening gap, direction, momentum, VWAP position, and efficiency to predict session direction. Non-repainting.</li>
+            <li><strong>Regime Detection</strong> (default: ON) — Classifies current market behaviour as Trending, Ranging, Volatile, or Dead. Based on efficiency ratio, volatility ratio, and directional consistency.</li>
+            <li><strong>Inter-Session Flow</strong> (default: ON) — Tracks whether London tends to continue or reverse Asian direction, and whether NY continues or reverses London.</li>
+            <li><strong>Session Score</strong> (default: ON) — Rates session energy 0-100 combining range vs average, efficiency, and volatility. Also tracks historical win rate.</li>
+            <li><strong>Anomaly Detection</strong> (default: ON) — Monitors 6 anomaly types: Range, Volatility, Timing, Gap, Flow, and ADR consumption. Configurable sensitivity (Low/Medium/High).</li>
+            <li><strong>Momentum Phases</strong> (default: OFF) — Marks Early, Mid, and Late phases of each session on the chart.</li>
+          </ul>
+
+          <h3>Display Settings</h3>
+          <ul>
+            <li><strong>Dashboard</strong> — Off / Minimal / Status / Trade / Analytics / Full</li>
+            <li><strong>Dashboard Position</strong> — Top Right, Top Left, Bottom Right, Bottom Left</li>
+            <li><strong>Dashboard Size</strong> — Tiny, Small, Normal</li>
+            <li><strong>Label Size</strong> — Tiny, Small, Normal, Large</li>
+            <li><strong>Level Labels</strong> — Toggle text labels on level lines</li>
+            <li><strong>Show Prices on Labels</strong> — Include price values on level labels</li>
+            <li><strong>Show Current Session Only</strong> — Hides historical session boxes</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Interpretation Guide',
+        icon: 'interpretation',
+        content: `
+          <h3>Reading the Dashboard Verdict</h3>
+          <p>The Verdict row is the single most important output. It combines session bias, DNA prediction, and regime into one plain-English call:</p>
+          <ul>
+            <li><strong>Strong Bullish / Strong Bearish</strong> — Bias and DNA both agree strongly. High-conviction direction.</li>
+            <li><strong>Leaning Bullish / Leaning Bearish</strong> — One or both factors show moderate directional bias.</li>
+            <li><strong>No Clear Edge</strong> — Mixed signals. The session hasn't declared a direction yet.</li>
+          </ul>
+          <p>The regime suffix (Trending, Ranging, Volatile, Dead) tells you how to trade that direction — not just what direction.</p>
+
+          <h3>Session DNA Prediction</h3>
+          <p>DNA analyses the current session at two checkpoints (Early and Mid) by comparing five factors against historical patterns:</p>
+          <ul>
+            <li><strong>Opening gap direction</strong> — Did the session open above or below the previous session close?</li>
+            <li><strong>Current direction</strong> — Is price above or below the session open?</li>
+            <li><strong>Momentum</strong> — Rate of price change relative to the session average</li>
+            <li><strong>VWAP position</strong> — Is price above or below session VWAP?</li>
+            <li><strong>Efficiency</strong> — How cleanly is price moving (net progress vs total movement)?</li>
+          </ul>
+          <p>The DNA outputs a bull probability (0-100). Above 75 = high-confidence bullish. Below 25 = high-confidence bearish.</p>
+
+          <h3>Regime Classification</h3>
+          <ul>
+            <li><strong>Trending</strong> — High efficiency ratio (>0.45), price moving directionally. Strategy: follow the move, trail stops.</li>
+            <li><strong>Ranging</strong> — Low efficiency, price rotating. Strategy: fade extremes, target mean.</li>
+            <li><strong>Volatile</strong> — High volatility ratio (>1.8x normal). Strategy: widen stops, reduce size.</li>
+            <li><strong>Dead</strong> — Low efficiency AND low volatility. Strategy: wait for breakout or skip the session.</li>
+          </ul>
+
+          <h3>Inter-Session Flow</h3>
+          <p>Flow shows the historical continuation percentage between sessions. For example, "Asian→London: 62% continuation" means London follows Asian direction 62% of the time on this instrument. Use it to set a pre-session bias before the next session opens.</p>
+
+          <h3>Killzone Effectiveness Grades</h3>
+          <ul>
+            <li><strong>A+ / A</strong> — This killzone consistently delivers strong reversals on this instrument. Focus your attention here.</li>
+            <li><strong>B</strong> — Decent performance, worth monitoring but not a primary setup window.</li>
+            <li><strong>C / D</strong> — This killzone rarely delivers on this specific instrument. Don't rely on it.</li>
+          </ul>
+          <p>Grades are instrument-specific — a London KZ might be A+ on EUR/USD but C on BTC/USD.</p>
+
+          <h3>Session Score</h3>
+          <p>The score (0-100) answers "Is this session worth trading right now?"</p>
+          <ul>
+            <li><strong>70+</strong> — High energy session. Good conditions for active trading.</li>
+            <li><strong>40-70</strong> — Average energy. Be selective with setups.</li>
+            <li><strong>Below 30</strong> — Dead session. Consider waiting for the next session or reducing activity.</li>
+          </ul>
+
+          <h3>Anomaly Detection</h3>
+          <p>When an anomaly fires, it means something statistically unusual is happening. The six types:</p>
+          <ul>
+            <li><strong>Range anomaly</strong> — Session range is significantly different from the historical average</li>
+            <li><strong>Volatility anomaly</strong> — Sudden volatility spike detected</li>
+            <li><strong>Timing anomaly</strong> — Session high or low formed at an unusual phase</li>
+            <li><strong>Gap anomaly</strong> — Significant gap from the previous session</li>
+            <li><strong>Flow anomaly</strong> — Session direction contradicts the historical flow tendency</li>
+            <li><strong>ADR anomaly</strong> — Unusual ADR consumption rate</li>
+          </ul>
+
+          <h3>ADR Levels</h3>
+          <p>ADR High and ADR Low are projected from the day's open price using the average daily range. The "ADR Used" percentage tells you how much of the expected daily range has already been consumed. Above 80% triggers an exhaustion warning — further directional extension becomes statistically less likely.</p>
+
+          <h3>Adaptive Boundaries</h3>
+          <p>Standard session boxes start at fixed clock times. Adaptive boundaries detect when a session truly begins based on volatility activity. This means:</p>
+          <ul>
+            <li><strong>True Start</strong> — Volatility has picked up, the session is genuinely active</li>
+            <li><strong>Early Start</strong> — Pre-session volatility detected before the scheduled open</li>
+            <li><strong>Extended</strong> — Activity continues past the scheduled close</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Trading Applications',
+        icon: 'trading',
+        content: `
+          <h3>Strategy 1: Killzone + DNA Confluence</h3>
+          <p>Use the DNA prediction with killzone timing for high-probability entries.</p>
+          <ul>
+            <li><strong>Setup</strong> — Enter a high-grade killzone (A/A+) while DNA shows 75%+ directional probability</li>
+            <li><strong>Entry</strong> — Look for a reversal setup within the killzone window</li>
+            <li><strong>Stop</strong> — Beyond the killzone's extreme or the session high/low</li>
+            <li><strong>Target</strong> — Session VWAP, equilibrium, or ADR level</li>
+          </ul>
+
+          <h3>Strategy 2: Opening Range Breakout</h3>
+          <p>Trade the break of the opening range in the direction of the session bias.</p>
+          <ul>
+            <li><strong>Setup</strong> — Opening range forms. Verdict shows directional bias. Regime is Trending.</li>
+            <li><strong>Entry</strong> — Break above OR High (if bullish) or below OR Low (if bearish)</li>
+            <li><strong>Stop</strong> — Opposite side of the opening range</li>
+            <li><strong>Target</strong> — ADR High/Low or session range projection</li>
+          </ul>
+
+          <h3>Strategy 3: Inter-Session Flow</h3>
+          <p>Use the flow analysis to set pre-session bias and trade the continuation.</p>
+          <ul>
+            <li><strong>Setup</strong> — Asian session closes bullish. Flow shows 65%+ London continuation rate.</li>
+            <li><strong>Bias</strong> — Enter London session with bullish bias</li>
+            <li><strong>Entry</strong> — First pullback to London session open or Asian high</li>
+            <li><strong>Stop</strong> — Below Asian low</li>
+            <li><strong>Target</strong> — ADR High or PDH</li>
+          </ul>
+
+          <h3>Strategy 4: ADR Exhaustion Fade</h3>
+          <p>When ADR is 80%+ consumed, fade directional extensions.</p>
+          <ul>
+            <li><strong>Setup</strong> — ADR Used shows 80%+ and the exhaustion warning fires</li>
+            <li><strong>Context</strong> — Regime should be Ranging or showing signs of slowing</li>
+            <li><strong>Entry</strong> — Fade the move at ADR High/Low level</li>
+            <li><strong>Stop</strong> — Beyond ADR level by a small margin</li>
+            <li><strong>Target</strong> — Session VWAP or midpoint</li>
+          </ul>
+
+          <h3>Strategy 5: Power of 3 Execution</h3>
+          <p>Trade the distribution phase after manipulation confirms the direction.</p>
+          <ul>
+            <li><strong>Setup</strong> — Accumulation range forms, then manipulation phase breaks one side (false break / liquidity grab)</li>
+            <li><strong>Entry</strong> — When Distribution phase starts (move in the opposite direction to manipulation)</li>
+            <li><strong>Stop</strong> — Beyond the manipulation extreme</li>
+            <li><strong>Target</strong> — 2x the accumulation range, or ADR level</li>
+          </ul>
+
+          <h3>Strategy 6: CBDR Expansion Targets</h3>
+          <p>Use Central Bank Dealers Range projections for session targets.</p>
+          <ul>
+            <li><strong>Setup</strong> — CBDR forms during 20:00-00:00 UTC</li>
+            <li><strong>Projection</strong> — 1x, 2x, and 3x CBDR projected above and below the range</li>
+            <li><strong>Target</strong> — The real move often targets 2x CBDR. Use 1x as first target, 3x as stretch target.</li>
+          </ul>
+
+          <h3>What NOT to Do</h3>
+          <ul>
+            <li>Don't trade against a strong DNA reading + killzone confluence</li>
+            <li>Don't ignore the ADR exhaustion warning — extending beyond 80% ADR usage is statistically unlikely</li>
+            <li>Don't use Sessions+ on Daily or Weekly timeframes for session-specific features (use it for levels only)</li>
+            <li>Don't treat every killzone equally — use the effectiveness grades to focus on what works for YOUR instrument</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'alerts',
+        title: 'Alert System',
+        icon: 'settings',
+        content: `
+          <p>Sessions+ includes 39 alert conditions covering every feature layer. All alerts are always active — no toggle needed.</p>
+
+          <h3>Session Alerts (3)</h3>
+          <ul>
+            <li><strong>Asian Start</strong> — Asian session has opened</li>
+            <li><strong>London Start</strong> — London session has opened</li>
+            <li><strong>NY Start</strong> — New York session has opened</li>
+          </ul>
+
+          <h3>Killzone Alerts (4)</h3>
+          <ul>
+            <li><strong>London KZ</strong> — London Open Killzone active</li>
+            <li><strong>NY AM KZ</strong> — NY AM Killzone active</li>
+            <li><strong>KZ High Grade</strong> — High-grade killzone entered (A/A+ rating)</li>
+            <li><strong>KZ Low Grade</strong> — Low-grade killzone entered (C/D rating)</li>
+          </ul>
+
+          <h3>Silver Bullet Alerts (2)</h3>
+          <ul>
+            <li><strong>Silver Bullet AM</strong> — AM window open (10:00-11:00 NY)</li>
+            <li><strong>Silver Bullet PM</strong> — PM window open (14:00-15:00 NY)</li>
+          </ul>
+
+          <h3>Level Alerts (3)</h3>
+          <ul>
+            <li><strong>OR Break High</strong> — Opening Range High broken</li>
+            <li><strong>OR Break Low</strong> — Opening Range Low broken</li>
+            <li><strong>ADR Exhausted</strong> — ADR 80%+ consumed</li>
+          </ul>
+
+          <h3>ICT Alerts (3)</h3>
+          <ul>
+            <li><strong>PO3 Manipulation</strong> — Power of 3 manipulation phase detected</li>
+            <li><strong>PO3 Distribution</strong> — Power of 3 distribution/expansion phase detected</li>
+            <li><strong>Macro Time</strong> — ICT macro reversal window active</li>
+          </ul>
+
+          <h3>DNA Alerts (2)</h3>
+          <ul>
+            <li><strong>DNA Signal Bullish</strong> — High-confidence bullish pattern (75%+ probability)</li>
+            <li><strong>DNA Signal Bearish</strong> — High-confidence bearish pattern (25%- probability)</li>
+          </ul>
+
+          <h3>Range Projection Alerts (3)</h3>
+          <ul>
+            <li><strong>Proj High Reached</strong> — Projected session high target hit</li>
+            <li><strong>Proj Low Reached</strong> — Projected session low target hit</li>
+            <li><strong>Proj Range Complete</strong> — Both targets hit</li>
+          </ul>
+
+          <h3>Adaptive Boundary Alerts (9)</h3>
+          <ul>
+            <li><strong>True Start</strong> — Session volatility confirmed (Asian, London, NY)</li>
+            <li><strong>Early Start</strong> — Pre-session volatility detected (Asian, London, NY)</li>
+            <li><strong>Extended</strong> — Activity continues past scheduled close (Asian, London, NY)</li>
+          </ul>
+
+          <h3>Regime Alerts (4)</h3>
+          <ul>
+            <li><strong>Regime: Trending</strong> — Market shifted to trending behaviour</li>
+            <li><strong>Regime: Ranging</strong> — Market shifted to ranging behaviour</li>
+            <li><strong>Regime: Volatile</strong> — Market shifted to volatile behaviour</li>
+            <li><strong>Regime: Dead</strong> — Market shifted to dead/inactive</li>
+          </ul>
+
+          <h3>Anomaly Alerts (6)</h3>
+          <ul>
+            <li><strong>Anomaly: Critical</strong> — Severity 80%+ (extreme unusual behaviour)</li>
+            <li><strong>Anomaly: Warning</strong> — Severity 50-80%</li>
+            <li><strong>Anomaly: Range / Volatility / Gap / Flow</strong> — Specific anomaly type triggered</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'timeframes',
+        title: 'Timeframe Behaviour',
+        icon: 'concept',
+        content: `
+          <p>Sessions+ is designed for intraday timeframes but gracefully degrades on higher TFs so the indicator remains useful everywhere.</p>
+
+          <h3>Sub-Hourly (1m to 45m) — Full Feature Set</h3>
+          <ul>
+            <li>All session boxes, killzones, Silver Bullet windows</li>
+            <li>Previous Hour High/Low levels</li>
+            <li>Macro times (up to 5m only)</li>
+            <li>Adaptive boundaries, momentum phases</li>
+            <li>Full analytics: DNA, Regime, Flow, Score, Anomalies</li>
+            <li>Opening Range, VWAP with bands</li>
+          </ul>
+
+          <h3>Hourly to 4H — Sessions + Levels</h3>
+          <ul>
+            <li>Session boxes still render</li>
+            <li>All period levels (PDH/PDL through PQH/PQL)</li>
+            <li>ADR levels and exhaustion</li>
+            <li>No killzones, Silver Bullet, Macro times, or adaptive boundaries</li>
+            <li>Analytics still active (DNA, Regime, Flow, Score)</li>
+          </ul>
+
+          <h3>Daily — Levels Only</h3>
+          <ul>
+            <li>No session boxes (sessions are intraday concepts)</li>
+            <li>PDH/PDL/PDC, PWH/PWL, PMH/PML levels active</li>
+            <li>Dashboard shows "vs Yesterday" + weekly + monthly position context</li>
+            <li>Verdict based on price vs previous period levels</li>
+          </ul>
+
+          <h3>Weekly — Macro Context</h3>
+          <ul>
+            <li>PWH/PWL, PMH/PML, PQH/PQL levels</li>
+            <li>Dashboard shows weekly vs monthly vs quarterly position</li>
+          </ul>
+
+          <h3>Monthly — Quarterly Context</h3>
+          <ul>
+            <li>PMH/PML, PQH/PQL levels</li>
+            <li>Dashboard shows monthly vs quarterly position</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <h3>Mistake 1: Overloading the Chart</h3>
+          <p><strong>Problem:</strong> Turning on every feature at once — killzones, all levels, analytics, Silver Bullet, PO3, CBDR, momentum phases.</p>
+          <p><strong>Solution:</strong> Start with sessions + PDH/PDL + one ICT feature. Add layers gradually. Use the dashboard views (Minimal → Status → Trade → Full) to control information density.</p>
+
+          <h3>Mistake 2: Using Killzone Grades from One Instrument on Another</h3>
+          <p><strong>Problem:</strong> Assuming London KZ is always A+ because it works on EUR/USD.</p>
+          <p><strong>Solution:</strong> Effectiveness grades are calculated per instrument from historical data. Check the grades for each instrument you trade.</p>
+
+          <h3>Mistake 3: Ignoring Regime Context</h3>
+          <p><strong>Problem:</strong> Trading killzone reversals when the regime is Trending.</p>
+          <p><strong>Solution:</strong> Killzone reversals work best in Ranging or Volatile regimes. In Trending regimes, look for killzone pullbacks in the trend direction instead.</p>
+
+          <h3>Mistake 4: Relying on Sessions on Daily+ Timeframes</h3>
+          <p><strong>Problem:</strong> Expecting session boxes and killzones on the Daily chart.</p>
+          <p><strong>Solution:</strong> Sessions are intraday concepts. On Daily and above, Sessions+ shifts to level-based intelligence (PDH/PDL, PWH/PWL, etc.) and the dashboard provides period-vs-period context instead.</p>
+
+          <h3>Mistake 5: Treating DNA as a Signal Generator</h3>
+          <p><strong>Problem:</strong> Entering trades purely because DNA shows 80% bullish probability.</p>
+          <p><strong>Solution:</strong> DNA is a bias indicator, not an entry trigger. Use it to set directional bias, then look for an actual entry setup (killzone reversal, OR break, level test) that aligns with the bias.</p>
+
+          <h3>Mistake 6: Not Adjusting Session Times for Your Broker</h3>
+          <p><strong>Problem:</strong> Default session times don't match your broker's timezone offset.</p>
+          <p><strong>Solution:</strong> All times are in UTC. TradingView handles timezone conversion automatically. If sessions look misaligned with your chart, check your chart's timezone setting (bottom-right of chart).</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Use "Show Current Session Only" for Clean Charts</h3>
+          <p>If historical session boxes are cluttering your chart, enable this setting. You'll still get all levels, analytics, and the dashboard — just without the historical boxes.</p>
+
+          <h3>Tip 2: ADR Exhaustion is Powerful for Mean Reversion</h3>
+          <p>When ADR Used hits 80%+, statistically the day's range is nearly complete. This is one of the highest-probability mean reversion setups available. Combine with session VWAP as a target.</p>
+
+          <h3>Tip 3: Combine Sessions+ with ATLAS Pro Indicators</h3>
+          <p>Sessions+ is designed as the contextual layer for the ATLAS suite. CIPHER PRO fires a Long signal? Check Sessions+ for: Is the killzone active? Is the DNA bullish? Is ADR consumed? This context turns signals into informed decisions.</p>
+
+          <h3>Tip 4: Flow Analysis Sets Pre-Session Bias</h3>
+          <p>Check the flow percentage before the next session opens. If London continues Asian 70% of the time on your instrument, and Asian was bullish, you have a statistical edge for London direction before it even starts.</p>
+
+          <h3>Tip 5: CBDR 2x is the Sweet Spot</h3>
+          <p>ICT teaches that the real move targets 2x CBDR. Use 1x as a partial profit target and 2x as the main target. The 3x level is a stretch target for exceptional days only.</p>
+
+          <h3>Tip 6: Use the Analytics Dashboard for Session Planning</h3>
+          <p>Switch to Analytics view before the session starts. Check DNA prediction, flow tendency, and regime. Plan your approach before the first candle prints — not after.</p>
+
+          <h3>Tip 7: Anomaly Alerts are Early Warning Signals</h3>
+          <p>When an anomaly fires, something statistically unusual is happening. Don't ignore it. A range anomaly + volatility anomaly together often means a news event or institutional intervention is underway.</p>
+
+          <h3>Tip 8: Start with Minimal Dashboard, Graduate to Full</h3>
+          <p>The Minimal dashboard (Session + Verdict) is all most traders need. Only switch to Full when you understand what every row means and actually use the information in your decision-making.</p>
+        `,
+      },
+    ],
+    prevIndicator: { slug: 'market-efficiency-ratio', title: 'Market Efficiency Ratio' },
   },
 };

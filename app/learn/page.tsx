@@ -52,7 +52,7 @@ export default function LearnPage() {
                     Free Indicators
                   </h2>
                   <p className="text-gray-400 mb-4">
-                    Complete documentation for all 8 free professional-grade indicators.
+                    Complete documentation for all 9 free professional-grade indicators.
                     Learn every setting, understand the calculations, and see practical examples.
                   </p>
                   <ul className="text-sm text-gray-500 space-y-1 mb-6">

@@ -4,7 +4,7 @@ import { SectionWrapper, GradientDivider, FadeInView, StaggerContainer, StaggerI
 
 export const metadata = {
   title: 'Free Indicators Documentation',
-  description: 'Complete documentation for all 8 free Interakktive trading indicators. Learn settings, calculations, and practical trading applications.',
+  description: 'Complete documentation for all 9 free Interakktive trading indicators. Learn settings, calculations, and practical trading applications.',
 };
 
 const indicators = [
@@ -64,6 +64,13 @@ const indicators = [
     icon: Percent,
     category: 'Efficiency',
   },
+  {
+    id: 'sessions-plus',
+    title: 'Sessions+',
+    description: 'The most comprehensive session analysis tool for TradingView. Sessions, levels, ICT concepts, analytics, and a live DNA predictor.',
+    icon: Activity,
+    category: 'Session Intelligence',
+  },
 ];
 
 export default function FreeIndicatorsDocsPage() {
@@ -83,7 +90,7 @@ export default function FreeIndicatorsDocsPage() {
           <FadeInView>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/10 border border-primary-500/20 rounded-full text-primary-400 text-sm mb-6">
               <BookOpen className="w-4 h-4" />
-              8 Free Indicators
+              8 Free Indicators + Sessions+
             </div>
           </FadeInView>
 
