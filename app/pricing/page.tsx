@@ -69,15 +69,12 @@ export default function PricingPage() {
           <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
             {pricingTiers.map((tier) => {
               const price = isAnnual ? tier.annualPrice : tier.monthlyPrice;
-              const perMonth = isAnnual
-                ? Math.round(tier.annualPrice / 12)
-                : tier.monthlyPrice;
 
               return (
                 <StaggerItem key={tier.id}>
                   <HoverScale scale={1.02}>
                     <div
-                      className={`glass-card rounded-xl p-8 flex flex-col relative h-full ${
+                      className={`glass-card rounded-xl p-8 flex flex-col relative h-full min-h-[520px] ${
                         tier.isPopular
                           ? 'border-primary-400/50 ring-1 ring-primary-400/20'
                           : ''
@@ -101,7 +98,7 @@ export default function PricingPage() {
                       <div className="mb-6">
                         <div className="flex items-baseline gap-1">
                           <span className="text-4xl font-bold text-white">
-                            ${perMonth}
+                            ${tier.monthlyPrice}
                           </span>
                           <span className="text-gray-400 text-sm">/month</span>
                         </div>
@@ -278,7 +275,7 @@ export default function PricingPage() {
               },
               {
                 q: 'Can I switch which indicators I have access to?',
-                a: 'Single and Duo plan subscribers can swap their indicator selection once per billing cycle. ATLAS Pro Suite subscribers have access to the full suite, so no swapping needed.',
+                a: 'Duo plan subscribers can swap their indicator selection once per billing cycle. Single plan selections are locked for the billing period — upgrade to Duo or Suite if you want flexibility. ATLAS Pro Suite subscribers have access to the full suite, so no swapping needed.',
               },
               {
                 q: 'What happens if I cancel?',

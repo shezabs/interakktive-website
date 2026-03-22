@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Crosshair, Eye, Activity, Radio, ExternalLink, Check } from 'lucide-react';
 import { getProIndicators } from '@/app/lib/indicators-data';
 import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, AnimatedBackground, SectionWrapper, GradientDivider } from '@/app/components/animations';
@@ -133,6 +134,17 @@ export default function AtlasProPage() {
                     <p className="text-lg text-gray-300 mb-6">
                       {indicator.description}
                     </p>
+
+                    {/* Screenshot */}
+                    {indicator.image && (
+                      <div className="rounded-lg overflow-hidden border border-white/10 mb-8">
+                        <img
+                          src={indicator.image}
+                          alt={`${indicator.shortTitle} screenshot`}
+                          className="w-full h-auto"
+                        />
+                      </div>
+                    )}
 
                     {/* Highlight stat */}
                     <div className="bg-black/30 rounded-lg px-4 py-3 mb-8 border border-white/5">
