@@ -42,7 +42,7 @@ const proIndicators = [
     description: 'Multi-ticker screener scanning 10 tickers across three independent engines with unified Confluence rating.',
     icon: Radio,
     lines: '819',
-    available: false,
+    available: true,
   },
 ];
 

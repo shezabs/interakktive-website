@@ -1160,7 +1160,268 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
     nextIndicator: { slug: 'atlas-radar-pro', title: 'Atlas Radar Pro' },
   },
 
-  // RADAR PRO — to be added in follow-up session
+  'atlas-radar-pro': {
+    title: 'Atlas Radar Pro',
+    subtitle: 'Screening Intelligence — the multi-ticker scanner of the ATLAS suite. Scans 10 tickers simultaneously across three independent engines (Signal, Structure, Momentum) with unified Confluence rating, 5-column sorting, 3 stackable filters, volatility classification, and JSON alerts for automation.',
+    tradingViewUrl: 'https://www.tradingview.com/script/V6tg80MI-Atlas-Radar-Pro-Interakktive/',
+    role: 'Screening Intelligence',
+    lines: '819',
+    sections: [
+      {
+        id: 'overview',
+        title: 'Overview',
+        icon: 'overview',
+        content: `
+          <p><strong>Atlas Radar Pro</strong> is the screening intelligence pillar of the ATLAS suite. It scans up to 10 tickers simultaneously across three independent analytical engines and produces a unified Confluence rating for each. No other screener on TradingView has three genuinely independent engines in a single indicator.</p>
+
+          <h3>What RADAR PRO Does</h3>
+          <p>RADAR PRO answers the watchlist question: <em>Which tickers have the highest confluence right now, and which should I focus on?</em></p>
+          <ul>
+            <li><strong>Signal Engine</strong> — 6-factor stateless directional assessment (Ribbon Stack, Price vs Flow, EMA Trend, MACD Momentum, RSI Position, Volume Conviction)</li>
+            <li><strong>Structure Engine</strong> — Stateless HH/HL vs LH/LL bias detection using the last 3 confirmed swing highs and lows</li>
+            <li><strong>Momentum Engine</strong> — 6-factor proprietary adaptive computation (Spread Velocity, Tension Momentum, Efficiency Trend, Volume Conviction Trend, ADX Direction, Anchor Slope)</li>
+            <li><strong>Confluence Rating</strong> — How many engines agree? 3/3 = highest conviction. Shows direction (▲/▼) and strength.</li>
+            <li><strong>Overall Rating</strong> — Weighted composite: Strong Bull → Bull → Neutral → Bear → Strong Bear</li>
+          </ul>
+
+          <h3>Architecture</h3>
+          <p>RADAR PRO uses a stateless architecture by design. Unlike CIPHER or PHANTOM which track state over time (var arrays, ring buffers), RADAR computes everything fresh each bar for each ticker. This prevents the critical "var state bleed" problem where compound state computed for the chart symbol contaminates request.security() calls for other tickers.</p>
+
+          <h3>Key Properties</h3>
+          <ul>
+            <li><strong>819 lines</strong> of Pine Script v6</li>
+            <li><strong>40 request.security() calls</strong> (10 tickers × 4 fetch loops — at the Pine Script limit)</li>
+            <li><strong>6 JSON alert types</strong> with transition detection</li>
+            <li><strong>Per-ticker timeframe override</strong> — each ticker can scan a different timeframe</li>
+            <li><strong>Entirely stateless computation</strong> — no var state bleed across tickers</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'three-engines',
+        title: 'The Three Engines',
+        icon: 'calculation',
+        content: `
+          <h3>Signal Engine (6 Factors)</h3>
+          <p>Assesses directional bias using six independent votes. Each factor returns +1 (bull), -1 (bear), or 0 (neutral):</p>
+          <ul>
+            <li><strong>Factor 1: Ribbon Stack</strong> — Are the adaptive Core/Flow/Anchor lines stacked bullish (Core > Flow > Anchor) or bearish?</li>
+            <li><strong>Factor 2: Price vs Flow</strong> — Is price above or below the adaptive Flow line?</li>
+            <li><strong>Factor 3: EMA Trend</strong> — Fast EMA (9) above slow EMA (21) = bullish momentum</li>
+            <li><strong>Factor 4: MACD Momentum</strong> — Histogram positive + improving = bullish. Negative + deteriorating = bearish.</li>
+            <li><strong>Factor 5: RSI Position</strong> — RSI > 55 = bullish bias. RSI < 45 = bearish. Between = neutral.</li>
+            <li><strong>Factor 6: Volume Conviction</strong> — Above-average volume on a bull candle = bullish conviction.</li>
+          </ul>
+          <p>Signal classification: 5-6 bull votes = Strong Bull. 4 bull + ≤1 bear = Bull. Net bull = Lean Bull. Same logic for bear side.</p>
+
+          <h3>Structure Engine (Stateless HH/HL vs LH/LL)</h3>
+          <p>Uses <code>ta.valuewhen()</code> to retrieve the last 3 confirmed swing highs and lows, then compares consecutive swings:</p>
+          <ul>
+            <li><strong>HH + HL</strong> — Classic uptrend structure (score: +3)</li>
+            <li><strong>LH + LL</strong> — Classic downtrend structure (score: -3)</li>
+            <li><strong>HH + LL</strong> — Expanding/volatile pattern (score: +1)</li>
+            <li><strong>LH + HL</strong> — Contracting/range pattern (score: -1)</li>
+          </ul>
+          <p>Also checks price position relative to the most recent key swing high/low for additional bias.</p>
+
+          <h3>Momentum Engine (6 Proprietary Factors)</h3>
+          <p>100% proprietary adaptive computations — no standard RSI/Stochastic. Each factor is derived from the ATLAS adaptive engine:</p>
+          <ul>
+            <li><strong>M1: Spread Velocity</strong> — How fast is the Core-Anchor spread changing? Z-score normalised against recent velocity.</li>
+            <li><strong>M2: Tension Momentum</strong> — Price displacement from Flow in ATR units. Moderate = healthy trending, extreme = potential exhaustion.</li>
+            <li><strong>M3: Efficiency Trend</strong> — Is the efficiency ratio improving (cleaner trend) or deteriorating (getting choppy)?</li>
+            <li><strong>M4: Volume Conviction Trend</strong> — Is volume conviction rising or falling? Directional by candle colour.</li>
+            <li><strong>M5: ADX Trend Direction</strong> — Not just "is there a trend" but "is the trend strengthening" + directional (DI+ vs DI-).</li>
+            <li><strong>M6: Anchor Slope</strong> — The slowest adaptive line. If Anchor is rising, deep structural momentum is bullish.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'confluence-rating',
+        title: 'Confluence & Rating',
+        icon: 'interpretation',
+        content: `
+          <h3>Confluence Score</h3>
+          <p>Confluence measures how many of the three engines agree:</p>
+          <ul>
+            <li><strong>3/3</strong> — All three engines agree (Signal + Structure + Momentum). Highest conviction. Displayed with ▲ or ▼ direction.</li>
+            <li><strong>2/3</strong> — Two engines agree. Good conviction but one dimension is neutral or opposing.</li>
+            <li><strong>1/3 or 0/3</strong> — Engines disagree or all neutral. Low conviction — avoid or wait for alignment.</li>
+          </ul>
+
+          <h3>Overall Rating</h3>
+          <p>A weighted composite of all three engine scores, classified into 5 tiers:</p>
+          <ul>
+            <li><strong>Strong Bull (5)</strong> — All engines strongly bullish, 3/3 confluence</li>
+            <li><strong>Bull (4)</strong> — Most engines bullish, 2-3/3 confluence</li>
+            <li><strong>Neutral (3)</strong> — Mixed or no conviction</li>
+            <li><strong>Bear (2)</strong> — Most engines bearish</li>
+            <li><strong>Strong Bear (1)</strong> — All engines strongly bearish, 3/3 confluence</li>
+          </ul>
+
+          <h3>Volatility Classification</h3>
+          <p>Each ticker is classified into one of 5 volatility tiers based on ATR ratio (current ATR / 50-bar ATR average):</p>
+          <ul>
+            <li><strong>Compressed</strong> (< 0.65) — Very low volatility, potential squeeze</li>
+            <li><strong>Low</strong> (0.65-0.9) — Below average volatility</li>
+            <li><strong>Normal</strong> (0.9-1.3) — Average volatility</li>
+            <li><strong>Expanding</strong> (1.3-1.8) — Volatility increasing</li>
+            <li><strong>High</strong> (> 1.8) — Significantly elevated volatility</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'table-display',
+        title: 'Table, Filters & Sorting',
+        icon: 'settings',
+        content: `
+          <h3>Table Columns</h3>
+          <p>Each column can be toggled independently:</p>
+          <ul>
+            <li><strong>Ticker</strong> — Always shown. Symbol name extracted from the full exchange:symbol format.</li>
+            <li><strong>Price</strong> — Current close price</li>
+            <li><strong>% Change</strong> — Percentage change from previous bar. Green = up, red = down.</li>
+            <li><strong>Rating</strong> — Overall rating (Strong Bull → Strong Bear) with colour coding</li>
+            <li><strong>Signal</strong> — Signal Engine output (Strong Long/Long/Lean/Neutral/Lean/Short/Strong Short)</li>
+            <li><strong>Structure</strong> — Structure Engine output with pattern description (HH+HL, LH+LL, etc.)</li>
+            <li><strong>Momentum</strong> — Momentum Engine output with bull/bear vote count</li>
+            <li><strong>Confluence</strong> — Engine agreement level (3/3, 2/3, 1/3) with direction arrow</li>
+            <li><strong>Volatility</strong> — Current volatility regime</li>
+          </ul>
+
+          <h3>Filters (3 Stackable)</h3>
+          <p>Filters hide tickers that don't match. Multiple filters can be active simultaneously:</p>
+          <ul>
+            <li><strong>Rating Filter</strong> — Strong Bull, Bull+, Bear+, Strong Bear</li>
+            <li><strong>Signal Filter</strong> — Any Bull, Any Bear, Strong Only</li>
+            <li><strong>Confluence Filter</strong> — 3/3 Only, 2/3+</li>
+          </ul>
+
+          <h3>Sorting (5 Columns)</h3>
+          <p>Sort the table by any of: Rating, Signal, Confluence, Momentum, or % Change. Default descending (strongest first). Toggle ascending for weakest first.</p>
+
+          <h3>Per-Ticker Timeframe</h3>
+          <p>Each ticker can have its own timeframe override. Leave blank to follow the chart timeframe. Set to a specific TF (e.g., "60" for 1H) to scan that ticker on a different timeframe than the chart. This lets you scan a mix of timeframes in one table.</p>
+        `,
+      },
+      {
+        id: 'settings',
+        title: 'Input Settings',
+        icon: 'settings',
+        content: `
+          <h3>Watchlist (10 Tickers)</h3>
+          <p>Each ticker has an enable toggle, symbol selector, and optional timeframe override. Default watchlist covers crypto (BTC, ETH, SOL), commodities (XAUUSD), indices (SPX), stocks (AAPL, TSLA, NVDA), and forex (EURUSD, GBPUSD).</p>
+
+          <h3>Intelligence Tuning</h3>
+          <ul>
+            <li><strong>Signal Sensitivity</strong> (default: 1.5) — Controls how quickly the signal engine reacts. Lower = more responsive, higher = fewer signals but higher conviction.</li>
+            <li><strong>Signal Smoothing</strong> (default: 3) — Smoothing on the adaptive trend line.</li>
+            <li><strong>Structure Sensitivity</strong> (default: 5) — Swing point detection bars. Lower = more swings detected.</li>
+          </ul>
+
+          <h3>Display</h3>
+          <ul>
+            <li><strong>Table Position</strong> — 9 positions (corners, edges, center). Middle Center is default for the dedicated pane.</li>
+            <li><strong>Table Size</strong> — Tiny, Small, Normal</li>
+          </ul>
+
+          <h3>Columns, Filters, Sort</h3>
+          <p>All toggleable. See the Table, Filters & Sorting section for details.</p>
+        `,
+      },
+      {
+        id: 'alerts',
+        title: 'Alert System',
+        icon: 'settings',
+        content: `
+          <p>RADAR PRO uses <code>alert()</code> with JSON payloads. Set your TradingView alert to <strong>"Any alert() function call"</strong>.</p>
+
+          <h3>6 Alert Types with Transition Detection</h3>
+          <p>Alerts only fire on transitions — when a value changes from the previous bar. This prevents spam.</p>
+          <ul>
+            <li><strong>RATING_CHANGE</strong> — Ticker's overall rating changed (e.g., Neutral → Bull)</li>
+            <li><strong>SIGNAL_CHANGE</strong> — Signal Engine output changed direction</li>
+            <li><strong>CONFLUENCE_CHANGE</strong> — Confluence level changed (e.g., 2/3 → 3/3)</li>
+            <li><strong>MOMENTUM_CHANGE</strong> — Momentum Engine state changed</li>
+            <li><strong>VOLATILITY_CHANGE</strong> — Volatility regime shifted (e.g., Normal → Expanding)</li>
+            <li><strong>STRONG_SETUP</strong> — Ticker reached Strong Bull or Strong Bear rating with 3/3 confluence</li>
+          </ul>
+
+          <h3>JSON Format</h3>
+          <p>Every alert includes ticker symbol, event type, old value, new value, and price: <code>{"event":"RATING_CHANGE","sym":"BTCUSDT","from":"Neutral","to":"Bull","price":87654.32}</code></p>
+          <p>Designed for webhook integration — pipe to Discord, Telegram, or custom systems.</p>
+        `,
+      },
+      {
+        id: 'how-to',
+        title: 'How To Use RADAR PRO',
+        icon: 'usage',
+        content: `
+          <h3>Basic Workflow</h3>
+          <ol>
+            <li>Add RADAR PRO to a dedicated pane (it's a non-overlay indicator)</li>
+            <li>Configure your 10 tickers in the Watchlist settings</li>
+            <li>Sort by Confluence (strongest agreement first) or Rating (overall strength first)</li>
+            <li>Filter to 3/3 confluence only to see the highest-conviction setups</li>
+            <li>Click through to the top-rated tickers and apply CIPHER PRO or PHANTOM PRO for entry timing</li>
+          </ol>
+
+          <h3>The RADAR → CIPHER → PHANTOM Workflow</h3>
+          <p>This is the intended multi-indicator workflow:</p>
+          <ol>
+            <li><strong>RADAR PRO scans</strong> — Identifies which tickers have 3/3 confluence (all engines agree)</li>
+            <li><strong>CIPHER PRO executes</strong> — Switch to the top-rated ticker, wait for a PX or TS signal with Strong conviction</li>
+            <li><strong>PHANTOM PRO confirms</strong> — Check structure: Is there an A-grade OB at the signal level? Is the BOS/CHoCH direction aligned?</li>
+            <li><strong>Enter with full confluence</strong> — RADAR says the ticker is ready, CIPHER gives the entry, PHANTOM confirms the structure.</li>
+          </ol>
+
+          <h3>Scanning Multiple Timeframes</h3>
+          <p>Set different timeframes per ticker to scan your watchlist across multiple perspectives. For example: BTC on 1H, ETH on 4H, SPX on Daily — all in one table. When a ticker shows Strong on a higher TF, it's a swing setup. Strong on a lower TF = a scalp opportunity.</p>
+
+          <h3>Using Filters Effectively</h3>
+          <ul>
+            <li><strong>Morning scan</strong> — Filter to 3/3 Confluence to find the day's best opportunities</li>
+            <li><strong>Trend following</strong> — Filter to Bull+ Rating to see only bullish tickers</li>
+            <li><strong>Mean reversion</strong> — Sort by %Chg ascending to find the biggest losers that might snap back (combine with PULSE PRO exhaustion confirmation)</li>
+          </ul>
+
+          <h3>What NOT to Do</h3>
+          <ul>
+            <li>Don't blindly trade the highest-rated ticker — RADAR identifies opportunities, CIPHER times entries</li>
+            <li>Don't ignore Volatility — a Strong Bull rating on a Compressed volatility ticker means the move hasn't started yet (patience needed), while High volatility means it may be overextended</li>
+            <li>Don't add more than 10 tickers — Pine Script limits request.security() to 40 calls, and RADAR uses all 40 (10 tickers × 4 fetch loops)</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: 3/3 Confluence is the Only Filter That Matters</h3>
+          <p>When all three engines agree, you have signal direction + structural alignment + momentum confirmation. This is the single most powerful screening criterion. Everything else is secondary.</p>
+
+          <h3>Tip 2: Compressed Volatility + Strong Rating = Pre-Breakout</h3>
+          <p>A ticker showing Strong Bull with Compressed volatility means all three engines agree AND volatility is at its lowest. This is the classic squeeze setup — energy is stored and waiting to release. Combine with CIPHER PRO's Coil feature for exact breakout timing.</p>
+
+          <h3>Tip 3: Confluence is the Unique Selling Point</h3>
+          <p>No competitor can replicate RADAR's confluence because no one else has three genuinely independent engines (proprietary adaptive signal, stateless structure, and 100% proprietary momentum) in a single screener. This is what justifies the premium pricing.</p>
+
+          <h3>Tip 4: Use Per-Ticker TF for Multi-Timeframe Scanning</h3>
+          <p>Set your main holdings to higher timeframes (Daily/Weekly) and your trading watchlist to lower timeframes (1H/4H). One table gives you both the macro view and the trading view simultaneously.</p>
+
+          <h3>Tip 5: Set STRONG_SETUP Alerts</h3>
+          <p>The STRONG_SETUP alert fires when a ticker reaches Strong Bull or Strong Bear with 3/3 confluence. This is the highest-conviction setup RADAR can produce. Set it and let RADAR notify you instead of watching the table all day.</p>
+
+          <h3>Tip 6: An Entire Premium Indicator Built in One Session</h3>
+          <p>RADAR PRO was designed and published in approximately 6 hours using the stateless architecture approach. The lesson: with clear architecture decisions and the right constraints (stateless-only, no var state in request.security), complex screeners can be built rapidly and reliably.</p>
+        `,
+      },
+    ],
+    prevIndicator: { slug: 'atlas-pulse-pro', title: 'Atlas Pulse Pro' },
+  },
+
+  // All 4 Pro indicators documented
 };
 
 export function getProIndicatorDoc(slug: string): ProIndicatorDoc | undefined {
