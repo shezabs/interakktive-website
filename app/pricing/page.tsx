@@ -66,100 +66,106 @@ export default function PricingPage() {
       {/* Pricing Cards */}
       <SectionWrapper variant="dark" className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-            {pricingTiers.map((tier) => {
-              const price = isAnnual ? tier.annualPrice : tier.monthlyPrice;
-
-              return (
-                <StaggerItem key={tier.id}>
-                  <HoverScale scale={1.02}>
-                    <div
-                      className={`glass-card rounded-xl p-8 flex flex-col relative h-full min-h-[520px] ${
-                        tier.isPopular
-                          ? 'border-primary-400/50 ring-1 ring-primary-400/20'
-                          : ''
-                      }`}
-                    >
-                      {tier.isPopular && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                          <span className="px-4 py-1 bg-primary-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
-                            Most Popular
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Tier Header */}
-                      <div className="mb-6">
-                        <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
-                        <p className="text-gray-400 text-sm">{tier.description}</p>
+          <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {pricingTiers.map((tier) => (
+              <StaggerItem key={tier.id}>
+                <HoverScale scale={1.02}>
+                  <div
+                    className={`glass-card rounded-xl p-8 flex flex-col relative ${
+                      tier.isPopular
+                        ? 'border-primary-400/50 ring-1 ring-primary-400/20'
+                        : ''
+                    }`}
+                    style={{ minHeight: '620px' }}
+                  >
+                    {tier.isPopular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span className="px-4 py-1 bg-primary-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
+                          Most Popular
+                        </span>
                       </div>
+                    )}
 
-                      {/* Price */}
-                      <div className="mb-6">
+                    {/* Tier Header */}
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
+                      <p className="text-gray-400 text-sm">{tier.description}</p>
+                    </div>
+
+                    {/* Price */}
+                    <div className="mb-6">
+                      {isAnnual ? (
+                        <>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-bold text-white">
+                              ${tier.annualPrice}
+                            </span>
+                            <span className="text-gray-400 text-sm">/year</span>
+                          </div>
+                          {tier.annualOriginalPrice && (
+                            <div className="mt-1">
+                              <span className="text-sm text-gray-500 line-through mr-2">
+                                ${tier.annualOriginalPrice}/yr
+                              </span>
+                              <span className="text-sm text-primary-400 font-medium">
+                                Save ${tier.annualOriginalPrice - tier.annualPrice}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      ) : (
                         <div className="flex items-baseline gap-1">
                           <span className="text-4xl font-bold text-white">
                             ${tier.monthlyPrice}
                           </span>
                           <span className="text-gray-400 text-sm">/month</span>
                         </div>
-                        {isAnnual && (
-                          <div className="mt-1">
-                            {tier.annualOriginalPrice && (
-                              <span className="text-sm text-gray-500 line-through mr-2">
-                                ${tier.annualOriginalPrice}/yr
-                              </span>
-                            )}
-                            <span className="text-sm text-primary-400 font-medium">
-                              ${price}/yr
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Indicators */}
-                      <div className="mb-6">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                          Includes
-                        </p>
-                        <ul className="space-y-2">
-                          {tier.indicators.map((ind, idx) => (
-                            <li key={idx} className="flex items-center gap-2 text-sm">
-                              <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                              <span className="text-gray-300">{ind}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* Features */}
-                      <div className="mb-8 flex-1">
-                        <ul className="space-y-2">
-                          {tier.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-sm">
-                              <Check className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
-                              <span className="text-gray-400">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      {/* CTA */}
-                      <Link
-                        href={`/checkout/start?plan=${tier.id}&billing=${isAnnual ? 'annual' : 'monthly'}`}
-                        className={`w-full py-3 rounded-lg font-semibold text-center transition-all flex items-center justify-center gap-2 ${
-                          tier.isPopular
-                            ? 'bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white'
-                            : 'bg-white/10 hover:bg-white/20 border border-white/20 text-white'
-                        }`}
-                      >
-                        Get Started
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
+                      )}
                     </div>
-                  </HoverScale>
-                </StaggerItem>
-              );
-            })}
+
+                    {/* Indicators */}
+                    <div className="mb-6">
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                        Includes
+                      </p>
+                      <ul className="space-y-2">
+                        {tier.indicators.map((ind, idx) => (
+                          <li key={idx} className="flex items-center gap-2 text-sm">
+                            <Check className="w-4 h-4 text-primary-400 flex-shrink-0" />
+                            <span className="text-gray-300">{ind}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Features */}
+                    <div className="mb-8 flex-1">
+                      <ul className="space-y-2">
+                        {tier.features.map((feature, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <Check className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
+                            <span className="text-gray-400">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* CTA */}
+                    <Link
+                      href={`/checkout/start?plan=${tier.id}&billing=${isAnnual ? 'annual' : 'monthly'}`}
+                      className={`w-full py-3 rounded-lg font-semibold text-center transition-all flex items-center justify-center gap-2 mt-auto ${
+                        tier.isPopular
+                          ? 'bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white'
+                          : 'bg-white/10 hover:bg-white/20 border border-white/20 text-white'
+                      }`}
+                    >
+                      Get Started
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </HoverScale>
+              </StaggerItem>
+            ))}
           </StaggerContainer>
         </div>
       </SectionWrapper>

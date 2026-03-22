@@ -21,9 +21,6 @@ export default function CheckoutStartPage() {
   const price = billing === 'annual'
     ? (tier?.annualPrice || 0)
     : (tier?.monthlyPrice || 0);
-  const perMonth = billing === 'annual'
-    ? ((tier?.annualPrice || 0) / 12).toFixed(2)
-    : (tier?.monthlyPrice || 0).toFixed(2);
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,12 +84,13 @@ export default function CheckoutStartPage() {
                 <p className="text-sm text-gray-400 mb-1">You&apos;re subscribing to</p>
                 <h1 className="text-2xl font-bold mb-1">{tier?.name || 'ATLAS Pro'}</h1>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-primary-400">${perMonth}</span>
-                  <span className="text-gray-400">/month</span>
+                  <span className="text-3xl font-bold text-primary-400">${price}</span>
+                  <span className="text-gray-400">/{billing === 'annual' ? 'year' : 'month'}</span>
                 </div>
-                {billing === 'annual' && (
+                {billing === 'annual' && tier?.annualOriginalPrice && (
                   <p className="text-sm text-gray-500 mt-1">
-                    ${price.toFixed(2)} billed annually · Save ~30%
+                    <span className="line-through">${tier.annualOriginalPrice}/yr</span>
+                    <span className="text-primary-400 ml-2">Save ${tier.annualOriginalPrice - price}</span>
                   </p>
                 )}
               </div>
@@ -161,7 +159,7 @@ export default function CheckoutStartPage() {
                       Redirecting to payment...
                     </>
                   ) : (
-                    `Continue to Payment — $${billing === 'annual' ? price.toFixed(2) + '/yr' : perMonth + '/mo'}`
+                    `Continue to Payment — $${price}/${billing === 'annual' ? 'yr' : 'mo'}`
                   )}
                 </button>
 

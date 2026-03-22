@@ -466,7 +466,7 @@ export const pricingTiers: PricingTier[] = [
     name: 'Duo Pack',
     description: 'Choose any two ATLAS Pro indicators.',
     monthlyPrice: 75,
-    annualPrice: 800,
+    annualPrice: 750,
     annualOriginalPrice: 900,
     indicators: ['Any 2 ATLAS Pro indicators'],
     features: [
