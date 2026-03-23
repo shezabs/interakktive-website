@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStripe, getPriceId, PlanId, BillingInterval } from '@/app/lib/stripe';
+import { createClient } from '@supabase/supabase-js';
+
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) throw new Error('Missing Supabase env vars');
+  return createClient(url, serviceKey);
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +41,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Invalid billing interval. Must be monthly or annual.' },
         { status: 400 }
+      );
+    }
+
+    // Check for existing active subscription with this email
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data: existingSub } = await supabaseAdmin
+      .from('subscriptions')
+      .select('id, plan, status')
+      .eq('user_email', email)
+      .in('status', ['active', 'cancelling'])
+      .limit(1)
+      .single();
+
+    if (existingSub) {
+      return NextResponse.json(
+        { error: `This email already has an active subscription (${existingSub.plan} plan). Please sign in and use the dashboard to manage your subscription.` },
+        { status: 409 }
       );
     }
 
