@@ -87,7 +87,7 @@ export default function ProIndicatorDocPage({ params }: { params: { slug: string
                 Open on TradingView
                 <ExternalLink className="w-4 h-4" />
               </a>
-              <span className="text-sm text-gray-500">{doc.lines} lines of Pine Script v6</span>
+              <span className="text-sm text-gray-500">Pine Script v6</span>
             </div>
           </FadeInView>
         </div>

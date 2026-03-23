@@ -21,7 +21,7 @@ export const freeIndicators: Indicator[] = [
       'Track session structure across multiple timeframes',
       'Set alerts for session level breaks and sweeps',
     ],
-    technicalDetails: 'Standalone indicator (no library imports). Hardcoded ATLAS brand colours. Multi-timeframe level degradation via ternary operators. Dashboard adapts rows based on chart timeframe. ~1,200 lines of Pine Script v6.',
+    technicalDetails: 'Standalone indicator (no library imports). Hardcoded ATLAS brand colours. Multi-timeframe level degradation via ternary operators. Dashboard adapts rows based on chart timeframe.',
     tradingViewUrl: 'https://www.tradingview.com/script/g3aVrzmp-Sessions-Interakktive/',
     category: 'free',
     stats: {
@@ -314,7 +314,7 @@ export const proIndicators: Indicator[] = [
       'Use Win Probability to size positions according to statistical edge',
       'Combine with PHANTOM PRO and PULSE PRO for full-suite confluence',
     ],
-    technicalDetails: '3,514 lines | 64/64 outputs | Asset-adaptive across stocks, forex, crypto, CFDs | Trail stops optimised at 1.0 ATR (368% improvement in backtested returns across 34 assets \u00d7 7 timeframes)',
+    technicalDetails: '64/64 outputs | Asset-adaptive across stocks, forex, crypto, CFDs | Trail stops optimised at 1.0 ATR (368% improvement in backtested returns across 34 assets \u00d7 7 timeframes)',
     tradingViewUrl: 'https://www.tradingview.com/script/vvf2W2ZG/',
     category: 'pro',
     stats: {
@@ -349,7 +349,7 @@ export const proIndicators: Indicator[] = [
       'Use Zone DNA to filter high-quality zones from noise',
       'Combine Smart Money Sequence detection with CIPHER signals',
     ],
-    technicalDetails: '~4,563 lines | Overlay indicator | 9 request.security() calls | Command Centre with plain English intelligence | Institutional Levels with UNTESTED\u2192APPROACHING\u2192TESTING\u2192SWEPT lifecycle',
+    technicalDetails: 'Overlay indicator | 9 request.security() calls | Command Centre with plain English intelligence | Institutional Levels with UNTESTED\u2192APPROACHING\u2192TESTING\u2192SWEPT lifecycle',
     tradingViewUrl: 'https://www.tradingview.com/script/fMZJJ8FQ/',
     category: 'pro',
     stats: {
@@ -384,7 +384,7 @@ export const proIndicators: Indicator[] = [
       'Track DNA alignment across timeframes for confluence',
       'Monitor Pulse Memory for historical context',
     ],
-    technicalDetails: '~1,304 lines | 49/64 outputs | 19 alerts | Pure intelligence tool \u2014 trend/reversal signals deliberately removed after testing proved oscillator crossovers cannot match price-structure accuracy',
+    technicalDetails: '49/64 outputs | 19 alerts | Pure intelligence tool \u2014 trend/reversal signals deliberately removed after testing proved oscillator crossovers cannot match price-structure accuracy',
     tradingViewUrl: 'https://www.tradingview.com/script/nHfT0sXk/',
     category: 'pro',
     stats: {
@@ -417,7 +417,7 @@ export const proIndicators: Indicator[] = [
       'Sort by signal, structure, momentum, confluence, or rating',
       'Set alerts for rating transitions to catch emerging setups',
     ],
-    technicalDetails: '819 lines | 40 request.security() calls (10 tickers \u00d7 4 fetch loops) | Stateless architecture prevents var state bleed | No competitor has 3 independent engines in a single screener',
+    technicalDetails: '40 request.security() calls (10 tickers \u00d7 4 fetch loops) | Stateless architecture prevents var state bleed | No competitor has 3 independent engines in a single screener',
     tradingViewUrl: 'https://www.tradingview.com/script/V6tg80MI-Atlas-Radar-Pro-Interakktive/',
     category: 'pro',
     stats: {

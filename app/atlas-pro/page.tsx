@@ -18,28 +18,28 @@ const indicatorMeta: Record<string, {
     role: 'Signal Intelligence',
     color: 'text-primary-400',
     tagColor: 'bg-primary-400/10 text-primary-400 border-primary-400/20',
-    highlight: '3,514 lines · 64/64 outputs · 238 asset configurations',
+    highlight: '64/64 outputs · 238 asset configurations',
   },
   'atlas-phantom-pro': {
     icon: <Eye className="w-10 h-10" />,
     role: 'Structure Intelligence',
     color: 'text-accent-400',
     tagColor: 'bg-accent-400/10 text-accent-400 border-accent-400/20',
-    highlight: '~4,563 lines · SMC + BOS/CHoCH + Order Blocks + FVG + Institutional Levels',
+    highlight: 'SMC + BOS/CHoCH + Order Blocks + FVG + Institutional Levels',
   },
   'atlas-pulse-pro': {
     icon: <Activity className="w-10 h-10" />,
     role: 'Momentum Intelligence',
     color: 'text-accent-400',
     tagColor: 'bg-accent-400/10 text-accent-400 border-accent-400/20',
-    highlight: '~1,304 lines · Dual oscillator · 6-component Pulse Score · Pure intelligence',
+    highlight: 'Dual oscillator · 6-component Pulse Score · Pure intelligence',
   },
   'atlas-radar-pro': {
     icon: <Radio className="w-10 h-10" />,
     role: 'Screening Intelligence',
     color: 'text-primary-400',
     tagColor: 'bg-primary-400/10 text-primary-400 border-primary-400/20',
-    highlight: '819 lines · 10 tickers · 3 independent engines · Stateless architecture',
+    highlight: '10 tickers · 3 independent engines · Stateless architecture',
   },
 };
 

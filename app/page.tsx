@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Activity, Layers, Radio, Crosshair, Eye, BarChart3 } from 'lucide-react';
+import { ArrowRight, Activity, Layers, Radio, Crosshair, Eye, BarChart3, Globe, Scan, TrendingUp } from 'lucide-react';
 import { getProIndicators, getFreeIndicators } from './lib/indicators-data';
 import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, AnimatedBackground, SectionWrapper, GradientDivider } from './components/animations';
 
@@ -170,6 +170,42 @@ export default function HomePage() {
                   <p className="text-gray-400 text-sm">
                     Every ATLAS indicator includes a Narrative Engine that translates
                     complex analytics into sentences you can act on immediately.
+                  </p>
+                </div>
+              </HoverScale>
+            </StaggerItem>
+            <StaggerItem>
+              <HoverScale>
+                <div className="glass-card p-6 rounded-lg h-full">
+                  <Scan className="w-10 h-10 text-accent-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Confluence Engine</h3>
+                  <p className="text-gray-400 text-sm">
+                    RADAR PRO scans 10 tickers across 3 independent engines simultaneously.
+                    The only screener on TradingView with genuine triple-engine confluence.
+                  </p>
+                </div>
+              </HoverScale>
+            </StaggerItem>
+            <StaggerItem>
+              <HoverScale>
+                <div className="glass-card p-6 rounded-lg h-full">
+                  <TrendingUp className="w-10 h-10 text-primary-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Multi-Timeframe Alignment</h3>
+                  <p className="text-gray-400 text-sm">
+                    Every indicator checks higher timeframes automatically so you
+                    never trade against the current. Full alignment = highest conviction.
+                  </p>
+                </div>
+              </HoverScale>
+            </StaggerItem>
+            <StaggerItem>
+              <HoverScale>
+                <div className="glass-card p-6 rounded-lg h-full">
+                  <Globe className="w-10 h-10 text-accent-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Asset Intelligence</h3>
+                  <p className="text-gray-400 text-sm">
+                    Auto-adapts to crypto, forex, stocks, indices, and commodities.
+                    Signal thresholds, stop methods, and context symbols all adjust automatically.
                   </p>
                 </div>
               </HoverScale>

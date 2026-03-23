@@ -91,7 +91,6 @@ export default function AtlasProDocsPage() {
                           </div>
                           <p className="text-gray-400 text-sm mb-3">{indicator.description}</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">{indicator.lines} lines</span>
                             <span className="text-primary-400 text-sm flex items-center gap-1 group-hover:gap-2 transition-all">Read docs <ArrowRight className="w-3 h-3" /></span>
                           </div>
                         </div>
@@ -108,7 +107,6 @@ export default function AtlasProDocsPage() {
                           </div>
                           <p className="text-gray-500 text-sm mb-3">{indicator.description}</p>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-600">{indicator.lines} lines</span>
                             <span className="text-gray-500 text-sm">Coming soon</span>
                           </div>
                         </div>

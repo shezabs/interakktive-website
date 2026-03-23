@@ -69,16 +69,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/learn/atlas-pro" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Pro Docs
-                </Link>
-              </li>
-              <li>
-                <Link href="/learn/free-indicators" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Free Indicator Docs
-                </Link>
-              </li>
-              <li>
                 <Link href="/about" className="text-gray-400 hover:text-white text-sm transition-colors">
                   About
                 </Link>
@@ -144,7 +134,7 @@ export default function Footer() {
 
         <div className="mt-8 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-gray-400 text-sm">
-            © 2026 Interakktive Ltd. All Rights Reserved.
+            © 2026 Shezab MediaWorx Ltd. All Rights Reserved.
           </p>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
