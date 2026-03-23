@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { subscriptionId, action } = body as {
       subscriptionId: string;
-      action: 'cancel' | 'reactivate';
+      action: 'cancel' | 'reactivate' | 'upgrade';
     };
 
     if (!subscriptionId || !action) {
@@ -86,6 +86,80 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         status: 'active',
         message: 'Your subscription has been reactivated.',
+      });
+    }
+
+    if (action === 'upgrade') {
+      // Get full subscription from Supabase for plan info
+      const { data: fullSub } = await supabaseAdmin
+        .from('subscriptions')
+        .select('plan, billing, indicators')
+        .eq('id', subscriptionId)
+        .single();
+
+      if (!fullSub) {
+        return NextResponse.json({ error: 'Subscription details not found' }, { status: 404 });
+      }
+
+      // Determine target plan and price
+      const currentPlan = fullSub.plan;
+      const billing = fullSub.billing;
+      let targetPlan: string;
+      let targetPriceEnv: string;
+
+      if (currentPlan === 'starter') {
+        targetPlan = 'advantage';
+        targetPriceEnv = billing === 'annual' ? 'STRIPE_PRICE_ADVANTAGE_ANNUAL' : 'STRIPE_PRICE_ADVANTAGE_MONTHLY';
+      } else if (currentPlan === 'advantage') {
+        targetPlan = 'elite';
+        targetPriceEnv = billing === 'annual' ? 'STRIPE_PRICE_ELITE_ANNUAL' : 'STRIPE_PRICE_ELITE_MONTHLY';
+      } else {
+        return NextResponse.json({ error: 'Already on the highest plan' }, { status: 400 });
+      }
+
+      const newPriceId = process.env[targetPriceEnv];
+      if (!newPriceId) {
+        return NextResponse.json({ error: 'Target price not configured' }, { status: 500 });
+      }
+
+      if (sub.stripe_subscription_id) {
+        // Get the current Stripe subscription to find the item ID
+        const stripeSub = await stripe.subscriptions.retrieve(sub.stripe_subscription_id);
+        const itemId = stripeSub.items.data[0]?.id;
+
+        if (!itemId) {
+          return NextResponse.json({ error: 'Could not find subscription item' }, { status: 500 });
+        }
+
+        // Update Stripe subscription with proration
+        await stripe.subscriptions.update(sub.stripe_subscription_id, {
+          items: [{
+            id: itemId,
+            price: newPriceId,
+          }],
+          proration_behavior: 'create_prorations',
+        });
+      }
+
+      // Update Supabase
+      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+      const newIndicators = targetPlan === 'elite' ? allIndicators : fullSub.indicators;
+
+      await supabaseAdmin
+        .from('subscriptions')
+        .update({
+          plan: targetPlan,
+          indicators: newIndicators,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', subscriptionId);
+
+      console.log(`✅ Upgrade: ${currentPlan} → ${targetPlan} (${subscriptionId})`);
+
+      return NextResponse.json({
+        status: 'upgraded',
+        plan: targetPlan,
+        message: `Upgraded to ${targetPlan}. Stripe will prorate the charge.`,
       });
     }
 

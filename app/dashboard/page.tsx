@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   ArrowRight, User, Crown, LogOut, Crosshair, Eye, Activity, Radio,
-  ExternalLink, BookOpen, RefreshCw, Check, AlertCircle, Loader2, ArrowLeftRight,
+  ExternalLink, BookOpen, RefreshCw, Check, AlertCircle, Loader2, ArrowLeftRight, Pencil,
 } from 'lucide-react';
 import { FadeIn, FadeInView, SectionWrapper } from '@/app/components/animations';
 
@@ -49,6 +49,18 @@ export default function DashboardPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState('');
+
+  // TV username edit state
+  const [editingTvUsername, setEditingTvUsername] = useState(false);
+  const [newTvUsername, setNewTvUsername] = useState('');
+  const [savingTvUsername, setSavingTvUsername] = useState(false);
+  const [tvUsernameError, setTvUsernameError] = useState('');
+  const [tvUsernameSuccess, setTvUsernameSuccess] = useState(false);
+
+  // Upgrade state
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgradeError, setUpgradeError] = useState('');
+  const [upgradeSuccess, setUpgradeSuccess] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,7 +158,79 @@ export default function DashboardPage() {
     }
   };
 
+  const handleSaveTvUsername = async () => {
+    if (!subscription || !newTvUsername.trim()) {
+      setTvUsernameError('Please enter a valid TradingView username.');
+      return;
+    }
+    if (newTvUsername.trim() === subscription.tradingview_username) {
+      setEditingTvUsername(false);
+      return;
+    }
+    setSavingTvUsername(true);
+    setTvUsernameError('');
+    setTvUsernameSuccess(false);
+    try {
+      // Update in Supabase
+      const { error: updateErr } = await supabase
+        .from('subscriptions')
+        .update({
+          tradingview_username: newTvUsername.trim(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', subscription.id);
+      if (updateErr) throw updateErr;
+
+      // Notify admin via API
+      await fetch('/api/notify-username-change', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user!.email,
+          oldUsername: subscription.tradingview_username,
+          newUsername: newTvUsername.trim(),
+          plan: subscription.plan,
+        }),
+      });
+
+      setSubscription(prev => prev ? { ...prev, tradingview_username: newTvUsername.trim() } : null);
+      setTvUsernameSuccess(true);
+      setEditingTvUsername(false);
+      setTimeout(() => setTvUsernameSuccess(false), 5000);
+    } catch (err: any) {
+      setTvUsernameError(err.message || 'Failed to update username.');
+    } finally {
+      setSavingTvUsername(false);
+    }
+  };
+
   const canSwap = subscription?.plan === 'advantage' && !subscription?.swap_used;
+
+  const handleUpgrade = async () => {
+    if (!subscription) return;
+    setUpgrading(true);
+    setUpgradeError('');
+    setUpgradeSuccess(false);
+    try {
+      const res = await fetch('/api/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriptionId: subscription.id, action: 'upgrade' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setUpgradeError(data.error || 'Upgrade failed.'); return; }
+      // Update local state
+      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+      const newPlan = subscription.plan === 'starter' ? 'advantage' : 'elite';
+      const newIndicators = newPlan === 'elite' ? allIndicators : subscription.indicators;
+      setSubscription(prev => prev ? { ...prev, plan: newPlan as any, indicators: newIndicators } : null);
+      setUpgradeSuccess(true);
+    } catch (err) {
+      setUpgradeError('Network error. Please try again.');
+    } finally {
+      setUpgrading(false);
+    }
+  };
 
   const openSwapModal = () => {
     setSwapSelections([...subscription!.indicators]);
@@ -350,13 +434,16 @@ export default function DashboardPage() {
                       <p className="text-sm text-gray-400 mb-3">
                         Want access to all 4 indicators?
                       </p>
-                      <Link
-                        href="/pricing"
-                        className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1 transition-colors"
+                      <button
+                        onClick={handleUpgrade}
+                        disabled={upgrading}
+                        className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
                       >
-                        Upgrade to Elite
+                        {upgrading ? 'Processing...' : `Upgrade to ${subscription.plan === 'starter' ? 'Advantage' : 'Elite'}`}
                         <ArrowRight className="w-3 h-3" />
-                      </Link>
+                      </button>
+                      {upgradeError && <p className="text-xs text-red-400 mt-1">{upgradeError}</p>}
+                      {upgradeSuccess && <p className="text-xs text-green-400 mt-1">Upgrade successful! Your indicators will be updated within 4 hours.</p>}
                     </div>
                   )}
                 </div>
@@ -406,7 +493,47 @@ export default function DashboardPage() {
                 {subscription?.tradingview_username && (
                   <div>
                     <p className="text-gray-500">TradingView</p>
-                    <p className="text-white">{subscription.tradingview_username}</p>
+                    {!editingTvUsername ? (
+                      <div className="flex items-center gap-2">
+                        <p className="text-white">{subscription.tradingview_username}</p>
+                        <button
+                          onClick={() => { setNewTvUsername(subscription.tradingview_username); setEditingTvUsername(true); setTvUsernameError(''); }}
+                          className="text-gray-500 hover:text-primary-400 transition-colors"
+                          title="Edit TradingView username"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 mt-1">
+                        <input
+                          type="text"
+                          value={newTvUsername}
+                          onChange={(e) => setNewTvUsername(e.target.value)}
+                          className="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors text-sm"
+                          placeholder="New TradingView username"
+                        />
+                        {tvUsernameError && <p className="text-xs text-red-400">{tvUsernameError}</p>}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleSaveTvUsername}
+                            disabled={savingTvUsername}
+                            className="px-3 py-1 bg-primary-500/20 border border-primary-500/30 text-primary-400 rounded text-xs font-medium hover:bg-primary-500/30 transition-all disabled:opacity-50"
+                          >
+                            {savingTvUsername ? 'Saving...' : 'Save'}
+                          </button>
+                          <button
+                            onClick={() => { setEditingTvUsername(false); setTvUsernameError(''); }}
+                            className="px-3 py-1 bg-white/10 rounded text-xs hover:bg-white/20 transition-all"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {tvUsernameSuccess && (
+                      <p className="text-xs text-green-400 mt-1">Updated! We'll update your TradingView access within 4 hours.</p>
+                    )}
                   </div>
                 )}
                 {hasSubscription && (
@@ -451,15 +578,13 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                   {/* Upgrade */}
                   {subscription!.plan !== 'elite' && subscription!.status === 'active' && (
-                    <Link
-                      href={subscription!.plan === 'starter' 
-                        ? `/checkout/start?plan=duo&billing=${subscription!.billing}`
-                        : `/checkout/start?plan=suite&billing=${subscription!.billing}`
-                      }
-                      className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium"
+                    <button
+                      onClick={handleUpgrade}
+                      disabled={upgrading}
+                      className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium disabled:opacity-50"
                     >
-                      Upgrade to {subscription!.plan === 'starter' ? 'Advantage' : 'Elite'}
-                    </Link>
+                      {upgrading ? 'Processing...' : `Upgrade to ${subscription!.plan === 'starter' ? 'Advantage' : 'Elite'}`}
+                    </button>
                   )}
 
                   {/* Cancelling state — offer reactivation */}
