@@ -2,76 +2,74 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, User, Crown, CheckCircle, Clock, XCircle, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import {
+  ArrowRight, User, Crown, LogOut, Crosshair, Eye, Activity, Radio,
+  ExternalLink, BookOpen, RefreshCw, Check, AlertCircle, Loader2, ArrowLeftRight,
+} from 'lucide-react';
+import { FadeIn, FadeInView, SectionWrapper } from '@/app/components/animations';
 
-interface AccessRequest {
+const INDICATORS = [
+  { id: 'CIPHER PRO', icon: Crosshair, role: 'Signal Intelligence', color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', tvUrl: 'https://www.tradingview.com/script/vvf2W2ZG/', docUrl: '/learn/atlas-pro/atlas-cipher-pro' },
+  { id: 'PHANTOM PRO', icon: Eye, role: 'Structure Intelligence', color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10', tvUrl: 'https://www.tradingview.com/script/fMZJJ8FQ/', docUrl: '/learn/atlas-pro/atlas-phantom-pro' },
+  { id: 'PULSE PRO', icon: Activity, role: 'Momentum Intelligence', color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', tvUrl: 'https://www.tradingview.com/script/nHfT0sXk/', docUrl: '/learn/atlas-pro/atlas-pulse-pro' },
+  { id: 'RADAR PRO', icon: Radio, role: 'Screening Intelligence', color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10', tvUrl: 'https://www.tradingview.com/script/V6tg80MI-Atlas-Radar-Pro-Interakktive/', docUrl: '/learn/atlas-pro/atlas-radar-pro' },
+];
+
+interface Subscription {
   id: string;
-  status: 'pending' | 'approved' | 'rejected';
-  created_at: string;
+  plan: 'starter' | 'advantage' | 'elite';
+  billing: 'monthly' | 'annual';
+  indicators: string[];
+  status: string;
+  swap_used: boolean;
+  swap_reset_date: string | null;
+  current_period_end: string | null;
   tradingview_username: string;
-  message: string | null;
 }
+
+const PLAN_NAMES: Record<string, string> = { starter: 'Starter', advantage: 'Advantage', elite: 'Elite' };
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState<{ tradingview_username: string | null } | null>(null);
-  const [accessRequest, setAccessRequest] = useState<AccessRequest | null>(null);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showRequestForm, setShowRequestForm] = useState(false);
-  const [tradingViewUsername, setTradingViewUsername] = useState('');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
+
+  // Swap state
+  const [showSwapModal, setShowSwapModal] = useState(false);
+  const [swapSelections, setSwapSelections] = useState<string[]>([]);
+  const [swapping, setSwapping] = useState(false);
+  const [swapError, setSwapError] = useState('');
+  const [swapSuccess, setSwapSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        // Get current user
         const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-
-        if (userError || !currentUser) {
-          router.push('/signin');
-          return;
-        }
-
+        if (userError || !currentUser) { router.push('/signin'); return; }
         setUser(currentUser);
 
-        // Get user profile
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('tradingview_username')
-          .eq('id', currentUser.id)
-          .single();
-
-        if (profileData) {
-          setProfile(profileData);
-          setTradingViewUsername(profileData.tradingview_username || '');
-        }
-
-        // Get existing access request
-        const { data: requestData } = await supabase
-          .from('pro_access_requests')
+        // Fetch active subscription
+        const { data: subData } = await supabase
+          .from('subscriptions')
           .select('*')
           .eq('user_id', currentUser.id)
+          .eq('status', 'active')
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
 
-        if (requestData) {
-          setAccessRequest(requestData);
-        }
+        if (subData) setSubscription(subData);
       } catch (err) {
-        console.error('Error fetching user data:', err);
+        console.error('Error:', err);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchUserData();
+    fetchData();
   }, [router]);
 
   const handleSignOut = async () => {
@@ -79,64 +77,95 @@ export default function DashboardPage() {
     router.push('/');
   };
 
-  const handleSubmitRequest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError('');
+  const canSwap = subscription?.plan === 'advantage' && !subscription?.swap_used;
 
-    if (!tradingViewUsername.trim()) {
-      setError('TradingView username is required');
-      setSubmitting(false);
-      return;
-    }
+  const openSwapModal = () => {
+    setSwapSelections([...subscription!.indicators]);
+    setSwapError('');
+    setSwapSuccess(false);
+    setShowSwapModal(true);
+  };
+
+  const toggleSwapSelection = (id: string) => {
+    setSwapSelections(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(i => i !== id);
+      }
+      if (prev.length >= 2) {
+        // Replace first
+        return [prev[1], id];
+      }
+      return [...prev, id];
+    });
+  };
+
+  const handleSwap = async () => {
+    if (swapSelections.length !== 2) { setSwapError('Select exactly 2 indicators.'); return; }
+
+    // Check if anything actually changed
+    const same = subscription!.indicators.length === swapSelections.length &&
+      subscription!.indicators.every(i => swapSelections.includes(i));
+    if (same) { setSwapError('Your selection is the same as your current indicators.'); return; }
+
+    setSwapping(true);
+    setSwapError('');
 
     try {
-      const { data, error: insertError } = await supabase
-        .from('pro_access_requests')
-        .insert({
-          user_id: user!.id,
-          user_email: user!.email!,
-          tradingview_username: tradingViewUsername.trim(),
-          message: message.trim() || null,
-          status: 'pending',
+      // Log the swap
+      const { error: histError } = await supabase.from('swap_history').insert({
+        subscription_id: subscription!.id,
+        user_id: user!.id,
+        old_indicators: subscription!.indicators,
+        new_indicators: swapSelections,
+      });
+      if (histError) throw histError;
+
+      // Update subscription
+      const { error: updateError } = await supabase
+        .from('subscriptions')
+        .update({
+          indicators: swapSelections,
+          swap_used: true,
+          updated_at: new Date().toISOString(),
         })
-        .select()
-        .single();
+        .eq('id', subscription!.id);
+      if (updateError) throw updateError;
 
-      if (insertError) {
-        setError(insertError.message);
-        return;
-      }
-
-      setAccessRequest(data);
-      setShowRequestForm(false);
-    } catch (err) {
-      setError('An error occurred. Please try again.');
+      setSubscription(prev => prev ? { ...prev, indicators: swapSelections, swap_used: true } : null);
+      setSwapSuccess(true);
+    } catch (err: any) {
+      setSwapError(err.message || 'Swap failed. Please try again.');
     } finally {
-      setSubmitting(false);
+      setSwapping(false);
     }
   };
 
   if (loading) {
     return (
       <div className="pt-24 pb-20 min-h-screen flex items-center justify-center">
-        <div className="text-gray-400">Loading...</div>
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
       </div>
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
+
+  const hasSubscription = !!subscription;
+  const userIndicators = subscription?.indicators || [];
 
   return (
     <div className="pt-24 pb-20 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-12 flex justify-between items-start">
+        <div className="mb-10 flex justify-between items-start">
           <div>
             <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
-            <p className="text-gray-400">Manage your account and access requests</p>
+            <p className="text-gray-400">
+              {hasSubscription
+                ? `${PLAN_NAMES[subscription.plan]} plan · ${subscription.billing === 'annual' ? 'Annual' : 'Monthly'} billing`
+                : 'Welcome to Interakktive'
+              }
+            </p>
           </div>
           <button
             onClick={handleSignOut}
@@ -150,199 +179,208 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* ATLAS PRO Access */}
-            <div className="glass p-8 rounded-lg">
-              <div className="flex items-center gap-3 mb-6">
-                <Crown className="w-6 h-6 text-accent-400" />
-                <h2 className="text-2xl font-bold">ATLAS PRO Access</h2>
-              </div>
 
-              {!accessRequest && !showRequestForm && (
-                <div>
+            {/* ── No Subscription ── */}
+            {!hasSubscription && (
+              <FadeIn>
+                <div className="glass p-8 rounded-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Crown className="w-6 h-6 text-accent-400" />
+                    <h2 className="text-2xl font-bold">ATLAS PRO Suite</h2>
+                  </div>
                   <p className="text-gray-300 mb-6">
-                    Request access to our invite-only ATLAS PRO indicator suite. Once approved,
-                    you'll receive a TradingView invite to access these premium indicators.
+                    You don't have an active subscription yet. Subscribe to get access to
+                    our premium trading intelligence indicators on TradingView.
                   </p>
-                  <button
-                    onClick={() => setShowRequestForm(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all font-semibold"
-                  >
-                    Request Access
-                  </button>
-                </div>
-              )}
-
-              {accessRequest?.status === 'pending' && (
-                <div className="flex items-start gap-4 p-6 bg-yellow-500/10 border border-yellow-500/50 rounded-lg">
-                  <Clock className="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="font-semibold text-yellow-400 mb-1">Request Pending</h3>
-                    <p className="text-gray-300">
-                      Your access request is under review. We'll send you an email once it's been processed.
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">
-                      Submitted: {new Date(accessRequest.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {accessRequest?.status === 'approved' && (
-                <div className="flex items-start gap-4 p-6 bg-primary-500/10 border border-primary-500/50 rounded-lg">
-                  <CheckCircle className="w-6 h-6 text-primary-400 flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="font-semibold text-primary-400 mb-1">Access Approved!</h3>
-                    <p className="text-gray-300 mb-4">
-                      Check your email for the TradingView invite link to access ATLAS PRO indicators.
-                    </p>
-                    <a
-                      href="https://www.tradingview.com/u/Interakktive/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors"
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href="/pricing"
+                      className="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all font-semibold flex items-center gap-2"
                     >
-                      View on TradingView
+                      View Pricing
                       <ArrowRight className="w-4 h-4" />
-                    </a>
+                    </Link>
+                    <Link
+                      href="/atlas-pro"
+                      className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all font-semibold"
+                    >
+                      Explore the Suite
+                    </Link>
                   </div>
                 </div>
-              )}
+              </FadeIn>
+            )}
 
-              {accessRequest?.status === 'rejected' && (
-                <div className="flex items-start gap-4 p-6 bg-red-500/10 border border-red-500/50 rounded-lg">
-                  <XCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
-                  <div>
-                    <h3 className="font-semibold text-red-400 mb-1">Request Not Approved</h3>
-                    <p className="text-gray-300">
-                      Your request couldn't be approved at this time. Please contact support for more information.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Request Form */}
-              {showRequestForm && (
-                <div className="p-6 bg-black/40 border border-white/10 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-4">Request ATLAS PRO Access</h3>
-                  <form onSubmit={handleSubmitRequest} className="space-y-4">
-                    <div>
-                      <label htmlFor="tvUsername" className="block text-sm font-medium mb-2">
-                        TradingView Username *
-                      </label>
-                      <input
-                        id="tvUsername"
-                        type="text"
-                        value={tradingViewUsername}
-                        onChange={(e) => setTradingViewUsername(e.target.value)}
-                        required
-                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors"
-                        placeholder="Your TradingView username"
-                      />
-                      <p className="mt-1 text-sm text-gray-500">
-                        We'll send the invite to this TradingView account
-                      </p>
+            {/* ── Active Subscription ── */}
+            {hasSubscription && (
+              <FadeIn>
+                <div className="glass p-8 rounded-xl">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <Crown className="w-6 h-6 text-accent-400" />
+                      <h2 className="text-2xl font-bold">Your Indicators</h2>
                     </div>
-
-                    <div>
-                      <label htmlFor="message" className="block text-sm font-medium mb-2">
-                        Tell us about your trading (optional)
-                      </label>
-                      <textarea
-                        id="message"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        rows={4}
-                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors resize-none"
-                        placeholder="Trading experience, markets you trade, why you're interested in ATLAS PRO, etc."
-                      />
-                    </div>
-
-                    {error && (
-                      <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
-                        {error}
-                      </div>
+                    {canSwap && (
+                      <button
+                        onClick={openSwapModal}
+                        className="flex items-center gap-2 px-4 py-2 bg-accent-400/10 border border-accent-400/30 text-accent-400 rounded-lg hover:bg-accent-400/20 transition-all text-sm font-medium"
+                      >
+                        <ArrowLeftRight className="w-4 h-4" />
+                        Swap Indicator
+                      </button>
                     )}
+                    {subscription.plan === 'advantage' && subscription.swap_used && (
+                      <span className="text-xs text-gray-500 px-3 py-1 bg-white/5 rounded-full">
+                        Swap used this cycle
+                      </span>
+                    )}
+                  </div>
 
-                    <div className="flex gap-3">
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {userIndicators.map((indName) => {
+                      const ind = INDICATORS.find(i => i.id === indName);
+                      if (!ind) return null;
+                      const Icon = ind.icon;
+                      return (
+                        <div
+                          key={ind.id}
+                          className={`p-5 rounded-xl border-2 ${ind.borderColor} ${ind.bgColor}`}
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <Icon className={`w-7 h-7 ${ind.color}`} />
+                            <div>
+                              <p className="font-semibold text-white">{ind.id}</p>
+                              <p className="text-xs text-gray-400">{ind.role}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <a
+                              href={ind.tvUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              TradingView
+                            </a>
+                            <Link
+                              href={ind.docUrl}
+                              className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
+                            >
+                              <BookOpen className="w-3 h-3" />
+                              Documentation
+                            </Link>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {subscription.plan !== 'elite' && (
+                    <div className="mt-6 pt-6 border-t border-white/10">
+                      <p className="text-sm text-gray-400 mb-3">
+                        Want access to all 4 indicators?
+                      </p>
+                      <Link
+                        href="/pricing"
+                        className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1 transition-colors"
                       >
-                        {submitting ? 'Submitting...' : 'Submit Request'}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowRequestForm(false)}
-                        className="px-6 py-3 glass rounded-lg hover:bg-white/10 transition-all"
-                      >
-                        Cancel
-                      </button>
+                        Upgrade to Elite
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
                     </div>
-                  </form>
+                  )}
                 </div>
-              )}
-            </div>
+              </FadeIn>
+            )}
 
             {/* Free Indicators */}
-            <div className="glass p-8 rounded-lg">
-              <h2 className="text-2xl font-bold mb-4">Free Indicators</h2>
-              <p className="text-gray-300 mb-6">
-                Access all 9 free indicators on TradingView. No approval needed.
-              </p>
-              <Link
-                href="/indicators"
-                className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors"
-              >
-                View All Free Indicators
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+            <FadeIn delay={0.1}>
+              <div className="glass p-8 rounded-xl">
+                <h2 className="text-2xl font-bold mb-3">Free Indicators</h2>
+                <p className="text-gray-300 mb-4">
+                  Access all 9 free diagnostic indicators on TradingView — no subscription needed.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    href="/indicators"
+                    className="flex items-center gap-2 text-primary-400 hover:text-primary-300 transition-colors text-sm font-medium"
+                  >
+                    View All Free Indicators
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    href="/learn/free-indicators"
+                    className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    Free Indicator Docs
+                  </Link>
+                </div>
+              </div>
+            </FadeIn>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Account Info */}
-            <div className="glass p-6 rounded-lg">
+            <div className="glass p-6 rounded-xl">
               <div className="flex items-center gap-3 mb-4">
                 <User className="w-5 h-5 text-primary-400" />
                 <h3 className="font-semibold">Account</h3>
               </div>
               <div className="space-y-3 text-sm">
                 <div>
-                  <p className="text-gray-400">Email</p>
+                  <p className="text-gray-500">Email</p>
                   <p className="text-white">{user.email}</p>
                 </div>
-                {profile?.tradingview_username && (
+                {subscription?.tradingview_username && (
                   <div>
-                    <p className="text-gray-400">TradingView</p>
-                    <p className="text-white">{profile.tradingview_username}</p>
+                    <p className="text-gray-500">TradingView</p>
+                    <p className="text-white">{subscription.tradingview_username}</p>
                   </div>
                 )}
+                {hasSubscription && (
+                  <>
+                    <div>
+                      <p className="text-gray-500">Plan</p>
+                      <p className="text-white">{PLAN_NAMES[subscription!.plan]} · {subscription!.billing === 'annual' ? 'Annual' : 'Monthly'}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">Status</p>
+                      <p className={subscription!.status === 'active' ? 'text-green-400' : 'text-amber-400'}>
+                        {subscription!.status === 'active' ? 'Active' : subscription!.status}
+                      </p>
+                    </div>
+                    {subscription!.current_period_end && (
+                      <div>
+                        <p className="text-gray-500">Renews</p>
+                        <p className="text-white">
+                          {new Date(subscription!.current_period_end).toLocaleDateString()}
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
                 <div>
-                  <p className="text-gray-400">Member since</p>
-                  <p className="text-white">
-                    {new Date(user.created_at).toLocaleDateString()}
-                  </p>
+                  <p className="text-gray-500">Member since</p>
+                  <p className="text-white">{new Date(user.created_at).toLocaleDateString()}</p>
                 </div>
               </div>
             </div>
 
             {/* Quick Links */}
-            <div className="glass p-6 rounded-lg">
+            <div className="glass p-6 rounded-xl">
               <h3 className="font-semibold mb-4">Quick Links</h3>
-              <div className="space-y-3">
-                <Link
-                  href="/indicators"
-                  className="block text-gray-400 hover:text-white transition-colors"
-                >
+              <div className="space-y-3 text-sm">
+                <Link href="/indicators" className="block text-gray-400 hover:text-white transition-colors">
                   Free Indicators
                 </Link>
-                <Link
-                  href="/atlas-pro"
-                  className="block text-gray-400 hover:text-white transition-colors"
-                >
-                  ATLAS PRO
+                <Link href="/atlas-pro" className="block text-gray-400 hover:text-white transition-colors">
+                  ATLAS PRO Suite
+                </Link>
+                <Link href="/learn" className="block text-gray-400 hover:text-white transition-colors">
+                  Documentation
                 </Link>
                 <a
                   href="https://www.tradingview.com/u/Interakktive/"
@@ -354,9 +392,125 @@ export default function DashboardPage() {
                 </a>
               </div>
             </div>
+
+            {/* Need Help */}
+            <div className="glass p-6 rounded-xl">
+              <h3 className="font-semibold mb-2">Need Help?</h3>
+              <p className="text-gray-400 text-sm mb-3">
+                Questions about your subscription or indicators?
+              </p>
+              <a
+                href="mailto:support@interakktive.com"
+                className="text-primary-400 hover:text-primary-300 text-sm transition-colors"
+              >
+                support@interakktive.com
+              </a>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* ── Swap Modal ── */}
+      {showSwapModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <FadeIn>
+            <div className="glass-card p-8 rounded-xl max-w-md w-full">
+              <h2 className="text-xl font-bold mb-2">Swap Indicators</h2>
+              <p className="text-sm text-gray-400 mb-1">
+                Choose your 2 indicators for this billing cycle.
+              </p>
+              <p className="text-xs text-amber-400 mb-4">
+                You can only swap once per billing cycle. This action cannot be undone.
+              </p>
+
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                {INDICATORS.map((ind) => {
+                  const Icon = ind.icon;
+                  const isSelected = swapSelections.includes(ind.id);
+                  const isFull = !isSelected && swapSelections.length >= 2;
+
+                  return (
+                    <button
+                      key={ind.id}
+                      type="button"
+                      onClick={() => toggleSwapSelection(ind.id)}
+                      className={`relative p-3 rounded-lg border-2 transition-all text-left ${
+                        isSelected
+                          ? `${ind.borderColor} ${ind.bgColor}`
+                          : isFull
+                          ? 'border-white/5 bg-white/[0.02] opacity-40 cursor-not-allowed'
+                          : 'border-white/10 bg-white/[0.02] hover:border-white/30'
+                      }`}
+                    >
+                      {isSelected && (
+                        <div className={`absolute top-2 right-2 w-5 h-5 rounded-full ${ind.bgColor} flex items-center justify-center`}>
+                          <Check className={`w-3 h-3 ${ind.color}`} />
+                        </div>
+                      )}
+                      <Icon className={`w-6 h-6 ${isSelected ? ind.color : 'text-gray-500'} mb-1.5`} />
+                      <p className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-400'}`}>{ind.id}</p>
+                      <p className={`text-xs ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>{ind.role}</p>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {swapSelections.length === 2 && (
+                <p className="text-xs text-gray-400 mb-4">
+                  New selection: {swapSelections.join(' + ')}
+                </p>
+              )}
+
+              {swapError && (
+                <div className="p-3 mb-4 bg-accent-500/10 border border-accent-500/30 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-accent-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-accent-400 text-sm">{swapError}</p>
+                </div>
+              )}
+
+              {swapSuccess && (
+                <div className="p-3 mb-4 bg-primary-500/10 border border-primary-500/30 rounded-lg flex items-start gap-2">
+                  <Check className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-primary-400 text-sm font-medium">Swap confirmed!</p>
+                    <p className="text-gray-400 text-xs mt-1">
+                      We'll update your TradingView access within 4 hours.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                {!swapSuccess ? (
+                  <>
+                    <button
+                      onClick={handleSwap}
+                      disabled={swapping || swapSelections.length !== 2}
+                      className="flex-1 py-3 bg-gradient-to-r from-primary-400 to-accent-500 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
+                    >
+                      {swapping ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                      {swapping ? 'Swapping...' : 'Confirm Swap'}
+                    </button>
+                    <button
+                      onClick={() => setShowSwapModal(false)}
+                      className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setShowSwapModal(false)}
+                    className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all font-semibold"
+                  >
+                    Close
+                  </button>
+                )}
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      )}
     </div>
   );
 }
