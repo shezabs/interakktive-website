@@ -1,13 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Check, ArrowRight } from 'lucide-react';
 import { pricingTiers, getProIndicators } from '@/app/lib/indicators-data';
 import { FadeIn, FadeInView, StaggerContainer, StaggerItem, HoverScale, SectionWrapper, GradientDivider } from '@/app/components/animations';
 
 export default function PricingPage() {
-  const [isAnnual, setIsAnnual] = useState(true);
+  const searchParams = useSearchParams();
+  const billingParam = searchParams.get('billing');
+  const [isAnnual, setIsAnnual] = useState(billingParam === 'monthly' ? false : true);
+
+  useEffect(() => {
+    if (billingParam === 'monthly') setIsAnnual(false);
+    if (billingParam === 'annual') setIsAnnual(true);
+  }, [billingParam]);
+
   const proIndicators = getProIndicators();
 
   return (

@@ -70,7 +70,7 @@ export default function CheckoutStartPage() {
       <SectionWrapper variant="dark" className="min-h-screen">
         <div className="max-w-md mx-auto px-4 relative">
           <Link
-            href="/pricing"
+            href={`/pricing?billing=${billing}`}
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4" />
