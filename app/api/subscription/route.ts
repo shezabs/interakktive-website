@@ -43,7 +43,34 @@ export async function POST(request: NextRequest) {
           .eq('id', subscriptionId);
         return NextResponse.json({ status: 'cancelled', message: 'Subscription cancelled.' });
       }
-      return NextResponse.json({ error: 'Cannot reactivate a manual subscription' }, { status: 400 });
+      if (action === 'upgrade') {
+        // Get current plan
+        const { data: fullSub } = await supabaseAdmin
+          .from('subscriptions')
+          .select('plan, indicators')
+          .eq('id', subscriptionId)
+          .single();
+        if (!fullSub) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
+        const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+        const targetPlan = fullSub.plan === 'starter' ? 'advantage' : 'elite';
+        const newIndicators = targetPlan === 'elite' ? allIndicators : fullSub.indicators;
+
+        await supabaseAdmin
+          .from('subscriptions')
+          .update({ plan: targetPlan, indicators: newIndicators, updated_at: new Date().toISOString() })
+          .eq('id', subscriptionId);
+
+        return NextResponse.json({ status: 'upgraded', plan: targetPlan, message: `Upgraded to ${targetPlan}. Contact support for billing adjustment.` });
+      }
+      if (action === 'reactivate') {
+        await supabaseAdmin
+          .from('subscriptions')
+          .update({ status: 'active', updated_at: new Date().toISOString() })
+          .eq('id', subscriptionId);
+        return NextResponse.json({ status: 'active', message: 'Subscription reactivated.' });
+      }
+      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
 
     const stripe = getStripe();
