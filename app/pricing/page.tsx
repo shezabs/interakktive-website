@@ -192,7 +192,7 @@ export default function PricingPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
               What You Get with{' '}
               <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-                ATLAS Pro
+                ATLAS PRO
               </span>
             </h2>
           </FadeInView>
@@ -306,7 +306,7 @@ export default function PricingPage() {
               },
               {
                 q: 'Can I try before I buy?',
-                a: 'We have 9 free indicators that demonstrate our approach to diagnostic intelligence. Try Sessions+, Market State Intelligence, or any of our open-source tools first.',
+                a: 'We have 9 free indicators that demonstrate our approach to diagnostic intelligence. Try Sessions +, Market State Intelligence, or any of our open-source tools first.',
               },
             ].map((faq, idx) => (
               <FadeInView key={idx} delay={idx * 0.05}>

@@ -18,7 +18,7 @@ export default function CheckoutSuccessPage() {
               <h1 className="text-3xl font-bold mb-3">Payment Successful</h1>
 
               <p className="text-lg text-gray-300 mb-6">
-                Thank you for subscribing to ATLAS Pro.
+                Thank you for subscribing to ATLAS PRO.
               </p>
 
               <div className="bg-black/30 rounded-lg p-4 mb-8 border border-white/5">
