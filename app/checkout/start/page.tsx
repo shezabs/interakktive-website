@@ -27,23 +27,28 @@ export default function CheckoutStartPage() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [existingSub, setExistingSub] = useState<{ plan: string } | null>(null);
 
-  // Pre-fill from logged-in user
+  // Pre-fill from logged-in user + check for existing subscription
   useEffect(() => {
     const prefill = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         if (user.email) setEmail(user.email);
-        // Try to get TV username from existing subscription
+        // Check for existing active subscription
         const { data: sub } = await supabase
           .from('subscriptions')
-          .select('tradingview_username')
+          .select('tradingview_username, plan, status')
           .eq('user_email', user.email)
+          .in('status', ['active', 'cancelling'])
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
         if (sub?.tradingview_username) {
           setTradingViewUsername(sub.tradingview_username);
+        }
+        if (sub?.plan) {
+          setExistingSub({ plan: sub.plan });
         }
       }
     };
@@ -146,6 +151,36 @@ export default function CheckoutStartPage() {
           </Link>
 
           <FadeIn>
+            {/* Block if already subscribed */}
+            {existingSub && (
+              <div className="glass-card p-8 rounded-xl text-center">
+                <AlertCircle className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+                <h2 className="text-xl font-bold mb-2">You Already Have a Subscription</h2>
+                <p className="text-gray-400 text-sm mb-2">
+                  You&apos;re currently on the <strong className="text-white">{existingSub.plan.charAt(0).toUpperCase() + existingSub.plan.slice(1)}</strong> plan.
+                </p>
+                <p className="text-gray-500 text-sm mb-6">
+                  To change your plan, use the upgrade or cancel options in your dashboard.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <Link
+                    href="/dashboard"
+                    className="w-full py-3 bg-gradient-to-r from-primary-400 to-primary-500 rounded-lg font-semibold text-center text-white"
+                  >
+                    Go to Dashboard
+                  </Link>
+                  <Link
+                    href={`/pricing?billing=${billing}`}
+                    className="text-gray-400 hover:text-white text-sm transition-colors"
+                  >
+                    Back to pricing
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* Normal checkout form — only if no existing subscription */}
+            {!existingSub && (
             <div className="glass-card p-8 rounded-xl">
               {/* Order Summary */}
               <div className="mb-6 pb-6 border-b border-white/10">
@@ -301,6 +336,7 @@ export default function CheckoutStartPage() {
                 </p>
               </form>
             </div>
+            )}
           </FadeIn>
         </div>
       </SectionWrapper>
