@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Mail, User as UserIcon, Loader2, AlertCircle, Crosshair, Eye, Activity, Radio, Check } from 'lucide-react';
 import { pricingTiers } from '@/app/lib/indicators-data';
+import { supabase } from '@/app/lib/supabase';
 import { FadeIn, SectionWrapper } from '@/app/components/animations';
 
 const INDICATORS = [
@@ -26,6 +27,28 @@ export default function CheckoutStartPage() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Pre-fill from logged-in user
+  useEffect(() => {
+    const prefill = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        if (user.email) setEmail(user.email);
+        // Try to get TV username from existing subscription
+        const { data: sub } = await supabase
+          .from('subscriptions')
+          .select('tradingview_username')
+          .eq('user_email', user.email)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        if (sub?.tradingview_username) {
+          setTradingViewUsername(sub.tradingview_username);
+        }
+      }
+    };
+    prefill();
+  }, []);
 
   const tier = pricingTiers.find(t => t.id === planId);
   const price = billing === 'annual'
