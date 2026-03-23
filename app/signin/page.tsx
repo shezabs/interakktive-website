@@ -89,6 +89,11 @@ export default function SignInPage() {
                   placeholder="Your password"
                 />
               </div>
+              <div className="flex justify-end mt-1">
+                <Link href="/forgot-password" className="text-xs text-primary-400 hover:text-primary-300 transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
 
             {/* Error Message */}
