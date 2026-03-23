@@ -90,14 +90,14 @@ export default function PricingPage() {
                       </div>
                     )}
 
-                    {/* Tier Header */}
-                    <div className="mb-6">
+                    {/* Tier Header - fixed height so all cards align */}
+                    <div className="mb-6 min-h-[72px]">
                       <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
                       <p className="text-gray-400 text-sm">{tier.description}</p>
                     </div>
 
-                    {/* Price */}
-                    <div className="mb-6">
+                    {/* Price - fixed height for alignment */}
+                    <div className="mb-6 min-h-[72px]">
                       {isAnnual ? (
                         <>
                           <div className="flex items-baseline gap-1">
@@ -127,8 +127,8 @@ export default function PricingPage() {
                       )}
                     </div>
 
-                    {/* Indicators */}
-                    <div className="mb-6">
+                    {/* Indicators - fixed height for alignment */}
+                    <div className="mb-6 min-h-[120px]">
                       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                         Includes
                       </p>
