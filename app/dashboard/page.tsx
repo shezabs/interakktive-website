@@ -452,10 +452,13 @@ export default function DashboardPage() {
                   {/* Upgrade */}
                   {subscription!.plan !== 'elite' && subscription!.status === 'active' && (
                     <Link
-                      href="/pricing"
+                      href={subscription!.plan === 'starter' 
+                        ? `/checkout/start?plan=duo&billing=${subscription!.billing}`
+                        : `/checkout/start?plan=suite&billing=${subscription!.billing}`
+                      }
                       className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium"
                     >
-                      Upgrade Plan
+                      Upgrade to {subscription!.plan === 'starter' ? 'Advantage' : 'Elite'}
                     </Link>
                   )}
 
