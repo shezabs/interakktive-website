@@ -45,6 +45,11 @@ export default function DashboardPage() {
   const [swapError, setSwapError] = useState('');
   const [swapSuccess, setSwapSuccess] = useState(false);
 
+  // Cancel state
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,14 +57,14 @@ export default function DashboardPage() {
         if (userError || !currentUser) { router.push('/signin'); return; }
         setUser(currentUser);
 
-        // Fetch active subscription — try by user_id first, then by email
+        // Fetch active/cancelling subscription — try by user_id first, then by email
         let subData = null;
         
         const { data: byUserId } = await supabase
           .from('subscriptions')
           .select('*')
           .eq('user_id', currentUser.id)
-          .eq('status', 'active')
+          .in('status', ['active', 'cancelling'])
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
@@ -67,19 +72,17 @@ export default function DashboardPage() {
         if (byUserId) {
           subData = byUserId;
         } else if (currentUser.email) {
-          // User might have paid before signing up — match by email
           const { data: byEmail } = await supabase
             .from('subscriptions')
             .select('*')
             .eq('user_email', currentUser.email)
-            .eq('status', 'active')
+            .in('status', ['active', 'cancelling'])
             .order('created_at', { ascending: false })
             .limit(1)
             .single();
 
           if (byEmail) {
             subData = byEmail;
-            // Link the subscription to this user for future lookups
             await supabase
               .from('subscriptions')
               .update({ user_id: currentUser.id })
@@ -100,6 +103,47 @@ export default function DashboardPage() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push('/');
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!subscription) return;
+    setCancelling(true);
+    setCancelError('');
+    try {
+      const res = await fetch('/api/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriptionId: subscription.id, action: 'cancel' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setCancelError(data.error || 'Failed to cancel.'); return; }
+      setSubscription(prev => prev ? { ...prev, status: 'cancelling' } : null);
+      setShowCancelConfirm(false);
+    } catch (err) {
+      setCancelError('Network error. Please try again.');
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const handleReactivate = async () => {
+    if (!subscription) return;
+    setCancelling(true);
+    setCancelError('');
+    try {
+      const res = await fetch('/api/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subscriptionId: subscription.id, action: 'reactivate' }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setCancelError(data.error || 'Failed to reactivate.'); return; }
+      setSubscription(prev => prev ? { ...prev, status: 'active' } : null);
+    } catch (err) {
+      setCancelError('Network error. Please try again.');
+    } finally {
+      setCancelling(false);
+    }
   };
 
   const canSwap = subscription?.plan === 'advantage' && !subscription?.swap_used;
@@ -373,13 +417,19 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-gray-500">Status</p>
-                      <p className={subscription!.status === 'active' ? 'text-green-400' : 'text-amber-400'}>
-                        {subscription!.status === 'active' ? 'Active' : subscription!.status}
+                      <p className={
+                        subscription!.status === 'active' ? 'text-green-400' 
+                        : subscription!.status === 'cancelling' ? 'text-amber-400'
+                        : 'text-red-400'
+                      }>
+                        {subscription!.status === 'active' ? 'Active' 
+                         : subscription!.status === 'cancelling' ? 'Cancelling at period end'
+                         : subscription!.status}
                       </p>
                     </div>
                     {subscription!.current_period_end && (
                       <div>
-                        <p className="text-gray-500">Renews</p>
+                        <p className="text-gray-500">{subscription!.status === 'cancelling' ? 'Access until' : 'Renews'}</p>
                         <p className="text-white">
                           {new Date(subscription!.current_period_end).toLocaleDateString()}
                         </p>
@@ -393,6 +443,77 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* Manage Subscription */}
+            {hasSubscription && (
+              <div className="glass p-6 rounded-xl">
+                <h3 className="font-semibold mb-4">Manage Subscription</h3>
+                <div className="space-y-3">
+                  {/* Upgrade */}
+                  {subscription!.plan !== 'elite' && subscription!.status === 'active' && (
+                    <Link
+                      href="/pricing"
+                      className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium"
+                    >
+                      Upgrade Plan
+                    </Link>
+                  )}
+
+                  {/* Cancelling state — offer reactivation */}
+                  {subscription!.status === 'cancelling' && (
+                    <div>
+                      <p className="text-xs text-amber-400 mb-2">
+                        Your subscription will end on {new Date(subscription!.current_period_end!).toLocaleDateString()}. You keep full access until then.
+                      </p>
+                      <button
+                        onClick={handleReactivate}
+                        disabled={cancelling}
+                        className="w-full py-2 px-4 bg-primary-500/20 border border-primary-500/30 text-primary-400 rounded-lg hover:bg-primary-500/30 transition-all text-sm font-medium disabled:opacity-50"
+                      >
+                        {cancelling ? 'Processing...' : 'Reactivate Subscription'}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Active state — offer cancellation */}
+                  {subscription!.status === 'active' && !showCancelConfirm && (
+                    <button
+                      onClick={() => setShowCancelConfirm(true)}
+                      className="block w-full text-center py-2 px-4 text-gray-500 hover:text-red-400 transition-colors text-xs"
+                    >
+                      Cancel subscription
+                    </button>
+                  )}
+
+                  {/* Cancel confirmation */}
+                  {showCancelConfirm && (
+                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+                      <p className="text-sm text-gray-300 mb-3">
+                        Are you sure? Your access continues until the end of your current billing period. No refunds for remaining time.
+                      </p>
+                      {cancelError && (
+                        <p className="text-xs text-red-400 mb-2">{cancelError}</p>
+                      )}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleCancelSubscription}
+                          disabled={cancelling}
+                          className="flex-1 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/30 transition-all text-sm font-medium disabled:opacity-50"
+                        >
+                          {cancelling ? 'Cancelling...' : 'Yes, cancel'}
+                        </button>
+                        <button
+                          onClick={() => { setShowCancelConfirm(false); setCancelError(''); }}
+                          className="flex-1 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-sm"
+                        >
+                          Keep subscription
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Quick Links */}
             <div className="glass p-6 rounded-xl">
