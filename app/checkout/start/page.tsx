@@ -1,11 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Mail, User as UserIcon, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Mail, User as UserIcon, Loader2, AlertCircle, Crosshair, Eye, Activity, Radio, Check } from 'lucide-react';
 import { pricingTiers } from '@/app/lib/indicators-data';
 import { FadeIn, SectionWrapper } from '@/app/components/animations';
+
+const INDICATORS = [
+  { id: 'cipher', name: 'CIPHER PRO', role: 'Signal Intelligence', icon: Crosshair, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10' },
+  { id: 'phantom', name: 'PHANTOM PRO', role: 'Structure Intelligence', icon: Eye, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10' },
+  { id: 'pulse', name: 'PULSE PRO', role: 'Momentum Intelligence', icon: Activity, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10' },
+  { id: 'radar', name: 'RADAR PRO', role: 'Screening Intelligence', icon: Radio, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10' },
+];
 
 export default function CheckoutStartPage() {
   const searchParams = useSearchParams();
@@ -14,6 +21,9 @@ export default function CheckoutStartPage() {
 
   const [email, setEmail] = useState('');
   const [tradingViewUsername, setTradingViewUsername] = useState('');
+  const [selectedIndicators, setSelectedIndicators] = useState<string[]>(
+    planId === 'suite' ? INDICATORS.map(i => i.id) : []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -21,6 +31,29 @@ export default function CheckoutStartPage() {
   const price = billing === 'annual'
     ? (tier?.annualPrice || 0)
     : (tier?.monthlyPrice || 0);
+
+  // How many indicators can they pick?
+  const maxSelections = planId === 'single' ? 1 : planId === 'duo' ? 2 : 4;
+  const isElite = planId === 'suite';
+  const needsSelection = !isElite;
+
+  const toggleIndicator = (id: string) => {
+    if (isElite) return; // Elite gets all, no toggling
+    
+    setSelectedIndicators(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(i => i !== id);
+      }
+      if (prev.length >= maxSelections) {
+        // For single plan, replace the selection
+        if (maxSelections === 1) {
+          return [id];
+        }
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +66,17 @@ export default function CheckoutStartPage() {
       return;
     }
 
+    if (needsSelection && selectedIndicators.length !== maxSelections) {
+      setError(`Please select ${maxSelections} indicator${maxSelections > 1 ? 's' : ''} to continue.`);
+      setLoading(false);
+      return;
+    }
+
+    // Get the display names for selected indicators
+    const selectedNames = selectedIndicators.map(id => 
+      INDICATORS.find(i => i.id === id)?.name || id
+    );
+
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -42,6 +86,7 @@ export default function CheckoutStartPage() {
           billing,
           email,
           tradingViewUsername: tradingViewUsername.trim(),
+          indicators: selectedNames,
         }),
       });
 
@@ -68,7 +113,7 @@ export default function CheckoutStartPage() {
   return (
     <div className="pt-24 pb-20 min-h-screen">
       <SectionWrapper variant="dark" className="min-h-screen">
-        <div className="max-w-md mx-auto px-4 relative">
+        <div className="max-w-lg mx-auto px-4 relative">
           <Link
             href={`/pricing?billing=${billing}`}
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
@@ -82,7 +127,7 @@ export default function CheckoutStartPage() {
               {/* Order Summary */}
               <div className="mb-6 pb-6 border-b border-white/10">
                 <p className="text-sm text-gray-400 mb-1">You&apos;re subscribing to</p>
-                <h1 className="text-2xl font-bold mb-1">{tier?.name || 'ATLAS Pro'}</h1>
+                <h1 className="text-2xl font-bold mb-1">{tier?.name || 'ATLAS PRO'}</h1>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-primary-400">${price}</span>
                   <span className="text-gray-400">/{billing === 'annual' ? 'year' : 'month'}</span>
@@ -91,6 +136,71 @@ export default function CheckoutStartPage() {
                   <p className="text-sm text-gray-500 mt-1">
                     <span className="line-through">${tier.annualOriginalPrice}/yr</span>
                     <span className="text-primary-400 ml-2">Save ${tier.annualOriginalPrice - price}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* Indicator Selection */}
+              <div className="mb-6 pb-6 border-b border-white/10">
+                <p className="text-sm font-medium mb-1">
+                  {isElite 
+                    ? 'Your indicators' 
+                    : `Choose ${maxSelections === 1 ? 'your indicator' : `your ${maxSelections} indicators`}`
+                  }
+                </p>
+                {needsSelection && (
+                  <p className="text-xs text-gray-500 mb-3">
+                    {planId === 'single' 
+                      ? 'Select 1 indicator. This selection is locked for the billing period.'
+                      : 'Select 2 indicators. You can swap once per billing cycle.'
+                    }
+                  </p>
+                )}
+                {isElite && (
+                  <p className="text-xs text-gray-500 mb-3">All 4 indicators included with Elite.</p>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  {INDICATORS.map((indicator) => {
+                    const Icon = indicator.icon;
+                    const isSelected = selectedIndicators.includes(indicator.id);
+                    const isDisabled = isElite;
+                    const isFull = !isElite && !isSelected && selectedIndicators.length >= maxSelections && maxSelections > 1;
+
+                    return (
+                      <button
+                        key={indicator.id}
+                        type="button"
+                        onClick={() => toggleIndicator(indicator.id)}
+                        disabled={isDisabled}
+                        className={`relative p-3 rounded-lg border-2 transition-all text-left ${
+                          isSelected
+                            ? `${indicator.borderColor} ${indicator.bgColor}`
+                            : isFull
+                            ? 'border-white/5 bg-white/[0.02] opacity-40 cursor-not-allowed'
+                            : 'border-white/10 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.05]'
+                        } ${isDisabled ? 'cursor-default' : 'cursor-pointer'}`}
+                      >
+                        {isSelected && (
+                          <div className={`absolute top-2 right-2 w-5 h-5 rounded-full ${indicator.bgColor} flex items-center justify-center`}>
+                            <Check className={`w-3 h-3 ${indicator.color}`} />
+                          </div>
+                        )}
+                        <Icon className={`w-6 h-6 ${isSelected ? indicator.color : 'text-gray-500'} mb-1.5`} />
+                        <p className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-400'}`}>
+                          {indicator.name}
+                        </p>
+                        <p className={`text-xs ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
+                          {indicator.role}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {needsSelection && selectedIndicators.length > 0 && (
+                  <p className="text-xs text-gray-400 mt-3">
+                    Selected: {selectedIndicators.map(id => INDICATORS.find(i => i.id === id)?.name).join(', ')}
                   </p>
                 )}
               </div>
@@ -150,7 +260,7 @@ export default function CheckoutStartPage() {
                 {/* Submit */}
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || (needsSelection && selectedIndicators.length !== maxSelections)}
                   className="w-full py-3 bg-gradient-to-r from-primary-400 to-primary-500 hover:from-primary-500 hover:to-primary-600 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
                 >
                   {loading ? (
