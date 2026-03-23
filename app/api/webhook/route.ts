@@ -136,8 +136,9 @@ export async function POST(request: NextRequest) {
       const status = subscription.status;
 
       // Get period end from Stripe
-      const periodEnd = new Date(subscription.current_period_end * 1000);
-      const periodStart = new Date(subscription.current_period_start * 1000);
+      const subObj = subscription as any;
+      const periodEnd = new Date((subObj.current_period_end || Math.floor(Date.now() / 1000)) * 1000);
+      const periodStart = new Date((subObj.current_period_start || Math.floor(Date.now() / 1000)) * 1000);
 
       // Update subscription status and period
       const { error: updateError } = await supabaseAdmin
