@@ -1,54 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/app/lib/stripe';
+import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
-// Disable body parsing — Stripe needs raw body for signature verification
 export const runtime = 'nodejs';
 
-async function sendNotificationEmail(data: {
-  email: string;
-  tradingViewUsername: string;
-  plan: string;
-  billing: string;
-  indicators: string;
-  amount: string;
-  stripeCustomerId: string;
-  subscriptionId: string;
-}) {
-  // Send notification via Supabase Edge Function, or a simple email service
-  // For now, log to console — replace with actual email sending
-  console.log('=== NEW SUBSCRIPTION ===');
-  console.log(`Email: ${data.email}`);
-  console.log(`TradingView Username: ${data.tradingViewUsername}`);
-  console.log(`Plan: ${data.plan} (${data.billing})`);
-  console.log(`Indicators: ${data.indicators || 'Elite'}`);
-  console.log(`Amount: ${data.amount}`);
-  console.log(`Stripe Customer: ${data.stripeCustomerId}`);
-  console.log(`Subscription: ${data.subscriptionId}`);
-  console.log('========================');
+// Use service role key for webhook — bypasses RLS
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) {
+    throw new Error('Missing Supabase env vars for webhook');
+  }
+  return createClient(url, serviceKey);
+}
 
-  // TODO: Replace with actual email notification
-  // Options:
-  // 1. Resend (resend.com) — simple API, free tier
-  // 2. Supabase Edge Function that sends email
-  // 3. Stripe's built-in email receipts (already enabled by default)
-  //
-  // Example with Resend:
-  // const resend = new Resend(process.env.RESEND_API_KEY);
-  // await resend.emails.send({
-  //   from: 'ATLAS <notifications@interakktive.com>',
-  //   to: process.env.ADMIN_EMAIL || 'shezab@interakktive.com',
-  //   subject: `New Subscription: ${data.tradingViewUsername} — ${data.plan}`,
-  //   html: `
-  //     <h2>New ATLAS PRO Subscription</h2>
-  //     <p><strong>TradingView Username:</strong> ${data.tradingViewUsername}</p>
-  //     <p><strong>Email:</strong> ${data.email}</p>
-  //     <p><strong>Plan:</strong> ${data.plan} (${data.billing})</p>
-  //     <p><strong>Indicators:</strong> ${data.indicators || 'Elite'}</p>
-  //     <p><strong>Amount:</strong> ${data.amount}</p>
-  //     <p>Grant TradingView access now.</p>
-  //   `,
-  // });
+// Map Stripe plan IDs to our plan names
+function getPlanFromPriceId(priceId: string): { plan: string; billing: string } | null {
+  const map: Record<string, { plan: string; billing: string }> = {
+    [process.env.STRIPE_PRICE_STARTER_MONTHLY || '']: { plan: 'starter', billing: 'monthly' },
+    [process.env.STRIPE_PRICE_STARTER_ANNUAL || '']: { plan: 'starter', billing: 'annual' },
+    [process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY || '']: { plan: 'advantage', billing: 'monthly' },
+    [process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL || '']: { plan: 'advantage', billing: 'annual' },
+    [process.env.STRIPE_PRICE_ELITE_MONTHLY || '']: { plan: 'elite', billing: 'monthly' },
+    [process.env.STRIPE_PRICE_ELITE_ANNUAL || '']: { plan: 'elite', billing: 'annual' },
+  };
+  return map[priceId] || null;
 }
 
 export async function POST(request: NextRequest) {
@@ -74,85 +51,160 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  // Handle events
+  const supabaseAdmin = getSupabaseAdmin();
+
   switch (event.type) {
+    // ── CHECKOUT COMPLETED — Create subscription in Supabase ──
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      const tradingViewUsername = session.metadata?.tradingview_username || 'NOT PROVIDED';
-      const plan = session.metadata?.plan || 'unknown';
-      const billing = session.metadata?.billing || 'unknown';
-      const indicators = session.metadata?.selected_indicators || '';
+      const email = session.customer_email || '';
+      const tradingViewUsername = session.metadata?.tradingview_username || '';
+      const plan = session.metadata?.plan || 'starter';
+      const billing = session.metadata?.billing || 'monthly';
+      const indicatorsRaw = session.metadata?.selected_indicators || '';
+      const indicators = indicatorsRaw ? indicatorsRaw.split(',').map(s => s.trim()) : [];
 
-      await sendNotificationEmail({
-        email: session.customer_email || 'unknown',
-        tradingViewUsername,
-        plan,
+      // If elite, ensure all 4 indicators
+      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+      const finalIndicators = plan === 'suite' || plan === 'elite' ? allIndicators : indicators;
+
+      const stripeCustomerId = typeof session.customer === 'string'
+        ? session.customer
+        : session.customer?.id || '';
+      const stripeSubscriptionId = typeof session.subscription === 'string'
+        ? session.subscription
+        : session.subscription?.id || '';
+
+      // Try to find the Supabase user by email
+      const { data: userList } = await supabaseAdmin.auth.admin.listUsers();
+      const matchedUser = userList?.users?.find(u => u.email === email);
+
+      // Calculate period end
+      const now = new Date();
+      const periodEnd = new Date(now);
+      if (billing === 'annual') {
+        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+      } else {
+        periodEnd.setMonth(periodEnd.getMonth() + 1);
+      }
+
+      // Normalise plan name (checkout sends 'single'/'duo'/'suite', db expects 'starter'/'advantage'/'elite')
+      const planMap: Record<string, string> = { single: 'starter', duo: 'advantage', suite: 'elite' };
+      const normalisedPlan = planMap[plan] || plan;
+
+      // Insert subscription
+      const { error: insertError } = await supabaseAdmin.from('subscriptions').insert({
+        user_id: matchedUser?.id || null,
+        user_email: email,
+        tradingview_username: tradingViewUsername,
+        plan: normalisedPlan,
         billing,
-        indicators,
-        amount: session.amount_total
-          ? `$${(session.amount_total / 100).toFixed(2)} ${session.currency?.toUpperCase()}`
-          : 'unknown',
-        stripeCustomerId: typeof session.customer === 'string'
-          ? session.customer
-          : session.customer?.id || 'unknown',
-        subscriptionId: typeof session.subscription === 'string'
-          ? session.subscription
-          : session.subscription?.id || 'unknown',
+        indicators: finalIndicators,
+        stripe_customer_id: stripeCustomerId,
+        stripe_subscription_id: stripeSubscriptionId,
+        status: 'active',
+        swap_used: false,
+        current_period_start: now.toISOString(),
+        current_period_end: periodEnd.toISOString(),
+        swap_reset_date: periodEnd.toISOString(),
       });
 
-      // TODO: Update Supabase with subscription data
-      // await supabase.from('customers').upsert({
-      //   email: session.customer_email,
-      //   tradingview_username: tradingViewUsername,
-      //   stripe_customer_id: session.customer,
-      //   stripe_subscription_id: session.subscription,
-      //   plan,
-      //   billing,
-      //   status: 'active',
-      //   indicators: indicators,
-      // });
+      if (insertError) {
+        console.error('Failed to insert subscription:', insertError);
+      } else {
+        console.log(`✅ Subscription created: ${email} — ${normalisedPlan} (${billing}) — ${finalIndicators.join(', ')}`);
+      }
+
+      // Log for admin notification
+      console.log('=== NEW SUBSCRIPTION ===');
+      console.log(`Email: ${email}`);
+      console.log(`TradingView: ${tradingViewUsername}`);
+      console.log(`Plan: ${normalisedPlan} (${billing})`);
+      console.log(`Indicators: ${finalIndicators.join(', ')}`);
+      console.log(`Stripe Customer: ${stripeCustomerId}`);
+      console.log(`Subscription: ${stripeSubscriptionId}`);
+      console.log('========================');
 
       break;
     }
 
+    // ── SUBSCRIPTION UPDATED — Sync status + reset swap on renewal ──
     case 'customer.subscription.updated': {
       const subscription = event.data.object as Stripe.Subscription;
-      console.log(`Subscription updated: ${subscription.id} — Status: ${subscription.status}`);
+      const stripeSubId = subscription.id;
+      const status = subscription.status;
 
-      // TODO: Update Supabase subscription status
-      // await supabase.from('customers')
-      //   .update({ status: subscription.status })
-      //   .eq('stripe_subscription_id', subscription.id);
+      // Get period end from Stripe
+      const periodEnd = new Date(subscription.current_period_end * 1000);
+      const periodStart = new Date(subscription.current_period_start * 1000);
+
+      // Update subscription status and period
+      const { error: updateError } = await supabaseAdmin
+        .from('subscriptions')
+        .update({
+          status: status === 'active' ? 'active' : status === 'past_due' ? 'past_due' : status,
+          current_period_start: periodStart.toISOString(),
+          current_period_end: periodEnd.toISOString(),
+          // Reset swap on renewal (new period = new swap allowance)
+          swap_used: false,
+          swap_reset_date: periodEnd.toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('stripe_subscription_id', stripeSubId);
+
+      if (updateError) {
+        console.error('Failed to update subscription:', updateError);
+      } else {
+        console.log(`✅ Subscription updated: ${stripeSubId} — ${status}`);
+      }
 
       break;
     }
 
+    // ── SUBSCRIPTION CANCELLED ──
     case 'customer.subscription.deleted': {
       const subscription = event.data.object as Stripe.Subscription;
-      console.log(`Subscription cancelled: ${subscription.id}`);
 
-      // TODO: Update Supabase subscription status
-      // await supabase.from('customers')
-      //   .update({ status: 'cancelled' })
-      //   .eq('stripe_subscription_id', subscription.id);
+      const { error: cancelError } = await supabaseAdmin
+        .from('subscriptions')
+        .update({
+          status: 'cancelled',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('stripe_subscription_id', subscription.id);
 
-      // TODO: Send email to admin to revoke TradingView access
+      if (cancelError) {
+        console.error('Failed to cancel subscription:', cancelError);
+      } else {
+        console.log(`❌ Subscription cancelled: ${subscription.id}`);
+      }
 
       break;
     }
 
+    // ── PAYMENT FAILED ──
     case 'invoice.payment_failed': {
       const invoice = event.data.object as Stripe.Invoice;
-      console.log(`Payment failed for invoice: ${invoice.id}`);
+      const stripeSubId = typeof invoice.subscription === 'string'
+        ? invoice.subscription
+        : invoice.subscription?.id || '';
 
-      // TODO: Notify admin and/or customer
+      if (stripeSubId) {
+        await supabaseAdmin
+          .from('subscriptions')
+          .update({
+            status: 'past_due',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('stripe_subscription_id', stripeSubId);
+      }
 
+      console.log(`⚠️ Payment failed: ${invoice.id}`);
       break;
     }
 
     default:
-      // Unhandled event type
       break;
   }
 

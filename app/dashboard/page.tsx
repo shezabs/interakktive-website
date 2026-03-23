@@ -52,8 +52,10 @@ export default function DashboardPage() {
         if (userError || !currentUser) { router.push('/signin'); return; }
         setUser(currentUser);
 
-        // Fetch active subscription
-        const { data: subData } = await supabase
+        // Fetch active subscription — try by user_id first, then by email
+        let subData = null;
+        
+        const { data: byUserId } = await supabase
           .from('subscriptions')
           .select('*')
           .eq('user_id', currentUser.id)
@@ -61,6 +63,29 @@ export default function DashboardPage() {
           .order('created_at', { ascending: false })
           .limit(1)
           .single();
+
+        if (byUserId) {
+          subData = byUserId;
+        } else if (currentUser.email) {
+          // User might have paid before signing up — match by email
+          const { data: byEmail } = await supabase
+            .from('subscriptions')
+            .select('*')
+            .eq('user_email', currentUser.email)
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (byEmail) {
+            subData = byEmail;
+            // Link the subscription to this user for future lookups
+            await supabase
+              .from('subscriptions')
+              .update({ user_id: currentUser.id })
+              .eq('id', byEmail.id);
+          }
+        }
 
         if (subData) setSubscription(subData);
       } catch (err) {
