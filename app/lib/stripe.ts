@@ -15,15 +15,14 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-// Price IDs — set these after creating products in Stripe Dashboard
-// Format: price_xxxxxxxxxxxxx
+// Price IDs — set in Vercel environment variables
 export const PRICE_IDS = {
-  single_monthly: process.env.STRIPE_PRICE_SINGLE_MONTHLY || '',
-  single_annual: process.env.STRIPE_PRICE_SINGLE_ANNUAL || '',
-  duo_monthly: process.env.STRIPE_PRICE_DUO_MONTHLY || '',
-  duo_annual: process.env.STRIPE_PRICE_DUO_ANNUAL || '',
-  suite_monthly: process.env.STRIPE_PRICE_SUITE_MONTHLY || '',
-  suite_annual: process.env.STRIPE_PRICE_SUITE_ANNUAL || '',
+  single_monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
+  single_annual: process.env.STRIPE_PRICE_STARTER_ANNUAL || '',
+  duo_monthly: process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY || '',
+  duo_annual: process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL || '',
+  suite_monthly: process.env.STRIPE_PRICE_ELITE_MONTHLY || '',
+  suite_annual: process.env.STRIPE_PRICE_ELITE_ANNUAL || '',
 } as const;
 
 export type PlanId = 'single' | 'duo' | 'suite';
