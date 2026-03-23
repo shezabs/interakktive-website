@@ -3163,7 +3163,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
 
   'sessions-plus': {
     title: 'Sessions +',
-    subtitle: 'The most comprehensive session analysis tool for TradingView. 4,500+ lines covering sessions, levels, ICT concepts, analytics, and a live DNA predictor — all in one free indicator.',
+    subtitle: 'The most comprehensive session analysis tool for TradingView. Sessions, levels, ICT concepts, analytics, and a live DNA predictor — all in one free indicator.',
     tradingViewUrl: 'https://www.tradingview.com/script/g3aVrzmp-Sessions-Interakktive/',
     sections: [
       {
@@ -3171,7 +3171,7 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Sessions +</strong> is a professional-grade session intelligence indicator that goes far beyond simple session boxes. It is the most feature-rich session tool published on TradingView — 4,500+ lines of Pine Script v6 covering four distinct layers of analysis.</p>
+          <p><strong>Sessions +</strong> is a professional-grade session intelligence indicator that goes far beyond simple session boxes. It is the most feature-rich session tool published on TradingView, covering four distinct layers of analysis.</p>
 
           <h3>What Sessions + Does</h3>
           <p>Sessions + answers the questions every intraday trader should be asking:</p>
@@ -3209,7 +3209,6 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
           <ul>
             <li><strong>Open-source</strong> — Full code visible, nothing hidden</li>
             <li><strong>Non-repainting</strong> — DNA predictions use closed-bar data only</li>
-            <li><strong>~4,500 lines</strong> of Pine Script v6</li>
             <li><strong>39 alert conditions</strong> covering every feature layer</li>
             <li><strong>Timeframe-aware</strong> — Features gracefully degrade on higher timeframes</li>
           </ul>

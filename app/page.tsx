@@ -138,72 +138,72 @@ export default function HomePage() {
             </p>
           </FadeInView>
           <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <StaggerItem>
-              <HoverScale>
-                <div className="glass-card p-6 rounded-lg h-full">
+            <StaggerItem className="h-full">
+              <HoverScale className="h-full">
+                <div className="glass-card p-6 rounded-lg h-full min-h-[200px] flex flex-col">
                   <Layers className="w-10 h-10 text-primary-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Diagnostic Transparency</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm flex-1">
                     Every signal comes with a plain English explanation of why it fired,
                     what confirmed it, and what could invalidate it. No black boxes.
                   </p>
                 </div>
               </HoverScale>
             </StaggerItem>
-            <StaggerItem>
-              <HoverScale>
-                <div className="glass-card p-6 rounded-lg h-full">
+            <StaggerItem className="h-full">
+              <HoverScale className="h-full">
+                <div className="glass-card p-6 rounded-lg h-full min-h-[200px] flex flex-col">
                   <BarChart3 className="w-10 h-10 text-accent-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Ghost Performance&trade;</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm flex-1">
                     Historical validation built into every indicator. See win rates,
                     accuracy stats, and first-touch validation — not just the current signal.
                   </p>
                 </div>
               </HoverScale>
             </StaggerItem>
-            <StaggerItem>
-              <HoverScale>
-                <div className="glass-card p-6 rounded-lg h-full">
+            <StaggerItem className="h-full">
+              <HoverScale className="h-full">
+                <div className="glass-card p-6 rounded-lg h-full min-h-[200px] flex flex-col">
                   <Activity className="w-10 h-10 text-primary-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Narrative Engine</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm flex-1">
                     Every ATLAS indicator includes a Narrative Engine that translates
                     complex analytics into sentences you can act on immediately.
                   </p>
                 </div>
               </HoverScale>
             </StaggerItem>
-            <StaggerItem>
-              <HoverScale>
-                <div className="glass-card p-6 rounded-lg h-full">
+            <StaggerItem className="h-full">
+              <HoverScale className="h-full">
+                <div className="glass-card p-6 rounded-lg h-full min-h-[200px] flex flex-col">
                   <Scan className="w-10 h-10 text-accent-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Confluence Engine</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm flex-1">
                     RADAR PRO scans 10 tickers across 3 independent engines simultaneously.
                     The only screener on TradingView with genuine triple-engine confluence.
                   </p>
                 </div>
               </HoverScale>
             </StaggerItem>
-            <StaggerItem>
-              <HoverScale>
-                <div className="glass-card p-6 rounded-lg h-full">
+            <StaggerItem className="h-full">
+              <HoverScale className="h-full">
+                <div className="glass-card p-6 rounded-lg h-full min-h-[200px] flex flex-col">
                   <TrendingUp className="w-10 h-10 text-primary-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Multi-Timeframe Alignment</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm flex-1">
                     Every indicator checks higher timeframes automatically so you
                     never trade against the current. Full alignment = highest conviction.
                   </p>
                 </div>
               </HoverScale>
             </StaggerItem>
-            <StaggerItem>
-              <HoverScale>
-                <div className="glass-card p-6 rounded-lg h-full">
+            <StaggerItem className="h-full">
+              <HoverScale className="h-full">
+                <div className="glass-card p-6 rounded-lg h-full min-h-[200px] flex flex-col">
                   <Globe className="w-10 h-10 text-accent-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Asset Intelligence</h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-400 text-sm flex-1">
                     Auto-adapts to crypto, forex, stocks, indices, and commodities.
                     Signal thresholds, stop methods, and context symbols all adjust automatically.
                   </p>

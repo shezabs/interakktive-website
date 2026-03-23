@@ -21,7 +21,7 @@ async function sendNotificationEmail(data: {
   console.log(`Email: ${data.email}`);
   console.log(`TradingView Username: ${data.tradingViewUsername}`);
   console.log(`Plan: ${data.plan} (${data.billing})`);
-  console.log(`Indicators: ${data.indicators || 'Full Suite'}`);
+  console.log(`Indicators: ${data.indicators || 'Elite'}`);
   console.log(`Amount: ${data.amount}`);
   console.log(`Stripe Customer: ${data.stripeCustomerId}`);
   console.log(`Subscription: ${data.subscriptionId}`);
@@ -44,7 +44,7 @@ async function sendNotificationEmail(data: {
   //     <p><strong>TradingView Username:</strong> ${data.tradingViewUsername}</p>
   //     <p><strong>Email:</strong> ${data.email}</p>
   //     <p><strong>Plan:</strong> ${data.plan} (${data.billing})</p>
-  //     <p><strong>Indicators:</strong> ${data.indicators || 'Full Suite'}</p>
+  //     <p><strong>Indicators:</strong> ${data.indicators || 'Elite'}</p>
   //     <p><strong>Amount:</strong> ${data.amount}</p>
   //     <p>Grant TradingView access now.</p>
   //   `,

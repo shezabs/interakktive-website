@@ -24,7 +24,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
         title: 'Overview',
         icon: 'overview',
         content: `
-          <p><strong>Atlas Cipher Pro</strong> is the signal intelligence engine of the ATLAS suite. It generates trade signals, visualises market structure, and provides a Command Center dashboard that explains every market condition in plain English. At 3,514 lines of Pine Script v6, it is one of the most feature-dense overlay indicators on TradingView.</p>
+          <p><strong>Atlas Cipher Pro</strong> is the signal intelligence engine of the ATLAS suite. It generates trade signals, visualises market structure, and provides a Command Center dashboard that explains every market condition in plain English. It is one of the most feature-dense overlay indicators on TradingView.</p>
 
           <h3>What CIPHER PRO Does</h3>
           <p>CIPHER PRO answers the core trading question: <em>Should I enter a trade right now, and if so, where do I put my stop and targets?</em></p>
@@ -58,7 +58,6 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>3,514 lines</strong> of Pine Script v6</li>
             <li><strong>64/64 outputs</strong> — zero headroom (at the TradingView maximum)</li>
             <li><strong>15 alert conditions</strong> covering signals, regime changes, squeezes, sweeps, momentum, divergence, and risk zones</li>
             <li><strong>Non-repainting</strong> signals — all triggers use closed-bar data</li>
@@ -483,7 +482,6 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>~4,563 lines</strong> of Pine Script v6</li>
             <li><strong>17 alert events</strong> via JSON payloads (use "Any alert() function call" in TradingView)</li>
             <li><strong>9 request.security() calls</strong> — HTF confluence + 4-TF MTF Panel + Institutional Levels</li>
             <li><strong>Non-repainting</strong> structure detection</li>
@@ -873,7 +871,6 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>~1,304 lines</strong> of Pine Script v6</li>
             <li><strong>49/64 outputs</strong> (15 headroom remaining)</li>
             <li><strong>19 alert conditions</strong></li>
             <li><strong>Non-repainting</strong> — all calculations use closed-bar data</li>
@@ -1189,7 +1186,6 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>819 lines</strong> of Pine Script v6</li>
             <li><strong>40 request.security() calls</strong> (10 tickers × 4 fetch loops — at the Pine Script limit)</li>
             <li><strong>6 JSON alert types</strong> with transition detection</li>
             <li><strong>Per-ticker timeframe override</strong> — each ticker can scan a different timeframe</li>

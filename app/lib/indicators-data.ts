@@ -295,7 +295,7 @@ export const proIndicators: Indicator[] = [
     id: 'atlas-cipher-pro',
     title: 'Atlas Cipher Pro [Interakktive]',
     shortTitle: 'CIPHER PRO',
-    description: 'The flagship signal intelligence engine of the ATLAS suite. Combines asset-adaptive signal filtering, Ghost Performance tracking, Win Probability estimation, and a full Narrative Engine into a comprehensive decision support system. 3,514 lines of proprietary intelligence across 64 output channels.',
+    description: 'The flagship signal intelligence engine of the ATLAS suite. Combines asset-adaptive signal filtering, Ghost Performance tracking, Win Probability estimation, and a full Narrative Engine into a comprehensive decision support system.',
     features: [
       'PX + Tension Snap (TS) signal architecture with conviction scoring',
       'Ghost Performance\u2122 \u2014 historical win rate tracking with first-touch-only validation',
@@ -448,7 +448,7 @@ export interface PricingTier {
 export const pricingTiers: PricingTier[] = [
   {
     id: 'single',
-    name: 'Single Indicator',
+    name: 'Starter',
     description: 'Access to any one ATLAS PRO indicator of your choice.',
     monthlyPrice: 50,
     annualPrice: 500,
@@ -463,34 +463,34 @@ export const pricingTiers: PricingTier[] = [
   },
   {
     id: 'duo',
-    name: 'Duo Pack',
+    name: 'Advantage',
     description: 'Choose any two ATLAS PRO indicators.',
     monthlyPrice: 75,
     annualPrice: 750,
     annualOriginalPrice: 900,
     indicators: ['Any 2 ATLAS PRO indicators'],
     features: [
-      'Everything in Single, plus:',
+      'Everything in Starter, plus:',
       'Save vs buying individually',
       'Swap indicators once per billing cycle',
     ],
-    isPopular: true,
   },
   {
     id: 'suite',
-    name: 'ATLAS PRO Suite',
+    name: 'Elite',
     description: 'Complete access to the entire ATLAS PRO suite with all future updates.',
     monthlyPrice: 100,
     annualPrice: 1000,
     annualOriginalPrice: 1200,
     indicators: ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'],
     features: [
-      'Everything in Duo, plus:',
+      'Everything in Advantage, plus:',
       'All current ATLAS PRO indicators',
       'All future updates included',
       'Priority feature requests',
       'Early access to beta features',
     ],
+    isPopular: true,
   },
 ];
 

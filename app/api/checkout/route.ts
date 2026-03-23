@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
 
     // Plan display names for the checkout
     const planNames: Record<PlanId, string> = {
-      single: 'ATLAS PRO — Single Indicator',
-      duo: 'ATLAS PRO — Duo Pack',
-      suite: 'ATLAS PRO — Full Suite',
+      single: 'ATLAS PRO — Starter',
+      duo: 'ATLAS PRO — Advantage',
+      suite: 'ATLAS PRO — Elite',
     };
 
     // Create Stripe Checkout Session
