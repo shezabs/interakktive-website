@@ -129,7 +129,24 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) { setCancelError(data.error || 'Failed to cancel.'); return; }
-      setSubscription(prev => prev ? { ...prev, status: 'cancelling' } : null);
+      
+      // Re-fetch from Supabase to verify the update persisted
+      const { data: refreshed } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('id', subscription.id)
+        .single();
+      
+      if (refreshed) {
+        setSubscription(refreshed);
+        if (refreshed.status === 'active') {
+          // Update didn't persist — show error
+          setCancelError('Cancellation may not have saved properly. Please try again or contact support.');
+        }
+      } else {
+        // Fallback to local state update
+        setSubscription(prev => prev ? { ...prev, status: data.status || 'cancelling' } : null);
+      }
       setShowCancelConfirm(false);
     } catch (err) {
       setCancelError('Network error. Please try again.');
@@ -150,7 +167,19 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) { setCancelError(data.error || 'Failed to reactivate.'); return; }
-      setSubscription(prev => prev ? { ...prev, status: 'active' } : null);
+      
+      // Re-fetch from Supabase to verify
+      const { data: refreshed } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('id', subscription.id)
+        .single();
+      
+      if (refreshed) {
+        setSubscription(refreshed);
+      } else {
+        setSubscription(prev => prev ? { ...prev, status: 'active' } : null);
+      }
     } catch (err) {
       setCancelError('Network error. Please try again.');
     } finally {

@@ -106,13 +106,39 @@ export async function POST(request: NextRequest) {
       }
 
       // Update Supabase — mark as cancelling but still active until period end
-      await supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .from('subscriptions')
         .update({
           status: 'cancelling',
           updated_at: new Date().toISOString(),
         })
         .eq('id', subscriptionId);
+
+      if (updateError) {
+        console.error('Supabase cancel update FAILED:', updateError);
+        // If 'cancelling' status fails (constraint issue), try 'cancelled' instead
+        const { error: fallbackError } = await supabaseAdmin
+          .from('subscriptions')
+          .update({
+            status: 'cancelled',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', subscriptionId);
+        
+        if (fallbackError) {
+          console.error('Supabase cancel fallback also FAILED:', fallbackError);
+          return NextResponse.json({ 
+            error: 'Stripe cancelled but database update failed. Please contact support.' 
+          }, { status: 500 });
+        }
+        
+        return NextResponse.json({
+          status: 'cancelled',
+          message: 'Subscription cancelled.',
+        });
+      }
+
+      console.log(`✅ Cancel: subscription ${subscriptionId} marked as cancelling in Supabase`);
 
       return NextResponse.json({
         status: 'cancelling',
@@ -139,13 +165,20 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: stripeErr.message || 'Failed to reactivate on Stripe.' }, { status: 500 });
       }
 
-      await supabaseAdmin
+      const { error: reactivateError } = await supabaseAdmin
         .from('subscriptions')
         .update({
           status: 'active',
           updated_at: new Date().toISOString(),
         })
         .eq('id', subscriptionId);
+
+      if (reactivateError) {
+        console.error('Supabase reactivate update FAILED:', reactivateError);
+        return NextResponse.json({ error: 'Stripe reactivated but database update failed. Please contact support.' }, { status: 500 });
+      }
+
+      console.log(`✅ Reactivate: subscription ${subscriptionId} marked as active in Supabase`);
 
       return NextResponse.json({
         status: 'active',
