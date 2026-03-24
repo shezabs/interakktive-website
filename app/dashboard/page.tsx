@@ -255,7 +255,7 @@ export default function DashboardPage() {
     if (target === 'elite') {
       setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']);
     } else {
-      setUpgradeSelections([...subscription.indicators]);
+      setUpgradeSelections([]); // Let user freely pick any 2
     }
     setUpgradeError('');
     setUpgradeSuccess(false);
@@ -264,11 +264,9 @@ export default function DashboardPage() {
 
   const toggleUpgradeSelection = (id: string) => {
     if (upgradeTarget === 'elite') return;
-    const currentIndicator = subscription?.indicators[0] || '';
     setUpgradeSelections(prev => {
-      if (id === currentIndicator) return prev; // Can't deselect current
       if (prev.includes(id)) return prev.filter(i => i !== id);
-      if (prev.length >= 2) return [currentIndicator, id]; // Replace the 2nd
+      if (prev.length >= 2) return [prev[1], id]; // Replace the oldest selection
       return [...prev, id];
     });
   };
@@ -788,7 +786,7 @@ export default function DashboardPage() {
               {subscription.plan === 'starter' && (
                 <div className="flex gap-3 mb-4">
                   <button
-                    onClick={() => { setUpgradeTarget('advantage'); setUpgradeSelections([...subscription.indicators]); }}
+                    onClick={() => { setUpgradeTarget('advantage'); setUpgradeSelections([]); }}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'advantage' ? 'bg-primary-500/20 border border-primary-500/50 text-primary-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
                   >
                     Advantage
@@ -831,12 +829,11 @@ export default function DashboardPage() {
               {upgradeTarget === 'advantage' && (
                 <div className="mb-4">
                   <p className="text-sm font-medium mb-1">Choose your 2 indicators</p>
-                  <p className="text-xs text-gray-500 mb-3">Your current indicator is pre-selected.</p>
+                  <p className="text-xs text-gray-500 mb-3">Select any 2 indicators for your Advantage plan.</p>
                   <div className="grid grid-cols-2 gap-3">
                     {INDICATORS.map((ind) => {
                       const Icon = ind.icon;
                       const isSelected = upgradeSelections.includes(ind.id);
-                      const isCurrent = subscription.indicators.includes(ind.id);
                       const isFull = !isSelected && upgradeSelections.length >= 2;
                       return (
                         <button
@@ -852,7 +849,6 @@ export default function DashboardPage() {
                               <Check className={`w-3 h-3 ${ind.color}`} />
                             </div>
                           )}
-                          {isCurrent && <span className="absolute top-2 left-2 text-[10px] text-gray-500">Current</span>}
                           <Icon className={`w-6 h-6 ${isSelected ? ind.color : 'text-gray-500'} mb-1.5`} />
                           <p className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-400'}`}>{ind.id}</p>
                           <p className={`text-xs ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>{ind.role}</p>
