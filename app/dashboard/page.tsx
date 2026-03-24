@@ -759,7 +759,7 @@ export default function DashboardPage() {
       {showUpgradeModal && subscription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <FadeIn>
-            <div className="glass-card p-8 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="glass-card p-8 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto custom-scrollbar">
               <h2 className="text-xl font-bold mb-4">Upgrade Your Plan</h2>
 
               {/* Billing toggle */}
