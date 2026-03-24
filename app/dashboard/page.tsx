@@ -206,28 +206,72 @@ export default function DashboardPage() {
 
   const canSwap = subscription?.plan === 'advantage' && !subscription?.swap_used;
 
-  const handleUpgrade = async () => {
+  // Upgrade state
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeTarget, setUpgradeTarget] = useState<'advantage' | 'elite'>('elite');
+  const [upgradeSelections, setUpgradeSelections] = useState<string[]>([]);
+
+  const PLAN_PRICES: Record<string, { monthly: number; annual: number }> = {
+    starter: { monthly: 50, annual: 500 },
+    advantage: { monthly: 75, annual: 750 },
+    elite: { monthly: 100, annual: 1000 },
+  };
+
+  const openUpgradeModal = () => {
     if (!subscription) return;
-    setUpgrading(true);
+    const target = subscription.plan === 'advantage' ? 'elite' : 'advantage';
+    setUpgradeTarget(target as 'advantage' | 'elite');
+    if (target === 'elite') {
+      setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']);
+    } else {
+      setUpgradeSelections([...subscription.indicators]);
+    }
     setUpgradeError('');
     setUpgradeSuccess(false);
+    setShowUpgradeModal(true);
+  };
+
+  const toggleUpgradeSelection = (id: string) => {
+    if (upgradeTarget === 'elite') return;
+    const currentIndicator = subscription?.indicators[0] || '';
+    setUpgradeSelections(prev => {
+      if (id === currentIndicator) return prev; // Can't deselect current
+      if (prev.includes(id)) return prev.filter(i => i !== id);
+      if (prev.length >= 2) return [currentIndicator, id]; // Replace the 2nd
+      return [...prev, id];
+    });
+  };
+
+  const handleUpgrade = async () => {
+    if (!subscription) return;
+    const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+    const newIndicators = upgradeTarget === 'elite' ? allIndicators : upgradeSelections;
+
+    if (upgradeTarget === 'advantage' && newIndicators.length !== 2) {
+      setUpgradeError('Please select your 2nd indicator.');
+      return;
+    }
+
+    setUpgrading(true);
+    setUpgradeError('');
     try {
-      const res = await fetch('/api/subscription', {
+      const res = await fetch('/api/upgrade', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subscriptionId: subscription.id, action: 'upgrade' }),
+        body: JSON.stringify({
+          subscriptionId: subscription.id,
+          targetPlan: upgradeTarget,
+          indicators: newIndicators,
+          billing: subscription.billing,
+        }),
       });
       const data = await res.json();
-      if (!res.ok) { setUpgradeError(data.error || 'Upgrade failed.'); return; }
-      // Update local state
-      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
-      const newPlan = subscription.plan === 'starter' ? 'advantage' : 'elite';
-      const newIndicators = newPlan === 'elite' ? allIndicators : subscription.indicators;
-      setSubscription(prev => prev ? { ...prev, plan: newPlan as any, indicators: newIndicators } : null);
-      setUpgradeSuccess(true);
+      if (!res.ok) { setUpgradeError(data.error || 'Upgrade failed.'); setUpgrading(false); return; }
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe checkout
+      }
     } catch (err) {
       setUpgradeError('Network error. Please try again.');
-    } finally {
       setUpgrading(false);
     }
   };
@@ -431,19 +475,16 @@ export default function DashboardPage() {
 
                   {subscription.plan !== 'elite' && (
                     <div className="mt-6 pt-6 border-t border-white/10">
-                      <p className="text-sm text-gray-400 mb-3">
-                        Want access to all 4 indicators?
+                      <p className="text-sm text-gray-400 mb-2">
+                        Want access to more indicators?
                       </p>
                       <button
-                        onClick={handleUpgrade}
-                        disabled={upgrading}
-                        className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
+                        onClick={openUpgradeModal}
+                        className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1 transition-colors"
                       >
-                        {upgrading ? 'Processing...' : `Upgrade to ${subscription.plan === 'starter' ? 'Advantage' : 'Elite'}`}
+                        Upgrade your plan
                         <ArrowRight className="w-3 h-3" />
                       </button>
-                      {upgradeError && <p className="text-xs text-red-400 mt-1">{upgradeError}</p>}
-                      {upgradeSuccess && <p className="text-xs text-green-400 mt-1">Upgrade successful! Your indicators will be updated within 4 hours.</p>}
                     </div>
                   )}
                 </div>
@@ -579,11 +620,10 @@ export default function DashboardPage() {
                   {/* Upgrade */}
                   {subscription!.plan !== 'elite' && subscription!.status === 'active' && (
                     <button
-                      onClick={handleUpgrade}
-                      disabled={upgrading}
-                      className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium disabled:opacity-50"
+                      onClick={openUpgradeModal}
+                      className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium"
                     >
-                      {upgrading ? 'Processing...' : `Upgrade to ${subscription!.plan === 'starter' ? 'Advantage' : 'Elite'}`}
+                      Upgrade Plan
                     </button>
                   )}
 
@@ -683,6 +723,138 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Upgrade Modal ── */}
+      {showUpgradeModal && subscription && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <FadeIn>
+            <div className="glass-card p-8 rounded-xl max-w-md w-full">
+              <h2 className="text-xl font-bold mb-2">Upgrade Your Plan</h2>
+              
+              {/* Plan selector for Starter users */}
+              {subscription.plan === 'starter' && (
+                <div className="flex gap-3 mb-4">
+                  <button
+                    onClick={() => { setUpgradeTarget('advantage'); setUpgradeSelections([...subscription.indicators]); }}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'advantage' ? 'bg-primary-500/20 border border-primary-500/50 text-primary-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
+                  >
+                    Advantage
+                    <span className="block text-xs mt-0.5">${subscription.billing === 'annual' ? '750/yr' : '75/mo'}</span>
+                  </button>
+                  <button
+                    onClick={() => { setUpgradeTarget('elite'); setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']); }}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'elite' ? 'bg-accent-500/20 border border-accent-500/50 text-accent-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
+                  >
+                    Elite
+                    <span className="block text-xs mt-0.5">${subscription.billing === 'annual' ? '1000/yr' : '100/mo'}</span>
+                  </button>
+                </div>
+              )}
+
+              {subscription.plan === 'advantage' && (
+                <p className="text-sm text-gray-400 mb-4">
+                  Upgrade to Elite — ${subscription.billing === 'annual' ? '1,000/yr' : '100/mo'} (all 4 indicators)
+                </p>
+              )}
+
+              {/* Pricing info */}
+              <div className="p-3 bg-white/5 rounded-lg mb-4">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-400">Current plan</span>
+                  <span className="text-white">{subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} — ${PLAN_PRICES[subscription.plan]?.[subscription.billing]}/{subscription.billing === 'annual' ? 'yr' : 'mo'}</span>
+                </div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-400">New plan</span>
+                  <span className="text-white">{upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} — ${PLAN_PRICES[upgradeTarget]?.[subscription.billing]}/{subscription.billing === 'annual' ? 'yr' : 'mo'}</span>
+                </div>
+                <div className="border-t border-white/10 mt-2 pt-2">
+                  <p className="text-xs text-gray-500">
+                    Your old plan will be cancelled and refunded for the remaining time. You&apos;ll pay the full {upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} price starting today via Stripe checkout.
+                  </p>
+                </div>
+              </div>
+
+              {/* Indicator selection for Advantage */}
+              {upgradeTarget === 'advantage' && (
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-1">Choose your 2 indicators</p>
+                  <p className="text-xs text-gray-500 mb-3">Your current indicator is pre-selected.</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {INDICATORS.map((ind) => {
+                      const Icon = ind.icon;
+                      const isSelected = upgradeSelections.includes(ind.id);
+                      const isCurrent = subscription.indicators.includes(ind.id);
+                      const isFull = !isSelected && upgradeSelections.length >= 2;
+                      return (
+                        <button
+                          key={ind.id}
+                          type="button"
+                          onClick={() => toggleUpgradeSelection(ind.id)}
+                          className={`relative p-3 rounded-lg border-2 transition-all text-left ${
+                            isSelected ? `${ind.borderColor} ${ind.bgColor}` : isFull ? 'border-white/5 bg-white/[0.02] opacity-40' : 'border-white/10 bg-white/[0.02] hover:border-white/30'
+                          }`}
+                        >
+                          {isSelected && (
+                            <div className={`absolute top-2 right-2 w-5 h-5 rounded-full ${ind.bgColor} flex items-center justify-center`}>
+                              <Check className={`w-3 h-3 ${ind.color}`} />
+                            </div>
+                          )}
+                          {isCurrent && <span className="absolute top-2 left-2 text-[10px] text-gray-500">Current</span>}
+                          <Icon className={`w-6 h-6 ${isSelected ? ind.color : 'text-gray-500'} mb-1.5`} />
+                          <p className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-400'}`}>{ind.id}</p>
+                          <p className={`text-xs ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>{ind.role}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Elite shows all 4 */}
+              {upgradeTarget === 'elite' && (
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-2">All 4 indicators included</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {INDICATORS.map((ind) => {
+                      const Icon = ind.icon;
+                      return (
+                        <div key={ind.id} className={`p-2 rounded-lg ${ind.bgColor} border ${ind.borderColor} flex items-center gap-2`}>
+                          <Icon className={`w-4 h-4 ${ind.color}`} />
+                          <span className="text-xs font-medium text-white">{ind.id}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {upgradeError && (
+                <div className="p-3 mb-4 bg-accent-500/10 border border-accent-500/30 rounded-lg">
+                  <p className="text-accent-400 text-sm">{upgradeError}</p>
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleUpgrade}
+                  disabled={upgrading || (upgradeTarget === 'advantage' && upgradeSelections.length !== 2)}
+                  className="flex-1 py-3 bg-gradient-to-r from-primary-400 to-accent-500 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
+                >
+                  {upgrading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  {upgrading ? 'Redirecting to payment...' : `Upgrade & Pay — $${PLAN_PRICES[upgradeTarget]?.[subscription.billing]}/${subscription.billing === 'annual' ? 'yr' : 'mo'}`}
+                </button>
+                <button
+                  onClick={() => setShowUpgradeModal(false)}
+                  disabled={upgrading}
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      )}
 
       {/* ── Swap Modal ── */}
       {showSwapModal && (

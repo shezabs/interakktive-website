@@ -117,6 +117,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'upgrade') {
+      const { targetPlan: requestedPlan, indicators: requestedIndicators } = body as {
+        targetPlan?: string;
+        indicators?: string[];
+      };
+
       // Get full subscription from Supabase for plan info
       const { data: fullSub } = await supabaseAdmin
         .from('subscriptions')
@@ -128,25 +133,44 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Subscription details not found' }, { status: 404 });
       }
 
-      // Determine target plan and price
       const currentPlan = fullSub.plan;
       const billing = fullSub.billing;
-      let targetPlan: string;
-      let targetPriceEnv: string;
 
-      if (currentPlan === 'starter') {
-        targetPlan = 'advantage';
-        targetPriceEnv = billing === 'annual' ? 'STRIPE_PRICE_ADVANTAGE_ANNUAL' : 'STRIPE_PRICE_ADVANTAGE_MONTHLY';
-      } else if (currentPlan === 'advantage') {
-        targetPlan = 'elite';
-        targetPriceEnv = billing === 'annual' ? 'STRIPE_PRICE_ELITE_ANNUAL' : 'STRIPE_PRICE_ELITE_MONTHLY';
-      } else {
-        return NextResponse.json({ error: 'Already on the highest plan' }, { status: 400 });
+      // Determine target plan — use requested or default to next tier
+      let targetPlan = requestedPlan || (currentPlan === 'starter' ? 'advantage' : 'elite');
+
+      // Validate upgrade direction
+      const planOrder: Record<string, number> = { starter: 1, advantage: 2, elite: 3 };
+      if ((planOrder[targetPlan] || 0) <= (planOrder[currentPlan] || 0)) {
+        return NextResponse.json({ error: 'Can only upgrade to a higher plan' }, { status: 400 });
       }
 
-      const newPriceId = process.env[targetPriceEnv];
+      // Determine target price
+      const priceMap: Record<string, string> = {
+        'advantage_monthly': process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY || '',
+        'advantage_annual': process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL || '',
+        'elite_monthly': process.env.STRIPE_PRICE_ELITE_MONTHLY || '',
+        'elite_annual': process.env.STRIPE_PRICE_ELITE_ANNUAL || '',
+      };
+      const newPriceId = priceMap[`${targetPlan}_${billing}`];
       if (!newPriceId) {
         return NextResponse.json({ error: 'Target price not configured' }, { status: 500 });
+      }
+
+      // Determine new indicators
+      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+      let newIndicators: string[];
+      if (targetPlan === 'elite') {
+        newIndicators = allIndicators;
+      } else if (requestedIndicators && requestedIndicators.length > 0) {
+        newIndicators = requestedIndicators;
+      } else {
+        newIndicators = fullSub.indicators;
+      }
+
+      // Validate indicator count
+      if (targetPlan === 'advantage' && newIndicators.length !== 2) {
+        return NextResponse.json({ error: 'Advantage plan requires exactly 2 indicators' }, { status: 400 });
       }
 
       if (sub.stripe_subscription_id) {
@@ -158,7 +182,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Could not find subscription item' }, { status: 500 });
         }
 
-        // Update Stripe subscription with proration
+        // Update Stripe subscription with proration — Stripe charges the difference automatically
         await stripe.subscriptions.update(sub.stripe_subscription_id, {
           items: [{
             id: itemId,
@@ -169,9 +193,6 @@ export async function POST(request: NextRequest) {
       }
 
       // Update Supabase
-      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
-      const newIndicators = targetPlan === 'elite' ? allIndicators : fullSub.indicators;
-
       await supabaseAdmin
         .from('subscriptions')
         .update({
@@ -181,12 +202,13 @@ export async function POST(request: NextRequest) {
         })
         .eq('id', subscriptionId);
 
-      console.log(`✅ Upgrade: ${currentPlan} → ${targetPlan} (${subscriptionId})`);
+      console.log(`✅ Upgrade: ${currentPlan} → ${targetPlan} | Indicators: ${newIndicators.join(', ')} (${subscriptionId})`);
 
       return NextResponse.json({
         status: 'upgraded',
         plan: targetPlan,
-        message: `Upgraded to ${targetPlan}. Stripe will prorate the charge.`,
+        indicators: newIndicators,
+        message: `Upgraded to ${targetPlan}. The prorated difference has been charged to your card.`,
       });
     }
 
