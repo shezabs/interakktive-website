@@ -472,7 +472,8 @@ export const pricingTiers: PricingTier[] = [
     features: [
       'Everything in Starter, plus:',
       'Save vs buying individually',
-      'Swap indicators once per billing cycle',
+      'Swap indicators once per month',
+      'Annual plan: 12 swaps per year',
     ],
   },
   {

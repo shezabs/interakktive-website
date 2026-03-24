@@ -233,6 +233,38 @@ export default function DashboardPage() {
     }
   };
 
+  // Auto-reset swap if past swap_reset_date
+  // Swap resets monthly — if current date > swap_reset_date, swap becomes available
+  useEffect(() => {
+    if (!subscription || subscription.plan !== 'advantage' || !subscription.swap_used) return;
+    if (!subscription.swap_reset_date) return;
+    
+    const resetDate = new Date(subscription.swap_reset_date);
+    const now = new Date();
+    
+    if (now >= resetDate) {
+      // Swap period has reset — update Supabase and local state
+      const nextResetDate = new Date(now);
+      nextResetDate.setMonth(nextResetDate.getMonth() + 1);
+      
+      supabase
+        .from('subscriptions')
+        .update({
+          swap_used: false,
+          swap_reset_date: nextResetDate.toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', subscription.id)
+        .then(() => {
+          setSubscription(prev => prev ? { 
+            ...prev, 
+            swap_used: false, 
+            swap_reset_date: nextResetDate.toISOString() 
+          } : null);
+        });
+    }
+  }, [subscription]);
+
   const canSwap = subscription?.plan === 'advantage' && !subscription?.swap_used;
 
   // Upgrade state
@@ -347,17 +379,21 @@ export default function DashboardPage() {
       if (histError) throw histError;
 
       // Update subscription
+      const nextSwapReset = new Date();
+      nextSwapReset.setMonth(nextSwapReset.getMonth() + 1);
+
       const { error: updateError } = await supabase
         .from('subscriptions')
         .update({
           indicators: swapSelections,
           swap_used: true,
+          swap_reset_date: nextSwapReset.toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq('id', subscription!.id);
       if (updateError) throw updateError;
 
-      setSubscription(prev => prev ? { ...prev, indicators: swapSelections, swap_used: true } : null);
+      setSubscription(prev => prev ? { ...prev, indicators: swapSelections, swap_used: true, swap_reset_date: nextSwapReset.toISOString() } : null);
       setSwapSuccess(true);
     } catch (err: any) {
       setSwapError(err.message || 'Swap failed. Please try again.');
@@ -457,7 +493,7 @@ export default function DashboardPage() {
                     )}
                     {subscription.plan === 'advantage' && subscription.swap_used && (
                       <span className="text-xs text-gray-500 px-3 py-1 bg-white/5 rounded-full">
-                        Swap used this cycle
+                        Next swap: {subscription.swap_reset_date ? new Date(subscription.swap_reset_date).toLocaleDateString() : 'Next month'}
                       </span>
                     )}
                   </div>
@@ -911,10 +947,10 @@ export default function DashboardPage() {
             <div className="glass-card p-8 rounded-xl max-w-md w-full">
               <h2 className="text-xl font-bold mb-2">Swap Indicators</h2>
               <p className="text-sm text-gray-400 mb-1">
-                Choose your 2 indicators for this billing cycle.
+                Choose your 2 indicators.
               </p>
               <p className="text-xs text-amber-400 mb-4">
-                You can only swap once per billing cycle. This action cannot be undone.
+                You can swap once per month. Your next swap will be available after the reset date.
               </p>
 
               <div className="grid grid-cols-2 gap-3 mb-6">

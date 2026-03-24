@@ -93,6 +93,12 @@ export async function POST(request: NextRequest) {
       const planMap: Record<string, string> = { single: 'starter', duo: 'advantage', suite: 'elite' };
       const normalisedPlan = planMap[plan] || plan;
 
+      // Calculate swap reset date — always 1 month from now regardless of billing cycle
+      // First month: swap_used = true (they just chose their indicators)
+      // After 1 month: swap resets, they can swap once
+      const swapResetDate = new Date(now);
+      swapResetDate.setMonth(swapResetDate.getMonth() + 1);
+
       // Insert subscription
       const { error: insertError } = await supabaseAdmin.from('subscriptions').insert({
         user_id: matchedUser?.id || null,
@@ -104,10 +110,10 @@ export async function POST(request: NextRequest) {
         stripe_customer_id: stripeCustomerId,
         stripe_subscription_id: stripeSubscriptionId,
         status: 'active',
-        swap_used: false,
+        swap_used: true, // First month — they already chose their indicators
         current_period_start: now.toISOString(),
         current_period_end: periodEnd.toISOString(),
-        swap_reset_date: periodEnd.toISOString(),
+        swap_reset_date: swapResetDate.toISOString(), // Resets monthly, not at billing cycle
       });
 
       if (insertError) {
@@ -236,15 +242,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Update subscription status and period
+      // NOTE: swap_used and swap_reset_date are NOT updated here
+      // Swap resets are handled by the dashboard based on swap_reset_date
       const { error: updateError } = await supabaseAdmin
         .from('subscriptions')
         .update({
           status: dbStatus,
           current_period_start: periodStart.toISOString(),
           current_period_end: correctedPeriodEnd.toISOString(),
-          // Reset swap on renewal (new period = new swap allowance)
-          swap_used: false,
-          swap_reset_date: correctedPeriodEnd.toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq('stripe_subscription_id', stripeSubId);
