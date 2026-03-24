@@ -76,10 +76,34 @@ export async function POST(request: NextRequest) {
     const stripe = getStripe();
 
     if (action === 'cancel') {
-      // Cancel at end of current period (user keeps access until then)
-      await stripe.subscriptions.update(sub.stripe_subscription_id, {
-        cancel_at_period_end: true,
-      });
+      // Try to cancel on Stripe first, but if Stripe fails (subscription already cancelled, etc.),
+      // still update Supabase so the user's dashboard reflects the cancellation
+      try {
+        await stripe.subscriptions.update(sub.stripe_subscription_id, {
+          cancel_at_period_end: true,
+        });
+      } catch (stripeErr: any) {
+        console.warn(`Stripe cancel warning (proceeding with Supabase update): ${stripeErr.message}`);
+        // If the Stripe subscription is already cancelled or doesn't exist,
+        // we still want to mark it as cancelled in our database
+        if (stripeErr.message?.includes('No such subscription') || 
+            stripeErr.message?.includes('cancelled') ||
+            stripeErr.message?.includes('canceled')) {
+          // Subscription is gone from Stripe — mark as fully cancelled
+          await supabaseAdmin
+            .from('subscriptions')
+            .update({
+              status: 'cancelled',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', subscriptionId);
+          return NextResponse.json({
+            status: 'cancelled',
+            message: 'Subscription cancelled.',
+          });
+        }
+        // For other Stripe errors, still try to update Supabase
+      }
 
       // Update Supabase — mark as cancelling but still active until period end
       await supabaseAdmin
@@ -97,10 +121,23 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'reactivate') {
-      // Remove the cancellation
-      await stripe.subscriptions.update(sub.stripe_subscription_id, {
-        cancel_at_period_end: false,
-      });
+      // Try to remove the cancellation on Stripe
+      try {
+        await stripe.subscriptions.update(sub.stripe_subscription_id, {
+          cancel_at_period_end: false,
+        });
+      } catch (stripeErr: any) {
+        console.warn(`Stripe reactivate warning: ${stripeErr.message}`);
+        // If Stripe sub is gone, we can't reactivate
+        if (stripeErr.message?.includes('No such subscription') || 
+            stripeErr.message?.includes('cancelled') ||
+            stripeErr.message?.includes('canceled')) {
+          return NextResponse.json({ 
+            error: 'This subscription has already been fully cancelled and cannot be reactivated. Please purchase a new plan.' 
+          }, { status: 400 });
+        }
+        return NextResponse.json({ error: stripeErr.message || 'Failed to reactivate on Stripe.' }, { status: 500 });
+      }
 
       await supabaseAdmin
         .from('subscriptions')
