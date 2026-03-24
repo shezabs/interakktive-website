@@ -75,29 +75,10 @@ export async function POST(request: NextRequest) {
 
     const stripe = getStripe();
 
-    // Cancel the old Stripe subscription immediately (they're upgrading)
-    if (currentSub.stripe_subscription_id) {
-      try {
-        await stripe.subscriptions.cancel(currentSub.stripe_subscription_id, {
-          prorate: true, // Refund remaining time on old plan
-        });
-      } catch (err) {
-        console.error('Failed to cancel old subscription:', err);
-        // Continue anyway — the new subscription is more important
-      }
-    }
-
-    // Mark old subscription as cancelled in Supabase
-    await supabaseAdmin
-      .from('subscriptions')
-      .update({
-        status: 'cancelled',
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', subscriptionId);
+    // DO NOT cancel old subscription here — only after new payment succeeds
+    // Store old subscription info in metadata so webhook can handle the swap
 
     // Create new Stripe checkout session for the upgrade
-    // The plan ID mapping for the checkout API
     const planIdMap: Record<string, string> = { advantage: 'duo', elite: 'suite' };
 
     const session = await stripe.checkout.sessions.create({
@@ -112,6 +93,8 @@ export async function POST(request: NextRequest) {
         selected_indicators: indicators.join(','),
         is_upgrade: 'true',
         previous_plan: currentSub.plan,
+        previous_subscription_id: subscriptionId, // Supabase row ID
+        previous_stripe_subscription_id: currentSub.stripe_subscription_id || '',
       },
       subscription_data: {
         metadata: {
@@ -121,7 +104,7 @@ export async function POST(request: NextRequest) {
         },
       },
       success_url: `${request.nextUrl.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}&upgrade=true`,
-      cancel_url: `${request.nextUrl.origin}/dashboard?upgrade_cancelled=true`,
+      cancel_url: `${request.nextUrl.origin}/dashboard`,
       allow_promotion_codes: true,
     });
 

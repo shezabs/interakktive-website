@@ -116,6 +116,37 @@ export async function POST(request: NextRequest) {
         console.log(`✅ Subscription created: ${email} — ${normalisedPlan} (${billing}) — ${finalIndicators.join(', ')}`);
       }
 
+      // Handle upgrade: cancel old subscription after new one is created
+      const isUpgrade = session.metadata?.is_upgrade === 'true';
+      if (isUpgrade) {
+        const prevSubId = session.metadata?.previous_subscription_id;
+        const prevStripeSubId = session.metadata?.previous_stripe_subscription_id;
+
+        // Cancel old Stripe subscription with proration refund
+        if (prevStripeSubId) {
+          try {
+            await getStripe().subscriptions.cancel(prevStripeSubId, {
+              prorate: true,
+            });
+            console.log(`✅ Old Stripe subscription cancelled: ${prevStripeSubId}`);
+          } catch (err) {
+            console.error('Failed to cancel old Stripe subscription:', err);
+          }
+        }
+
+        // Mark old Supabase subscription as cancelled
+        if (prevSubId) {
+          await supabaseAdmin
+            .from('subscriptions')
+            .update({
+              status: 'cancelled',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', prevSubId);
+          console.log(`✅ Old subscription cancelled in Supabase: ${prevSubId}`);
+        }
+      }
+
       // Log for admin notification
       console.log('=== NEW SUBSCRIPTION ===');
       console.log(`Email: ${email}`);
