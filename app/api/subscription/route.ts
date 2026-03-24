@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/app/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
+import { sendCancellationEmail } from '@/app/lib/email';
 
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -139,6 +140,21 @@ export async function POST(request: NextRequest) {
       }
 
       console.log(`✅ Cancel: subscription ${subscriptionId} marked as cancelling in Supabase`);
+
+      // Send cancellation email to customer
+      const { data: cancelSub } = await supabaseAdmin
+        .from('subscriptions')
+        .select('user_email, plan, current_period_end')
+        .eq('id', subscriptionId)
+        .single();
+      
+      if (cancelSub) {
+        await sendCancellationEmail({
+          email: cancelSub.user_email,
+          plan: cancelSub.plan,
+          accessUntil: cancelSub.current_period_end,
+        });
+      }
 
       return NextResponse.json({
         status: 'cancelling',

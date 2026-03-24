@@ -191,3 +191,136 @@ export async function sendWelcomeEmail(data: {
     `,
   });
 }
+
+// ── Customer email: Cancellation confirmed ──
+export async function sendCancellationEmail(data: {
+  email: string;
+  plan: string;
+  accessUntil: string;
+}) {
+  const { email, plan, accessUntil } = data;
+  const dateStr = new Date(accessUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  
+  await sendEmail({
+    to: email,
+    subject: `Your ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan has been cancelled`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #fff; padding: 30px; border-radius: 12px;">
+        <h2 style="color: #f59e0b; margin-bottom: 20px;">Subscription Cancelled</h2>
+        <p style="color: #d1d5db; line-height: 1.6;">Your <strong style="color: #fff;">${plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> plan has been cancelled.</p>
+        <p style="color: #d1d5db; line-height: 1.6;">You still have full access to your indicators until <strong style="color: #fff;">${dateStr}</strong>.</p>
+        <p style="color: #d1d5db; line-height: 1.6;">After that date, your TradingView access will be revoked.</p>
+        <div style="margin-top: 20px; padding: 15px; background: #0ea5e908; border: 1px solid #0ea5e933; border-radius: 8px;">
+          <p style="color: #0ea5e9; margin: 0; font-weight: bold;">Changed your mind?</p>
+          <p style="color: #d1d5db; margin: 8px 0 0;">You can reactivate anytime before ${dateStr} from your <a href="https://www.interakktive.com/dashboard" style="color: #0ea5e9;">dashboard</a>.</p>
+        </div>
+        <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">Interakktive — Trading Intelligence You Can See</p>
+      </div>
+    `,
+  });
+}
+
+// ── Customer email: Swap confirmed ──
+export async function sendSwapEmail(data: {
+  email: string;
+  newIndicators: string[];
+  nextSwapDate: string;
+}) {
+  const { email, newIndicators, nextSwapDate } = data;
+  const dateStr = new Date(nextSwapDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  
+  await sendEmail({
+    to: email,
+    subject: `Indicator swap confirmed — ${newIndicators.join(' + ')}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #fff; padding: 30px; border-radius: 12px;">
+        <h2 style="color: #0ea5e9; margin-bottom: 20px;">Indicator Swap Confirmed 🔄</h2>
+        <p style="color: #d1d5db; line-height: 1.6;">Your indicators have been updated to:</p>
+        <p style="color: #0ea5e9; font-size: 18px; font-weight: bold; margin: 15px 0;">${newIndicators.join(' + ')}</p>
+        <p style="color: #d1d5db; line-height: 1.6;">We'll update your TradingView access within <strong style="color: #fff;">4 hours</strong>.</p>
+        <p style="color: #d1d5db; line-height: 1.6;">Your next swap will be available on <strong style="color: #fff;">${dateStr}</strong>.</p>
+        <div style="margin-top: 20px; padding: 15px; background: #ffffff08; border: 1px solid #ffffff15; border-radius: 8px;">
+          <p style="color: #9ca3af; margin: 0; font-size: 14px;">Need help? Reply to this email or visit <a href="https://www.interakktive.com/dashboard" style="color: #0ea5e9;">your dashboard</a>.</p>
+        </div>
+        <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">Interakktive — Trading Intelligence You Can See</p>
+      </div>
+    `,
+  });
+}
+
+// ── Customer email: Upgrade confirmed ──
+export async function sendUpgradeEmail(data: {
+  email: string;
+  newPlan: string;
+  indicators: string[];
+}) {
+  const { email, newPlan, indicators } = data;
+  
+  await sendEmail({
+    to: email,
+    subject: `Upgraded to ${newPlan.charAt(0).toUpperCase() + newPlan.slice(1)} — ATLAS PRO Suite`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #fff; padding: 30px; border-radius: 12px;">
+        <h2 style="color: #0ea5e9; margin-bottom: 20px;">Plan Upgraded! 🚀</h2>
+        <p style="color: #d1d5db; line-height: 1.6;">You've been upgraded to the <strong style="color: #fff;">${newPlan.charAt(0).toUpperCase() + newPlan.slice(1)}</strong> plan.</p>
+        <p style="color: #d1d5db; line-height: 1.6;">Your indicators: <strong style="color: #0ea5e9;">${indicators.join(', ')}</strong></p>
+        <p style="color: #d1d5db; line-height: 1.6;">We'll update your TradingView access within <strong style="color: #fff;">4 hours</strong>.</p>
+        <p style="color: #d1d5db; line-height: 1.6;">Any unused time from your previous plan has been credited toward this subscription.</p>
+        <div style="margin-top: 20px; padding: 15px; background: #ffffff08; border: 1px solid #ffffff15; border-radius: 8px;">
+          <p style="color: #9ca3af; margin: 0; font-size: 14px;">Need help? Reply to this email or visit <a href="https://www.interakktive.com/dashboard" style="color: #0ea5e9;">your dashboard</a>.</p>
+        </div>
+        <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">Interakktive — Trading Intelligence You Can See</p>
+      </div>
+    `,
+  });
+}
+
+// ── Customer email: Payment failed ──
+export async function sendPaymentFailedEmail(data: {
+  email: string;
+  plan: string;
+}) {
+  const { email, plan } = data;
+  
+  await sendEmail({
+    to: email,
+    subject: `Payment failed — Action required for your ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #fff; padding: 30px; border-radius: 12px;">
+        <h2 style="color: #ef4444; margin-bottom: 20px;">Payment Failed ⚠️</h2>
+        <p style="color: #d1d5db; line-height: 1.6;">We were unable to process the payment for your <strong style="color: #fff;">${plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> plan.</p>
+        <p style="color: #d1d5db; line-height: 1.6;">Please update your payment method to avoid losing access to your indicators.</p>
+        <div style="margin-top: 20px; text-align: center;">
+          <a href="https://www.interakktive.com/dashboard" style="display: inline-block; padding: 12px 30px; background: linear-gradient(to right, #0ea5e9, #d946ef); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold;">Update Payment Method</a>
+        </div>
+        <p style="color: #9ca3af; font-size: 13px; margin-top: 20px; line-height: 1.6;">If you believe this is an error, reply to this email and we'll help you sort it out.</p>
+        <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">Interakktive — Trading Intelligence You Can See</p>
+      </div>
+    `,
+  });
+}
+
+// ── Customer email: Subscription expired ──
+export async function sendExpiredEmail(data: {
+  email: string;
+  plan: string;
+}) {
+  const { email, plan } = data;
+  
+  await sendEmail({
+    to: email,
+    subject: `Your ${plan.charAt(0).toUpperCase() + plan.slice(1)} plan has expired`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #fff; padding: 30px; border-radius: 12px;">
+        <h2 style="color: #6b7280; margin-bottom: 20px;">Subscription Ended</h2>
+        <p style="color: #d1d5db; line-height: 1.6;">Your <strong style="color: #fff;">${plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> plan has now expired and your TradingView access has been revoked.</p>
+        <p style="color: #d1d5db; line-height: 1.6;">We hope the ATLAS PRO indicators helped your trading. If you'd like to resubscribe, you can do so anytime.</p>
+        <div style="margin-top: 20px; text-align: center;">
+          <a href="https://www.interakktive.com/pricing" style="display: inline-block; padding: 12px 30px; background: linear-gradient(to right, #0ea5e9, #d946ef); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold;">View Plans</a>
+        </div>
+        <p style="color: #9ca3af; font-size: 13px; margin-top: 20px; line-height: 1.6;">Questions? Reply to this email — we're here to help.</p>
+        <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">Interakktive — Trading Intelligence You Can See</p>
+      </div>
+    `,
+  });
+}

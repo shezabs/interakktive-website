@@ -424,6 +424,7 @@ export default function DashboardPage() {
           tradingviewUsername: subscription!.tradingview_username,
           oldIndicators: subscription!.indicators,
           newIndicators: swapSelections,
+          nextSwapDate: nextSwapReset.toISOString(),
         }),
       }).catch(() => {}); // Don't block on notification failure
     } catch (err: any) {

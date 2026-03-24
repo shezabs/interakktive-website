@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/app/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
-import { notifyNewSubscription, notifyCancellation, sendWelcomeEmail } from '@/app/lib/email';
+import { notifyNewSubscription, notifyCancellation, sendWelcomeEmail, sendUpgradeEmail, sendCancellationEmail, sendExpiredEmail, sendPaymentFailedEmail } from '@/app/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -134,11 +134,19 @@ export async function POST(request: NextRequest) {
           indicators: finalIndicators,
           isUpgrade,
         });
-        await sendWelcomeEmail({
-          email,
-          plan: normalisedPlan,
-          indicators: finalIndicators,
-        });
+        if (isUpgrade) {
+          await sendUpgradeEmail({
+            email,
+            newPlan: normalisedPlan,
+            indicators: finalIndicators,
+          });
+        } else {
+          await sendWelcomeEmail({
+            email,
+            plan: normalisedPlan,
+            indicators: finalIndicators,
+          });
+        }
       }
 
       // Handle upgrade: cancel old subscription after new one is created
@@ -305,11 +313,15 @@ export async function POST(request: NextRequest) {
       } else {
         console.log(`❌ Subscription cancelled: ${subscription.id}`);
         
-        // Send cancellation email to admin
+        // Send cancellation email to admin + expired email to customer
         if (cancelledSub) {
           await notifyCancellation({
             email: cancelledSub.user_email,
             tradingviewUsername: cancelledSub.tradingview_username,
+            plan: cancelledSub.plan,
+          });
+          await sendExpiredEmail({
+            email: cancelledSub.user_email,
             plan: cancelledSub.plan,
           });
         }
@@ -327,6 +339,13 @@ export async function POST(request: NextRequest) {
         : invoiceObj.subscription?.id || '';
 
       if (stripeSubId) {
+        // Get subscription details for email
+        const { data: failedSub } = await supabaseAdmin
+          .from('subscriptions')
+          .select('user_email, plan')
+          .eq('stripe_subscription_id', stripeSubId)
+          .single();
+
         await supabaseAdmin
           .from('subscriptions')
           .update({
@@ -334,6 +353,14 @@ export async function POST(request: NextRequest) {
             updated_at: new Date().toISOString(),
           })
           .eq('stripe_subscription_id', stripeSubId);
+
+        // Send payment failed email to customer
+        if (failedSub) {
+          await sendPaymentFailedEmail({
+            email: failedSub.user_email,
+            plan: failedSub.plan,
+          });
+        }
       }
 
       console.log(`⚠️ Payment failed: ${invoice.id}`);
