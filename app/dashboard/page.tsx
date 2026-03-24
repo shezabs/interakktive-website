@@ -210,6 +210,7 @@ export default function DashboardPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeTarget, setUpgradeTarget] = useState<'advantage' | 'elite'>('elite');
   const [upgradeSelections, setUpgradeSelections] = useState<string[]>([]);
+  const [upgradeBilling, setUpgradeBilling] = useState<'monthly' | 'annual'>('monthly');
 
   const PLAN_PRICES: Record<string, { monthly: number; annual: number }> = {
     starter: { monthly: 50, annual: 500 },
@@ -221,6 +222,7 @@ export default function DashboardPage() {
     if (!subscription) return;
     const target = subscription.plan === 'advantage' ? 'elite' : 'advantage';
     setUpgradeTarget(target as 'advantage' | 'elite');
+    setUpgradeBilling(subscription.billing); // Default to current billing cycle
     if (target === 'elite') {
       setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']);
     } else {
@@ -262,7 +264,7 @@ export default function DashboardPage() {
           subscriptionId: subscription.id,
           targetPlan: upgradeTarget,
           indicators: newIndicators,
-          billing: subscription.billing,
+          billing: upgradeBilling,
         }),
       });
       const data = await res.json();
@@ -728,8 +730,30 @@ export default function DashboardPage() {
       {showUpgradeModal && subscription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <FadeIn>
-            <div className="glass-card p-8 rounded-xl max-w-md w-full">
-              <h2 className="text-xl font-bold mb-2">Upgrade Your Plan</h2>
+            <div className="glass-card p-8 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <h2 className="text-xl font-bold mb-4">Upgrade Your Plan</h2>
+
+              {/* Billing toggle */}
+              <div className="mb-4">
+                <p className="text-xs text-gray-500 mb-2">Billing cycle</p>
+                <div className="flex items-center gap-2 p-1 bg-white/5 rounded-lg w-fit">
+                  <button
+                    onClick={() => setUpgradeBilling('monthly')}
+                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${upgradeBilling === 'monthly' ? 'bg-primary-500/20 text-primary-400' : 'text-gray-400 hover:text-white'}`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    onClick={() => setUpgradeBilling('annual')}
+                    className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${upgradeBilling === 'annual' ? 'bg-primary-500/20 text-primary-400' : 'text-gray-400 hover:text-white'}`}
+                  >
+                    Annual
+                  </button>
+                  {upgradeBilling === 'annual' && (
+                    <span className="text-[10px] text-green-400 font-medium ml-1">Save ~17%</span>
+                  )}
+                </div>
+              </div>
               
               {/* Plan selector for Starter users */}
               {subscription.plan === 'starter' && (
@@ -739,21 +763,21 @@ export default function DashboardPage() {
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'advantage' ? 'bg-primary-500/20 border border-primary-500/50 text-primary-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
                   >
                     Advantage
-                    <span className="block text-xs mt-0.5">${subscription.billing === 'annual' ? '750/yr' : '75/mo'}</span>
+                    <span className="block text-xs mt-0.5">${upgradeBilling === 'annual' ? '750/yr' : '75/mo'}</span>
                   </button>
                   <button
                     onClick={() => { setUpgradeTarget('elite'); setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']); }}
                     className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'elite' ? 'bg-accent-500/20 border border-accent-500/50 text-accent-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
                   >
                     Elite
-                    <span className="block text-xs mt-0.5">${subscription.billing === 'annual' ? '1000/yr' : '100/mo'}</span>
+                    <span className="block text-xs mt-0.5">${upgradeBilling === 'annual' ? '1,000/yr' : '100/mo'}</span>
                   </button>
                 </div>
               )}
 
               {subscription.plan === 'advantage' && (
                 <p className="text-sm text-gray-400 mb-4">
-                  Upgrade to Elite — ${subscription.billing === 'annual' ? '1,000/yr' : '100/mo'} (all 4 indicators)
+                  Upgrade to Elite — ${upgradeBilling === 'annual' ? '1,000/yr' : '100/mo'} (all 4 indicators)
                 </p>
               )}
 
@@ -765,11 +789,11 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-400">New plan</span>
-                  <span className="text-white">{upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} — ${PLAN_PRICES[upgradeTarget]?.[subscription.billing]}/{subscription.billing === 'annual' ? 'yr' : 'mo'}</span>
+                  <span className="text-white">{upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} — ${PLAN_PRICES[upgradeTarget]?.[upgradeBilling]}/{upgradeBilling === 'annual' ? 'yr' : 'mo'}</span>
                 </div>
                 <div className="border-t border-white/10 mt-2 pt-2">
                   <p className="text-xs text-gray-500">
-                    Your old plan will be cancelled and refunded for the remaining time. You&apos;ll pay the full {upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} price starting today via Stripe checkout.
+                    Your old plan will be cancelled and refunded for the remaining time. You&apos;ll pay the full {upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} {upgradeBilling === 'annual' ? 'Annual' : 'Monthly'} price starting today via Stripe checkout.
                   </p>
                 </div>
               </div>
@@ -841,7 +865,7 @@ export default function DashboardPage() {
                   className="flex-1 py-3 bg-gradient-to-r from-primary-400 to-accent-500 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
                 >
                   {upgrading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  {upgrading ? 'Redirecting to payment...' : `Upgrade & Pay — $${PLAN_PRICES[upgradeTarget]?.[subscription.billing]}/${subscription.billing === 'annual' ? 'yr' : 'mo'}`}
+                  {upgrading ? 'Redirecting to payment...' : `Upgrade & Pay — $${PLAN_PRICES[upgradeTarget]?.[upgradeBilling]}/${upgradeBilling === 'annual' ? 'yr' : 'mo'}`}
                 </button>
                 <button
                   onClick={() => { setShowUpgradeModal(false); setUpgrading(false); }}
