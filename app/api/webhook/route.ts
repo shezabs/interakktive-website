@@ -117,6 +117,9 @@ export async function POST(request: NextRequest) {
         swap_reset_date: swapResetDate.toISOString(), // Resets monthly, not at billing cycle
       });
 
+      // Check if this is an upgrade
+      const isUpgrade = session.metadata?.is_upgrade === 'true';
+
       if (insertError) {
         console.error('Failed to insert subscription:', insertError);
       } else {
@@ -139,7 +142,6 @@ export async function POST(request: NextRequest) {
       }
 
       // Handle upgrade: cancel old subscription after new one is created
-      const isUpgrade = session.metadata?.is_upgrade === 'true';
       if (isUpgrade) {
         const prevSubId = session.metadata?.previous_subscription_id;
         const prevStripeSubId = session.metadata?.previous_stripe_subscription_id;
