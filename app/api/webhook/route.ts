@@ -164,18 +164,32 @@ export async function POST(request: NextRequest) {
     case 'customer.subscription.updated': {
       const subscription = event.data.object as Stripe.Subscription;
       const stripeSubId = subscription.id;
-      const status = subscription.status;
+      const stripeStatus = subscription.status;
+      const cancelAtPeriodEnd = subscription.cancel_at_period_end;
 
       // Get period end from Stripe
       const subObj = subscription as any;
       const periodEnd = new Date((subObj.current_period_end || Math.floor(Date.now() / 1000)) * 1000);
       const periodStart = new Date((subObj.current_period_start || Math.floor(Date.now() / 1000)) * 1000);
 
+      // Determine the correct status for our database
+      // If Stripe says active but cancel_at_period_end is true, keep as 'cancelling'
+      let dbStatus: string;
+      if (cancelAtPeriodEnd) {
+        dbStatus = 'cancelling';
+      } else if (stripeStatus === 'active') {
+        dbStatus = 'active';
+      } else if (stripeStatus === 'past_due') {
+        dbStatus = 'past_due';
+      } else {
+        dbStatus = stripeStatus;
+      }
+
       // Update subscription status and period
       const { error: updateError } = await supabaseAdmin
         .from('subscriptions')
         .update({
-          status: status === 'active' ? 'active' : status === 'past_due' ? 'past_due' : status,
+          status: dbStatus,
           current_period_start: periodStart.toISOString(),
           current_period_end: periodEnd.toISOString(),
           // Reset swap on renewal (new period = new swap allowance)
@@ -188,7 +202,7 @@ export async function POST(request: NextRequest) {
       if (updateError) {
         console.error('Failed to update subscription:', updateError);
       } else {
-        console.log(`✅ Subscription updated: ${stripeSubId} — ${status}`);
+        console.log(`✅ Subscription updated: ${stripeSubId} — ${dbStatus} (stripe: ${stripeStatus}, cancel_at_period_end: ${cancelAtPeriodEnd})`);
       }
 
       break;
