@@ -844,8 +844,7 @@ export default function DashboardPage() {
                   {upgrading ? 'Redirecting to payment...' : `Upgrade & Pay — $${PLAN_PRICES[upgradeTarget]?.[subscription.billing]}/${subscription.billing === 'annual' ? 'yr' : 'mo'}`}
                 </button>
                 <button
-                  onClick={() => setShowUpgradeModal(false)}
-                  disabled={upgrading}
+                  onClick={() => { setShowUpgradeModal(false); setUpgrading(false); }}
                   className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all"
                 >
                   Cancel
