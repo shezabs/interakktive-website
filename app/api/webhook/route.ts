@@ -214,6 +214,27 @@ export async function POST(request: NextRequest) {
         dbStatus = stripeStatus;
       }
 
+      // Safeguard: don't overwrite a subscription that was just created by checkout handler
+      // This prevents race conditions where subscription.updated fires right after checkout.completed
+      if (dbStatus === 'cancelling') {
+        const { data: currentRow } = await supabaseAdmin
+          .from('subscriptions')
+          .select('status, created_at')
+          .eq('stripe_subscription_id', stripeSubId)
+          .single();
+        
+        if (currentRow) {
+          const createdAt = new Date(currentRow.created_at);
+          const ageMs = Date.now() - createdAt.getTime();
+          // If subscription was created less than 2 minutes ago and is currently active,
+          // don't overwrite to cancelling — the checkout handler just set it to active
+          if (ageMs < 120000 && currentRow.status === 'active') {
+            console.log(`⚠️ Skipping cancelling status for newly created subscription: ${stripeSubId} (age: ${Math.round(ageMs/1000)}s)`);
+            dbStatus = 'active';
+          }
+        }
+      }
+
       // Update subscription status and period
       const { error: updateError } = await supabaseAdmin
         .from('subscriptions')
