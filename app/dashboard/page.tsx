@@ -820,7 +820,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="border-t border-white/10 mt-2 pt-2">
                   <p className="text-xs text-gray-500">
-                    Your old plan will be cancelled and refunded for the remaining time. You&apos;ll pay the full {upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} {upgradeBilling === 'annual' ? 'Annual' : 'Monthly'} price starting today via Stripe checkout.
+                    Your old plan will be cancelled and any unused time will be credited toward your new {upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} {upgradeBilling === 'annual' ? 'Annual' : 'Monthly'} plan via Stripe checkout.
                   </p>
                 </div>
               </div>
