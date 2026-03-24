@@ -10,22 +10,37 @@ const SITE_URL = 'https://www.interakktive.com';
 // Shared email wrapper with logo header and footer
 function emailTemplate(content: string): string {
   return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a14; border-radius: 12px; overflow: hidden;">
-      <div style="background: linear-gradient(135deg, #0a0a14 0%, #1a1a2e 100%); padding: 30px 30px 15px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08);">
-        <img src="${LOGO_URL}" alt="Interakktive" style="height: 40px; width: auto;" />
-      </div>
-      <div style="padding: 30px; color: #fff;">
-        ${content}
-      </div>
-      <div style="padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
-        <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">Interakktive — Trading Intelligence You Can See</p>
-        <p style="color: #4b5563; font-size: 11px; margin: 0;">
-          <a href="${SITE_URL}" style="color: #4b5563; text-decoration: none;">interakktive.com</a> · 
-          <a href="${SITE_URL}/dashboard" style="color: #4b5563; text-decoration: none;">Dashboard</a> · 
-          <a href="${SITE_URL}/pricing" style="color: #4b5563; text-decoration: none;">Pricing</a>
-        </p>
-      </div>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="font-family: Arial, sans-serif; background-color: #111827;">
+      <tr>
+        <td align="center" style="padding: 20px;">
+          <table width="600" cellpadding="0" cellspacing="0" style="background-color: #1f2937; border-radius: 12px; border: 1px solid #374151;">
+            <!-- Logo Header -->
+            <tr>
+              <td align="center" style="padding: 25px 30px 20px; background-color: #ffffff; border-radius: 12px 12px 0 0;">
+                <img src="${LOGO_URL}" alt="Interakktive" width="220" style="display: block; width: 220px; height: auto;" />
+              </td>
+            </tr>
+            <!-- Content -->
+            <tr>
+              <td style="padding: 30px; color: #ffffff;">
+                ${content}
+              </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+              <td align="center" style="padding: 20px 30px; border-top: 1px solid #374151;">
+                <p style="color: #9ca3af; font-size: 12px; margin: 0 0 6px;">Interakktive — Trading Intelligence You Can See</p>
+                <p style="color: #6b7280; font-size: 11px; margin: 0;">
+                  <a href="${SITE_URL}" style="color: #6b7280; text-decoration: none;">interakktive.com</a> &middot; 
+                  <a href="${SITE_URL}/dashboard" style="color: #6b7280; text-decoration: none;">Dashboard</a> &middot; 
+                  <a href="${SITE_URL}/pricing" style="color: #6b7280; text-decoration: none;">Pricing</a>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   `;
 }
 
@@ -92,7 +107,7 @@ export async function notifyNewSubscription(data: {
         <tr><td style="padding: 8px 0; color: #9ca3af;">Plan</td><td style="padding: 8px 0; color: #fff; font-weight: bold;">${plan} (${billing})</td></tr>
         <tr><td style="padding: 8px 0; color: #9ca3af;">Indicators</td><td style="padding: 8px 0; color: #fff; font-weight: bold;">${indicators.join(', ')}</td></tr>
       </table>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #1a2e3d; border: 1px solid #1e5a7a; border-radius: 8px;">
         <p style="color: #0ea5e9; margin: 0; font-weight: bold;">⚡ ACTION REQUIRED</p>
         <p style="color: #d1d5db; margin: 8px 0 0;">Grant TradingView access to <strong>${tradingviewUsername}</strong> for: ${indicators.join(', ')}</p>
       </div>
@@ -118,7 +133,7 @@ export async function notifyCancellation(data: {
         <tr><td style="padding: 8px 0; color: #9ca3af;">TradingView</td><td style="padding: 8px 0; color: #fff; font-weight: bold;">${tradingviewUsername}</td></tr>
         <tr><td style="padding: 8px 0; color: #9ca3af;">Plan</td><td style="padding: 8px 0; color: #fff; font-weight: bold;">${plan}</td></tr>
       </table>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #2e1a1a; border: 1px solid #7a1e1e; border-radius: 8px;">
         <p style="color: #ef4444; margin: 0; font-weight: bold;">⚡ ACTION REQUIRED</p>
         <p style="color: #d1d5db; margin: 8px 0 0;">Revoke TradingView access for <strong>${tradingviewUsername}</strong> at period end.</p>
       </div>
@@ -146,7 +161,7 @@ export async function notifySwap(data: {
         <tr><td style="padding: 8px 0; color: #9ca3af;">Old</td><td style="padding: 8px 0; color: #ef4444; font-weight: bold;">${oldIndicators.join(', ')}</td></tr>
         <tr><td style="padding: 8px 0; color: #9ca3af;">New</td><td style="padding: 8px 0; color: #22c55e; font-weight: bold;">${newIndicators.join(', ')}</td></tr>
       </table>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #2e2a1a; border: 1px solid #7a5a1e; border-radius: 8px;">
         <p style="color: #f59e0b; margin: 0; font-weight: bold;">⚡ ACTION REQUIRED</p>
         <p style="color: #d1d5db; margin: 8px 0 0;">Update TradingView access for <strong>${tradingviewUsername}</strong>: Remove ${oldIndicators.filter(i => !newIndicators.includes(i)).join(', ') || 'none'}, Add ${newIndicators.filter(i => !oldIndicators.includes(i)).join(', ') || 'none'}</p>
       </div>
@@ -174,7 +189,7 @@ export async function notifyUsernameChange(data: {
         <tr><td style="padding: 8px 0; color: #9ca3af;">Old Username</td><td style="padding: 8px 0; color: #ef4444; font-weight: bold;">${oldUsername}</td></tr>
         <tr><td style="padding: 8px 0; color: #9ca3af;">New Username</td><td style="padding: 8px 0; color: #22c55e; font-weight: bold;">${newUsername}</td></tr>
       </table>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #251a2e; border: 1px solid #4a2e7a; border-radius: 8px;">
         <p style="color: #8b5cf6; margin: 0; font-weight: bold;">⚡ ACTION REQUIRED</p>
         <p style="color: #d1d5db; margin: 8px 0 0;">Update TradingView access: Revoke from <strong>${oldUsername}</strong>, grant to <strong>${newUsername}</strong></p>
       </div>
@@ -198,7 +213,7 @@ export async function sendWelcomeEmail(data: {
       <p style="color: #d1d5db; line-height: 1.6;">Thank you for subscribing to the <strong style="color: #fff;">${plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> plan.</p>
       <p style="color: #d1d5db; line-height: 1.6;">Your indicators: <strong style="color: #0ea5e9;">${indicators.join(', ')}</strong></p>
       <p style="color: #d1d5db; line-height: 1.6;">We'll grant you TradingView access within <strong style="color: #fff;">4 hours</strong>. You'll receive the indicators as Invite-Only scripts in your TradingView account.</p>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #283040; border: 1px solid #374151; border-radius: 8px;">
         <p style="color: #9ca3af; margin: 0; font-size: 14px;">Need help? Reply to this email or visit <a href="${SITE_URL}/dashboard" style="color: #0ea5e9;">your dashboard</a>.</p>
       </div>
     `),
@@ -222,7 +237,7 @@ export async function sendCancellationEmail(data: {
       <p style="color: #d1d5db; line-height: 1.6;">Your <strong style="color: #fff;">${plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> plan has been cancelled.</p>
       <p style="color: #d1d5db; line-height: 1.6;">You still have full access to your indicators until <strong style="color: #fff;">${dateStr}</strong>.</p>
       <p style="color: #d1d5db; line-height: 1.6;">After that date, your TradingView access will be revoked.</p>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(14,165,233,0.05); border: 1px solid rgba(14,165,233,0.15); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #1a2a35; border: 1px solid #1e5a7a; border-radius: 8px;">
         <p style="color: #0ea5e9; margin: 0; font-weight: bold;">Changed your mind?</p>
         <p style="color: #d1d5db; margin: 8px 0 0;">You can reactivate anytime before ${dateStr} from your <a href="${SITE_URL}/dashboard" style="color: #0ea5e9;">dashboard</a>.</p>
       </div>
@@ -248,7 +263,7 @@ export async function sendSwapEmail(data: {
       <p style="color: #0ea5e9; font-size: 18px; font-weight: bold; margin: 15px 0;">${newIndicators.join(' + ')}</p>
       <p style="color: #d1d5db; line-height: 1.6;">We'll update your TradingView access within <strong style="color: #fff;">4 hours</strong>.</p>
       <p style="color: #d1d5db; line-height: 1.6;">Your next swap will be available on <strong style="color: #fff;">${dateStr}</strong>.</p>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #283040; border: 1px solid #374151; border-radius: 8px;">
         <p style="color: #9ca3af; margin: 0; font-size: 14px;">Need help? Reply to this email or visit <a href="${SITE_URL}/dashboard" style="color: #0ea5e9;">your dashboard</a>.</p>
       </div>
     `),
@@ -272,7 +287,7 @@ export async function sendUpgradeEmail(data: {
       <p style="color: #d1d5db; line-height: 1.6;">Your indicators: <strong style="color: #0ea5e9;">${indicators.join(', ')}</strong></p>
       <p style="color: #d1d5db; line-height: 1.6;">We'll update your TradingView access within <strong style="color: #fff;">4 hours</strong>.</p>
       <p style="color: #d1d5db; line-height: 1.6;">Any unused time from your previous plan has been credited toward this subscription.</p>
-      <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+      <div style="margin-top: 20px; padding: 15px; background-color: #283040; border: 1px solid #374151; border-radius: 8px;">
         <p style="color: #9ca3af; margin: 0; font-size: 14px;">Need help? Reply to this email or visit <a href="${SITE_URL}/dashboard" style="color: #0ea5e9;">your dashboard</a>.</p>
       </div>
     `),
