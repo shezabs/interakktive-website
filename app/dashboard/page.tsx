@@ -414,6 +414,18 @@ export default function DashboardPage() {
 
       setSubscription(prev => prev ? { ...prev, indicators: swapSelections, swap_used: true, swap_reset_date: nextSwapReset.toISOString() } : null);
       setSwapSuccess(true);
+
+      // Send swap notification email
+      fetch('/api/notify-swap', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user!.email,
+          tradingviewUsername: subscription!.tradingview_username,
+          oldIndicators: subscription!.indicators,
+          newIndicators: swapSelections,
+        }),
+      }).catch(() => {}); // Don't block on notification failure
     } catch (err: any) {
       setSwapError(err.message || 'Swap failed. Please try again.');
     } finally {

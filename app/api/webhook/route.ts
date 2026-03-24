@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getStripe } from '@/app/lib/stripe';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { notifyNewSubscription, notifyCancellation, sendWelcomeEmail } from '@/app/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -120,6 +121,21 @@ export async function POST(request: NextRequest) {
         console.error('Failed to insert subscription:', insertError);
       } else {
         console.log(`✅ Subscription created: ${email} — ${normalisedPlan} (${billing}) — ${finalIndicators.join(', ')}`);
+        
+        // Send email notifications
+        await notifyNewSubscription({
+          email,
+          tradingviewUsername: tradingViewUsername,
+          plan: normalisedPlan,
+          billing,
+          indicators: finalIndicators,
+          isUpgrade,
+        });
+        await sendWelcomeEmail({
+          email,
+          plan: normalisedPlan,
+          indicators: finalIndicators,
+        });
       }
 
       // Handle upgrade: cancel old subscription after new one is created
@@ -267,6 +283,13 @@ export async function POST(request: NextRequest) {
     case 'customer.subscription.deleted': {
       const subscription = event.data.object as Stripe.Subscription;
 
+      // Get subscription details before updating
+      const { data: cancelledSub } = await supabaseAdmin
+        .from('subscriptions')
+        .select('user_email, tradingview_username, plan')
+        .eq('stripe_subscription_id', subscription.id)
+        .single();
+
       const { error: cancelError } = await supabaseAdmin
         .from('subscriptions')
         .update({
@@ -279,6 +302,15 @@ export async function POST(request: NextRequest) {
         console.error('Failed to cancel subscription:', cancelError);
       } else {
         console.log(`❌ Subscription cancelled: ${subscription.id}`);
+        
+        // Send cancellation email to admin
+        if (cancelledSub) {
+          await notifyCancellation({
+            email: cancelledSub.user_email,
+            tradingviewUsername: cancelledSub.tradingview_username,
+            plan: cancelledSub.plan,
+          });
+        }
       }
 
       break;
