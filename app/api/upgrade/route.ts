@@ -10,6 +10,8 @@ function getSupabaseAdmin() {
 }
 
 const PRICE_MAP: Record<string, string | undefined> = {
+  'starter_monthly': process.env.STRIPE_PRICE_STARTER_MONTHLY,
+  'starter_annual': process.env.STRIPE_PRICE_STARTER_ANNUAL,
   'advantage_monthly': process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY,
   'advantage_annual': process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL,
   'elite_monthly': process.env.STRIPE_PRICE_ELITE_MONTHLY,
@@ -25,11 +27,12 @@ const PLAN_PRICES: Record<string, { monthly: number; annual: number }> = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { subscriptionId, targetPlan, indicators, billing } = body as {
+    const { subscriptionId, targetPlan, indicators, billing, isBillingSwitch } = body as {
       subscriptionId: string;
-      targetPlan: 'advantage' | 'elite';
+      targetPlan: 'starter' | 'advantage' | 'elite';
       indicators: string[];
       billing: 'monthly' | 'annual';
+      isBillingSwitch?: boolean;
     };
 
     if (!subscriptionId || !targetPlan || !indicators || !billing) {
@@ -43,6 +46,9 @@ export async function POST(request: NextRequest) {
     }
     if (targetPlan === 'elite' && indicators.length !== 4) {
       return NextResponse.json({ error: 'Elite plan requires all 4 indicators' }, { status: 400 });
+    }
+    if (targetPlan === 'starter' && indicators.length !== 1) {
+      return NextResponse.json({ error: 'Starter plan requires exactly 1 indicator' }, { status: 400 });
     }
     if (!indicators.every(i => allIndicators.includes(i))) {
       return NextResponse.json({ error: 'Invalid indicator selection' }, { status: 400 });
@@ -61,10 +67,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
     }
 
-    // Validate upgrade direction
+    // Validate upgrade direction — allow same plan only if billing is changing
     const planOrder: Record<string, number> = { starter: 1, advantage: 2, elite: 3 };
-    if ((planOrder[targetPlan] || 0) <= (planOrder[currentSub.plan] || 0)) {
-      return NextResponse.json({ error: 'Can only upgrade to a higher plan' }, { status: 400 });
+    const isSamePlan = targetPlan === currentSub.plan;
+    const isBillingChange = billing !== currentSub.billing;
+    
+    if (isSamePlan && !isBillingChange) {
+      return NextResponse.json({ error: 'You are already on this plan with this billing cycle' }, { status: 400 });
+    }
+    if (!isSamePlan && (planOrder[targetPlan] || 0) < (planOrder[currentSub.plan] || 0)) {
+      return NextResponse.json({ error: 'Can only upgrade to a higher or equal plan' }, { status: 400 });
     }
 
     // Get target price ID

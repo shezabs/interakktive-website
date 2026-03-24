@@ -272,6 +272,7 @@ export default function DashboardPage() {
   const [upgradeTarget, setUpgradeTarget] = useState<'advantage' | 'elite'>('elite');
   const [upgradeSelections, setUpgradeSelections] = useState<string[]>([]);
   const [upgradeBilling, setUpgradeBilling] = useState<'monthly' | 'annual'>('monthly');
+  const [isBillingSwitch, setIsBillingSwitch] = useState(false); // Same plan, different billing
 
   const PLAN_PRICES: Record<string, { monthly: number; annual: number }> = {
     starter: { monthly: 50, annual: 500 },
@@ -281,13 +282,26 @@ export default function DashboardPage() {
 
   const openUpgradeModal = () => {
     if (!subscription) return;
-    const target = subscription.plan === 'advantage' ? 'elite' : 'advantage';
-    setUpgradeTarget(target as 'advantage' | 'elite');
-    setUpgradeBilling(subscription.billing); // Default to current billing cycle
-    if (target === 'elite') {
+    
+    if (subscription.plan === 'elite' && subscription.billing === 'monthly') {
+      // Elite Monthly — only option is billing switch to Annual
+      setUpgradeTarget('elite');
+      setIsBillingSwitch(true);
+      setUpgradeBilling('annual');
+      setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']);
+    } else if (subscription.plan === 'advantage') {
+      // Advantage — can switch billing or upgrade to Elite
+      setUpgradeTarget('elite');
+      setIsBillingSwitch(false);
+      setUpgradeBilling(subscription.billing);
       setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']);
     } else {
-      setUpgradeSelections([]); // Let user freely pick any 2
+      // Starter — can go to Advantage or Elite
+      const target = 'advantage';
+      setUpgradeTarget(target);
+      setIsBillingSwitch(false);
+      setUpgradeBilling(subscription.billing === 'monthly' ? 'annual' : 'monthly');
+      setUpgradeSelections([]);
     }
     setUpgradeError('');
     setUpgradeSuccess(false);
@@ -306,9 +320,13 @@ export default function DashboardPage() {
   const handleUpgrade = async () => {
     if (!subscription) return;
     const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
-    const newIndicators = upgradeTarget === 'elite' ? allIndicators : upgradeSelections;
+    
+    // For billing switch (same plan): keep current indicators
+    const effectiveTarget = isBillingSwitch ? subscription.plan as 'advantage' | 'elite' : upgradeTarget;
+    const newIndicators = effectiveTarget === 'elite' ? allIndicators : 
+      isBillingSwitch ? subscription.indicators : upgradeSelections;
 
-    if (upgradeTarget === 'advantage' && newIndicators.length !== 2) {
+    if (effectiveTarget === 'advantage' && newIndicators.length !== 2) {
       setUpgradeError('Please select your 2nd indicator.');
       return;
     }
@@ -321,9 +339,10 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           subscriptionId: subscription.id,
-          targetPlan: upgradeTarget,
+          targetPlan: effectiveTarget,
           indicators: newIndicators,
           billing: upgradeBilling,
+          isBillingSwitch,
         }),
       });
       const data = await res.json();
@@ -538,16 +557,16 @@ export default function DashboardPage() {
                     })}
                   </div>
 
-                  {subscription.plan !== 'elite' && (
+                  {(subscription.plan !== 'elite' || (subscription.plan === 'elite' && subscription.billing === 'monthly')) && (
                     <div className="mt-6 pt-6 border-t border-white/10">
                       <p className="text-sm text-gray-400 mb-2">
-                        Want access to more indicators?
+                        {subscription.plan === 'elite' ? 'Save with annual billing' : 'Want access to more indicators?'}
                       </p>
                       <button
                         onClick={openUpgradeModal}
                         className="text-primary-400 hover:text-primary-300 text-sm font-medium flex items-center gap-1 transition-colors"
                       >
-                        Upgrade your plan
+                        {subscription.plan === 'elite' ? 'Switch to Annual' : 'Upgrade your plan'}
                         <ArrowRight className="w-3 h-3" />
                       </button>
                     </div>
@@ -682,13 +701,13 @@ export default function DashboardPage() {
               <div className="glass p-6 rounded-xl">
                 <h3 className="font-semibold mb-4">Manage Subscription</h3>
                 <div className="space-y-3">
-                  {/* Upgrade */}
-                  {subscription!.plan !== 'elite' && subscription!.status === 'active' && (
+                  {/* Upgrade / Billing switch */}
+                  {(subscription!.plan !== 'elite' || (subscription!.plan === 'elite' && subscription!.billing === 'monthly')) && subscription!.status === 'active' && (
                     <button
                       onClick={openUpgradeModal}
                       className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium"
                     >
-                      Upgrade Plan
+                      {subscription!.plan === 'elite' ? 'Switch to Annual' : 'Upgrade Plan'}
                     </button>
                   )}
 
@@ -796,7 +815,8 @@ export default function DashboardPage() {
             <div className="glass-card p-8 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto custom-scrollbar">
               <h2 className="text-xl font-bold mb-4">Upgrade Your Plan</h2>
 
-              {/* Billing toggle */}
+              {/* Billing toggle — only show for Starter users and Advantage→Elite */}
+              {(subscription.plan === 'starter' || (subscription.plan === 'advantage' && !isBillingSwitch)) && (
               <div className="mb-4">
                 <p className="text-xs text-gray-500 mb-2">Billing cycle</p>
                 <div className="flex items-center gap-2 p-1 bg-white/5 rounded-lg w-fit">
@@ -817,20 +837,30 @@ export default function DashboardPage() {
                   )}
                 </div>
               </div>
+              )}
               
               {/* Plan selector for Starter users */}
               {subscription.plan === 'starter' && (
-                <div className="flex gap-3 mb-4">
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {subscription.billing === 'monthly' && (
+                    <button
+                      onClick={() => { setUpgradeTarget('starter' as any); setIsBillingSwitch(true); setUpgradeBilling('annual'); setUpgradeSelections([...subscription.indicators]); }}
+                      className={`flex-1 min-w-[120px] py-2 px-3 rounded-lg text-sm font-medium transition-all ${isBillingSwitch ? 'bg-green-500/20 border border-green-500/50 text-green-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
+                    >
+                      Starter Annual
+                      <span className="block text-xs mt-0.5">$500/yr · Save ~17%</span>
+                    </button>
+                  )}
                   <button
-                    onClick={() => { setUpgradeTarget('advantage'); setUpgradeSelections([]); }}
-                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'advantage' ? 'bg-primary-500/20 border border-primary-500/50 text-primary-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
+                    onClick={() => { setUpgradeTarget('advantage'); setIsBillingSwitch(false); setUpgradeSelections([]); }}
+                    className={`flex-1 min-w-[120px] py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'advantage' && !isBillingSwitch ? 'bg-primary-500/20 border border-primary-500/50 text-primary-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
                   >
                     Advantage
                     <span className="block text-xs mt-0.5">${upgradeBilling === 'annual' ? '750/yr' : '75/mo'}</span>
                   </button>
                   <button
-                    onClick={() => { setUpgradeTarget('elite'); setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']); }}
-                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'elite' ? 'bg-accent-500/20 border border-accent-500/50 text-accent-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
+                    onClick={() => { setUpgradeTarget('elite'); setIsBillingSwitch(false); setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']); }}
+                    className={`flex-1 min-w-[120px] py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'elite' && !isBillingSwitch ? 'bg-accent-500/20 border border-accent-500/50 text-accent-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
                   >
                     Elite
                     <span className="block text-xs mt-0.5">${upgradeBilling === 'annual' ? '1,000/yr' : '100/mo'}</span>
@@ -838,10 +868,35 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              {/* Plan selector for Advantage users — can switch to Annual OR upgrade to Elite */}
               {subscription.plan === 'advantage' && (
-                <p className="text-sm text-gray-400 mb-4">
-                  Upgrade to Elite — ${upgradeBilling === 'annual' ? '1,000/yr' : '100/mo'} (all 4 indicators)
-                </p>
+                <div className="flex gap-3 mb-4">
+                  {subscription.billing === 'monthly' && (
+                    <button
+                      onClick={() => { setUpgradeTarget('advantage'); setIsBillingSwitch(true); setUpgradeBilling('annual'); setUpgradeSelections([...subscription.indicators]); }}
+                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${isBillingSwitch ? 'bg-primary-500/20 border border-primary-500/50 text-primary-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
+                    >
+                      Advantage Annual
+                      <span className="block text-xs mt-0.5">$750/yr · Save ~17%</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => { setUpgradeTarget('elite'); setIsBillingSwitch(false); setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']); }}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${upgradeTarget === 'elite' && !isBillingSwitch ? 'bg-accent-500/20 border border-accent-500/50 text-accent-400' : 'bg-white/5 border border-white/10 text-gray-400'}`}
+                  >
+                    Elite
+                    <span className="block text-xs mt-0.5">${upgradeBilling === 'annual' ? '1,000/yr' : '100/mo'}</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Elite Monthly users — only billing switch to Annual */}
+              {subscription.plan === 'elite' && subscription.billing === 'monthly' && (
+                <div className="mb-4">
+                  <p className="text-sm text-gray-400 mb-2">
+                    Switch to Elite Annual — $1,000/yr · Save ~17%
+                  </p>
+                </div>
               )}
 
               {/* Pricing info */}
@@ -852,17 +907,25 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-400">New plan</span>
-                  <span className="text-white">{upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} — ${PLAN_PRICES[upgradeTarget]?.[upgradeBilling]}/{upgradeBilling === 'annual' ? 'yr' : 'mo'}</span>
+                  <span className="text-white">
+                    {isBillingSwitch 
+                      ? `${subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} — $${PLAN_PRICES[subscription.plan]?.[upgradeBilling]}/${upgradeBilling === 'annual' ? 'yr' : 'mo'}`
+                      : `${upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} — $${PLAN_PRICES[upgradeTarget]?.[upgradeBilling]}/${upgradeBilling === 'annual' ? 'yr' : 'mo'}`
+                    }
+                  </span>
                 </div>
                 <div className="border-t border-white/10 mt-2 pt-2">
                   <p className="text-xs text-gray-500">
-                    Your old plan will be cancelled and any unused time will be credited toward your new {upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} {upgradeBilling === 'annual' ? 'Annual' : 'Monthly'} plan via Stripe checkout.
+                    {isBillingSwitch 
+                      ? `Your current plan will switch to ${upgradeBilling === 'annual' ? 'Annual' : 'Monthly'} billing. Unused time will be credited toward your new plan via Stripe checkout.`
+                      : `Your old plan will be cancelled and any unused time will be credited toward your new ${upgradeTarget.charAt(0).toUpperCase() + upgradeTarget.slice(1)} ${upgradeBilling === 'annual' ? 'Annual' : 'Monthly'} plan via Stripe checkout.`
+                    }
                   </p>
                 </div>
               </div>
 
-              {/* Indicator selection for Advantage */}
-              {upgradeTarget === 'advantage' && (
+              {/* Indicator selection for Advantage upgrade (not billing switch) */}
+              {upgradeTarget === 'advantage' && !isBillingSwitch && (
                 <div className="mb-4">
                   <p className="text-sm font-medium mb-1">Choose your 2 indicators</p>
                   <p className="text-xs text-gray-500 mb-3">Select any 2 indicators for your Advantage plan.</p>
@@ -895,8 +958,28 @@ export default function DashboardPage() {
                 </div>
               )}
 
+              {/* Billing switch — show current indicators (they stay the same) */}
+              {isBillingSwitch && (
+                <div className="mb-4">
+                  <p className="text-sm font-medium mb-2">Your indicators stay the same</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {subscription.indicators.map((indName) => {
+                      const ind = INDICATORS.find(i => i.id === indName);
+                      if (!ind) return null;
+                      const Icon = ind.icon;
+                      return (
+                        <div key={ind.id} className={`p-2 rounded-lg ${ind.bgColor} border ${ind.borderColor} flex items-center gap-2`}>
+                          <Icon className={`w-4 h-4 ${ind.color}`} />
+                          <span className="text-xs font-medium text-white">{ind.id}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Elite shows all 4 */}
-              {upgradeTarget === 'elite' && (
+              {upgradeTarget === 'elite' && !isBillingSwitch && (
                 <div className="mb-4">
                   <p className="text-sm font-medium mb-2">All 4 indicators included</p>
                   <div className="grid grid-cols-2 gap-2">
@@ -926,7 +1009,7 @@ export default function DashboardPage() {
                   className="flex-1 py-3 bg-gradient-to-r from-primary-400 to-accent-500 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
                 >
                   {upgrading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                  {upgrading ? 'Redirecting to payment...' : `Upgrade & Pay — $${PLAN_PRICES[upgradeTarget]?.[upgradeBilling]}/${upgradeBilling === 'annual' ? 'yr' : 'mo'}`}
+                  {upgrading ? 'Redirecting to payment...' : `${isBillingSwitch ? 'Switch' : 'Upgrade'} & Pay — $${PLAN_PRICES[isBillingSwitch ? subscription.plan : upgradeTarget]?.[upgradeBilling]}/${upgradeBilling === 'annual' ? 'yr' : 'mo'}`}
                 </button>
                 <button
                   onClick={() => { setShowUpgradeModal(false); setUpgrading(false); }}
