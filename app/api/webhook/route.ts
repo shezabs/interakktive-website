@@ -172,6 +172,35 @@ export async function POST(request: NextRequest) {
       const periodEnd = new Date((subObj.current_period_end || Math.floor(Date.now() / 1000)) * 1000);
       const periodStart = new Date((subObj.current_period_start || Math.floor(Date.now() / 1000)) * 1000);
 
+      // Guard: if period start and end are the same (100% coupon), calculate correct end
+      // Stripe sometimes sets both to the same timestamp for $0 subscriptions
+      let correctedPeriodEnd = periodEnd;
+      const diffMs = Math.abs(periodEnd.getTime() - periodStart.getTime());
+      if (diffMs < 60000) { // Less than 1 minute apart — treat as identical
+        // Look up the billing cycle from our database to calculate correct end
+        const { data: existingSub } = await supabaseAdmin
+          .from('subscriptions')
+          .select('billing, current_period_end')
+          .eq('stripe_subscription_id', stripeSubId)
+          .single();
+        
+        if (existingSub) {
+          // If our DB already has a correct period end (set by checkout handler), keep it
+          const existingEnd = new Date(existingSub.current_period_end);
+          if (existingEnd > periodStart) {
+            correctedPeriodEnd = existingEnd;
+          } else {
+            // Calculate from billing cycle
+            correctedPeriodEnd = new Date(periodStart);
+            if (existingSub.billing === 'annual') {
+              correctedPeriodEnd.setFullYear(correctedPeriodEnd.getFullYear() + 1);
+            } else {
+              correctedPeriodEnd.setMonth(correctedPeriodEnd.getMonth() + 1);
+            }
+          }
+        }
+      }
+
       // Determine the correct status for our database
       // If Stripe says active but cancel_at_period_end is true, keep as 'cancelling'
       let dbStatus: string;
@@ -191,10 +220,10 @@ export async function POST(request: NextRequest) {
         .update({
           status: dbStatus,
           current_period_start: periodStart.toISOString(),
-          current_period_end: periodEnd.toISOString(),
+          current_period_end: correctedPeriodEnd.toISOString(),
           // Reset swap on renewal (new period = new swap allowance)
           swap_used: false,
-          swap_reset_date: periodEnd.toISOString(),
+          swap_reset_date: correctedPeriodEnd.toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq('stripe_subscription_id', stripeSubId);
