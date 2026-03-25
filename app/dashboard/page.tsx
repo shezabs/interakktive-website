@@ -461,13 +461,6 @@ export default function DashboardPage() {
               }
             </p>
           </div>
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-2 px-4 py-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all"
-          >
-            <LogOut className="w-4 h-4" />
-            Sign Out
-          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
