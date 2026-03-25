@@ -35,15 +35,21 @@ export default function CheckoutSuccessPage() {
 
               <div className="space-y-3">
                 <Link
-                  href="/atlas-pro"
+                  href="/dashboard"
                   className="w-full py-3 bg-gradient-to-r from-primary-400 to-primary-500 hover:from-primary-500 hover:to-primary-600 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 text-white"
                 >
-                  Explore Your Indicators
+                  Go to Dashboard
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
+                  href="/atlas-pro"
+                  className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 text-white"
+                >
+                  Explore Your Indicators
+                </Link>
+                <Link
                   href="/"
-                  className="block text-gray-400 hover:text-white text-sm transition-colors"
+                  className="block text-gray-400 hover:text-white text-sm transition-colors text-center"
                 >
                   Back to home
                 </Link>

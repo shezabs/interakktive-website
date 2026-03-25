@@ -570,7 +570,7 @@ export default function DashboardPage() {
                     })}
                   </div>
 
-                  {(subscription.plan !== 'elite' || (subscription.plan === 'elite' && subscription.billing === 'monthly')) && (
+                  {(subscription.plan !== 'elite' || (subscription.plan === 'elite' && subscription.billing === 'monthly')) && subscription.status === 'active' && (
                     <div className="mt-6 pt-6 border-t border-white/10">
                       <p className="text-sm text-gray-400 mb-2">
                         {subscription.plan === 'elite' ? 'Save with annual billing' : 'Want access to more indicators?'}

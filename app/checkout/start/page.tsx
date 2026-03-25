@@ -22,6 +22,7 @@ export default function CheckoutStartPage() {
 
   const [email, setEmail] = useState('');
   const [tradingViewUsername, setTradingViewUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedIndicators, setSelectedIndicators] = useState<string[]>(
     planId === 'suite' ? INDICATORS.map(i => i.id) : []
   );
@@ -34,6 +35,7 @@ export default function CheckoutStartPage() {
     const prefill = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
+        setIsLoggedIn(true);
         if (user.email) setEmail(user.email);
         // Check for existing active subscription
         const { data: sub } = await supabase
@@ -209,8 +211,8 @@ export default function CheckoutStartPage() {
                 {needsSelection && (
                   <p className="text-xs text-gray-500 mb-3">
                     {planId === 'single' 
-                      ? 'Select 1 indicator. This selection is locked for the billing period.'
-                      : 'Select 2 indicators. You can swap once per billing cycle.'
+                      ? 'Select 1 indicator.'
+                      : 'Select 2 indicators. You can swap once per month.'
                     }
                   </p>
                 )}
@@ -269,6 +271,7 @@ export default function CheckoutStartPage() {
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-2">
                     Email Address
+                    {isLoggedIn && <span className="text-xs text-gray-500 ml-2">(from your account)</span>}
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -278,7 +281,8 @@ export default function CheckoutStartPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="w-full pl-10 pr-4 py-3 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors"
+                      readOnly={isLoggedIn}
+                      className={`w-full pl-10 pr-4 py-3 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors ${isLoggedIn ? 'text-gray-400 cursor-not-allowed' : ''}`}
                       placeholder="you@example.com"
                     />
                   </div>
