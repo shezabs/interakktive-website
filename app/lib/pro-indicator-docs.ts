@@ -58,7 +58,6 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>64/64 outputs</strong> — zero headroom (at the TradingView maximum)</li>
             <li><strong>15 alert conditions</strong> covering signals, regime changes, squeezes, sweeps, momentum, divergence, and risk zones</li>
             <li><strong>Non-repainting</strong> signals — all triggers use closed-bar data</li>
             <li><strong>Cross-asset adaptive</strong> — Crypto, Forex, Stocks, Indices, Commodities</li>
@@ -483,7 +482,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <h3>Key Properties</h3>
           <ul>
             <li><strong>17 alert events</strong> via JSON payloads (use "Any alert() function call" in TradingView)</li>
-            <li><strong>9 request.security() calls</strong> — HTF confluence + 4-TF MTF Panel + Institutional Levels</li>
+            <li><strong>Multi-timeframe analysis</strong> — HTF confluence, 4-TF MTF Panel, and Institutional Levels</li>
             <li><strong>Non-repainting</strong> structure detection</li>
             <li><strong>Asset-adaptive</strong> — age decay, sensitivity, and swing detection adjust per asset class and timeframe</li>
           </ul>
@@ -871,7 +870,6 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>49/64 outputs</strong> (15 headroom remaining)</li>
             <li><strong>19 alert conditions</strong></li>
             <li><strong>Non-repainting</strong> — all calculations use closed-bar data</li>
             <li><strong>Timeframe-adaptive</strong> — signal sensitivity auto-adjusts by chart timeframe</li>
@@ -984,7 +982,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           </ul>
 
           <h3>Pulse Memory</h3>
-          <p>"Last time FLOW was at this level, price did X." Uses a ring buffer of 200 snapshots (every 5 bars = 1,000 bars of history). Searches for the most recent snapshot where FLOW was within ±3 points of the current level, then reports what price did 15 bars later.</p>
+          <p>"Last time FLOW was at this level, price did X." Pulse Memory searches your chart history for moments when FLOW was at a similar level, then shows what price did next.</p>
           <p>Examples: "Flow at 72 → +0.8%" (last time FLOW was at 72, price rallied 0.8%) or "Flow at 28 → -1.2%" (last time at 28, price dropped 1.2%). Gives historical context to the current momentum reading.</p>
         `,
       },
@@ -1174,22 +1172,19 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <h3>What RADAR PRO Does</h3>
           <p>RADAR PRO answers the watchlist question: <em>Which tickers have the highest confluence right now, and which should I focus on?</em></p>
           <ul>
-            <li><strong>Signal Engine</strong> — 6-factor stateless directional assessment (Ribbon Stack, Price vs Flow, EMA Trend, MACD Momentum, RSI Position, Volume Conviction)</li>
-            <li><strong>Structure Engine</strong> — Stateless HH/HL vs LH/LL bias detection using the last 3 confirmed swing highs and lows</li>
+            <li><strong>Signal Engine</strong> — 6-factor directional assessment (Ribbon Stack, Price vs Flow, EMA Trend, MACD Momentum, RSI Position, Volume Conviction)</li>
+            <li><strong>Structure Engine</strong> — HH/HL vs LH/LL bias detection using the last 3 confirmed swing highs and lows</li>
             <li><strong>Momentum Engine</strong> — 6-factor proprietary adaptive computation (Spread Velocity, Tension Momentum, Efficiency Trend, Volume Conviction Trend, ADX Direction, Anchor Slope)</li>
             <li><strong>Confluence Rating</strong> — How many engines agree? 3/3 = highest conviction. Shows direction (▲/▼) and strength.</li>
             <li><strong>Overall Rating</strong> — Weighted composite: Strong Bull → Bull → Neutral → Bear → Strong Bear</li>
           </ul>
 
-          <h3>Architecture</h3>
-          <p>RADAR PRO uses a stateless architecture by design. Unlike CIPHER or PHANTOM which track state over time (var arrays, ring buffers), RADAR computes everything fresh each bar for each ticker. This prevents the critical "var state bleed" problem where compound state computed for the chart symbol contaminates request.security() calls for other tickers.</p>
-
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>40 request.security() calls</strong> (10 tickers × 4 fetch loops — at the Pine Script limit)</li>
+            <li><strong>Scan up to 10 tickers</strong> simultaneously from a single chart</li>
             <li><strong>6 JSON alert types</strong> with transition detection</li>
             <li><strong>Per-ticker timeframe override</strong> — each ticker can scan a different timeframe</li>
-            <li><strong>Entirely stateless computation</strong> — no var state bleed across tickers</li>
+            <li><strong>Triple-engine confluence</strong> — three genuinely independent engines for high-conviction signals</li>
           </ul>
         `,
       },
@@ -1385,7 +1380,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <ul>
             <li>Don't blindly trade the highest-rated ticker — RADAR identifies opportunities, CIPHER times entries</li>
             <li>Don't ignore Volatility — a Strong Bull rating on a Compressed volatility ticker means the move hasn't started yet (patience needed), while High volatility means it may be overextended</li>
-            <li>Don't add more than 10 tickers — Pine Script limits request.security() to 40 calls, and RADAR uses all 40 (10 tickers × 4 fetch loops)</li>
+            <li>Don't add more than 10 tickers — RADAR is optimised for up to 10 simultaneous scans</li>
           </ul>
         `,
       },
@@ -1400,17 +1395,14 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <h3>Tip 2: Compressed Volatility + Strong Rating = Pre-Breakout</h3>
           <p>A ticker showing Strong Bull with Compressed volatility means all three engines agree AND volatility is at its lowest. This is the classic squeeze setup — energy is stored and waiting to release. Combine with CIPHER PRO's Coil feature for exact breakout timing.</p>
 
-          <h3>Tip 3: Confluence is the Unique Selling Point</h3>
-          <p>No competitor can replicate RADAR's confluence because no one else has three genuinely independent engines (proprietary adaptive signal, stateless structure, and 100% proprietary momentum) in a single screener. This is what justifies the premium pricing.</p>
+          <h3>Tip 3: Triple-Engine Confluence</h3>
+          <p>RADAR's power lies in having three genuinely independent engines — a proprietary adaptive signal engine, an independent structure engine, and a fully proprietary momentum engine — all in a single screener. When all three agree, the conviction is unmatched.</p>
 
           <h3>Tip 4: Use Per-Ticker TF for Multi-Timeframe Scanning</h3>
           <p>Set your main holdings to higher timeframes (Daily/Weekly) and your trading watchlist to lower timeframes (1H/4H). One table gives you both the macro view and the trading view simultaneously.</p>
 
           <h3>Tip 5: Set STRONG_SETUP Alerts</h3>
           <p>The STRONG_SETUP alert fires when a ticker reaches Strong Bull or Strong Bear with 3/3 confluence. This is the highest-conviction setup RADAR can produce. Set it and let RADAR notify you instead of watching the table all day.</p>
-
-          <h3>Tip 6: An Entire Premium Indicator Built in One Session</h3>
-          <p>RADAR PRO was designed and published in approximately 6 hours using the stateless architecture approach. The lesson: with clear architecture decisions and the right constraints (stateless-only, no var state in request.security), complex screeners can be built rapidly and reliably.</p>
         `,
       },
     ],
