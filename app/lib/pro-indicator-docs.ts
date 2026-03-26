@@ -1157,10 +1157,10 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
   'atlas-radar-pro': {
     title: 'Atlas Radar Pro',
-    subtitle: 'Screening Intelligence — the multi-ticker scanner of the ATLAS suite. Scans 10 tickers simultaneously across three independent engines (Signal, Structure, Momentum) with unified Confluence rating, 5-column sorting, 3 stackable filters, volatility classification, and JSON alerts for automation.',
+    subtitle: 'Screening Intelligence — the multi-ticker scanner of the ATLAS suite. Scans 10 tickers simultaneously across three independent engines (Signal, Structure, Momentum) with unified Confluence rating, dedicated Timeframe column for multi-TF scanning, 5-column sorting, 3 stackable filters, volatility classification, and JSON alerts for automation.',
     tradingViewUrl: 'https://www.tradingview.com/script/V6tg80MI-Atlas-Radar-Pro-Interakktive/',
     role: 'Screening Intelligence',
-    lines: '819',
+    lines: '835',
     sections: [
       {
         id: 'overview',
@@ -1182,8 +1182,10 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <h3>Key Properties</h3>
           <ul>
             <li><strong>Scan up to 10 tickers</strong> simultaneously from a single chart</li>
+            <li><strong>Dedicated TF column</strong> — see at a glance which timeframe each row represents</li>
             <li><strong>6 JSON alert types</strong> with transition detection</li>
             <li><strong>Per-ticker timeframe override</strong> — each ticker can scan a different timeframe</li>
+            <li><strong>All columns independently toggleable</strong> — customise the table to show only what you need</li>
             <li><strong>Triple-engine confluence</strong> — three genuinely independent engines for high-conviction signals</li>
           </ul>
         `,
@@ -1270,6 +1272,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <p>Each column can be toggled independently:</p>
           <ul>
             <li><strong>Ticker</strong> — Always shown. Symbol name extracted from the full exchange:symbol format.</li>
+            <li><strong>TF</strong> — Displays the configured timeframe for each row. Shows "Chart" when following the chart timeframe, or the specific TF (1m, 15m, 1H, 4H, D, W, etc.). Essential for multi-TF scanning of the same ticker.</li>
             <li><strong>Price</strong> — Current close price</li>
             <li><strong>% Change</strong> — Percentage change from previous bar. Green = up, red = down.</li>
             <li><strong>Rating</strong> — Overall rating (Strong Bull → Strong Bear) with colour coding</li>
@@ -1292,7 +1295,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <p>Sort the table by any of: Rating, Signal, Confluence, Momentum, or % Change. Default descending (strongest first). Toggle ascending for weakest first.</p>
 
           <h3>Per-Ticker Timeframe</h3>
-          <p>Each ticker can have its own timeframe override. Leave blank to follow the chart timeframe. Set to a specific TF (e.g., "60" for 1H) to scan that ticker on a different timeframe than the chart. This lets you scan a mix of timeframes in one table.</p>
+          <p>Each ticker can have its own timeframe override. Leave blank to follow the chart timeframe (displayed as "Chart" in the TF column). Set to a specific TF (e.g., 1H, 4H, D) to scan that ticker on a different timeframe. Assign the same ticker to multiple slots with different TFs to build a multi-timeframe view of a single asset — the TF column makes each row instantly identifiable.</p>
         `,
       },
       {
@@ -1367,7 +1370,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           </ol>
 
           <h3>Scanning Multiple Timeframes</h3>
-          <p>Set different timeframes per ticker to scan your watchlist across multiple perspectives. For example: BTC on 1H, ETH on 4H, SPX on Daily — all in one table. When a ticker shows Strong on a higher TF, it's a swing setup. Strong on a lower TF = a scalp opportunity.</p>
+          <p>Assign the same ticker to multiple slots with different timeframes to see all TF assessments side by side. For example: set slots 1-3 to BTCUSDT on 15m, 1H, and 4H — the TF column instantly shows which row is which. When all timeframes align, conviction is at its highest. When lower TFs diverge from higher TFs, a reversal may be forming.</p>
 
           <h3>Using Filters Effectively</h3>
           <ul>
@@ -1398,8 +1401,8 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
           <h3>Tip 3: Triple-Engine Confluence</h3>
           <p>RADAR's power lies in having three genuinely independent engines — a proprietary adaptive signal engine, an independent structure engine, and a fully proprietary momentum engine — all in a single screener. When all three agree, the conviction is unmatched.</p>
 
-          <h3>Tip 4: Use Per-Ticker TF for Multi-Timeframe Scanning</h3>
-          <p>Set your main holdings to higher timeframes (Daily/Weekly) and your trading watchlist to lower timeframes (1H/4H). One table gives you both the macro view and the trading view simultaneously.</p>
+          <h3>Tip 4: Use the TF Column for Multi-Timeframe Scanning</h3>
+          <p>Assign the same ticker to multiple slots with different timeframes — the TF column shows exactly which timeframe each row represents. Set your main holdings to higher timeframes (Daily/Weekly) and your trading watchlist to lower timeframes (1H/4H). One table gives you both the macro view and the trading view simultaneously. When all TFs for one ticker show 3/3 confluence in the same direction, that's as high-conviction as it gets.</p>
 
           <h3>Tip 5: Set STRONG_SETUP Alerts</h3>
           <p>The STRONG_SETUP alert fires when a ticker reaches Strong Bull or Strong Bear with 3/3 confluence. This is the highest-conviction setup RADAR can produce. Set it and let RADAR notify you instead of watching the table all day.</p>

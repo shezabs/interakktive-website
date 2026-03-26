@@ -399,15 +399,17 @@ export const proIndicators: Indicator[] = [
     id: 'atlas-radar-pro',
     title: 'Atlas Radar Pro [Interakktive]',
     shortTitle: 'RADAR PRO',
-    description: 'A multi-ticker intelligence screener scanning 10 tickers simultaneously across three independent engines: Signal, Structure, and Momentum. The only screener on TradingView with three genuinely independent analytical dimensions producing a unified Confluence rating.',
+    description: 'A multi-ticker intelligence screener scanning 10 tickers simultaneously across three independent engines: Signal, Structure, and Momentum. The only screener on TradingView with three genuinely independent analytical dimensions producing a unified Confluence rating. Includes a dedicated Timeframe column for multi-TF scanning of the same ticker.',
     features: [
       '10-ticker simultaneous scanning via request.security()',
       'Signal Engine \u2014 6-factor stateless confluence assessment',
       'Structure Engine \u2014 stateless HH/HL vs LH/LL bias detection',
       'Momentum Engine \u2014 100% proprietary adaptive computations',
       'Cross-engine Confluence rating with weighted composite scoring',
+      'Timeframe column \u2014 scan the same ticker across multiple TFs in one table',
       '3 stackable filters + 5-column sorting',
       'Volatility classification across 5 tiers',
+      'All columns independently toggleable',
       '6-type JSON alert system with transition detection',
     ],
     useCases: [
@@ -417,7 +419,7 @@ export const proIndicators: Indicator[] = [
       'Sort by signal, structure, momentum, confluence, or rating',
       'Set alerts for rating transitions to catch emerging setups',
     ],
-    technicalDetails: '40 request.security() calls (10 tickers \u00d7 4 fetch loops) | Stateless architecture prevents var state bleed | No competitor has 3 independent engines in a single screener',
+    technicalDetails: '40 request.security() calls (10 tickers \u00d7 4 fetch loops) | 835 lines | Stateless architecture prevents var state bleed | Toggleable TF column for multi-timeframe scanning | No competitor has 3 independent engines in a single screener',
     tradingViewUrl: 'https://www.tradingview.com/script/V6tg80MI-Atlas-Radar-Pro-Interakktive/',
     category: 'pro',
     stats: {
