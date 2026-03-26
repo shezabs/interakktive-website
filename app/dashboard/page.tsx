@@ -62,6 +62,12 @@ export default function DashboardPage() {
   const [upgradeError, setUpgradeError] = useState('');
   const [upgradeSuccess, setUpgradeSuccess] = useState(false);
 
+  // TV username prompt state (for users without one)
+  const [promptTvUsername, setPromptTvUsername] = useState('');
+  const [savingPromptTv, setSavingPromptTv] = useState(false);
+  const [promptTvError, setPromptTvError] = useState('');
+  const [promptTvSuccess, setPromptTvSuccess] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -446,12 +452,6 @@ export default function DashboardPage() {
 
   // Check if user has a TV username — from subscription or from auth metadata
   const hasTvUsername = subscription?.tradingview_username || user?.user_metadata?.tradingview_username;
-
-  // TV username prompt state (for users without one)
-  const [promptTvUsername, setPromptTvUsername] = useState('');
-  const [savingPromptTv, setSavingPromptTv] = useState(false);
-  const [promptTvError, setPromptTvError] = useState('');
-  const [promptTvSuccess, setPromptTvSuccess] = useState(false);
 
   const handleSavePromptTvUsername = async () => {
     if (!promptTvUsername.trim()) {
