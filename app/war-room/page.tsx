@@ -188,15 +188,23 @@ export default function WarRoomPage() {
       // Phase 4: CEO daily briefing
       setPhase('synthesizing');
       setCeoStatus(S_RUNNING);
-      await delay(5000);
-      const assessments = results.map(r => `── ${r.name} (${r.role}) ──\n${r.response}`).join('\n\n');
+      await delay(15000); // 15s delay to let rate limit fully recover
+
+      // Trim assessments — CEO only needs bias, conviction, key finding, and recommendation from each
+      const trimmedAssessments = results.map(r => {
+        const lines = r.response.split('\n').filter((l: string) => l.trim());
+        const importantLines = lines.filter((l: string) => 
+          l.includes('BIAS:') || l.includes('CONVICTION:') || l.includes('RECOMMENDATION:') || l.includes('RISK FLAG:') || l.startsWith('-')
+        ).slice(0, 6); // Max 6 lines per agent
+        return `${r.name}: ${importantLines.join(' | ')}`;
+      }).join('\n');
+
       const now = new Date();
       const dateStr = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-      const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
       const verdict = await callAPI(
         CEO_SYSTEM,
-        `DAILY BRIEFING — ${dateStr}, ${timeStr} UTC\nASSET: ${ticker} | TIMEFRAME: ${timeframe}\n\n${fullContext}\n\n14 SPECIALIST ASSESSMENTS:\n${assessments}\n\nDeliver the ATLAS DAILY BRIEFING:\n\n# ATLAS DAILY BRIEFING — ${ticker}\n## ${dateStr}\n\nVERDICT: [STRONG BUY / BUY / HOLD / SELL / STRONG SELL]\nCONFIDENCE: [1-10]\n\n## CONSENSUS\n[Summarise which specialists agree/disagree and why]\n\n## TRADE SETUP\nEntry Zone:\nStop Loss:\nTP1:\nTP2:\nTP3:\n\n## KEY RISKS\n[Top 2-3 risks]\n\n## POSITION SIZE\n[Guidance]\n\n## EVENTS TO WATCH TODAY\n[Scheduled events, news catalysts]\n\n## EXECUTIVE SUMMARY\n[2-3 sentence conviction statement — the one paragraph a trader reads if they read nothing else]`,
+        `DAILY BRIEFING — ${dateStr}\nASSET: ${ticker} | TF: ${timeframe}\n\nSPECIALIST SUMMARY:\n${trimmedAssessments}\n\nDeliver the briefing:\n\n# ATLAS DAILY BRIEFING — ${ticker}\n## ${dateStr}\n\nVERDICT: [STRONG BUY / BUY / HOLD / SELL / STRONG SELL]\nCONFIDENCE: [1-10]\n\n## CONSENSUS\n[Which specialists agree/disagree]\n\n## TRADE SETUP\nEntry Zone:\nStop Loss:\nTP1:\nTP2:\nTP3:\n\n## KEY RISKS\n[Top 2-3 risks]\n\n## POSITION SIZE\n[Guidance]\n\n## EVENTS TO WATCH\n[Catalysts today]\n\n## EXECUTIVE SUMMARY\n[2-3 sentence conviction — the one paragraph to read]`,
         false, true
       );
       setCeoVerdict(verdict);
