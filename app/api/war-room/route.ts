@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const MAX_MARKET_DATA_CHARS = 3000; // Trim market data to reduce token usage
+const MAX_MARKET_DATA_CHARS = 3000;
 
 export async function POST(request: Request) {
   try {
-    const { system, message, useSearch, password, isCeo } = await request.json();
+    const { system, message, useSearch, password, isCeo, imageBase64 } = await request.json();
 
-    // Password gate
     if (password !== process.env.WAR_ROOM_PASSWORD) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -16,18 +15,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
     }
 
-    // Trim message if it contains market data (agents get a condensed version)
     const trimmedMessage = message.length > MAX_MARKET_DATA_CHARS + 500
-      ? message.substring(0, MAX_MARKET_DATA_CHARS) + '\n\n[Market data truncated for brevity — analyse what is provided]'
+      ? message.substring(0, MAX_MARKET_DATA_CHARS) + '\n\n[Market data truncated — analyse what is provided]'
       : message;
 
-    // Use Sonnet for market data search and CEO, Haiku for individual agents (faster + cheaper)
-    const model = (useSearch || isCeo) ? 'claude-sonnet-4-20250514' : 'claude-haiku-4-5-20251001';
+    // Sonnet for search, CEO, and image analysis. Haiku for text-only agents.
+    const model = (useSearch || isCeo || imageBase64) ? 'claude-sonnet-4-20250514' : 'claude-haiku-4-5-20251001';
+
+    // Build message content — support image + text
+    let content: any;
+    if (imageBase64) {
+      content = [
+        { type: 'image', source: { type: 'base64', media_type: 'image/png', data: imageBase64 } },
+        { type: 'text', text: trimmedMessage },
+      ];
+    } else {
+      content = trimmedMessage;
+    }
 
     const body: any = {
       model,
-      max_tokens: useSearch ? 1200 : isCeo ? 1000 : 600,
-      messages: [{ role: 'user', content: trimmedMessage }],
+      max_tokens: useSearch ? 1200 : isCeo ? 1200 : imageBase64 ? 800 : 600,
+      messages: [{ role: 'user', content }],
       system,
     };
 
@@ -35,11 +44,9 @@ export async function POST(request: Request) {
       body.tools = [{ type: 'web_search_20250305', name: 'web_search' }];
     }
 
-    // Retry logic for rate limits
     let lastError = '';
     for (let attempt = 0; attempt < 3; attempt++) {
       if (attempt > 0) {
-        // Wait before retry — exponential backoff
         await new Promise(resolve => setTimeout(resolve, (attempt * 5000) + 2000));
       }
 
@@ -57,10 +64,7 @@ export async function POST(request: Request) {
 
       if (data.error) {
         lastError = data.error.message || 'API error';
-        // If rate limited, retry
-        if (res.status === 429 || lastError.includes('rate limit')) {
-          continue;
-        }
+        if (res.status === 429 || lastError.includes('rate limit')) continue;
         return NextResponse.json({ error: lastError }, { status: 500 });
       }
 
