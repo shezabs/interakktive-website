@@ -19,8 +19,8 @@ export async function POST(request: Request) {
       ? message.substring(0, MAX_MARKET_DATA_CHARS) + '\n\n[Market data truncated — analyse what is provided]'
       : message;
 
-    // Sonnet for search, CEO, and image analysis. Haiku for text-only agents.
-    const model = (useSearch || isCeo || imageBase64) ? 'claude-sonnet-4-20250514' : 'claude-haiku-4-5-20251001';
+    // Sonnet ONLY for CEO (needs best synthesis quality). Everything else uses Haiku (50k token limit vs 30k).
+    const model = isCeo ? 'claude-sonnet-4-20250514' : 'claude-haiku-4-5-20251001';
 
     // Build message content — support image + text
     let content: any;
