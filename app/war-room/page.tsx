@@ -47,16 +47,18 @@ export default function WarRoomPage() {
 
   const fmtTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
-  const callAPI = async (system: string, message: string, useSearch: boolean) => {
+  const callAPI = async (system: string, message: string, useSearch: boolean, isCeo: boolean = false) => {
     const res = await fetch('/api/war-room', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ system, message, useSearch, password: storedPwd }),
+      body: JSON.stringify({ system, message, useSearch, password: storedPwd, isCeo }),
     });
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || 'API call failed');
     return data.text;
   };
+
+  const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,14 +103,16 @@ export default function WarRoomPage() {
       setSearchStatus('Market data received ✓');
       setPhase('analyzing');
 
-      // Phase 2: 8 specialists (no web search)
+      // Phase 2: 8 specialists (no web search, with delay to avoid rate limits)
       const results: any[] = [];
       for (let i = 0; i < AGENTS.length; i++) {
         const agent = AGENTS[i];
         setAgentStatus(i, S_RUNNING);
         setAgentMsg(i, 'Analysing...');
         try {
-          const system = `You are ${agent.name} — ${agent.role}.\n\n${agent.expertise}\n\nYou will receive live market data gathered moments ago. Analyse it through YOUR specialist lens only. Be decisive and specific with actual price levels.`;
+          // 4-second delay between agents to stay under rate limits
+          if (i > 0) await delay(4000);
+          const system = `You are ${agent.name} — ${agent.role}.\n\n${agent.expertise}\n\nYou will receive live market data gathered moments ago. Analyse it through YOUR specialist lens only. Be decisive and specific with actual price levels. Keep your response concise — under 200 words.`;
           const user = `ASSET: ${ticker} | TIMEFRAME: ${timeframe}\n\nLIVE MARKET DATA:\n${marketData}\n\nProvide your assessment in this EXACT format:\nBIAS: [BULLISH / BEARISH / NEUTRAL]\nCONVICTION: [1-10]\nKEY FINDINGS:\n- [Finding 1 with specific price levels]\n- [Finding 2]\n- [Finding 3]\nRISK FLAG: [Any concern, or "None"]\nRECOMMENDATION: [1-2 sentence actionable recommendation]`;
           const response = await callAPI(system, user, false);
           results.push({ ...agent, response });
@@ -123,14 +127,16 @@ export default function WarRoomPage() {
         }
       }
 
-      // Phase 3: CEO
+      // Phase 3: CEO (uses Sonnet for better synthesis)
       setPhase('synthesizing');
       setCeoStatus(S_RUNNING);
+      await delay(5000); // Extra pause before CEO to let rate limit recover
       const assessments = results.map(r => `── ${r.name} ──\n${r.response}`).join('\n\n');
       const verdict = await callAPI(
         CEO_SYSTEM,
         `ASSET: ${ticker} | TIMEFRAME: ${timeframe}\n\nMARKET DATA:\n${marketData}\n\nSPECIALIST ASSESSMENTS:\n${assessments}\n\nDeliver your FINAL VERDICT:\n\n═══════════════════════════════\nVERDICT: [STRONG BUY / BUY / HOLD / SELL / STRONG SELL]\nCONFIDENCE: [1-10]\n═══════════════════════════════\n\nCONSENSUS SUMMARY: [Who agrees, who disagrees, why]\nENTRY ZONE: [Price range]\nSTOP LOSS: [Level + reasoning]\nTP1: [Level]\nTP2: [Level]\nTP3: [Level]\nPRIMARY RISK: [Biggest threat]\nPOSITION SIZE: [Guidance]\nFINAL NOTE: [Your conviction as CEO]`,
-        false
+        false,
+        true
       );
       setCeoVerdict(verdict);
       setCeoStatus(S_DONE);
