@@ -165,7 +165,7 @@ export default function SignUpPage() {
             {/* TradingView Username */}
             <div>
               <label htmlFor="tradingview" className="block text-sm font-medium mb-2">
-                TradingView Username <span className="text-accent-400">*</span>
+                TradingView Username <span className="text-gray-500 text-xs">(optional — you can add this later)</span>
               </label>
               <div className="relative">
                 <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -174,9 +174,8 @@ export default function SignUpPage() {
                   type="text"
                   value={tradingViewUsername}
                   onChange={(e) => setTradingViewUsername(e.target.value)}
-                  required
                   className="w-full pl-10 pr-4 py-3 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors"
-                  placeholder="Your TradingView username (required for access)"
+                  placeholder="Your TradingView username"
                 />
               </div>
             </div>

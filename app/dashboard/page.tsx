@@ -444,6 +444,51 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
+  // Check if user has a TV username — from subscription or from auth metadata
+  const hasTvUsername = subscription?.tradingview_username || user?.user_metadata?.tradingview_username;
+
+  // TV username prompt state (for users without one)
+  const [promptTvUsername, setPromptTvUsername] = useState('');
+  const [savingPromptTv, setSavingPromptTv] = useState(false);
+  const [promptTvError, setPromptTvError] = useState('');
+  const [promptTvSuccess, setPromptTvSuccess] = useState(false);
+
+  const handleSavePromptTvUsername = async () => {
+    if (!promptTvUsername.trim()) {
+      setPromptTvError('Please enter your TradingView username.');
+      return;
+    }
+    setSavingPromptTv(true);
+    setPromptTvError('');
+    try {
+      // Save to auth metadata so it persists even without a subscription
+      const { error: metaErr } = await supabase.auth.updateUser({
+        data: { tradingview_username: promptTvUsername.trim() },
+      });
+      if (metaErr) throw metaErr;
+
+      // If they have a subscription, update that too
+      if (subscription) {
+        await supabase
+          .from('subscriptions')
+          .update({
+            tradingview_username: promptTvUsername.trim(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', subscription.id);
+        setSubscription(prev => prev ? { ...prev, tradingview_username: promptTvUsername.trim() } : null);
+      }
+
+      // Update local user state
+      setUser(prev => prev ? { ...prev, user_metadata: { ...prev.user_metadata, tradingview_username: promptTvUsername.trim() } } : null);
+      setPromptTvSuccess(true);
+    } catch (err: any) {
+      setPromptTvError(err.message || 'Failed to save. Please try again.');
+    } finally {
+      setSavingPromptTv(false);
+    }
+  };
+
   const hasSubscription = !!subscription;
   const userIndicators = subscription?.indicators || [];
 
@@ -462,6 +507,58 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
+
+        {/* TradingView Username Prompt — shown when user has no TV username */}
+        {!hasTvUsername && !promptTvSuccess && (
+          <FadeIn>
+            <div className="mb-8 glass p-6 rounded-xl border border-amber-500/30 bg-amber-500/5">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-white mb-1">Add your TradingView username</h3>
+                  <p className="text-sm text-gray-400 mb-4">
+                    We need your TradingView username to grant access to your ATLAS PRO indicators. You can find it in your TradingView profile settings.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        value={promptTvUsername}
+                        onChange={(e) => setPromptTvUsername(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2.5 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors text-sm"
+                        placeholder="Your TradingView username"
+                      />
+                    </div>
+                    <button
+                      onClick={handleSavePromptTvUsername}
+                      disabled={savingPromptTv}
+                      className="px-6 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {savingPromptTv ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                      {savingPromptTv ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                  {promptTvError && (
+                    <p className="text-xs text-red-400 mt-2">{promptTvError}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        )}
+
+        {/* TV Username saved confirmation */}
+        {promptTvSuccess && (
+          <FadeIn>
+            <div className="mb-8 glass p-4 rounded-xl border border-green-500/30 bg-green-500/5">
+              <div className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-green-400" />
+                <p className="text-sm text-green-400">TradingView username saved — <span className="font-semibold text-white">{promptTvUsername}</span></p>
+              </div>
+            </div>
+          </FadeIn>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -621,19 +718,21 @@ export default function DashboardPage() {
                   <p className="text-gray-500">Email</p>
                   <p className="text-white">{user.email}</p>
                 </div>
-                {subscription?.tradingview_username && (
+                {(subscription?.tradingview_username || user?.user_metadata?.tradingview_username) && (
                   <div>
                     <p className="text-gray-500">TradingView</p>
                     {!editingTvUsername ? (
                       <div className="flex items-center gap-2">
-                        <p className="text-white">{subscription.tradingview_username}</p>
-                        <button
-                          onClick={() => { setNewTvUsername(subscription.tradingview_username); setEditingTvUsername(true); setTvUsernameError(''); }}
-                          className="text-gray-500 hover:text-primary-400 transition-colors"
-                          title="Edit TradingView username"
-                        >
-                          <Pencil className="w-3 h-3" />
-                        </button>
+                        <p className="text-white">{subscription?.tradingview_username || user?.user_metadata?.tradingview_username}</p>
+                        {subscription && (
+                          <button
+                            onClick={() => { setNewTvUsername(subscription.tradingview_username); setEditingTvUsername(true); setTvUsernameError(''); }}
+                            className="text-gray-500 hover:text-primary-400 transition-colors"
+                            title="Edit TradingView username"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
                     ) : (
                       <div className="space-y-2 mt-1">
