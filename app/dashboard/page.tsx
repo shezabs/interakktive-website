@@ -202,11 +202,12 @@ export default function DashboardPage() {
   };
 
   const handleSaveTvUsername = async () => {
-    if (!subscription || !newTvUsername.trim()) {
+    if (!newTvUsername.trim()) {
       setTvUsernameError('Please enter a valid TradingView username.');
       return;
     }
-    if (newTvUsername.trim() === subscription.tradingview_username) {
+    const currentTv = subscription?.tradingview_username || user?.user_metadata?.tradingview_username || '';
+    if (newTvUsername.trim() === currentTv) {
       setEditingTvUsername(false);
       return;
     }
@@ -214,29 +215,39 @@ export default function DashboardPage() {
     setTvUsernameError('');
     setTvUsernameSuccess(false);
     try {
-      // Update in Supabase
-      const { error: updateErr } = await supabase
-        .from('subscriptions')
-        .update({
-          tradingview_username: newTvUsername.trim(),
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', subscription.id);
-      if (updateErr) throw updateErr;
-
-      // Notify admin via API
-      await fetch('/api/notify-username-change', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user!.email,
-          oldUsername: subscription.tradingview_username,
-          newUsername: newTvUsername.trim(),
-          plan: subscription.plan,
-        }),
+      // Always save to auth metadata
+      await supabase.auth.updateUser({
+        data: { tradingview_username: newTvUsername.trim() },
       });
 
-      setSubscription(prev => prev ? { ...prev, tradingview_username: newTvUsername.trim() } : null);
+      // If they have a subscription, update that too
+      if (subscription) {
+        const { error: updateErr } = await supabase
+          .from('subscriptions')
+          .update({
+            tradingview_username: newTvUsername.trim(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', subscription.id);
+        if (updateErr) throw updateErr;
+
+        // Notify admin via API
+        await fetch('/api/notify-username-change', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: user!.email,
+            oldUsername: subscription.tradingview_username,
+            newUsername: newTvUsername.trim(),
+            plan: subscription.plan,
+          }),
+        });
+
+        setSubscription(prev => prev ? { ...prev, tradingview_username: newTvUsername.trim() } : null);
+      }
+
+      // Update local user state
+      setUser(prev => prev ? { ...prev, user_metadata: { ...prev.user_metadata, tradingview_username: newTvUsername.trim() } } : null);
       setTvUsernameSuccess(true);
       setEditingTvUsername(false);
       setTimeout(() => setTvUsernameSuccess(false), 5000);
@@ -732,15 +743,13 @@ export default function DashboardPage() {
                     {!editingTvUsername ? (
                       <div className="flex items-center gap-2">
                         <p className="text-white">{subscription?.tradingview_username || user?.user_metadata?.tradingview_username}</p>
-                        {subscription && (
-                          <button
-                            onClick={() => { setNewTvUsername(subscription.tradingview_username); setEditingTvUsername(true); setTvUsernameError(''); }}
-                            className="text-gray-500 hover:text-primary-400 transition-colors"
-                            title="Edit TradingView username"
-                          >
-                            <Pencil className="w-3 h-3" />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => { setNewTvUsername(subscription?.tradingview_username || user?.user_metadata?.tradingview_username || ''); setEditingTvUsername(true); setTvUsernameError(''); }}
+                          className="text-gray-500 hover:text-primary-400 transition-colors"
+                          title="Edit TradingView username"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
                       </div>
                     ) : (
                       <div className="space-y-2 mt-1">
