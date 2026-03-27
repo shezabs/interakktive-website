@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { sendSignupWelcomeEmail } from '@/app/lib/email';
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -11,9 +12,28 @@ export async function GET(request: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    await supabase.auth.exchangeCodeForSession(code);
+    const { data } = await supabase.auth.exchangeCodeForSession(code);
+
+    // Send welcome email for first-time OAuth sign-ups
+    if (data?.user) {
+      const user = data.user;
+      const createdAt = new Date(user.created_at).getTime();
+      const now = Date.now();
+      const isNewUser = (now - createdAt) < 60000; // Created within last 60 seconds = new signup
+
+      if (isNewUser && user.email) {
+        try {
+          await sendSignupWelcomeEmail({
+            email: user.email,
+            name: user.user_metadata?.full_name || user.user_metadata?.name || undefined,
+          });
+        } catch (err) {
+          console.error('Failed to send signup welcome email:', err);
+        }
+      }
+    }
   }
 
-  // Redirect to dashboard after email confirmation
+  // Redirect to dashboard after auth
   return NextResponse.redirect(new URL('/dashboard', requestUrl.origin));
 }

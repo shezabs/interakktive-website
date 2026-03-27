@@ -337,3 +337,46 @@ export async function sendExpiredEmail(data: {
     `),
   });
 }
+
+// ── Customer email: Signup Welcome (non-subscription) ──
+export async function sendSignupWelcomeEmail(data: {
+  email: string;
+  name?: string;
+}) {
+  const { email, name } = data;
+  const greeting = name ? `Hi ${name}` : 'Welcome';
+
+  await sendEmail({
+    to: email,
+    subject: 'Welcome to Interakktive — Trading Intelligence You Can See',
+    html: emailTemplate(`
+      <h2 style="color: #0ea5e9; margin: 0 0 20px;">${greeting}! 👋</h2>
+      <p style="color: #d1d5db; line-height: 1.6;">Thanks for creating your Interakktive account. You now have access to:</p>
+      <ul style="color: #d1d5db; line-height: 1.8; padding-left: 20px;">
+        <li><strong style="color: #fff;">9 free diagnostic indicators</strong> on TradingView — no subscription needed</li>
+        <li><strong style="color: #fff;">Documentation & guides</strong> for all ATLAS indicators</li>
+        <li>Your personal <strong style="color: #fff;">dashboard</strong> to manage your account</li>
+      </ul>
+      <p style="color: #d1d5db; line-height: 1.6;">Ready for premium intelligence? The <strong style="color: #0ea5e9;">ATLAS PRO Suite</strong> gives you CIPHER PRO, PHANTOM PRO, PULSE PRO, and RADAR PRO — the most comprehensive trading intelligence system on TradingView.</p>
+      <div style="margin-top: 20px; text-align: center;">
+        <a href="${SITE_URL}/pricing" style="display: inline-block; padding: 12px 30px; background: linear-gradient(to right, #0ea5e9, #d946ef); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold;">Explore ATLAS PRO</a>
+      </div>
+      <div style="margin-top: 20px; padding: 15px; background-color: #283040; border: 1px solid #374151; border-radius: 8px;">
+        <p style="color: #9ca3af; margin: 0; font-size: 14px;">Your dashboard: <a href="${SITE_URL}/dashboard" style="color: #0ea5e9;">interakktive.com/dashboard</a></p>
+      </div>
+    `),
+  });
+
+  // Admin notification
+  await sendEmail({
+    to: ADMIN_EMAIL,
+    subject: `🆕 New signup: ${email}`,
+    html: emailTemplate(`
+      <h2 style="color: #0ea5e9; margin: 0 0 15px;">New Account Created</h2>
+      <p style="color: #d1d5db;"><strong style="color: #fff;">Email:</strong> ${email}</p>
+      <p style="color: #d1d5db;"><strong style="color: #fff;">Name:</strong> ${name || 'Not provided'}</p>
+      <p style="color: #d1d5db;"><strong style="color: #fff;">Method:</strong> OAuth/Google or Email signup</p>
+      <p style="color: #9ca3af; font-size: 13px; margin-top: 15px;">No subscription yet — just created an account.</p>
+    `),
+  });
+}
