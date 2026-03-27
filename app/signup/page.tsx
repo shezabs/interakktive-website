@@ -70,6 +70,12 @@ export default function SignUpPage() {
         return;
       }
 
+      // Supabase returns a user with empty identities when email already exists (security obfuscation)
+      if (data?.user && data.user.identities && data.user.identities.length === 0) {
+        setError('An account with this email may already exist. Try signing in instead, or use "Continue with Google" if you signed up with Google.');
+        return;
+      }
+
       setSuccess(true);
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -240,6 +246,9 @@ export default function SignUpPage() {
             <Link href="/signin" className="text-primary-400 hover:text-primary-300 transition-colors">
               Sign in
             </Link>
+          </p>
+          <p className="mt-2 text-center text-gray-600 text-xs">
+            Signed up with Google before? Use the Google button above — your account is already linked.
           </p>
         </div>
       </div>

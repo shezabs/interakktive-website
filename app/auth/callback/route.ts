@@ -14,18 +14,27 @@ export async function GET(request: Request) {
 
     const { data } = await supabase.auth.exchangeCodeForSession(code);
 
-    // Send welcome email for first-time OAuth sign-ups
+    // Send welcome email for first-time sign-ups (Google OAuth or email confirmation)
     if (data?.user) {
       const user = data.user;
       const createdAt = new Date(user.created_at).getTime();
       const now = Date.now();
-      const isNewUser = (now - createdAt) < 60000; // Created within last 60 seconds = new signup
+      // 5-minute window — OAuth redirects can take time
+      const isNewUser = (now - createdAt) < 300000;
 
-      if (isNewUser && user.email) {
+      // Check if we already sent a welcome email (stored in user metadata)
+      const alreadyWelcomed = user.user_metadata?.welcome_email_sent === true;
+
+      if (isNewUser && !alreadyWelcomed && user.email) {
         try {
           await sendSignupWelcomeEmail({
             email: user.email,
             name: user.user_metadata?.full_name || user.user_metadata?.name || undefined,
+          });
+
+          // Mark that we sent the welcome email so we don't send it again on next login
+          await supabase.auth.updateUser({
+            data: { welcome_email_sent: true },
           });
         } catch (err) {
           console.error('Failed to send signup welcome email:', err);
