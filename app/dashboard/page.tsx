@@ -68,6 +68,14 @@ export default function DashboardPage() {
   const [promptTvError, setPromptTvError] = useState('');
   const [promptTvSuccess, setPromptTvSuccess] = useState(false);
 
+  // Social profiles state
+  const [editingSocials, setEditingSocials] = useState(false);
+  const [socialX, setSocialX] = useState('');
+  const [socialInsta, setSocialInsta] = useState('');
+  const [socialDiscord, setSocialDiscord] = useState('');
+  const [savingSocials, setSavingSocials] = useState(false);
+  const [socialsSuccess, setSocialsSuccess] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -797,6 +805,136 @@ export default function DashboardPage() {
                 <div>
                   <p className="text-gray-500">Member since</p>
                   <p className="text-white">{new Date(user.created_at).toLocaleDateString()}</p>
+                </div>
+
+                {/* Social Profiles */}
+                <div className="pt-3 border-t border-white/5">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-gray-500 text-xs font-medium">Social Profiles</p>
+                    {!editingSocials && (
+                      <button
+                        onClick={() => {
+                          setSocialX(user?.user_metadata?.social_x || '');
+                          setSocialInsta(user?.user_metadata?.social_instagram || '');
+                          setSocialDiscord(user?.user_metadata?.social_discord || '');
+                          setEditingSocials(true);
+                          setSocialsSuccess(false);
+                        }}
+                        className="text-gray-500 hover:text-primary-400 transition-colors"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+
+                  {!editingSocials ? (
+                    <div className="space-y-1.5">
+                      {user?.user_metadata?.social_x && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600 text-xs w-5">𝕏</span>
+                          <p className="text-white text-xs">@{user.user_metadata.social_x.replace('@', '')}</p>
+                        </div>
+                      )}
+                      {user?.user_metadata?.social_instagram && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600 text-xs w-5">IG</span>
+                          <p className="text-white text-xs">@{user.user_metadata.social_instagram.replace('@', '')}</p>
+                        </div>
+                      )}
+                      {user?.user_metadata?.social_discord && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600 text-xs w-5">DC</span>
+                          <p className="text-white text-xs">{user.user_metadata.social_discord}</p>
+                        </div>
+                      )}
+                      {!user?.user_metadata?.social_x && !user?.user_metadata?.social_instagram && !user?.user_metadata?.social_discord && (
+                        <button
+                          onClick={() => { setEditingSocials(true); setSocialsSuccess(false); }}
+                          className="text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                        >
+                          + Add your socials
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500 text-xs w-5">𝕏</span>
+                        <input
+                          type="text"
+                          value={socialX}
+                          onChange={e => setSocialX(e.target.value)}
+                          placeholder="X / Twitter handle"
+                          className="flex-1 px-2 py-1 bg-black/40 border border-white/10 rounded text-xs text-white outline-none focus:border-primary-500 transition-colors"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500 text-xs w-5">IG</span>
+                        <input
+                          type="text"
+                          value={socialInsta}
+                          onChange={e => setSocialInsta(e.target.value)}
+                          placeholder="Instagram handle"
+                          className="flex-1 px-2 py-1 bg-black/40 border border-white/10 rounded text-xs text-white outline-none focus:border-primary-500 transition-colors"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500 text-xs w-5">DC</span>
+                        <input
+                          type="text"
+                          value={socialDiscord}
+                          onChange={e => setSocialDiscord(e.target.value)}
+                          placeholder="Discord username"
+                          className="flex-1 px-2 py-1 bg-black/40 border border-white/10 rounded text-xs text-white outline-none focus:border-primary-500 transition-colors"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={async () => {
+                            setSavingSocials(true);
+                            try {
+                              await supabase.auth.updateUser({
+                                data: {
+                                  social_x: socialX.trim() || null,
+                                  social_instagram: socialInsta.trim() || null,
+                                  social_discord: socialDiscord.trim() || null,
+                                },
+                              });
+                              setUser(prev => prev ? {
+                                ...prev,
+                                user_metadata: {
+                                  ...prev.user_metadata,
+                                  social_x: socialX.trim() || null,
+                                  social_instagram: socialInsta.trim() || null,
+                                  social_discord: socialDiscord.trim() || null,
+                                }
+                              } : null);
+                              setEditingSocials(false);
+                              setSocialsSuccess(true);
+                              setTimeout(() => setSocialsSuccess(false), 4000);
+                            } catch (err) {
+                              console.error('Failed to save socials:', err);
+                            } finally {
+                              setSavingSocials(false);
+                            }
+                          }}
+                          disabled={savingSocials}
+                          className="px-3 py-1 bg-primary-500/20 border border-primary-500/30 text-primary-400 rounded text-xs font-medium hover:bg-primary-500/30 transition-all disabled:opacity-50"
+                        >
+                          {savingSocials ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          onClick={() => setEditingSocials(false)}
+                          className="px-3 py-1 bg-white/10 rounded text-xs hover:bg-white/20 transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {socialsSuccess && (
+                    <p className="text-xs text-green-400 mt-1">Socials saved!</p>
+                  )}
                 </div>
               </div>
             </div>
