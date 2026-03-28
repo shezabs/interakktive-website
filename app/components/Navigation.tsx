@@ -47,9 +47,9 @@ export default function Navigation() {
             <Image
               src="/images/logo.png"
               alt="Interakktive"
-              width={300}
+              width={400}
               height={300}
-              className="w-48 md:w-56 h-auto"
+              className="w-44 md:w-52 h-auto"
               priority
             />
           </Link>

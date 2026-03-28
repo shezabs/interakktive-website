@@ -27,9 +27,9 @@ export default function Footer() {
               <Image
                 src="/images/logo.png"
                 alt="Interakktive"
-                width={200}
-                height={200}
-                className="w-40 h-auto -my-8 object-contain"
+                width={400}
+                height={300}
+                className="w-36 h-auto -my-6 object-contain"
               />
             </div>
             <p className="text-gray-400 text-sm">
