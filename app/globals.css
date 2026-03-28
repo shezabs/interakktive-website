@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix Chrome/Mac gradient text rendering — forces GPU compositing to prevent invisible text */
+.bg-clip-text {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 10, 10, 20;
