@@ -29,7 +29,7 @@ export default function Footer() {
                 alt="Interakktive"
                 width={400}
                 height={300}
-                className="w-44 h-auto -my-4 object-contain"
+                className="w-44 h-auto -my-4 -ml-2 object-contain"
               />
             </div>
             <p className="text-gray-400 text-sm">
