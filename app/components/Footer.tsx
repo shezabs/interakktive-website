@@ -23,13 +23,13 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="space-y-2">
-            <div className="h-12 overflow-hidden flex items-center">
+            <div className="h-14 overflow-hidden flex items-center">
               <Image
                 src="/images/logo.png"
                 alt="Interakktive"
                 width={400}
                 height={300}
-                className="w-36 h-auto -my-6 object-contain"
+                className="w-44 h-auto -my-4 object-contain"
               />
             </div>
             <p className="text-gray-400 text-sm">
