@@ -126,7 +126,7 @@ export default function Footer() {
             <h4 className="font-semibold text-white">Community</h4>
             <div className="flex space-x-4">
               <a
-                href="https://discord.com/channels/1487377501888974920/1487377502795206769"
+                href="https://discord.gg/dcDqu3aB"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
