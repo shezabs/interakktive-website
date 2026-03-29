@@ -181,7 +181,7 @@ export const freeIndicators: Indicator[] = [
       'Recognise equilibrium zones for range-bound strategies',
     ],
     technicalDetails: 'Combines volume-weighted buying pressure, selling pressure, and equilibrium calculations with adaptive smoothing and persistence logic.',
-    tradingViewUrl: 'https://www.tradingview.com/script/wXKLjZTO-Market-Pressure-Regime-Interakktive/',
+    tradingViewUrl: 'https://www.tradingview.com/script/V3jfGrc1-Market-Pressure-Regime-Interakktive/',
     category: 'free',
     stats: {
       uses: 387,
