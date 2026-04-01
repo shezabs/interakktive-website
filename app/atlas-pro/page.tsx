@@ -41,6 +41,13 @@ const indicatorMeta: Record<string, {
     tagColor: 'bg-primary-400/10 text-primary-400 border-primary-400/20',
     highlight: '10 tickers · 3 independent engines · Stateless architecture',
   },
+  'atlas-options-pro': {
+    icon: <Activity className="w-10 h-10" />,
+    role: 'Options Intelligence',
+    color: 'text-accent-400',
+    tagColor: 'bg-accent-400/10 text-accent-400 border-accent-400/20',
+    highlight: '5 regimes · BSM Greeks · Gamma zones · Whale Flow · Cross-TF consistent',
+  },
 };
 
 export default function AtlasProPage() {

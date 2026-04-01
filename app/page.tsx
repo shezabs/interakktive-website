@@ -82,12 +82,14 @@ export default function HomePage() {
                 'atlas-phantom-pro': <Eye className="w-8 h-8 text-accent-400" />,
                 'atlas-pulse-pro': <Activity className="w-8 h-8 text-primary-400" />,
                 'atlas-radar-pro': <Radio className="w-8 h-8 text-accent-400" />,
+                'atlas-options-pro': <Activity className="w-8 h-8 text-primary-400" />,
               };
               const roleMap: Record<string, string> = {
                 'atlas-cipher-pro': 'Signal Intelligence',
                 'atlas-phantom-pro': 'Structure Intelligence',
                 'atlas-pulse-pro': 'Momentum Intelligence',
                 'atlas-radar-pro': 'Screening Intelligence',
+                'atlas-options-pro': 'Options Intelligence',
               };
               return (
                 <StaggerItem key={indicator.id}>

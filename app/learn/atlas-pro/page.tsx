@@ -41,7 +41,16 @@ const proIndicators = [
     role: 'Screening Intelligence',
     description: 'Multi-ticker screener scanning 10 tickers across three independent engines with unified Confluence rating.',
     icon: Radio,
-    lines: '819',
+    lines: '835',
+    available: true,
+  },
+  {
+    slug: 'atlas-options-pro',
+    title: 'OPTIONS PRO',
+    role: 'Options Intelligence',
+    description: 'Volatility regime classification, BSM Greeks, gamma structure, Whale Flow, and strategy scoring — all cross-timeframe consistent.',
+    icon: Activity,
+    lines: '2,073',
     available: true,
   },
 ];

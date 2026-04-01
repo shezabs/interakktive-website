@@ -203,6 +203,7 @@ export default function PricingPage() {
                 'atlas-phantom-pro': 'Structure Intelligence',
                 'atlas-pulse-pro': 'Momentum Intelligence',
                 'atlas-radar-pro': 'Screening Intelligence',
+                'atlas-options-pro': 'Options Intelligence',
               };
               return (
                 <FadeInView key={indicator.id}>
