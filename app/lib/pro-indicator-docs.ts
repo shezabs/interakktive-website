@@ -1510,7 +1510,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       {
         id: 'gamma-structure',
         title: 'Gamma Structure &amp; Max Pain',
-        icon: 'structure',
+        icon: 'concept',
         content: `
           <h3>Gamma Zones</h3>
           <p>Gamma exposure calculated at each strike level using the BSM gamma function. Drawn as horizontal bands:</p>
@@ -1534,7 +1534,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       {
         id: 'whale-flow',
         title: 'Whale Flow Intelligence',
-        icon: 'dashboard',
+        icon: 'interpretation',
         content: `
           <h3>Four Dimensions of Institutional Flow</h3>
           <ul>
@@ -1554,7 +1554,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       {
         id: 'strategy-matrix',
         title: 'Strategy Matrix &amp; Narrative',
-        icon: 'alerts',
+        icon: 'trading',
         content: `
           <h3>10-Strategy Universe</h3>
           <p>Long Call, Long Put, Covered Call, Credit Call Spread, Credit Put Spread, Iron Condor, Straddle, Calendar Spread, Protective Put, and Cash.</p>
@@ -1574,7 +1574,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       {
         id: 'multi-asset',
         title: 'Multi-Asset Adaptivity',
-        icon: 'presets',
+        icon: 'settings',
         content: `
           <h3>Auto-Detection by Asset Class</h3>
           <ul>
