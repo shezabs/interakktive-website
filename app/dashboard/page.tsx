@@ -1230,10 +1230,10 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Elite shows all 4 */}
+              {/* Elite shows all 5 */}
               {upgradeTarget === 'elite' && !isBillingSwitch && (
                 <div className="mb-4">
-                  <p className="text-sm font-medium mb-2">All 4 indicators included</p>
+                  <p className="text-sm font-medium mb-2">All 5 indicators included</p>
                   <div className="grid grid-cols-2 gap-2">
                     {INDICATORS.map((ind) => {
                       const Icon = ind.icon;

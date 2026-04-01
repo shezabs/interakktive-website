@@ -71,7 +71,7 @@ export default function HomePage() {
               The <span className="bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">ATLAS PRO</span> Suite
             </h2>
             <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
-              Four dimensions of market intelligence. Each indicator is a specialist.
+              Five dimensions of market intelligence. Each indicator is a specialist.
               Together, they give you the complete picture.
             </p>
           </FadeInView>

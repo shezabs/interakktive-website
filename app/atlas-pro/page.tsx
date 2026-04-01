@@ -68,7 +68,7 @@ export default function AtlasProPage() {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-xl md:text-2xl text-gray-300 mb-4 max-w-3xl mx-auto">
-              Four indicators. Four dimensions of market intelligence.
+              Five indicators. Five dimensions of market intelligence.
               Each one tells you something no other can.
             </p>
           </FadeIn>

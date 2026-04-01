@@ -137,7 +137,7 @@ export default function PricingPage() {
                     </div>
 
                     {/* Indicators - fixed height for alignment */}
-                    <div className="mb-6 min-h-[160px]">
+                    <div className="mb-6 min-h-[180px]">
                       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                         Includes
                       </p>

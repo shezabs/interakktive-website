@@ -78,7 +78,7 @@ export default function ChatWidget() {
       return "We offer 9 free professional-grade indicators on TradingView! They include Sessions +, Market Acceptance Envelope, Market State Intelligence, Volatility State Index, and more. Visit our Indicators page to explore them all and add them to your charts instantly.";
     }
     if (message.includes('atlas') || message.includes('pro')) {
-      return "ATLAS PRO is our premium trading intelligence suite — four indicators covering signals, structure, momentum, and screening. Each explains its reasoning in plain English. Visit the Pricing page to choose a plan, or explore the ATLAS PRO Suite page to see what each indicator does.";
+      return "ATLAS PRO is our premium trading intelligence suite — five indicators covering signals, structure, momentum, screening, and options intelligence. Each explains its reasoning in plain English. Visit the Pricing page to choose a plan, or explore the ATLAS PRO Suite page to see what each indicator does.";
     }
     if (message.includes('access') || message.includes('get') || message.includes('join')) {
       return "To get ATLAS PRO access: 1) Visit the Pricing page, 2) Choose your plan (Starter, Advantage, or Elite), 3) Select your indicators and enter your TradingView username, 4) Complete payment — we'll grant access to your TradingView account within 4 hours.";

@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
       const indicatorsRaw = session.metadata?.selected_indicators || '';
       const indicators = indicatorsRaw ? indicatorsRaw.split(',').map(s => s.trim()) : [];
 
-      // If elite, ensure all 4 indicators
-      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+      // If elite, ensure all 5 indicators
+      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
       const finalIndicators = plan === 'suite' || plan === 'elite' ? allIndicators : indicators;
 
       const stripeCustomerId = typeof session.customer === 'string'

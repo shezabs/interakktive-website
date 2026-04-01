@@ -40,12 +40,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate indicators
-    const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+    const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
     if (targetPlan === 'advantage' && indicators.length !== 2) {
       return NextResponse.json({ error: 'Advantage plan requires exactly 2 indicators' }, { status: 400 });
     }
-    if (targetPlan === 'elite' && indicators.length !== 4) {
-      return NextResponse.json({ error: 'Elite plan requires all 4 indicators' }, { status: 400 });
+    if (targetPlan === 'elite' && indicators.length !== 5) {
+      return NextResponse.json({ error: 'Elite plan requires all 5 indicators' }, { status: 400 });
     }
     if (targetPlan === 'starter' && indicators.length !== 1) {
       return NextResponse.json({ error: 'Starter plan requires exactly 1 indicator' }, { status: 400 });

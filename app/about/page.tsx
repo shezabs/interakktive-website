@@ -94,9 +94,9 @@ export default function AboutPage() {
             <div className="glass p-8 rounded-lg bg-gradient-to-br from-primary-900/20 to-accent-900/20">
               <h3 className="text-2xl font-bold mb-3">ATLAS PRO Suite</h3>
               <p className="text-gray-300 mb-4">
-                Four premium indicators covering every dimension of market intelligence: CIPHER PRO (signals),
-                PHANTOM PRO (structure), PULSE PRO (momentum), and RADAR PRO (screening). Each includes a
-                Narrative Engine, Ghost Performance validation, and multi-timeframe alignment — all explained
+                Five premium indicators covering every dimension of market intelligence: CIPHER PRO (signals),
+                PHANTOM PRO (structure), PULSE PRO (momentum), RADAR PRO (screening), and OPTIONS PRO (volatility and options strategy). Each includes a
+                Narrative Engine and multi-timeframe intelligence — all explained
                 in plain English.
               </p>
               <div className="flex flex-wrap gap-4">

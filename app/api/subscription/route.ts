@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
           .single();
         if (!fullSub) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-        const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+        const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
         const targetPlan = fullSub.plan === 'starter' ? 'advantage' : 'elite';
         const newIndicators = targetPlan === 'elite' ? allIndicators : fullSub.indicators;
 
@@ -244,7 +244,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Determine new indicators
-      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
       let newIndicators: string[];
       if (targetPlan === 'elite') {
         newIndicators = allIndicators;

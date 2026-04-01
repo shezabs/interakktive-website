@@ -1509,7 +1509,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       },
       {
         id: 'gamma-structure',
-        title: 'Gamma Structure &amp; Max Pain',
+        title: 'Gamma Structure and Max Pain',
         icon: 'concept',
         content: `
           <h3>Gamma Zones</h3>
@@ -1553,7 +1553,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       },
       {
         id: 'strategy-matrix',
-        title: 'Strategy Matrix &amp; Narrative',
+        title: 'Strategy Matrix and Narrative',
         icon: 'trading',
         content: `
           <h3>10-Strategy Universe</h3>
@@ -1591,7 +1591,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       },
       {
         id: 'tips',
-        title: 'Tips &amp; Best Practices',
+        title: 'Tips and Best Practices',
         icon: 'tips',
         content: `
           <h3>Tip 1: Start with the Narrative</h3>

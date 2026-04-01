@@ -13,6 +13,7 @@ const INDICATORS = [
   { id: 'phantom', name: 'PHANTOM PRO', role: 'Structure Intelligence', icon: Eye, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10' },
   { id: 'pulse', name: 'PULSE PRO', role: 'Momentum Intelligence', icon: Activity, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10' },
   { id: 'radar', name: 'RADAR PRO', role: 'Screening Intelligence', icon: Radio, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10' },
+  { id: 'options', name: 'OPTIONS PRO', role: 'Options Intelligence', icon: Activity, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10' },
 ];
 
 export default function CheckoutStartPage() {
@@ -217,7 +218,7 @@ export default function CheckoutStartPage() {
                   </p>
                 )}
                 {isElite && (
-                  <p className="text-xs text-gray-500 mb-3">All 4 indicators included with Elite.</p>
+                  <p className="text-xs text-gray-500 mb-3">All 5 indicators included with Elite.</p>
                 )}
 
                 <div className="grid grid-cols-2 gap-3">
