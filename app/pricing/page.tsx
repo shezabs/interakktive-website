@@ -81,15 +81,14 @@ export default function PricingPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <StaggerContainer staggerDelay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {pricingTiers.map((tier) => (
-              <StaggerItem key={tier.id}>
-                <HoverScale scale={1.02}>
+              <StaggerItem key={tier.id} className="h-full">
+                <HoverScale scale={1.02} className="h-full">
                   <div
-                    className={`glass-card rounded-xl p-8 flex flex-col relative ${
+                    className={`glass-card rounded-xl p-8 flex flex-col relative h-full ${
                       tier.isPopular
                         ? 'border-primary-400/50 ring-1 ring-primary-400/20'
                         : ''
                     }`}
-                    style={{ minHeight: '680px' }}
                   >
                     {tier.isPopular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
