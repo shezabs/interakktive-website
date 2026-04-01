@@ -50,7 +50,7 @@ const proIndicators = [
     role: 'Options Intelligence',
     description: 'Volatility regime classification, BSM Greeks, gamma structure, Whale Flow, and strategy scoring — all cross-timeframe consistent.',
     icon: Activity,
-    lines: '2,073',
+    lines: '5 engines',
     available: true,
   },
 ];

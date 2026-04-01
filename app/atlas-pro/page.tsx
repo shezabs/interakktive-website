@@ -222,6 +222,7 @@ export default function AtlasProPage() {
                   { q: 'WHY is structure shifting?', a: 'PHANTOM PRO', detail: 'Shows BOS/CHoCH, order blocks, liquidity, and institutional levels' },
                   { q: 'HOW strong is momentum?', a: 'PULSE PRO', detail: 'Measures flow, wave, rhythm, fatigue, and divergence lifecycle' },
                   { q: 'WHERE is the opportunity?', a: 'RADAR PRO', detail: 'Screens 10 tickers for signal + structure + momentum confluence' },
+                  { q: 'WHAT does volatility say?', a: 'OPTIONS PRO', detail: 'Diagnoses IV regime, Greeks, gamma structure, and strategy fit' },
                 ].map((item, idx) => (
                   <div key={idx} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 py-3 border-b border-white/5 last:border-0">
                     <span className="text-gray-500 text-sm md:w-56 flex-shrink-0">{item.q}</span>

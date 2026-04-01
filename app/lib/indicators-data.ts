@@ -454,7 +454,7 @@ export const proIndicators: Indicator[] = [
       'Check Whale Flow for institutional positioning confirmation',
       'Get strategy recommendations scored against the current environment',
     ],
-    technicalDetails: '2,073 lines | 12 request.security() calls | 15 alerts | Real IV data from CBOE VIX, GVZ, OVX + Deribit DVOL/ETHDVOL | Source-symbol Daily tuple architecture for cross-TF consistency',
+    technicalDetails: '15 alerts | Real IV data from CBOE VIX, GVZ, OVX + Deribit DVOL/ETHDVOL | Cross-timeframe consistent IV Rank and IV Percentile | 6 asset classes with auto-detection',
     tradingViewUrl: 'https://www.tradingview.com/script/9D3jLsLj-Atlas-Options-Pro-Interakktive/',
     category: 'pro',
     stats: {

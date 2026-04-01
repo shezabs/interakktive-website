@@ -1418,7 +1418,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
     subtitle: 'Options Intelligence — five-regime volatility engine, full BSM Greeks, gamma structure, Whale Flow, strategy scoring matrix, and cross-timeframe consistent IV Rank/Percentile from 1-minute to Monthly.',
     tradingViewUrl: 'https://www.tradingview.com/script/9D3jLsLj-Atlas-Options-Pro-Interakktive/',
     role: 'Options Intelligence',
-    lines: '2,073',
+    lines: '5 engines',
     sections: [
       {
         id: 'overview',
@@ -1443,11 +1443,11 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
 
           <h3>Key Properties</h3>
           <ul>
-            <li><strong>2,073 lines</strong> of proprietary Pine Script v6 code</li>
-            <li><strong>12 request.security()</strong> calls — well within Pine's 40-call limit</li>
             <li><strong>15 alert conditions</strong> covering regimes, OPEX events, Whale Flow, and strategy changes</li>
             <li><strong>6 asset classes</strong> — ETF, Stock, Crypto, Forex, Gold, Oil with auto-detection</li>
             <li><strong>4 command centers</strong> — Main, Whale Flow, Strategy Matrix, Narrative (each independently positionable and toggleable)</li>
+            <li><strong>Cross-timeframe consistent</strong> — IV Rank and IV Percentile are identical from 1-minute to Monthly</li>
+            <li><strong>Real IV data</strong> — sourced from CBOE VIX, GVZ, OVX and Deribit DVOL/ETHDVOL</li>
           </ul>
         `,
       },
