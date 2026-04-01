@@ -89,7 +89,7 @@ export default function PricingPage() {
                         ? 'border-primary-400/50 ring-1 ring-primary-400/20'
                         : ''
                     }`}
-                    style={{ minHeight: '620px' }}
+                    style={{ minHeight: '680px' }}
                   >
                     {tier.isPopular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -137,7 +137,7 @@ export default function PricingPage() {
                     </div>
 
                     {/* Indicators - fixed height for alignment */}
-                    <div className="mb-6 min-h-[180px]">
+                    <div className="mb-6 min-h-[200px]">
                       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                         Includes
                       </p>
