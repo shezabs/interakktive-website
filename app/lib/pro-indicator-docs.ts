@@ -1410,9 +1410,211 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       },
     ],
     prevIndicator: { slug: 'atlas-pulse-pro', title: 'Atlas Pulse Pro' },
+    nextIndicator: { slug: 'atlas-options-pro', title: 'Atlas Options Pro' },
   },
 
-  // All 4 Pro indicators documented
+  'atlas-options-pro': {
+    title: 'Atlas Options Pro',
+    subtitle: 'Options Intelligence — five-regime volatility engine, full BSM Greeks, gamma structure, Whale Flow, strategy scoring matrix, and cross-timeframe consistent IV Rank/Percentile from 1-minute to Monthly.',
+    tradingViewUrl: 'https://www.tradingview.com/script/9D3jLsLj-Atlas-Options-Pro-Interakktive/',
+    role: 'Options Intelligence',
+    lines: '2,073',
+    sections: [
+      {
+        id: 'overview',
+        title: 'Overview',
+        icon: 'overview',
+        content: `
+          <p><strong>Atlas Options Pro</strong> is the options intelligence engine of the ATLAS suite. It diagnoses the volatility environment and translates it into actionable options strategy recommendations — showing traders <em>why</em> a particular strategy fits the current conditions.</p>
+
+          <h3>What OPTIONS PRO Does</h3>
+          <p>OPTIONS PRO answers the core options question: <em>What is the volatility environment telling me, and which strategy fits it best?</em></p>
+          <ul>
+            <li><strong>Volatility Regime Engine</strong> — Classifies the environment into one of five regimes (Compression, Expansion, Crush, Spike, Mean-Revert) using Realized vs Implied Volatility, IV rate-of-change, directional context, and historical rank.</li>
+            <li><strong>BSM Greeks Engine</strong> — Full Black-Scholes-Merton pricing with Delta, Gamma, Theta, Vega, and optional 2nd-order Greeks (Vanna, Charm, Vomma).</li>
+            <li><strong>Gamma Structure</strong> — Strike-level hedging zones, Pin Risk, Max Pain proxy, and OPEX Gravity Field visualization.</li>
+            <li><strong>Whale Flow Intelligence</strong> — VIX term structure, flow pressure, SKEW-based tail risk, and institutional positioning composite.</li>
+            <li><strong>Strategy Matrix</strong> — Scores 10 options strategies against the current regime, premium level, time pressure, and flow alignment.</li>
+            <li><strong>Narrative Engine</strong> — Plain English synthesis of all five engines into one actionable sentence.</li>
+          </ul>
+
+          <h3>Cross-Timeframe Consistency</h3>
+          <p>The defining architectural feature of OPTIONS PRO. IV Rank, IV Percentile, IV Status, and the crush baseline are all computed from the source volatility symbol's own Daily data via tuple request.security() calls. VIX data comes from CBOE:VIX's own 500 Daily bars. GVZ from CBOE:GVZ. DVOL from Deribit. The result: a trader on a 1-minute chart sees the exact same IV Rank as on the Monthly chart. Verified across six asset classes.</p>
+
+          <h3>Key Properties</h3>
+          <ul>
+            <li><strong>2,073 lines</strong> of proprietary Pine Script v6 code</li>
+            <li><strong>12 request.security()</strong> calls — well within Pine's 40-call limit</li>
+            <li><strong>15 alert conditions</strong> covering regimes, OPEX events, Whale Flow, and strategy changes</li>
+            <li><strong>6 asset classes</strong> — ETF, Stock, Crypto, Forex, Gold, Oil with auto-detection</li>
+            <li><strong>4 command centers</strong> — Main, Whale Flow, Strategy Matrix, Narrative (each independently positionable and toggleable)</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'volatility-regime',
+        title: 'Volatility Regime Engine',
+        icon: 'trading',
+        content: `
+          <h3>Realized Volatility (RV)</h3>
+          <p>Computed using the <strong>Garman-Klass (1980) OHLC estimator</strong>, which captures intraday high-low range information for more accurate readings than close-to-close methods. On non-daily timeframes, RV is fetched at Daily resolution to avoid intraday noise.</p>
+
+          <h3>Implied Volatility (SIV)</h3>
+          <p>Sourced from real market data — not synthetic estimation:</p>
+          <ul>
+            <li><strong>Equities/ETFs</strong> — CBOE VIX</li>
+            <li><strong>Gold</strong> — CBOE GVZ</li>
+            <li><strong>Oil</strong> — CBOE OVX</li>
+            <li><strong>Bitcoin</strong> — Deribit DVOL</li>
+            <li><strong>Ethereum</strong> — Deribit ETHDVOL</li>
+            <li><strong>Forex</strong> — VIX \u00d7 0.6 scaling</li>
+          </ul>
+
+          <h3>Volatility Risk Premium (VRP)</h3>
+          <p>The spread between IV and RV. When IV significantly exceeds RV, options are expensive (premium rich). The VRP z-score classifies premium as Cheap, Fair, Expensive, or Very Expensive.</p>
+
+          <h3>IV Rank &amp; IV Percentile</h3>
+          <p>IV Rank places current IV within its 500-day historical range. IV Percentile uses statistical percentile ranking. Both computed on the source symbol's own Daily data — not the chart's bars.</p>
+
+          <h3>The Five Regimes</h3>
+          <ul>
+            <li><strong>Compression</strong> — Low IV, narrow VRP. Premium cheap. Expect a breakout. Buy straddles, debit spreads.</li>
+            <li><strong>Expansion</strong> — Rising IV, widening VRP. Premium expensive. Directional spreads, straddles.</li>
+            <li><strong>Crush</strong> — IV falling from elevated levels. Premium sellers' paradise. Iron condors, credit spreads.</li>
+            <li><strong>Spike</strong> — Sudden IV surge, extreme VRP. Protective puts, volatility spreads, cash.</li>
+            <li><strong>Mean-Revert</strong> — IV/RV divergence. Calendar spreads, ratio spreads.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'greeks-engine',
+        title: 'BSM Greeks Engine',
+        icon: 'components',
+        content: `
+          <h3>Full BSM Pricing</h3>
+          <p>Computes theoretical Call and Put values at the nearest ATM strike using adaptive strike increments (0.01 for forex, 0.5 for mid-caps, 2.5\u20135.0 for indices, 5.0 for BTC). Risk-free rate defaults to the US 10-Year Treasury yield (TNX) with manual override.</p>
+
+          <h3>Greeks Calculated</h3>
+          <ul>
+            <li><strong>Delta \u0394</strong> — Directional exposure. Shown as Call/Put pair.</li>
+            <li><strong>Gamma \u0393</strong> — Delta sensitivity. Classified as Low/Moderate/High/Very High.</li>
+            <li><strong>Theta \u0398</strong> — Time decay per day. Shown as Call/Put with decay classification.</li>
+            <li><strong>Vega \u03BD</strong> — IV sensitivity. Includes Expected Move percentage.</li>
+            <li><strong>2nd Order (optional)</strong> — Vanna (delta/IV sensitivity), Charm (delta/time decay), Vomma (vega/IV sensitivity). Toggle ON to display in the Vega row.</li>
+          </ul>
+
+          <h3>Crypto Denomination</h3>
+          <p>For BTCUSDT and ETHUSD, option prices, theta, and daily burn are displayed in the base currency (BTC or ETH) — reflecting how crypto options are quoted on Deribit.</p>
+        `,
+      },
+      {
+        id: 'gamma-structure',
+        title: 'Gamma Structure &amp; Max Pain',
+        icon: 'structure',
+        content: `
+          <h3>Gamma Zones</h3>
+          <p>Gamma exposure calculated at each strike level using the BSM gamma function. Drawn as horizontal bands:</p>
+          <ul>
+            <li><strong>Teal zones above price</strong> — Positive gamma. Market maker hedging dampens movement ("sticky" levels).</li>
+            <li><strong>Magenta zones below price</strong> — Negative gamma. Hedging accelerates movement.</li>
+            <li><strong>Amber ATM zone</strong> — At-the-money strike with highest gamma.</li>
+          </ul>
+          <p>Only zones with gamma intensity above 40% of the maximum are drawn, keeping the chart clean.</p>
+
+          <h3>Pin Risk</h3>
+          <p>Round-number strikes where open interest concentrates. "Magnet levels" where price frequently pins near expiration.</p>
+
+          <h3>Max Pain Proxy</h3>
+          <p>Estimated from VWAP clustering (60%) and round-number strike aggregation (40%). The Max Pain line responds to OPEX proximity — growing thicker and more opaque as expiration approaches.</p>
+
+          <h3>OPEX Gravity Field</h3>
+          <p>An expanding visual field around Max Pain that intensifies as days-to-OPEX decreases, showing the increasing hedging pull that technical analysis alone cannot capture.</p>
+        `,
+      },
+      {
+        id: 'whale-flow',
+        title: 'Whale Flow Intelligence',
+        icon: 'dashboard',
+        content: `
+          <h3>Four Dimensions of Institutional Flow</h3>
+          <ul>
+            <li><strong>Risk Curve</strong> — VIX term structure (VIX vs VIX3M). Contango = complacency. Backwardation = near-term panic.</li>
+            <li><strong>Flow Pressure</strong> — VIX rate-of-change momentum. Extreme readings signal EXTREME FEAR or EXTREME GREED.</li>
+            <li><strong>Tail Risk</strong> — CBOE SKEW analysis. High SKEW + low VIX = "silent hedging" — institutions buying crash protection while retail is calm.</li>
+            <li><strong>Institutions</strong> — Composite directional assessment: Strong Bull through Strong Bear.</li>
+          </ul>
+
+          <h3>Flow Confidence</h3>
+          <p>When Whale Flow aligns with the Volatility Regime, confidence reads "Flow confirms regime." When they diverge: "Flow contradicts regime" — alerting to a disconnect between options positioning and the volatility environment.</p>
+
+          <h3>Crypto Adaptation</h3>
+          <p>For crypto assets, Whale Flow substitutes DVOL dynamics for VIX-based metrics, using DVOL level, rate-of-change, and adapted thresholds for 24/7 market structure.</p>
+        `,
+      },
+      {
+        id: 'strategy-matrix',
+        title: 'Strategy Matrix &amp; Narrative',
+        icon: 'alerts',
+        content: `
+          <h3>10-Strategy Universe</h3>
+          <p>Long Call, Long Put, Covered Call, Credit Call Spread, Credit Put Spread, Iron Condor, Straddle, Calendar Spread, Protective Put, and Cash.</p>
+
+          <h3>Scoring Factors</h3>
+          <ul>
+            <li><strong>Regime base score</strong> — Each strategy has a base affinity for each regime (e.g., Iron Condor scores high in Crush, low in Expansion).</li>
+            <li><strong>Premium adjustment</strong> — Expensive premium boosts sell-premium strategies; cheap premium boosts buy-premium.</li>
+            <li><strong>Time pressure</strong> — High theta acceleration boosts short-dated strategies.</li>
+            <li><strong>Flow alignment</strong> — Strategies matching institutional flow direction get a bonus; contradicting ones get a penalty.</li>
+          </ul>
+
+          <h3>Narrative Engine</h3>
+          <p>Synthesizes all engines into a single sentence: the regime story, the trade recommendation (top strategy with score + flow alignment), and the time context (theta decay status).</p>
+        `,
+      },
+      {
+        id: 'multi-asset',
+        title: 'Multi-Asset Adaptivity',
+        icon: 'presets',
+        content: `
+          <h3>Auto-Detection by Asset Class</h3>
+          <ul>
+            <li><strong>Equities/ETFs</strong> — VIX for IV, standard USD pricing, standard strike increments.</li>
+            <li><strong>Crypto</strong> — DVOL for BTC, ETHDVOL for ETH, native currency Greeks (BTC/ETH denominated), DVOL-based Whale Flow.</li>
+            <li><strong>Forex</strong> — VIX \u00d7 0.6 scaling, fine strike increments (0.01), adaptive label precision (5 decimal places).</li>
+            <li><strong>Gold</strong> — GVZ for IV.</li>
+            <li><strong>Oil</strong> — OVX for IV.</li>
+          </ul>
+
+          <h3>Adaptive Visuals</h3>
+          <p>Strike increments, gamma zone widths, fan fill transparency, label decimal precision, and Greeks denomination all adjust automatically based on the detected asset class and price level.</p>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Tips &amp; Best Practices',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Start with the Narrative</h3>
+          <p>The Narrative bar (middle-right) gives you the executive summary in one glance. Read it first, then drill into specific dashboards for detail. If the Narrative says "CRUSH \u2014 Iron Condor (68) \u2014 Flow CONFIRMS", you know the environment, the strategy, and the conviction level instantly.</p>
+
+          <h3>Tip 2: Watch for Flow Divergence</h3>
+          <p>When the Strategy Matrix says "Flow contradicts \u2014 use caution", it means the regime-recommended strategy conflicts with institutional positioning. This is a genuine warning \u2014 reduce size or wait for alignment.</p>
+
+          <h3>Tip 3: Use IV Rank + IV Percentile Together</h3>
+          <p>IV Rank tells you where current IV sits in its 2-year range. IV Percentile tells you what percentage of days had lower IV. Both at "Extreme" = options are historically expensive. Both at "Very Low" = options are historically cheap. When they disagree, dig deeper.</p>
+
+          <h3>Tip 4: OPEX Gravity Strengthens Near Expiry</h3>
+          <p>The Max Pain line gets thicker and the gravity field expands as OPEX approaches. At 20+ days out, Max Pain is a loose reference. At 5 days or less, the hedging pull is at its strongest \u2014 price tends to gravitate toward Max Pain in the final days before expiration.</p>
+
+          <h3>Tip 5: Cross-Timeframe Consistency is Your Edge</h3>
+          <p>Unlike most volatility indicators, OPTIONS PRO shows identical IV Rank and IV Percentile on every timeframe. This means you can analyse gamma structure on a 15-minute chart and know that the IV context matches what you'd see on Daily. No second-guessing across timeframes.</p>
+        `,
+      },
+    ],
+    prevIndicator: { slug: 'atlas-radar-pro', title: 'Atlas Radar Pro' },
+  },
+
+  // All 5 Pro indicators documented
 };
 
 export function getProIndicatorDoc(slug: string): ProIndicatorDoc | undefined {

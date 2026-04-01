@@ -302,7 +302,7 @@ export default function PricingPage() {
               },
               {
                 q: 'What does the Elite plan include?',
-                a: 'The Elite plan gives you access to every indicator that is part of the ATLAS suite — currently CIPHER PRO, PHANTOM PRO, PULSE PRO, and RADAR PRO. As we add new indicators to the suite, you get access to those too, plus all future updates.',
+                a: 'The Elite plan gives you access to every indicator that is part of the ATLAS suite — currently CIPHER PRO, PHANTOM PRO, PULSE PRO, RADAR PRO, and OPTIONS PRO. As we add new indicators to the suite, you get access to those too, plus all future updates.',
               },
               {
                 q: 'Can I try before I buy?',

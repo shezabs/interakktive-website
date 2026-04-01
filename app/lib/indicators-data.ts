@@ -430,6 +430,41 @@ export const proIndicators: Indicator[] = [
     isPublished: true,
     image: '/images/Radar_Pro_SS.png',
   },
+  {
+    id: 'atlas-options-pro',
+    title: 'Atlas Options Pro [Interakktive]',
+    shortTitle: 'OPTIONS PRO',
+    description: 'An options intelligence overlay that diagnoses the volatility environment and translates it into actionable options strategy recommendations. Five-regime volatility engine, full Black-Scholes-Merton Greeks, gamma structure mapping, institutional Whale Flow analysis, and a strategy scoring matrix \u2014 all with cross-timeframe consistency from 1-minute to Monthly.',
+    features: [
+      '5-regime Volatility Engine \u2014 Compression, Expansion, Crush, Spike, Mean-Revert',
+      'Full BSM Greeks \u2014 Delta, Gamma, Theta, Vega + optional Vanna, Charm, Vomma',
+      'Cross-TF Consistent \u2014 IV Rank, IV Percentile, IV Status identical on all timeframes',
+      'Gamma Structure \u2014 strike-level hedging zones with ATM, Pin Risk, Max Pain',
+      'Whale Flow Intelligence \u2014 VIX term structure, SKEW, institutional positioning',
+      'Strategy Matrix \u2014 10-strategy scoring with regime + premium + flow alignment',
+      'Expected Move Fan \u2014 50%/1\u03c3/2\u03c3 probability projections',
+      'OPEX Gravity Field \u2014 expanding visual showing hedging pull near expiry',
+      'Narrative Engine \u2014 plain English synthesis of all five engines',
+      '6 asset classes \u2014 ETF, Stock, Crypto, Forex, Gold, Oil with auto-detection',
+    ],
+    useCases: [
+      'Diagnose the volatility regime before selecting an options strategy',
+      'Use IV Rank and IV Percentile to assess whether options are cheap or expensive',
+      'Identify gamma zones where market maker hedging creates support/resistance',
+      'Check Whale Flow for institutional positioning confirmation',
+      'Get strategy recommendations scored against the current environment',
+    ],
+    technicalDetails: '2,073 lines | 12 request.security() calls | 15 alerts | Real IV data from CBOE VIX, GVZ, OVX + Deribit DVOL/ETHDVOL | Source-symbol Daily tuple architecture for cross-TF consistency',
+    tradingViewUrl: 'https://www.tradingview.com/script/9D3jLsLj-Atlas-Options-Pro-Interakktive/',
+    category: 'pro',
+    stats: {
+      favorites: 0,
+      publishedDate: 'April 2026',
+    },
+    isPro: true,
+    isPublished: true,
+    image: '/images/Options_Pro_SS.png',
+  },
 ];
 
 // Pricing tiers
@@ -485,7 +520,7 @@ export const pricingTiers: PricingTier[] = [
     monthlyPrice: 100,
     annualPrice: 1000,
     annualOriginalPrice: 1200,
-    indicators: ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'],
+    indicators: ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'],
     features: [
       'Everything in Advantage, plus:',
       'All current ATLAS PRO indicators',
