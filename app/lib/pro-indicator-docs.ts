@@ -1489,7 +1489,7 @@ export const proIndicatorDocs: Record<string, ProIndicatorDoc> = {
       {
         id: 'greeks-engine',
         title: 'BSM Greeks Engine',
-        icon: 'components',
+        icon: 'settings',
         content: `
           <h3>Full BSM Pricing</h3>
           <p>Computes theoretical Call and Put values at the nearest ATM strike using adaptive strike increments (0.01 for forex, 0.5 for mid-caps, 2.5\u20135.0 for indices, 5.0 for BTC). Risk-free rate defaults to the US 10-Year Treasury yield (TNX) with manual override.</p>
