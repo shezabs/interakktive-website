@@ -1,43 +1,101 @@
 import { NextResponse } from 'next/server';
 
-// Finnhub symbol mapping — convert trade symbols to Finnhub format
-const FINNHUB_MAP: Record<string, string> = {
-  // Forex — Finnhub uses OANDA: prefix for forex
-  'EURUSD': 'OANDA:EUR_USD', 'GBPUSD': 'OANDA:GBP_USD', 'USDJPY': 'OANDA:USD_JPY',
-  'USDCHF': 'OANDA:USD_CHF', 'AUDUSD': 'OANDA:AUD_USD', 'USDCAD': 'OANDA:USD_CAD',
-  'NZDUSD': 'OANDA:NZD_USD', 'EURGBP': 'OANDA:EUR_GBP', 'EURJPY': 'OANDA:EUR_JPY',
-  'GBPJPY': 'OANDA:GBP_JPY', 'AUDNZD': 'OANDA:AUD_NZD', 'EURCHF': 'OANDA:EUR_CHF',
-  'AUDCAD': 'OANDA:AUD_CAD', 'GBPCAD': 'OANDA:GBP_CAD', 'GBPCHF': 'OANDA:GBP_CHF',
-  'CADJPY': 'OANDA:CAD_JPY', 'EURAUD': 'OANDA:EUR_AUD', 'EURCAD': 'OANDA:EUR_CAD',
-  'EURNZD': 'OANDA:EUR_NZD', 'GBPAUD': 'OANDA:GBP_AUD', 'GBPNZD': 'OANDA:GBP_NZD',
-  'AUDCHF': 'OANDA:AUD_CHF', 'AUDJPY': 'OANDA:AUD_JPY', 'NZDJPY': 'OANDA:NZD_JPY',
-  'NZDCAD': 'OANDA:NZD_CAD', 'NZDCHF': 'OANDA:NZD_CHF', 'CHFJPY': 'OANDA:CHF_JPY',
-  // Gold / Silver
-  'XAUUSD': 'OANDA:XAU_USD', 'GOLD': 'OANDA:XAU_USD', 'XAGUSD': 'OANDA:XAG_USD',
-  // Crypto — Finnhub uses BINANCE: prefix
-  'BTCUSD': 'BINANCE:BTCUSDT', 'BTCUSDT': 'BINANCE:BTCUSDT',
-  'ETHUSD': 'BINANCE:ETHUSDT', 'ETHUSDT': 'BINANCE:ETHUSDT',
-  // Indices — Finnhub quote endpoint doesn't support indices directly
-  // We'll return null for these
+// Simple in-memory cache
+const cache: Record<string, { price: number; timestamp: number }> = {};
+const CACHE_TTL = 4000; // 4 seconds
+
+// Forex rates cache (single call returns ALL pairs)
+let forexRatesCache: { rates: Record<string, number>; timestamp: number } | null = null;
+const FOREX_CACHE_TTL = 3000;
+
+// Known forex pairs — base/quote
+const FOREX_PAIRS: Record<string, [string, string]> = {
+  'EURUSD': ['EUR', 'USD'], 'GBPUSD': ['GBP', 'USD'], 'USDJPY': ['USD', 'JPY'],
+  'USDCHF': ['USD', 'CHF'], 'AUDUSD': ['AUD', 'USD'], 'USDCAD': ['USD', 'CAD'],
+  'NZDUSD': ['NZD', 'USD'], 'EURGBP': ['EUR', 'GBP'], 'EURJPY': ['EUR', 'JPY'],
+  'GBPJPY': ['GBP', 'JPY'], 'AUDNZD': ['AUD', 'NZD'], 'EURCHF': ['EUR', 'CHF'],
+  'AUDCAD': ['AUD', 'CAD'], 'GBPCAD': ['GBP', 'CAD'], 'GBPCHF': ['GBP', 'CHF'],
+  'CADJPY': ['CAD', 'JPY'], 'EURAUD': ['EUR', 'AUD'], 'EURCAD': ['EUR', 'CAD'],
+  'EURNZD': ['EUR', 'NZD'], 'GBPAUD': ['GBP', 'AUD'], 'GBPNZD': ['GBP', 'NZD'],
+  'AUDCHF': ['AUD', 'CHF'], 'AUDJPY': ['AUD', 'JPY'], 'NZDJPY': ['NZD', 'JPY'],
+  'NZDCAD': ['NZD', 'CAD'], 'NZDCHF': ['NZD', 'CHF'], 'CHFJPY': ['CHF', 'JPY'],
 };
 
-function getFinnhubSymbol(symbol: string): string | null {
-  const upper = symbol.toUpperCase().replace(/[^A-Z0-9]/g, '');
-  if (FINNHUB_MAP[upper]) return FINNHUB_MAP[upper];
-  // Try auto-mapping 6-char forex pairs
-  if (upper.length === 6 && /^[A-Z]+$/.test(upper)) {
-    return `OANDA:${upper.slice(0, 3)}_${upper.slice(3)}`;
+// Gold/Silver — use quote endpoint with OANDA symbols
+const COMMODITY_MAP: Record<string, string> = {
+  'XAUUSD': 'OANDA:XAU_USD', 'GOLD': 'OANDA:XAU_USD', 'XAGUSD': 'OANDA:XAG_USD',
+};
+
+// Crypto — use quote endpoint with BINANCE symbols
+const CRYPTO_MAP: Record<string, string> = {
+  'BTCUSD': 'BINANCE:BTCUSDT', 'BTCUSDT': 'BINANCE:BTCUSDT',
+  'ETHUSD': 'BINANCE:ETHUSDT', 'ETHUSDT': 'BINANCE:ETHUSDT',
+};
+
+async function getForexRates(apiKey: string): Promise<Record<string, number> | null> {
+  const now = Date.now();
+  if (forexRatesCache && (now - forexRatesCache.timestamp) < FOREX_CACHE_TTL) {
+    return forexRatesCache.rates;
+  }
+
+  try {
+    // Finnhub forex/rates returns all rates relative to USD base
+    const res = await fetch(
+      `https://finnhub.io/api/v1/forex/rates?base=USD&token=${apiKey}`,
+      { cache: 'no-store' }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    // data.quote = { "AUD": 0.64, "EUR": 0.87, "GBP": 0.79, ... }
+    if (data && data.quote) {
+      forexRatesCache = { rates: data.quote, timestamp: now };
+      return data.quote;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function calcForexPrice(base: string, quote: string, rates: Record<string, number>): number | null {
+  // rates are USD-based: rates[X] = how much X per 1 USD
+  // e.g. rates["EUR"] = 0.87 means 1 USD = 0.87 EUR
+  // EURUSD = 1 / rates["EUR"] = 1.149
+  // GBPJPY = rates["JPY"] / rates["GBP"]
+
+  if (base === 'USD' && rates[quote]) {
+    // e.g. USDJPY = rates["JPY"]
+    return rates[quote];
+  }
+  if (quote === 'USD' && rates[base]) {
+    // e.g. EURUSD = 1 / rates["EUR"]
+    return 1 / rates[base];
+  }
+  if (rates[base] && rates[quote]) {
+    // Cross rate: e.g. EURJPY = rates["JPY"] / rates["EUR"]
+    return rates[quote] / rates[base];
   }
   return null;
 }
 
-// Simple in-memory cache to avoid hammering API
-const cache: Record<string, { price: number; timestamp: number }> = {};
-const CACHE_TTL = 3000; // 3 seconds
+async function getQuotePrice(symbol: string, apiKey: string): Promise<number | null> {
+  try {
+    const res = await fetch(
+      `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`,
+      { cache: 'no-store' }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data && data.c && data.c > 0) return data.c;
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const symbols = searchParams.get('symbols'); // comma-separated
+  const symbols = searchParams.get('symbols');
 
   if (!symbols) {
     return NextResponse.json({ error: 'Missing symbols parameter' }, { status: 400 });
@@ -48,44 +106,59 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Price feed not configured' }, { status: 503 });
   }
 
-  const symbolList = symbols.split(',').map(s => s.trim()).filter(Boolean).slice(0, 10); // max 10
+  const symbolList = symbols.split(',').map(s => s.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 10);
   const results: Record<string, number | null> = {};
   const now = Date.now();
 
-  for (const sym of symbolList) {
-    // Check cache first
+  // Check which symbols are forex
+  const forexSymbols = symbolList.filter(s => FOREX_PAIRS[s]);
+  const otherSymbols = symbolList.filter(s => !FOREX_PAIRS[s]);
+
+  // Fetch forex rates (single API call for ALL forex pairs)
+  if (forexSymbols.length > 0) {
+    const rates = await getForexRates(apiKey);
+    if (rates) {
+      for (const sym of forexSymbols) {
+        const cached = cache[sym];
+        if (cached && (now - cached.timestamp) < CACHE_TTL) {
+          results[sym] = cached.price;
+          continue;
+        }
+
+        const [base, quote] = FOREX_PAIRS[sym];
+        const price = calcForexPrice(base, quote, rates);
+        if (price !== null) {
+          // Round to 5 decimal places for forex
+          const rounded = Math.round(price * 100000) / 100000;
+          results[sym] = rounded;
+          cache[sym] = { price: rounded, timestamp: now };
+        } else {
+          results[sym] = null;
+        }
+      }
+    } else {
+      forexSymbols.forEach(s => results[s] = null);
+    }
+  }
+
+  // Fetch other symbols (commodities, crypto) via quote endpoint
+  for (const sym of otherSymbols) {
     const cached = cache[sym];
     if (cached && (now - cached.timestamp) < CACHE_TTL) {
       results[sym] = cached.price;
       continue;
     }
 
-    const finnhubSym = getFinnhubSymbol(sym);
-    if (!finnhubSym) {
-      results[sym] = null;
-      continue;
-    }
-
-    try {
-      const res = await fetch(
-        `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(finnhubSym)}&token=${apiKey}`,
-        { next: { revalidate: 0 } }
-      );
-
-      if (!res.ok) {
-        results[sym] = null;
-        continue;
-      }
-
-      const data = await res.json();
-      // Finnhub returns { c: current, h: high, l: low, o: open, pc: prevClose, t: timestamp }
-      if (data && data.c && data.c > 0) {
-        results[sym] = data.c;
-        cache[sym] = { price: data.c, timestamp: now };
+    const quoteSymbol = COMMODITY_MAP[sym] || CRYPTO_MAP[sym];
+    if (quoteSymbol) {
+      const price = await getQuotePrice(quoteSymbol, apiKey);
+      if (price !== null) {
+        results[sym] = price;
+        cache[sym] = { price, timestamp: now };
       } else {
         results[sym] = null;
       }
-    } catch {
+    } else {
       results[sym] = null;
     }
   }
