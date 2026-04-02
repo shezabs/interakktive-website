@@ -7,7 +7,8 @@ import { supabase } from '../../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   ArrowLeft, TrendingUp, TrendingDown, Shield, Target, AlertTriangle,
-  X, Check, Loader2, Trash2, DollarSign, Crosshair, BarChart3, Zap, Heart, Activity, AlertCircle, Settings
+  X, Check, Loader2, Trash2, DollarSign, Crosshair, BarChart3, Zap, Heart, Activity,
+  AlertCircle, Settings, ChevronDown, ChevronUp, LineChart, Calendar
 } from 'lucide-react';
 
 interface PropAccount {
@@ -30,6 +31,8 @@ interface Trade {
 const fmt = (n: number, d = 2) => n.toFixed(d);
 const fmtM = (n: number, c: string) => `${c} ${n >= 0 ? '+' : ''}${fmt(n)}`;
 
+// ── SURVIVAL BAR ────────────────────────────────────────────────────────────
+
 function SurvivalBar({ remaining, total, currency, budgetLeft }: { remaining: number; total: number; currency: string; budgetLeft: number }) {
   const pct = total > 0 ? Math.max(0, (remaining / total) * 100) : 100;
   const segments = Math.min(Math.max(total, 1), 10);
@@ -39,31 +42,35 @@ function SurvivalBar({ remaining, total, currency, budgetLeft }: { remaining: nu
   return (
     <div className={`bg-[#0d0d14] border-b border-gray-800/50 px-4 py-2.5 ${pct <= 30 ? 'animate-pulse' : ''}`}>
       <div className="max-w-7xl mx-auto flex items-center gap-4">
-        <div className="flex items-center gap-2"><Heart className={`w-4 h-4 ${tc}`} /><span className="text-xs text-gray-400">Survival</span></div>
+        <div className="flex items-center gap-2 flex-shrink-0"><Heart className={`w-4 h-4 ${tc}`} /><span className="text-xs text-gray-400 hidden sm:inline">Survival</span></div>
         <div className="flex-1 flex gap-0.5">
           {Array.from({ length: segments }).map((_, i) => (
             <div key={i} className={`h-3 flex-1 rounded-sm transition-all duration-300 ${i < filled ? `bg-gradient-to-r ${grad}` : 'bg-gray-800'}`} />
           ))}
         </div>
-        <div className="flex items-center gap-4 text-xs">
-          <span className={`font-bold tabular-nums ${tc}`}>{remaining} trade{remaining !== 1 ? 's' : ''} left</span>
-          <span className="text-gray-600">|</span>
-          <span className="text-gray-400">Budget: <span className={`font-medium ${tc}`}>{currency} {fmt(budgetLeft, 0)}</span></span>
+        <div className="flex items-center gap-2 sm:gap-4 text-xs flex-shrink-0">
+          <span className={`font-bold tabular-nums ${tc}`}>{remaining} left</span>
+          <span className="text-gray-600 hidden sm:inline">|</span>
+          <span className="text-gray-400 hidden sm:inline">Budget: <span className={`font-medium ${tc}`}>{currency} {fmt(budgetLeft, 0)}</span></span>
         </div>
       </div>
     </div>
   );
 }
 
+// ── STAT CARD ───────────────────────────────────────────────────────────────
+
 function StatCard({ label, value, color = 'text-white', sub, icon: Icon }: { label: string; value: string; color?: string; sub?: string; icon?: any }) {
   return (
-    <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-4 hover:border-gray-700/50 transition-all">
-      <div className="flex items-center gap-2 mb-2">{Icon && <Icon className="w-3.5 h-3.5 text-gray-600" />}<span className="text-xs text-gray-500 uppercase tracking-wider">{label}</span></div>
-      <div className={`text-xl font-bold tabular-nums ${color}`}>{value}</div>
-      {sub && <div className="text-xs text-gray-600 mt-1">{sub}</div>}
+    <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-3 sm:p-4 hover:border-gray-700/50 transition-all">
+      <div className="flex items-center gap-2 mb-1.5">{Icon && <Icon className="w-3.5 h-3.5 text-gray-600" />}<span className="text-[10px] sm:text-xs text-gray-500 uppercase tracking-wider">{label}</span></div>
+      <div className={`text-lg sm:text-xl font-bold tabular-nums ${color}`}>{value}</div>
+      {sub && <div className="text-[10px] sm:text-xs text-gray-600 mt-0.5">{sub}</div>}
     </div>
   );
 }
+
+// ── DD GAUGE ────────────────────────────────────────────────────────────────
 
 function DDGauge({ value, max, label, sublabel, variant = 'default' }: { value: number; max: number; label: string; sublabel?: string; variant?: string }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
@@ -78,6 +85,112 @@ function DDGauge({ value, max, label, sublabel, variant = 'default' }: { value: 
     </div>
   );
 }
+
+// ── JOURNAL DAY GROUP ───────────────────────────────────────────────────────
+
+function JournalDayGroup({ date, trades, currency, onDelete, isToday }: {
+  date: string; trades: Trade[]; currency: string; onDelete: (id: string) => void; isToday: boolean;
+}) {
+  const [expanded, setExpanded] = useState(isToday);
+  const dayPnl = trades.reduce((s, t) => s + (t.pnl || 0), 0);
+  const dayR = trades.reduce((s, t) => s + (t.r_result || 0), 0);
+  const wins = trades.filter(t => (t.pnl || 0) > 0).length;
+  const losses = trades.filter(t => (t.pnl || 0) <= 0).length;
+  const dateObj = new Date(date + 'T00:00:00');
+  const dateLabel = isToday ? 'Today' : dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+
+  return (
+    <div className="bg-[#12121a] border border-gray-800/30 rounded-xl overflow-hidden">
+      <button onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-900/30 transition-colors">
+        <div className="flex items-center gap-3">
+          <span className={`text-sm font-medium ${isToday ? 'text-sky-400' : 'text-gray-300'}`}>{dateLabel}</span>
+          <span className="text-xs text-gray-600">{trades.length} trade{trades.length !== 1 ? 's' : ''}</span>
+          <span className="text-xs text-gray-600">{wins}W {losses}L</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className={`text-sm font-bold tabular-nums ${dayPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            {dayPnl >= 0 ? '+' : ''}{currency} {fmt(dayPnl)}
+          </span>
+          <span className={`text-xs tabular-nums ${dayR >= 0 ? 'text-emerald-400/70' : 'text-red-400/70'}`}>
+            {dayR >= 0 ? '+' : ''}{fmt(dayR)}R
+          </span>
+          {expanded ? <ChevronUp className="w-4 h-4 text-gray-600" /> : <ChevronDown className="w-4 h-4 text-gray-600" />}
+        </div>
+      </button>
+      {expanded && (
+        <div className="border-t border-gray-800/30">
+          {/* Desktop table */}
+          <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-800/50 bg-gray-900/30">
+                  {['#', 'DIR', 'SYMBOL', 'ENTRY', 'EXIT', 'P&L', 'R', 'TIME', ''].map(h => (
+                    <th key={h} className={`px-4 py-2.5 text-[10px] text-gray-600 font-medium uppercase tracking-wider ${['ENTRY', 'EXIT', 'P&L', 'R', 'TIME'].includes(h) ? 'text-right' : 'text-left'}`}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {trades.map((t, i) => {
+                  const pc = (t.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-red-400';
+                  const tm = t.closed_at ? new Date(t.closed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                  return (
+                    <tr key={t.id} className={`border-b border-gray-800/20 ${(t.pnl || 0) >= 0 ? 'hover:bg-emerald-500/5' : 'hover:bg-red-500/5'}`}>
+                      <td className="px-4 py-2.5 text-gray-600">{i + 1}</td>
+                      <td className={`px-4 py-2.5 font-medium ${t.direction === 'long' ? 'text-emerald-400' : 'text-red-400'}`}>{t.direction === 'long' ? '▲' : '▼'} {t.direction.toUpperCase()}</td>
+                      <td className="px-4 py-2.5 text-gray-300">{t.symbol}</td>
+                      <td className="px-4 py-2.5 text-right text-gray-400 tabular-nums">{t.entry_price}</td>
+                      <td className="px-4 py-2.5 text-right text-gray-400 tabular-nums">{t.close_price}</td>
+                      <td className={`px-4 py-2.5 text-right font-bold tabular-nums ${pc}`}>{(t.pnl || 0) >= 0 ? '+' : ''}{currency} {fmt(t.pnl || 0)}</td>
+                      <td className={`px-4 py-2.5 text-right font-medium tabular-nums ${pc}`}>{(t.r_result || 0) >= 0 ? '+' : ''}{fmt(t.r_result || 0)}R</td>
+                      <td className="px-4 py-2.5 text-right text-gray-700 text-xs">{tm}</td>
+                      <td className="px-4 py-2.5 text-right">
+                        <button onClick={() => onDelete(t.id)} className="text-gray-800 hover:text-red-400 transition-colors"><Trash2 className="w-3 h-3" /></button>
+                      </td>
+                    </tr>
+                  );
+                })}
+                <tr className="bg-gray-900/50">
+                  <td colSpan={5} className="px-4 py-2.5 text-right text-xs text-gray-500">{wins}W {losses}L · {trades.length > 0 ? fmt(dayR / trades.length) : '0.00'}R avg</td>
+                  <td className={`px-4 py-2.5 text-right font-bold tabular-nums ${dayPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{dayPnl >= 0 ? '+' : ''}{currency} {fmt(dayPnl)}</td>
+                  <td className={`px-4 py-2.5 text-right font-bold tabular-nums ${dayR >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{dayR >= 0 ? '+' : ''}{fmt(dayR)}R</td>
+                  <td colSpan={2}></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {/* Mobile cards */}
+          <div className="sm:hidden divide-y divide-gray-800/20">
+            {trades.map((t, i) => {
+              const pc = (t.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-red-400';
+              const tm = t.closed_at ? new Date(t.closed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+              return (
+                <div key={t.id} className="px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${t.direction === 'long' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {t.direction === 'long' ? '▲' : '▼'}
+                    </span>
+                    <div>
+                      <span className="text-sm text-gray-300">{t.symbol}</span>
+                      <span className="text-xs text-gray-600 ml-2">{tm}</span>
+                      {t.notes && <div className="text-[10px] text-gray-600 mt-0.5 truncate max-w-[200px]">{t.notes}</div>}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-sm font-bold tabular-nums ${pc}`}>{(t.pnl || 0) >= 0 ? '+' : ''}{currency} {fmt(t.pnl || 0)}</div>
+                    <div className={`text-xs tabular-nums ${pc}`}>{(t.r_result || 0) >= 0 ? '+' : ''}{fmt(t.r_result || 0)}R</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── MAIN TRADE DESK ─────────────────────────────────────────────────────────
 
 export default function TradeDesk() {
   const router = useRouter();
@@ -96,11 +209,12 @@ export default function TradeDesk() {
   const [showSettings, setShowSettings] = useState(false);
   const [editAccount, setEditAccount] = useState<PropAccount | null>(null);
   const [saving, setSaving] = useState(false);
+  const [journalView, setJournalView] = useState<'today' | 'all'>('today');
 
   const loadData = useCallback(async (uid: string) => {
     const [a, t] = await Promise.all([
       supabase.from('prop_accounts').select('*').eq('id', accountId).eq('user_id', uid).single(),
-      supabase.from('prop_trades').select('*').eq('account_id', accountId).eq('user_id', uid).order('opened_at', { ascending: false }).limit(100),
+      supabase.from('prop_trades').select('*').eq('account_id', accountId).eq('user_id', uid).order('opened_at', { ascending: false }).limit(500),
     ]);
     if (a.data) setAccount(a.data);
     if (t.data) setTrades(t.data);
@@ -114,8 +228,11 @@ export default function TradeDesk() {
     const todayTrades = trades.filter(t => new Date(t.opened_at).toDateString() === today);
     const closedToday = todayTrades.filter(t => t.status === 'closed');
     const openTrades = trades.filter(t => t.status === 'open');
+    const allClosed = trades.filter(t => t.status === 'closed');
     const sessionPnl = closedToday.reduce((s, t) => s + (t.pnl || 0), 0);
     const sessionR = closedToday.reduce((s, t) => s + (t.r_result || 0), 0);
+    const totalPnl = allClosed.reduce((s, t) => s + (t.pnl || 0), 0);
+    const totalR = allClosed.reduce((s, t) => s + (t.r_result || 0), 0);
     const wins = closedToday.filter(t => (t.pnl || 0) > 0).length;
     const losses = closedToday.filter(t => (t.pnl || 0) <= 0 && t.pnl !== null).length;
     const avgR = closedToday.length > 0 ? sessionR / closedToday.length : 0;
@@ -129,10 +246,20 @@ export default function TradeDesk() {
     const ddPct = dailyDdLimit > 0 ? (ddUsed / dailyDdLimit) * 100 : 0;
     const budgetLeft = Math.max(0, dailyDdLimit - ddUsed);
     const targetD = account.balance * account.profit_target_pct / 100;
-    const progressPct = targetD > 0 ? Math.max(0, sessionPnl) / targetD * 100 : 0;
+    const progressPct = targetD > 0 ? Math.max(0, totalPnl) / targetD * 100 : 0;
     const survivalCount = effectiveRiskD > 0 ? Math.floor(budgetLeft / effectiveRiskD) : 99;
     const tradesLeft = Math.max(0, account.max_trades_per_day - todayTrades.length);
-    return { todayTrades, closedToday, openTrades, sessionPnl, sessionR, wins, losses, avgR, effectiveRisk, effectiveRiskD, riskD, dailyDdLimit, maxDdLimit, ddUsed, ddPct, budgetLeft, targetD, progressPct, survivalCount, tradesLeft };
+
+    // Group closed trades by date for journal
+    const closedByDate: Record<string, Trade[]> = {};
+    for (const t of allClosed) {
+      const d = t.closed_at ? t.closed_at.split('T')[0] : t.opened_at.split('T')[0];
+      if (!closedByDate[d]) closedByDate[d] = [];
+      closedByDate[d].push(t);
+    }
+    const sortedDates = Object.keys(closedByDate).sort().reverse();
+
+    return { todayTrades, closedToday, openTrades, allClosed, sessionPnl, sessionR, totalPnl, totalR, wins, losses, avgR, effectiveRisk, effectiveRiskD, riskD, dailyDdLimit, maxDdLimit, ddUsed, ddPct, budgetLeft, targetD, progressPct, survivalCount, tradesLeft, closedByDate, sortedDates };
   }, [account, trades]);
 
   const openTrade = async () => {
@@ -199,7 +326,6 @@ export default function TradeDesk() {
   const hBorder = danger ? 'border-red-500/50' : warn ? 'border-amber-500/30' : 'border-gray-800/50';
   const pColor = account.phase === 'Funded' ? 'bg-emerald-500/10 text-emerald-400' : account.phase === 'Phase 2' ? 'bg-amber-500/10 text-amber-400' : 'bg-sky-500/10 text-sky-400';
 
-  // Session narrative
   const narr: string[] = [account.phase];
   if (c.wins + c.losses > 0) narr.push(`${c.wins}W ${c.losses}L`);
   narr.push(fmtM(c.sessionPnl, account.currency));
@@ -208,29 +334,37 @@ export default function TradeDesk() {
   if (c.progressPct >= 100) narr.push('TARGET REACHED');
   const narrBg = danger ? 'bg-red-500/10 border-red-500/30' : warn ? 'bg-amber-500/10 border-amber-500/30' : c.sessionPnl > 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-sky-500/10 border-sky-500/30';
 
+  const todayStr = new Date().toISOString().split('T')[0];
+  const journalDates = journalView === 'today' ? c.sortedDates.filter(d => d === todayStr) : c.sortedDates;
+
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
+      {/* ── HEADER ─────────────────────────────────────────────────────────── */}
       <div className={`border-b ${hBorder} bg-[#0d0d14] transition-colors duration-500`}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/prop" className="text-gray-500 hover:text-gray-300"><ArrowLeft className="w-5 h-5" /></Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold">{account.name}</h1>
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/prop" className="text-gray-500 hover:text-gray-300 flex-shrink-0"><ArrowLeft className="w-5 h-5" /></Link>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-bold truncate">{account.name}</h1>
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${pColor}`}>{account.phase}</span>
                 {danger && <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 font-medium animate-pulse">DANGER</span>}
               </div>
-              <p className="text-xs text-gray-500">{account.currency} {account.balance.toLocaleString()} · {account.daily_dd_pct}%/{account.max_dd_pct}% · {account.daily_dd_calc} · {account.max_dd_type}</p>
+              <p className="text-xs text-gray-500 truncate">{account.currency} {account.balance.toLocaleString()} · {account.daily_dd_pct}%/{account.max_dd_pct}% · {account.daily_dd_calc}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Link href={`/prop/${account.id}/analytics`}
+              className="p-2.5 text-gray-500 hover:text-sky-400 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition-all" title="Analytics">
+              <LineChart className="w-4 h-4" />
+            </Link>
             <button onClick={() => { setEditAccount({...account}); setShowSettings(true); }}
               className="p-2.5 text-gray-500 hover:text-white bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition-all">
               <Settings className="w-4 h-4" />
             </button>
             <button onClick={() => setShowNewTrade(true)} disabled={c.tradesLeft <= 0 || c.ddPct >= 100}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${c.tradesLeft <= 0 || c.ddPct >= 100 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20'}`}>
-              <Zap className="w-4 h-4" /> New Trade
+              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${c.tradesLeft <= 0 || c.ddPct >= 100 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20'}`}>
+              <Zap className="w-4 h-4" /> <span className="hidden sm:inline">New Trade</span>
             </button>
           </div>
         </div>
@@ -241,15 +375,17 @@ export default function TradeDesk() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className={`${narrBg} border rounded-lg px-4 py-2 mb-6`}><p className="text-sm text-center text-gray-300">{narr.join('  ·  ')}</p></div>
 
+        {/* ── STATS GRID ───────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           <StatCard label="Session P&L" icon={DollarSign} value={fmtM(c.sessionPnl, account.currency)} color={c.sessionPnl >= 0 ? 'text-emerald-400' : 'text-red-400'} sub={c.wins + c.losses > 0 ? `${c.wins}W ${c.losses}L · ${fmt(c.avgR)}R avg` : 'No trades yet'} />
           <StatCard label="Daily DD" icon={Shield} value={`${fmt(c.ddPct, 0)}%`} color={danger ? 'text-red-400' : warn ? 'text-amber-400' : 'text-emerald-400'} sub={`${account.currency} ${fmt(c.ddUsed, 0)} / ${fmt(c.dailyDdLimit, 0)}`} />
           <StatCard label="Budget" icon={Target} value={`${account.currency} ${fmt(c.budgetLeft, 0)}`} color={c.budgetLeft > c.dailyDdLimit * 0.5 ? 'text-emerald-400' : c.budgetLeft > 0 ? 'text-amber-400' : 'text-red-400'} />
           <StatCard label="Trades" icon={BarChart3} value={`${c.todayTrades.length} / ${account.max_trades_per_day}`} color={c.tradesLeft <= 0 ? 'text-red-400' : 'text-white'} sub={`${c.tradesLeft} remaining`} />
-          <StatCard label="Target" icon={Crosshair} value={`${fmt(c.progressPct, 0)}%`} color={c.progressPct >= 100 ? 'text-emerald-400' : 'text-amber-400'} sub={`Need ${account.currency} ${fmt(Math.max(0, c.targetD - Math.max(0, c.sessionPnl)), 0)}`} />
+          <StatCard label="Target" icon={Crosshair} value={`${fmt(c.progressPct, 0)}%`} color={c.progressPct >= 100 ? 'text-emerald-400' : 'text-amber-400'} sub={`${account.currency} ${fmt(c.totalPnl)} / ${fmt(c.targetD)}`} />
           <StatCard label="Risk/Trade" icon={AlertTriangle} value={`${fmt(c.effectiveRisk, 1)}%`} color="text-sky-400" sub={`${account.currency} ${fmt(c.effectiveRiskD, 0)} · ${account.phase === 'Funded' ? '50%' : account.phase === 'Phase 2' ? '75%' : 'Full'}`} />
         </div>
 
+        {/* ── DD & PROGRESS PANELS ────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-5 space-y-4">
             <h3 className="text-sm font-bold text-gray-400 flex items-center gap-2"><Shield className="w-4 h-4 text-sky-400" /> Drawdown Monitor</h3>
@@ -259,95 +395,188 @@ export default function TradeDesk() {
           </div>
           <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-5 space-y-4">
             <h3 className="text-sm font-bold text-gray-400 flex items-center gap-2"><Target className="w-4 h-4 text-emerald-400" /> Challenge Progress</h3>
-            <DDGauge value={Math.max(0, c.sessionPnl)} max={c.targetD} label={`Target: ${account.profit_target_pct}%`} sublabel={`${account.currency} ${fmt(c.targetD, 0)} needed`} variant="progress" />
+            <DDGauge value={Math.max(0, c.totalPnl)} max={c.targetD} label={`Target: ${account.profit_target_pct}%`} sublabel={`${account.currency} ${fmt(c.targetD, 0)} needed`} variant="progress" />
             <div className="bg-gray-900/50 rounded-lg p-3 space-y-2 text-xs">
+              <div className="flex justify-between"><span className="text-gray-400">Total P&L</span><span className={c.totalPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}>{fmtM(c.totalPnl, account.currency)}</span></div>
+              <div className="flex justify-between"><span className="text-gray-400">Total R</span><span className={c.totalR >= 0 ? 'text-emerald-400' : 'text-red-400'}>{c.totalR >= 0 ? '+' : ''}{fmt(c.totalR)}R</span></div>
               <div className="flex justify-between"><span className="text-gray-400">Strategy</span><span className={account.phase === 'Funded' ? 'text-emerald-400' : 'text-sky-400'}>{account.phase === 'Funded' ? 'Survival' : account.phase === 'Phase 2' ? '75% risk' : 'Full risk'}</span></div>
               <div className="flex justify-between"><span className="text-gray-400">Survival</span><span className={c.survivalCount <= 2 ? 'text-red-400' : 'text-emerald-400'}>{c.survivalCount} losses before breach</span></div>
             </div>
           </div>
         </div>
 
-        {c.openTrades.length > 0 && <div className="mb-6"><h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> Open Positions</h3>
-          {c.openTrades.map(t => <div key={t.id} className="bg-[#12121a] border border-sky-500/20 rounded-xl p-4 flex items-center justify-between mb-2">
-            <div className="flex items-center gap-4 flex-wrap">
-              <span className={`text-sm font-bold px-2 py-1 rounded ${t.direction === 'long' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>{t.direction === 'long' ? '▲ LONG' : '▼ SHORT'}</span>
-              <span className="font-medium">{t.symbol}</span><span className="text-sm text-gray-400">@ {t.entry_price}</span><span className="text-xs text-gray-600">SL {t.stop_price}</span><span className="text-xs text-gray-600">{t.lot_size} lots</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {closingTradeId === t.id ? <div className="flex items-center gap-2">
-                <input type="number" step="any" placeholder="Exit price" value={closePrice} onChange={e => setClosePrice(e.target.value)} className="w-32 bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none" autoFocus />
-                <button onClick={() => closeTrade(t.id)} disabled={closing} className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium">{closing ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Close & Log'}</button>
-                <button onClick={() => { setClosingTradeId(null); setClosePrice(''); }} className="p-1 text-gray-500 hover:text-white"><X className="w-4 h-4" /></button>
-              </div> : <>
-                <button onClick={() => setClosingTradeId(t.id)} className="px-4 py-1.5 bg-amber-600/80 hover:bg-amber-500 text-white rounded-lg text-xs font-medium">Close Trade</button>
-                <button onClick={() => deleteTrade(t.id)} className="p-1.5 text-gray-700 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button>
-              </>}
-            </div>
-          </div>)}
-        </div>}
+        {/* ── OPEN POSITIONS ──────────────────────────────────────────────── */}
+        {c.openTrades.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> Open Positions</h3>
+            {c.openTrades.map(t => (
+              <div key={t.id} className="bg-[#12121a] border border-sky-500/20 rounded-xl p-4 mb-2">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className={`text-sm font-bold px-2 py-1 rounded ${t.direction === 'long' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {t.direction === 'long' ? '▲ LONG' : '▼ SHORT'}
+                    </span>
+                    <span className="font-medium">{t.symbol}</span>
+                    <span className="text-sm text-gray-400">@ {t.entry_price}</span>
+                    <span className="text-xs text-gray-600">SL {t.stop_price}</span>
+                    <span className="text-xs text-gray-600">{t.lot_size} lots</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {closingTradeId === t.id ? (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <input type="number" step="any" placeholder="Exit price" value={closePrice} onChange={e => setClosePrice(e.target.value)}
+                          className="w-28 sm:w-32 bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none" autoFocus />
+                        <button onClick={() => closeTrade(t.id)} disabled={closing}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium">
+                          {closing ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Close & Log'}
+                        </button>
+                        <button onClick={() => { setClosingTradeId(null); setClosePrice(''); }} className="p-1 text-gray-500 hover:text-white"><X className="w-4 h-4" /></button>
+                      </div>
+                    ) : (
+                      <>
+                        <button onClick={() => setClosingTradeId(t.id)} className="px-4 py-1.5 bg-amber-600/80 hover:bg-amber-500 text-white rounded-lg text-xs font-medium">Close Trade</button>
+                        <button onClick={() => deleteTrade(t.id)} className="p-1.5 text-gray-700 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <div><h3 className="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Trade Journal</h3>
-          {c.closedToday.length === 0 ? <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-12 text-center"><Crosshair className="w-8 h-8 text-gray-700 mx-auto mb-3" /><p className="text-gray-500 text-sm">No closed trades today</p></div>
-          : <div className="bg-[#12121a] border border-gray-800/30 rounded-xl overflow-hidden"><table className="w-full text-sm"><thead><tr className="border-b border-gray-800/50 bg-gray-900/30">
-            {['#','DIR','SYMBOL','ENTRY','EXIT','P&L','R','TIME',''].map(h => <th key={h} className={`px-4 py-3 text-xs text-gray-600 font-medium uppercase tracking-wider ${['ENTRY','EXIT','P&L','R','TIME'].includes(h) ? 'text-right' : 'text-left'}`}>{h}</th>)}
-          </tr></thead><tbody>
-            {c.closedToday.map((t, i) => { const pc = (t.pnl || 0) >= 0 ? 'text-emerald-400' : 'text-red-400'; const rb = (t.pnl || 0) >= 0 ? 'hover:bg-emerald-500/5' : 'hover:bg-red-500/5'; const tm = t.closed_at ? new Date(t.closed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''; return (
-              <tr key={t.id} className={`border-b border-gray-800/20 ${rb}`}>
-                <td className="px-4 py-3 text-gray-600">{i+1}</td>
-                <td className={`px-4 py-3 font-medium ${t.direction === 'long' ? 'text-emerald-400' : 'text-red-400'}`}>{t.direction === 'long' ? '▲' : '▼'} {t.direction.toUpperCase()}</td>
-                <td className="px-4 py-3 text-gray-300">{t.symbol}</td>
-                <td className="px-4 py-3 text-right text-gray-400 tabular-nums">{t.entry_price}</td>
-                <td className="px-4 py-3 text-right text-gray-400 tabular-nums">{t.close_price}</td>
-                <td className={`px-4 py-3 text-right font-bold tabular-nums ${pc}`}>{(t.pnl||0)>=0?'+':''}{account.currency} {fmt(t.pnl||0)}</td>
-                <td className={`px-4 py-3 text-right font-medium tabular-nums ${pc}`}>{(t.r_result||0)>=0?'+':''}{fmt(t.r_result||0)}R</td>
-                <td className="px-4 py-3 text-right text-gray-700 text-xs">{tm}</td>
-                <td className="px-4 py-3 text-right"><button onClick={() => deleteTrade(t.id)} className="text-gray-800 hover:text-red-400"><Trash2 className="w-3 h-3" /></button></td>
-              </tr>); })}
-            <tr className="bg-gray-900/50"><td colSpan={5} className="px-4 py-3 text-right text-xs text-gray-500">{c.wins}W {c.losses}L · {fmt(c.avgR)}R avg</td>
-              <td className={`px-4 py-3 text-right font-bold text-lg tabular-nums ${c.sessionPnl>=0?'text-emerald-400':'text-red-400'}`}>{c.sessionPnl>=0?'+':''}{account.currency} {fmt(c.sessionPnl)}</td>
-              <td className={`px-4 py-3 text-right font-bold tabular-nums ${c.sessionR>=0?'text-emerald-400':'text-red-400'}`}>{c.sessionR>=0?'+':''}{fmt(c.sessionR)}R</td><td colSpan={2}></td></tr>
-          </tbody></table></div>}
+        {/* ── TRADE JOURNAL ───────────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Trade Journal</h3>
+            <div className="flex items-center bg-gray-900/50 rounded-lg p-0.5">
+              <button onClick={() => setJournalView('today')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${journalView === 'today' ? 'bg-gray-800 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}>
+                Today
+              </button>
+              <button onClick={() => setJournalView('all')}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${journalView === 'all' ? 'bg-gray-800 text-white shadow' : 'text-gray-500 hover:text-gray-300'}`}>
+                All History
+              </button>
+            </div>
+          </div>
+
+          {journalDates.length === 0 ? (
+            <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-12 text-center">
+              <Crosshair className="w-8 h-8 text-gray-700 mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">{journalView === 'today' ? 'No closed trades today' : 'No trade history yet'}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {journalDates.map(date => (
+                <JournalDayGroup
+                  key={date}
+                  date={date}
+                  trades={c.closedByDate[date]}
+                  currency={account.currency}
+                  onDelete={deleteTrade}
+                  isToday={date === todayStr}
+                />
+              ))}
+              {journalView === 'all' && c.allClosed.length > 0 && (
+                <div className="bg-gray-900/30 border border-gray-800/20 rounded-xl p-4 flex items-center justify-between">
+                  <span className="text-xs text-gray-500">
+                    {c.allClosed.length} total trades across {c.sortedDates.length} days
+                  </span>
+                  <span className={`text-sm font-bold tabular-nums ${c.totalPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    All-time: {c.totalPnl >= 0 ? '+' : ''}{account.currency} {fmt(c.totalPnl)} ({c.totalR >= 0 ? '+' : ''}{fmt(c.totalR)}R)
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      {showNewTrade && <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"><div className="bg-[#12121a] border border-gray-800 rounded-2xl max-w-lg w-full shadow-2xl">
-        <div className="border-b border-gray-800/50 p-5 flex items-center justify-between"><div><h2 className="text-lg font-bold">Open Trade</h2><p className="text-xs text-gray-500 mt-0.5">Risk: {account.currency} {fmt(c.effectiveRiskD)} ({fmt(c.effectiveRisk, 1)}%) · Budget: {account.currency} {fmt(c.budgetLeft, 0)} · {c.tradesLeft} left</p></div><button onClick={() => setShowNewTrade(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button></div>
-        <div className="p-5 space-y-4">
-          <div className="grid grid-cols-3 gap-3"><div><label className="block text-xs text-gray-400 mb-1.5">Symbol</label><input type="text" value={tradeForm.symbol} onChange={e => setTradeForm({...tradeForm, symbol: e.target.value.toUpperCase()})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none" /></div>
-            <div className="col-span-2"><label className="block text-xs text-gray-400 mb-1.5">Direction</label><div className="grid grid-cols-2 gap-2">{['long','short'].map(d => <button key={d} onClick={() => setTradeForm({...tradeForm, direction: d})} className={`py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${tradeForm.direction===d ? d==='long' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'bg-gray-800 text-gray-500 hover:text-white'}`}>{d==='long'?<><TrendingUp className="w-4 h-4"/>LONG</>:<><TrendingDown className="w-4 h-4"/>SHORT</>}</button>)}</div></div></div>
-          <div className="grid grid-cols-2 gap-3"><div><label className="block text-xs text-gray-400 mb-1.5">Entry Price</label><input type="number" step="any" placeholder="1.15325" value={tradeForm.entry_price} onChange={e => setTradeForm({...tradeForm, entry_price: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white tabular-nums focus:border-sky-500 focus:outline-none" /></div>
-            <div><label className="block text-xs text-gray-400 mb-1.5">Stop Price</label><input type="number" step="any" placeholder="1.15225" value={tradeForm.stop_price} onChange={e => setTradeForm({...tradeForm, stop_price: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white tabular-nums focus:border-sky-500 focus:outline-none" /></div></div>
-          {tradeForm.entry_price && tradeForm.stop_price && (() => { const e=parseFloat(tradeForm.entry_price),s=parseFloat(tradeForm.stop_price); if(!e||!s) return null; const d=Math.abs(e-s),p=d*10000,l=p>0?c.effectiveRiskD/(p*10):0,bp=c.dailyDdLimit>0?(c.effectiveRiskD/c.dailyDdLimit)*100:0,v=tradeForm.direction==='long'?s<e:s>e;
-            return <div className={`rounded-xl p-4 space-y-2 ${v?'bg-gray-900/80 border border-gray-800/50':'bg-red-500/10 border border-red-500/30'}`}>
-              {!v && <div className="flex items-center gap-2 text-red-400 text-xs mb-2"><AlertTriangle className="w-3.5 h-3.5"/>Stop wrong side for {tradeForm.direction}</div>}
-              <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
-                <div className="flex justify-between"><span className="text-gray-500">Pips</span><span className="text-gray-300 tabular-nums">{fmt(p,1)}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Lots</span><span className="text-white font-bold tabular-nums">{fmt(l)}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Risk</span><span className="text-red-400">{account.currency} {fmt(c.effectiveRiskD)}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Budget</span><span className={bp>40?'text-amber-400':'text-gray-300'}>{fmt(bp,0)}%</span></div>
-              </div></div>; })()}
-          <div><label className="block text-xs text-gray-400 mb-1.5">Notes</label><input type="text" placeholder="Setup reason..." value={tradeForm.notes} onChange={e => setTradeForm({...tradeForm, notes: e.target.value})} className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+      {/* ── NEW TRADE MODAL ──────────────────────────────────────────────── */}
+      {showNewTrade && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#12121a] border border-gray-800 rounded-2xl max-w-lg w-full shadow-2xl">
+            <div className="border-b border-gray-800/50 p-5 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold">Open Trade</h2>
+                <p className="text-xs text-gray-500 mt-0.5">Risk: {account.currency} {fmt(c.effectiveRiskD)} ({fmt(c.effectiveRisk, 1)}%) · Budget: {account.currency} {fmt(c.budgetLeft, 0)} · {c.tradesLeft} left</p>
+              </div>
+              <button onClick={() => setShowNewTrade(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1.5">Symbol</label>
+                  <input type="text" value={tradeForm.symbol} onChange={e => setTradeForm({...tradeForm, symbol: e.target.value.toUpperCase()})}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none" />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-gray-400 mb-1.5">Direction</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {['long', 'short'].map(d => (
+                      <button key={d} onClick={() => setTradeForm({...tradeForm, direction: d})}
+                        className={`py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${
+                          tradeForm.direction === d
+                            ? d === 'long' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'bg-red-600 text-white shadow-lg shadow-red-600/20'
+                            : 'bg-gray-800 text-gray-500 hover:text-white'
+                        }`}>
+                        {d === 'long' ? <><TrendingUp className="w-4 h-4" />LONG</> : <><TrendingDown className="w-4 h-4" />SHORT</>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-xs text-gray-400 mb-1.5">Entry Price</label>
+                  <input type="number" step="any" placeholder="1.15325" value={tradeForm.entry_price} onChange={e => setTradeForm({...tradeForm, entry_price: e.target.value})}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white tabular-nums focus:border-sky-500 focus:outline-none" /></div>
+                <div><label className="block text-xs text-gray-400 mb-1.5">Stop Price</label>
+                  <input type="number" step="any" placeholder="1.15225" value={tradeForm.stop_price} onChange={e => setTradeForm({...tradeForm, stop_price: e.target.value})}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white tabular-nums focus:border-sky-500 focus:outline-none" /></div>
+              </div>
+              {tradeForm.entry_price && tradeForm.stop_price && (() => {
+                const e = parseFloat(tradeForm.entry_price), s = parseFloat(tradeForm.stop_price);
+                if (!e || !s) return null;
+                const d = Math.abs(e - s), p = d * 10000, l = p > 0 ? c.effectiveRiskD / (p * 10) : 0, bp = c.dailyDdLimit > 0 ? (c.effectiveRiskD / c.dailyDdLimit) * 100 : 0;
+                const v = tradeForm.direction === 'long' ? s < e : s > e;
+                return (
+                  <div className={`rounded-xl p-4 space-y-2 ${v ? 'bg-gray-900/80 border border-gray-800/50' : 'bg-red-500/10 border border-red-500/30'}`}>
+                    {!v && <div className="flex items-center gap-2 text-red-400 text-xs mb-2"><AlertTriangle className="w-3.5 h-3.5" />Stop wrong side for {tradeForm.direction}</div>}
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
+                      <div className="flex justify-between"><span className="text-gray-500">Pips</span><span className="text-gray-300 tabular-nums">{fmt(p, 1)}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">Lots</span><span className="text-white font-bold tabular-nums">{fmt(l)}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">Risk</span><span className="text-red-400">{account.currency} {fmt(c.effectiveRiskD)}</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">Budget</span><span className={bp > 40 ? 'text-amber-400' : 'text-gray-300'}>{fmt(bp, 0)}%</span></div>
+                    </div>
+                  </div>
+                );
+              })()}
+              <div><label className="block text-xs text-gray-400 mb-1.5">Notes</label>
+                <input type="text" placeholder="Setup reason..." value={tradeForm.notes} onChange={e => setTradeForm({...tradeForm, notes: e.target.value})}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+            </div>
+            <div className="border-t border-gray-800/50 p-5 flex justify-end gap-3">
+              <button onClick={() => setShowNewTrade(false)} className="px-4 py-2 text-gray-400 hover:text-white text-sm">Cancel</button>
+              <button onClick={openTrade} disabled={submitting || !tradeForm.entry_price || !tradeForm.stop_price}
+                className="flex items-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-sky-600/20">
+                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />} Execute Trade
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="border-t border-gray-800/50 p-5 flex justify-end gap-3"><button onClick={() => setShowNewTrade(false)} className="px-4 py-2 text-gray-400 hover:text-white text-sm">Cancel</button>
-          <button onClick={openTrade} disabled={submitting||!tradeForm.entry_price||!tradeForm.stop_price} className="flex items-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-sky-600/20">{submitting?<Loader2 className="w-4 h-4 animate-spin"/>:<Zap className="w-4 h-4"/>}Execute Trade</button></div>
-      </div></div>}
+      )}
 
-      {/* ── SETTINGS MODAL ──────────────────────────────────────────────────── */}
+      {/* ── SETTINGS MODAL ───────────────────────────────────────────────── */}
       {showSettings && editAccount && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <style>{`
-            .modal-scroll::-webkit-scrollbar { width: 6px; }
-            .modal-scroll::-webkit-scrollbar-track { background: transparent; }
-            .modal-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-            .modal-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
-          `}</style>
+          <style>{`.modal-scroll::-webkit-scrollbar { width: 6px; } .modal-scroll::-webkit-scrollbar-track { background: transparent; } .modal-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; } .modal-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }`}</style>
           <div className="modal-scroll bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-[#12121a] border-b border-gray-800/50 p-5 flex items-center justify-between z-10">
               <h2 className="text-lg font-bold">Account Settings</h2>
               <button onClick={() => setShowSettings(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
             </div>
             <div className="p-5 space-y-5">
-              {/* Name + Balance */}
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-xs text-gray-400 mb-1.5">Account Name</label>
                   <input type="text" value={editAccount.name} onChange={e => setEditAccount({...editAccount, name: e.target.value})}
@@ -368,7 +597,6 @@ export default function TradeDesk() {
                     {['Phase 1','Phase 2','Funded'].map(p => <option key={p} value={p}>{p}</option>)}
                   </select></div>
               </div>
-              {/* Drawdown */}
               <div>
                 <h3 className="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Drawdown Rules</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -398,7 +626,6 @@ export default function TradeDesk() {
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>}
                 </div>
               </div>
-              {/* Challenge + Risk */}
               <div>
                 <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Challenge & Risk</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -419,7 +646,6 @@ export default function TradeDesk() {
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
                 </div>
               </div>
-              {/* Payout */}
               <div>
                 <h3 className="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Payout & Fees</h3>
                 <div className="grid grid-cols-2 gap-4">
