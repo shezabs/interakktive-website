@@ -7,7 +7,7 @@ import { supabase } from '../../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   ArrowLeft, TrendingUp, TrendingDown, Shield, Target, AlertTriangle,
-  X, Check, Loader2, Trash2, DollarSign, Crosshair, BarChart3, Zap, Heart, Activity, AlertCircle
+  X, Check, Loader2, Trash2, DollarSign, Crosshair, BarChart3, Zap, Heart, Activity, AlertCircle, Settings
 } from 'lucide-react';
 
 interface PropAccount {
@@ -93,6 +93,9 @@ export default function TradeDesk() {
   const [closingTradeId, setClosingTradeId] = useState<string | null>(null);
   const [closePrice, setClosePrice] = useState('');
   const [closing, setClosing] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [editAccount, setEditAccount] = useState<PropAccount | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const loadData = useCallback(async (uid: string) => {
     const [a, t] = await Promise.all([
@@ -170,6 +173,23 @@ export default function TradeDesk() {
     await loadData(user.id);
   };
 
+  const saveSettings = async () => {
+    if (!user || !editAccount) return;
+    setSaving(true);
+    await supabase.from('prop_accounts').update({
+      name: editAccount.name, balance: editAccount.balance, currency: editAccount.currency,
+      daily_dd_pct: editAccount.daily_dd_pct, daily_dd_calc: editAccount.daily_dd_calc,
+      max_dd_pct: editAccount.max_dd_pct, max_dd_type: editAccount.max_dd_type,
+      trail_lock: editAccount.trail_lock, trail_lock_pct: editAccount.trail_lock_pct,
+      profit_target_pct: editAccount.profit_target_pct, phase: editAccount.phase,
+      min_days: editAccount.min_days, consistency_pct: editAccount.consistency_pct,
+      risk_pct: editAccount.risk_pct, max_trades_per_day: editAccount.max_trades_per_day,
+    }).eq('id', editAccount.id);
+    await loadData(user.id);
+    setShowSettings(false);
+    setSaving(false);
+  };
+
   if (loading || !account || !c) return <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-sky-500" /></div>;
 
   const danger = c.ddPct >= 80;
@@ -201,10 +221,16 @@ export default function TradeDesk() {
               <p className="text-xs text-gray-500">{account.currency} {account.balance.toLocaleString()} · {account.daily_dd_pct}%/{account.max_dd_pct}% · {account.daily_dd_calc} · {account.max_dd_type}</p>
             </div>
           </div>
-          <button onClick={() => setShowNewTrade(true)} disabled={c.tradesLeft <= 0 || c.ddPct >= 100}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${c.tradesLeft <= 0 || c.ddPct >= 100 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20'}`}>
-            <Zap className="w-4 h-4" /> New Trade
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => { setEditAccount({...account}); setShowSettings(true); }}
+              className="p-2.5 text-gray-500 hover:text-white bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition-all">
+              <Settings className="w-4 h-4" />
+            </button>
+            <button onClick={() => setShowNewTrade(true)} disabled={c.tradesLeft <= 0 || c.ddPct >= 100}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${c.tradesLeft <= 0 || c.ddPct >= 100 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20'}`}>
+              <Zap className="w-4 h-4" /> New Trade
+            </button>
+          </div>
         </div>
       </div>
 
@@ -303,6 +329,91 @@ export default function TradeDesk() {
         <div className="border-t border-gray-800/50 p-5 flex justify-end gap-3"><button onClick={() => setShowNewTrade(false)} className="px-4 py-2 text-gray-400 hover:text-white text-sm">Cancel</button>
           <button onClick={openTrade} disabled={submitting||!tradeForm.entry_price||!tradeForm.stop_price} className="flex items-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-sky-600/20">{submitting?<Loader2 className="w-4 h-4 animate-spin"/>:<Zap className="w-4 h-4"/>}Execute Trade</button></div>
       </div></div>}
+
+      {/* ── SETTINGS MODAL ──────────────────────────────────────────────────── */}
+      {showSettings && editAccount && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 bg-[#12121a] border-b border-gray-800/50 p-5 flex items-center justify-between z-10">
+              <h2 className="text-lg font-bold">Account Settings</h2>
+              <button onClick={() => setShowSettings(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
+            </div>
+            <div className="p-5 space-y-5">
+              {/* Name + Balance */}
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-xs text-gray-400 mb-1.5">Account Name</label>
+                  <input type="text" value={editAccount.name} onChange={e => setEditAccount({...editAccount, name: e.target.value})}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none" /></div>
+                <div><label className="block text-xs text-gray-400 mb-1.5">Balance</label>
+                  <input type="number" value={editAccount.balance} onChange={e => setEditAccount({...editAccount, balance: parseFloat(e.target.value) || 0})}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none" /></div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-xs text-gray-400 mb-1.5">Currency</label>
+                  <select value={editAccount.currency} onChange={e => setEditAccount({...editAccount, currency: e.target.value})}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none">
+                    {['USD','EUR','GBP','JPY','AUD','CAD','CHF'].map(c => <option key={c} value={c}>{c}</option>)}
+                  </select></div>
+                <div><label className="block text-xs text-gray-400 mb-1.5">Phase</label>
+                  <select value={editAccount.phase} onChange={e => setEditAccount({...editAccount, phase: e.target.value})}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none">
+                    {['Phase 1','Phase 2','Funded'].map(p => <option key={p} value={p}>{p}</option>)}
+                  </select></div>
+              </div>
+              {/* Drawdown */}
+              <div>
+                <h3 className="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Drawdown Rules</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-xs text-gray-400 mb-1">Daily Loss Limit (%)</label>
+                    <input type="number" step="0.5" value={editAccount.daily_dd_pct} onChange={e => setEditAccount({...editAccount, daily_dd_pct: parseFloat(e.target.value) || 0})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">DD Calculation</label>
+                    <select value={editAccount.daily_dd_calc} onChange={e => setEditAccount({...editAccount, daily_dd_calc: e.target.value})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none">
+                      {['Balance-Based','Equity-Based','Intraday Trailing'].map(t => <option key={t} value={t}>{t}</option>)}
+                    </select></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Max Drawdown (%)</label>
+                    <input type="number" step="0.5" value={editAccount.max_dd_pct} onChange={e => setEditAccount({...editAccount, max_dd_pct: parseFloat(e.target.value) || 0})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Max DD Type</label>
+                    <select value={editAccount.max_dd_type} onChange={e => setEditAccount({...editAccount, max_dd_type: e.target.value})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none">
+                      {['Static','EOD Trailing','Intraday Trailing'].map(t => <option key={t} value={t}>{t}</option>)}
+                    </select></div>
+                </div>
+              </div>
+              {/* Challenge + Risk */}
+              <div>
+                <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Challenge & Risk</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-xs text-gray-400 mb-1">Profit Target (%)</label>
+                    <input type="number" step="0.5" value={editAccount.profit_target_pct} onChange={e => setEditAccount({...editAccount, profit_target_pct: parseFloat(e.target.value) || 0})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Min Trading Days</label>
+                    <input type="number" value={editAccount.min_days} onChange={e => setEditAccount({...editAccount, min_days: parseInt(e.target.value) || 0})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Consistency Rule (%)</label>
+                    <input type="number" step="5" value={editAccount.consistency_pct} onChange={e => setEditAccount({...editAccount, consistency_pct: parseFloat(e.target.value) || 0})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Risk Per Trade (%)</label>
+                    <input type="number" step="0.1" value={editAccount.risk_pct} onChange={e => setEditAccount({...editAccount, risk_pct: parseFloat(e.target.value) || 0})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Max Trades / Day</label>
+                    <input type="number" value={editAccount.max_trades_per_day} onChange={e => setEditAccount({...editAccount, max_trades_per_day: parseInt(e.target.value) || 1})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                </div>
+              </div>
+            </div>
+            <div className="sticky bottom-0 bg-[#12121a] border-t border-gray-800/50 p-5 flex items-center justify-end gap-3">
+              <button onClick={() => setShowSettings(false)} className="px-4 py-2 text-gray-400 hover:text-white text-sm">Cancel</button>
+              <button onClick={saveSettings} disabled={saving}
+                className="flex items-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:bg-gray-700 text-white rounded-lg text-sm font-medium transition-all">
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />} Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
