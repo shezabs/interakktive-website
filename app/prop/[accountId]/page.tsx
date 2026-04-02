@@ -670,7 +670,6 @@ export default function TradeDesk() {
                 </div>
               );
             })}
-            ))}
           </div>
         )}
 
