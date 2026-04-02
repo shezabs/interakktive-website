@@ -308,6 +308,8 @@ export default function TradeDesk() {
   const [journalView, setJournalView] = useState<'today' | 'all'>('today');
   const [showChart, setShowChart] = useState(true);
   const [chartHeight, setChartHeight] = useState(400);
+  const [livePrices, setLivePrices] = useState<Record<string, number | null>>({});
+  const [priceLoading, setPriceLoading] = useState(false);
 
   const loadData = useCallback(async (uid: string) => {
     const [a, t] = await Promise.all([
@@ -319,6 +321,28 @@ export default function TradeDesk() {
   }, [accountId]);
 
   useEffect(() => { (async () => { const { data: { user: u } } = await supabase.auth.getUser(); if (!u) { router.push('/signin'); return; } setUser(u); await loadData(u.id); setLoading(false); })(); }, [router, loadData]);
+
+  // Live price polling for open positions
+  useEffect(() => {
+    const openTrades = trades.filter(t => t.status === 'open');
+    if (openTrades.length === 0) return;
+
+    const symbols = [...new Set(openTrades.map(t => t.symbol))];
+
+    const fetchPrices = async () => {
+      try {
+        const res = await fetch(`/api/price?symbols=${symbols.join(',')}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.prices) setLivePrices(data.prices);
+        }
+      } catch { /* silent fail */ }
+    };
+
+    fetchPrices(); // initial fetch
+    const interval = setInterval(fetchPrices, 5000); // poll every 5s
+    return () => clearInterval(interval);
+  }, [trades]);
 
   const c = useMemo(() => {
     if (!account) return null;
@@ -545,39 +569,107 @@ export default function TradeDesk() {
         {/* ── OPEN POSITIONS ──────────────────────────────────────────────── */}
         {c.openTrades.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2"><Activity className="w-4 h-4" /> Open Positions</h3>
-            {c.openTrades.map(t => (
-              <div key={t.id} className="bg-[#12121a] border border-sky-500/20 rounded-xl p-4 mb-2">
-                <div className="flex items-center justify-between flex-wrap gap-3">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className={`text-sm font-bold px-2 py-1 rounded ${t.direction === 'long' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
-                      {t.direction === 'long' ? '▲ LONG' : '▼ SHORT'}
-                    </span>
-                    <span className="font-medium">{t.symbol}</span>
-                    <span className="text-sm text-gray-400">@ {t.entry_price}</span>
-                    <span className="text-xs text-gray-600">SL {t.stop_price}</span>
-                    <span className="text-xs text-gray-600">{t.lot_size} lots</span>
+            <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2">
+              <Activity className="w-4 h-4" /> Open Positions
+              {Object.values(livePrices).some(p => p !== null) && (
+                <span className="flex items-center gap-1 text-[10px] text-emerald-500/60 font-normal">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> LIVE
+                </span>
+              )}
+            </h3>
+            {c.openTrades.map(t => {
+              const livePrice = livePrices[t.symbol];
+              const hasLive = livePrice !== null && livePrice !== undefined;
+              const move = hasLive
+                ? (t.direction === 'long' ? livePrice - t.entry_price : t.entry_price - livePrice)
+                : null;
+              const dist = Math.abs(t.entry_price - t.stop_price);
+              const unrealizedR = move !== null && dist > 0 ? move / dist : null;
+              const unrealizedPnl = move !== null ? move * (t.lot_size || 0) * 100000 : null;
+              const pnlColor = unrealizedPnl !== null ? (unrealizedPnl >= 0 ? 'text-emerald-400' : 'text-red-400') : 'text-gray-500';
+              const pnlBorder = unrealizedPnl !== null ? (unrealizedPnl >= 0 ? 'border-emerald-500/20' : 'border-red-500/20') : 'border-sky-500/20';
+
+              return (
+                <div key={t.id} className={`bg-[#12121a] border ${pnlBorder} rounded-xl p-4 mb-2 transition-colors`}>
+                  {/* Row 1: Direction, Symbol, Entry, SL, Lots */}
+                  <div className="flex items-center justify-between flex-wrap gap-3 mb-2">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className={`text-sm font-bold px-2 py-1 rounded ${t.direction === 'long' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+                        {t.direction === 'long' ? '▲ LONG' : '▼ SHORT'}
+                      </span>
+                      <span className="font-medium">{t.symbol}</span>
+                      <span className="text-sm text-gray-400">@ {t.entry_price}</span>
+                      <span className="text-xs text-gray-600">SL {t.stop_price}</span>
+                      <span className="text-xs text-gray-600">{t.lot_size} lots</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {closingTradeId === t.id ? (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <input type="number" step="any" placeholder="Exit price" value={closePrice} onChange={e => setClosePrice(e.target.value)}
+                            className="w-28 sm:w-32 bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none" autoFocus />
+                          <button onClick={() => closeTrade(t.id)} disabled={closing}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium">
+                            {closing ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Close & Log'}
+                          </button>
+                          <button onClick={() => { setClosingTradeId(null); setClosePrice(''); }} className="p-1 text-gray-500 hover:text-white"><X className="w-4 h-4" /></button>
+                        </div>
+                      ) : (
+                        <>
+                          {hasLive && (
+                            <button onClick={() => { setClosingTradeId(t.id); setClosePrice(String(livePrice)); }}
+                              className="px-3 py-1.5 bg-emerald-600/80 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium"
+                              title={`Close at live price ${livePrice}`}>
+                              Close @ {livePrice}
+                            </button>
+                          )}
+                          <button onClick={() => setClosingTradeId(t.id)} className="px-4 py-1.5 bg-amber-600/80 hover:bg-amber-500 text-white rounded-lg text-xs font-medium">
+                            {hasLive ? 'Custom' : 'Close Trade'}
+                          </button>
+                          <button onClick={() => deleteTrade(t.id)} className="p-1.5 text-gray-700 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {closingTradeId === t.id ? (
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <input type="number" step="any" placeholder="Exit price" value={closePrice} onChange={e => setClosePrice(e.target.value)}
-                          className="w-28 sm:w-32 bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-white focus:border-emerald-500 focus:outline-none" autoFocus />
-                        <button onClick={() => closeTrade(t.id)} disabled={closing}
-                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-medium">
-                          {closing ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Close & Log'}
-                        </button>
-                        <button onClick={() => { setClosingTradeId(null); setClosePrice(''); }} className="p-1 text-gray-500 hover:text-white"><X className="w-4 h-4" /></button>
+                  {/* Row 2: Live Price + Unrealized P&L */}
+                  {hasLive && (
+                    <div className="flex items-center gap-4 pl-1 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-gray-500 uppercase">Live</span>
+                        <span className="text-sm font-bold text-white tabular-nums">{livePrice}</span>
                       </div>
-                    ) : (
-                      <>
-                        <button onClick={() => setClosingTradeId(t.id)} className="px-4 py-1.5 bg-amber-600/80 hover:bg-amber-500 text-white rounded-lg text-xs font-medium">Close Trade</button>
-                        <button onClick={() => deleteTrade(t.id)} className="p-1.5 text-gray-700 hover:text-red-400"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </>
-                    )}
-                  </div>
+                      <div className="w-px h-4 bg-gray-800" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-gray-500 uppercase">Unrealized</span>
+                        <span className={`text-sm font-bold tabular-nums ${pnlColor}`}>
+                          {unrealizedPnl !== null ? `${unrealizedPnl >= 0 ? '+' : ''}${account.currency} ${fmt(unrealizedPnl)}` : '—'}
+                        </span>
+                      </div>
+                      <div className="w-px h-4 bg-gray-800" />
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-gray-500 uppercase">R</span>
+                        <span className={`text-sm font-bold tabular-nums ${pnlColor}`}>
+                          {unrealizedR !== null ? `${unrealizedR >= 0 ? '+' : ''}${fmt(unrealizedR)}R` : '—'}
+                        </span>
+                      </div>
+                      {unrealizedPnl !== null && Math.abs(unrealizedPnl) > 0 && (
+                        <>
+                          <div className="w-px h-4 bg-gray-800" />
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-gray-500 uppercase">Pips</span>
+                            <span className={`text-xs tabular-nums ${pnlColor}`}>
+                              {move !== null ? `${move >= 0 ? '+' : ''}${fmt(move * 10000, 1)}` : '—'}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                  {!hasLive && (
+                    <div className="pl-1 text-[10px] text-gray-600">Price feed loading...</div>
+                  )}
                 </div>
-              </div>
+              );
+            })}
             ))}
           </div>
         )}
