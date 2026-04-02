@@ -184,6 +184,8 @@ export default function TradeDesk() {
       profit_target_pct: editAccount.profit_target_pct, phase: editAccount.phase,
       min_days: editAccount.min_days, consistency_pct: editAccount.consistency_pct,
       risk_pct: editAccount.risk_pct, max_trades_per_day: editAccount.max_trades_per_day,
+      profit_split: (editAccount as any).profit_split ?? 80,
+      challenge_fee: (editAccount as any).challenge_fee ?? 0,
     }).eq('id', editAccount.id);
     await loadData(user.id);
     setShowSettings(false);
@@ -380,6 +382,14 @@ export default function TradeDesk() {
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none">
                       {['Static','EOD Trailing','Intraday Trailing'].map(t => <option key={t} value={t}>{t}</option>)}
                     </select></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Trailing DD Locks at BE</label>
+                    <select value={editAccount.trail_lock ? 'Yes' : 'No'} onChange={e => setEditAccount({...editAccount, trail_lock: e.target.value === 'Yes'})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none">
+                      <option value="No">No</option><option value="Yes">Yes</option>
+                    </select></div>
+                  {editAccount.trail_lock && <div><label className="block text-xs text-gray-400 mb-1">Lock Threshold (%)</label>
+                    <input type="number" step="1" value={editAccount.trail_lock_pct} onChange={e => setEditAccount({...editAccount, trail_lock_pct: parseFloat(e.target.value) || 0})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>}
                 </div>
               </div>
               {/* Challenge + Risk */}
@@ -400,6 +410,18 @@ export default function TradeDesk() {
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
                   <div><label className="block text-xs text-gray-400 mb-1">Max Trades / Day</label>
                     <input type="number" value={editAccount.max_trades_per_day} onChange={e => setEditAccount({...editAccount, max_trades_per_day: parseInt(e.target.value) || 1})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                </div>
+              </div>
+              {/* Payout */}
+              <div>
+                <h3 className="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Payout & Fees</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="block text-xs text-gray-400 mb-1">Profit Split (%)</label>
+                    <input type="number" step="5" value={(editAccount as any).profit_split ?? 80} onChange={e => setEditAccount({...editAccount, profit_split: parseFloat(e.target.value) || 80} as any)}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  <div><label className="block text-xs text-gray-400 mb-1">Challenge Fee ({account.currency})</label>
+                    <input type="number" step="10" value={(editAccount as any).challenge_fee ?? 0} onChange={e => setEditAccount({...editAccount, challenge_fee: parseFloat(e.target.value) || 0} as any)}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
                 </div>
               </div>
