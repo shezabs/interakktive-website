@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '../../lib/supabase';
@@ -8,7 +8,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   ArrowLeft, TrendingUp, TrendingDown, Shield, Target, AlertTriangle,
   X, Check, Loader2, Trash2, DollarSign, Crosshair, BarChart3, Zap, Heart, Activity,
-  AlertCircle, Settings, ChevronDown, ChevronUp, LineChart, Calendar
+  AlertCircle, Settings, ChevronDown, ChevronUp, LineChart, Calendar, Tv, Minimize2, Maximize2
 } from 'lucide-react';
 
 interface PropAccount {
@@ -190,6 +190,102 @@ function JournalDayGroup({ date, trades, currency, onDelete, isToday }: {
   );
 }
 
+// ── SYMBOL MAPPING (trade symbol → TradingView format) ──────────────────────
+
+const TV_SYMBOL_MAP: Record<string, string> = {
+  'EURUSD': 'FX:EURUSD', 'GBPUSD': 'FX:GBPUSD', 'USDJPY': 'FX:USDJPY', 'USDCHF': 'FX:USDCHF',
+  'AUDUSD': 'FX:AUDUSD', 'USDCAD': 'FX:USDCAD', 'NZDUSD': 'FX:NZDUSD', 'EURGBP': 'FX:EURGBP',
+  'EURJPY': 'FX:EURJPY', 'GBPJPY': 'FX:GBPJPY', 'AUDNZD': 'FX:AUDNZD', 'EURCHF': 'FX:EURCHF',
+  'AUDCAD': 'FX:AUDCAD', 'GBPCAD': 'FX:GBPCAD', 'GBPCHF': 'FX:GBPCHF', 'CADJPY': 'FX:CADJPY',
+  'XAUUSD': 'OANDA:XAUUSD', 'GOLD': 'OANDA:XAUUSD', 'XAGUSD': 'OANDA:XAGUSD',
+  'BTCUSD': 'BITSTAMP:BTCUSD', 'ETHUSD': 'BITSTAMP:ETHUSD', 'BTCUSDT': 'BINANCE:BTCUSDT',
+  'US30': 'TVC:DJI', 'NAS100': 'NASDAQ:NDX', 'SPX500': 'SP:SPX', 'US500': 'SP:SPX',
+  'DE40': 'XETR:DAX', 'UK100': 'TVC:UKX', 'JP225': 'TVC:NI225',
+  'USOIL': 'TVC:USOIL', 'UKOIL': 'TVC:UKOIL',
+};
+
+function getTvSymbol(symbol: string): string {
+  const upper = symbol.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (TV_SYMBOL_MAP[upper]) return TV_SYMBOL_MAP[upper];
+  // Fallback: try FX: prefix for 6-char forex pairs
+  if (upper.length === 6) return `FX:${upper}`;
+  return upper;
+}
+
+// ── TRADINGVIEW CHART COMPONENT ─────────────────────────────────────────────
+
+function TradingViewChart({ symbol, height = 400 }: { symbol: string; height?: number }) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const widgetRef = React.useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Clear previous widget
+    if (widgetRef.current) {
+      widgetRef.current.remove();
+      widgetRef.current = null;
+    }
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'tradingview-widget-container';
+    wrapper.style.height = '100%';
+    wrapper.style.width = '100%';
+
+    const widgetDiv = document.createElement('div');
+    widgetDiv.className = 'tradingview-widget-container__widget';
+    widgetDiv.style.height = 'calc(100% - 32px)';
+    widgetDiv.style.width = '100%';
+    wrapper.appendChild(widgetDiv);
+
+    const copyright = document.createElement('div');
+    copyright.className = 'tradingview-widget-copyright';
+    copyright.innerHTML = '<a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span style="color: rgba(255,255,255,0.2); font-size: 11px;">Chart by TradingView</span></a>';
+    wrapper.appendChild(copyright);
+
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+    script.async = true;
+    script.textContent = JSON.stringify({
+      autosize: true,
+      symbol: getTvSymbol(symbol),
+      interval: '15',
+      timezone: 'exchange',
+      theme: 'dark',
+      style: '1',
+      locale: 'en',
+      backgroundColor: 'rgba(10, 10, 15, 1)',
+      gridColor: 'rgba(255, 255, 255, 0.03)',
+      hide_top_toolbar: false,
+      hide_legend: false,
+      save_image: false,
+      hide_volume: false,
+      calendar: false,
+      withdateranges: false,
+      allow_symbol_change: true,
+      details: false,
+      hotlist: false,
+      support_host: 'https://www.tradingview.com',
+    });
+    wrapper.appendChild(script);
+
+    containerRef.current.appendChild(wrapper);
+    widgetRef.current = wrapper;
+
+    return () => {
+      if (widgetRef.current) {
+        widgetRef.current.remove();
+        widgetRef.current = null;
+      }
+    };
+  }, [symbol]);
+
+  return (
+    <div ref={containerRef} style={{ height: `${height}px` }} className="rounded-xl overflow-hidden border border-gray-800/30" />
+  );
+}
+
 // ── MAIN TRADE DESK ─────────────────────────────────────────────────────────
 
 export default function TradeDesk() {
@@ -210,6 +306,8 @@ export default function TradeDesk() {
   const [editAccount, setEditAccount] = useState<PropAccount | null>(null);
   const [saving, setSaving] = useState(false);
   const [journalView, setJournalView] = useState<'today' | 'all'>('today');
+  const [showChart, setShowChart] = useState(true);
+  const [chartHeight, setChartHeight] = useState(400);
 
   const loadData = useCallback(async (uid: string) => {
     const [a, t] = await Promise.all([
@@ -385,6 +483,45 @@ export default function TradeDesk() {
           <StatCard label="Risk/Trade" icon={AlertTriangle} value={`${fmt(c.effectiveRisk, 1)}%`} color="text-sky-400" sub={`${account.currency} ${fmt(c.effectiveRiskD, 0)} · ${account.phase === 'Funded' ? '50%' : account.phase === 'Phase 2' ? '75%' : 'Full'}`} />
         </div>
 
+        {/* ── TRADINGVIEW CHART ────────────────────────────────────────────── */}
+        {(() => {
+          const chartSymbol = c.openTrades.length > 0
+            ? c.openTrades[0].symbol
+            : trades.length > 0
+              ? trades[0].symbol
+              : 'EURUSD';
+          return (
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-sm font-bold text-gray-400 flex items-center gap-2">
+                    <Tv className="w-4 h-4 text-sky-400" /> Chart
+                  </h3>
+                  <span className="text-xs text-gray-500 bg-gray-900/50 px-2 py-0.5 rounded">{chartSymbol}</span>
+                  {c.openTrades.length > 0 && c.openTrades.length > 1 && (
+                    <div className="flex items-center gap-1">
+                      {c.openTrades.map(t => (
+                        <span key={t.id} className="text-[10px] text-gray-600 bg-gray-800/50 px-1.5 py-0.5 rounded cursor-default">{t.symbol}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setChartHeight(h => h === 400 ? 550 : 400)}
+                    className="p-1.5 text-gray-600 hover:text-gray-300 transition-colors" title={chartHeight === 400 ? 'Expand chart' : 'Collapse chart'}>
+                    {chartHeight === 400 ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
+                  </button>
+                  <button onClick={() => setShowChart(!showChart)}
+                    className="p-1.5 text-gray-600 hover:text-gray-300 transition-colors">
+                    {showChart ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+              {showChart && <TradingViewChart symbol={chartSymbol} height={chartHeight} />}
+            </div>
+          );
+        })()}
+
         {/* ── DD & PROGRESS PANELS ────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-5 space-y-4">
@@ -399,7 +536,7 @@ export default function TradeDesk() {
             <div className="bg-gray-900/50 rounded-lg p-3 space-y-2 text-xs">
               <div className="flex justify-between"><span className="text-gray-400">Total P&L</span><span className={c.totalPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}>{fmtM(c.totalPnl, account.currency)}</span></div>
               <div className="flex justify-between"><span className="text-gray-400">Total R</span><span className={c.totalR >= 0 ? 'text-emerald-400' : 'text-red-400'}>{c.totalR >= 0 ? '+' : ''}{fmt(c.totalR)}R</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Strategy</span><span className={account.phase === 'Funded' ? 'text-emerald-400' : 'text-sky-400'}>{account.phase === 'Funded' ? 'Survival' : account.phase === 'Phase 2' ? '75% risk' : 'Full risk'}</span></div>
+              <div className="flex justify-between"><span className="text-gray-400">Risk Mode</span><span className={account.phase === 'Funded' ? 'text-emerald-400' : 'text-sky-400'}>{account.phase === 'Funded' ? `Funded · ${fmt(c.effectiveRisk, 1)}% per trade` : account.phase === 'Phase 2' ? `P2 · ${fmt(c.effectiveRisk, 1)}% per trade` : `P1 · ${fmt(c.effectiveRisk, 1)}% per trade`}</span></div>
               <div className="flex justify-between"><span className="text-gray-400">Survival</span><span className={c.survivalCount <= 2 ? 'text-red-400' : 'text-emerald-400'}>{c.survivalCount} losses before breach</span></div>
             </div>
           </div>

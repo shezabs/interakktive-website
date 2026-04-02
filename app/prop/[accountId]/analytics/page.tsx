@@ -427,9 +427,9 @@ export default function Analytics() {
                 <h3 className="text-sm font-bold text-gray-400 mb-4 flex items-center gap-2"><Award className="w-4 h-4 text-emerald-400" /> Win / Loss</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm"><span className="text-gray-400">Avg Win</span><span className="text-emerald-400 tabular-nums">+{account.currency} {fmt(stats.avgWin)}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-gray-400">Avg Loss</span><span className="text-red-400 tabular-nums">{account.currency} {fmt(stats.avgLoss)}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-gray-400">Best Day</span><span className="text-emerald-400 tabular-nums">+{account.currency} {fmt(stats.bestDay)}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-gray-400">Worst Day</span><span className="text-red-400 tabular-nums">{account.currency} {fmt(stats.worstDay)}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-gray-400">Avg Loss</span><span className={`tabular-nums ${stats.losses === 0 ? 'text-gray-500' : 'text-red-400'}`}>{stats.losses === 0 ? 'No losses' : `${account.currency} ${fmt(stats.avgLoss)}`}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-gray-400">Best Day</span><span className={`tabular-nums ${stats.bestDay >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{stats.bestDay >= 0 ? '+' : ''}{account.currency} {fmt(stats.bestDay)}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-gray-400">Worst Day</span><span className={`tabular-nums ${stats.worstDay >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{stats.worstDay >= 0 ? '+' : ''}{account.currency} {fmt(stats.worstDay)}{stats.tradingDays === 1 ? ' (1 day)' : ''}</span></div>
                   <div className="border-t border-gray-800/30 pt-3 flex justify-between text-sm">
                     <span className="text-gray-400">Max Win Streak</span>
                     <span className="text-emerald-400 flex items-center gap-1"><Zap className="w-3 h-3" />{stats.maxWinStreak}</span>
