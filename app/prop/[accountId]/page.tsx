@@ -335,7 +335,13 @@ export default function TradeDesk() {
       {/* ── SETTINGS MODAL ──────────────────────────────────────────────────── */}
       {showSettings && editAccount && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <style>{`
+            .modal-scroll::-webkit-scrollbar { width: 6px; }
+            .modal-scroll::-webkit-scrollbar-track { background: transparent; }
+            .modal-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+            .modal-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+          `}</style>
+          <div className="modal-scroll bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-[#12121a] border-b border-gray-800/50 p-5 flex items-center justify-between z-10">
               <h2 className="text-lg font-bold">Account Settings</h2>
               <button onClick={() => setShowSettings(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
