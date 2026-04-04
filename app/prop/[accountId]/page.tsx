@@ -10,6 +10,7 @@ import {
   X, Check, Loader2, Trash2, DollarSign, Crosshair, BarChart3, Zap, Heart, Activity,
   AlertCircle, Settings, ChevronDown, ChevronUp, LineChart, Calendar, Tv, Minimize2, Maximize2
 } from 'lucide-react';
+import PreTradeEngine from '../components/PreTradeEngine';
 
 interface PropAccount {
   id: string; name: string; balance: number; currency: string;
@@ -721,78 +722,33 @@ export default function TradeDesk() {
         </div>
       </div>
 
-      {/* ── NEW TRADE MODAL ──────────────────────────────────────────────── */}
+      {/* ── PRE-TRADE ENGINE ──────────────────────────────────────────────── */}
       {showNewTrade && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#12121a] border border-gray-800 rounded-2xl max-w-lg w-full shadow-2xl">
-            <div className="border-b border-gray-800/50 p-5 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold">Open Trade</h2>
-                <p className="text-xs text-gray-500 mt-0.5">Risk: {account.currency} {fmt(c.effectiveRiskD)} ({fmt(c.effectiveRisk, 1)}%) · Budget: {account.currency} {fmt(c.budgetLeft, 0)} · {c.tradesLeft} left</p>
-              </div>
-              <button onClick={() => setShowNewTrade(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
-            </div>
-            <div className="p-5 space-y-4">
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1.5">Symbol</label>
-                  <input type="text" value={tradeForm.symbol} onChange={e => setTradeForm({...tradeForm, symbol: e.target.value.toUpperCase()})}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none" />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs text-gray-400 mb-1.5">Direction</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {['long', 'short'].map(d => (
-                      <button key={d} onClick={() => setTradeForm({...tradeForm, direction: d})}
-                        className={`py-2.5 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${
-                          tradeForm.direction === d
-                            ? d === 'long' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' : 'bg-red-600 text-white shadow-lg shadow-red-600/20'
-                            : 'bg-gray-800 text-gray-500 hover:text-white'
-                        }`}>
-                        {d === 'long' ? <><TrendingUp className="w-4 h-4" />LONG</> : <><TrendingDown className="w-4 h-4" />SHORT</>}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-xs text-gray-400 mb-1.5">Entry Price</label>
-                  <input type="number" step="any" placeholder="1.15325" value={tradeForm.entry_price} onChange={e => setTradeForm({...tradeForm, entry_price: e.target.value})}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white tabular-nums focus:border-sky-500 focus:outline-none" /></div>
-                <div><label className="block text-xs text-gray-400 mb-1.5">Stop Price</label>
-                  <input type="number" step="any" placeholder="1.15225" value={tradeForm.stop_price} onChange={e => setTradeForm({...tradeForm, stop_price: e.target.value})}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white tabular-nums focus:border-sky-500 focus:outline-none" /></div>
-              </div>
-              {tradeForm.entry_price && tradeForm.stop_price && (() => {
-                const e = parseFloat(tradeForm.entry_price), s = parseFloat(tradeForm.stop_price);
-                if (!e || !s) return null;
-                const d = Math.abs(e - s), p = d * 10000, l = p > 0 ? c.effectiveRiskD / (p * 10) : 0, bp = c.dailyDdLimit > 0 ? (c.effectiveRiskD / c.dailyDdLimit) * 100 : 0;
-                const v = tradeForm.direction === 'long' ? s < e : s > e;
-                return (
-                  <div className={`rounded-xl p-4 space-y-2 ${v ? 'bg-gray-900/80 border border-gray-800/50' : 'bg-red-500/10 border border-red-500/30'}`}>
-                    {!v && <div className="flex items-center gap-2 text-red-400 text-xs mb-2"><AlertTriangle className="w-3.5 h-3.5" />Stop wrong side for {tradeForm.direction}</div>}
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
-                      <div className="flex justify-between"><span className="text-gray-500">Pips</span><span className="text-gray-300 tabular-nums">{fmt(p, 1)}</span></div>
-                      <div className="flex justify-between"><span className="text-gray-500">Lots</span><span className="text-white font-bold tabular-nums">{fmt(l)}</span></div>
-                      <div className="flex justify-between"><span className="text-gray-500">Risk</span><span className="text-red-400">{account.currency} {fmt(c.effectiveRiskD)}</span></div>
-                      <div className="flex justify-between"><span className="text-gray-500">Budget</span><span className={bp > 40 ? 'text-amber-400' : 'text-gray-300'}>{fmt(bp, 0)}%</span></div>
-                    </div>
-                  </div>
-                );
-              })()}
-              <div><label className="block text-xs text-gray-400 mb-1.5">Notes</label>
-                <input type="text" placeholder="Setup reason..." value={tradeForm.notes} onChange={e => setTradeForm({...tradeForm, notes: e.target.value})}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
-            </div>
-            <div className="border-t border-gray-800/50 p-5 flex justify-end gap-3">
-              <button onClick={() => setShowNewTrade(false)} className="px-4 py-2 text-gray-400 hover:text-white text-sm">Cancel</button>
-              <button onClick={openTrade} disabled={submitting || !tradeForm.entry_price || !tradeForm.stop_price}
-                className="flex items-center gap-2 px-6 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:bg-gray-700 disabled:text-gray-500 text-white rounded-lg text-sm font-medium shadow-lg shadow-sky-600/20">
-                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />} Execute Trade
-              </button>
-            </div>
-          </div>
-        </div>
+        <PreTradeEngine
+          account={account}
+          trades={trades}
+          onExecute={async (data) => {
+            if (!user) return;
+            setSubmitting(true);
+            await supabase.from('prop_trades').insert({
+              account_id: account.id,
+              user_id: user.id,
+              symbol: data.symbol,
+              direction: data.direction,
+              entry_price: data.entry_price,
+              stop_price: data.stop_price,
+              lot_size: data.lot_size,
+              risk_dollars: data.risk_dollars,
+              risk_pct: data.risk_pct,
+              notes: data.notes || null,
+              status: 'open',
+            });
+            await loadData(user.id);
+            setShowNewTrade(false);
+            setSubmitting(false);
+          }}
+          onClose={() => setShowNewTrade(false)}
+        />
       )}
 
       {/* ── SETTINGS MODAL ───────────────────────────────────────────────── */}
