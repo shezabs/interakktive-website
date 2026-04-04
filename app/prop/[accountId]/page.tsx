@@ -487,7 +487,12 @@ export default function TradeDesk() {
   const danger = c.ddPct >= 80;
   const warn = c.ddPct >= 60;
   const hBorder = danger ? 'border-red-500/50' : warn ? 'border-amber-500/30' : 'border-gray-800/50';
-  const pColor = account.phase === 'Funded' ? 'bg-emerald-500/10 text-emerald-400' : account.phase === 'Phase 2' ? 'bg-amber-500/10 text-amber-400' : 'bg-sky-500/10 text-sky-400';
+  const acType = account.account_type || 'prop_challenge';
+  const isPropAccount = acType === 'prop_challenge' || acType === 'funded';
+  const pColor = isPropAccount
+    ? (account.phase === 'Funded' ? 'bg-emerald-500/10 text-emerald-400' : account.phase === 'Phase 2' ? 'bg-amber-500/10 text-amber-400' : 'bg-sky-500/10 text-sky-400')
+    : (acType === 'personal' ? 'bg-purple-500/10 text-purple-400' : acType === 'futures' ? 'bg-orange-500/10 text-orange-400' : acType === 'spread_bet' ? 'bg-pink-500/10 text-pink-400' : acType === 'demo' ? 'bg-gray-500/10 text-gray-400' : 'bg-sky-500/10 text-sky-400');
+  const pLabel = isPropAccount ? account.phase : { personal: 'Personal', futures: 'Futures', spread_bet: 'Spread Bet', demo: 'Demo' }[acType] || acType;
 
   const narr: string[] = [account.phase];
   if (c.wins + c.losses > 0) narr.push(`${c.wins}W ${c.losses}L`);
@@ -530,10 +535,13 @@ export default function TradeDesk() {
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-lg font-bold truncate">{account.name}</h1>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${pColor}`}>{account.phase}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${pColor}`}>{pLabel}</span>
                 {danger && <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 font-medium animate-pulse">DANGER</span>}
               </div>
-              <p className="text-xs text-gray-500 truncate">{account.currency} {account.balance.toLocaleString()} · {account.daily_dd_pct}%/{account.max_dd_pct}% · {account.daily_dd_calc}</p>
+              <p className="text-xs text-gray-500 truncate">
+                {account.currency} {account.balance.toLocaleString()}
+                {(account.account_type === 'prop_challenge' || account.account_type === 'funded' || !account.account_type) ? ` · ${account.daily_dd_pct}%/${account.max_dd_pct}% · ${account.daily_dd_calc}` : ` · ${account.daily_dd_pct}% daily / ${account.max_dd_pct}% max`}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -616,24 +624,39 @@ export default function TradeDesk() {
         )}
 
         {/* ── DD & PROGRESS PANELS ────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-          <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-5 space-y-4">
-            <h3 className="text-sm font-bold text-gray-400 flex items-center gap-2"><Shield className="w-4 h-4 text-sky-400" /> Drawdown Monitor</h3>
-            <DDGauge value={c.ddUsed} max={c.dailyDdLimit} label="Daily Drawdown" sublabel={`${account.daily_dd_calc}`} />
-            <DDGauge value={c.ddUsed} max={c.maxDdLimit} label="Max Drawdown" sublabel={`${account.max_dd_type} · Floor: ${account.currency} ${fmt(account.balance - c.maxDdLimit, 0)}`} />
-            {c.ddPct >= 60 && <div className={`flex items-start gap-2 p-3 rounded-lg ${danger ? 'bg-red-500/10' : 'bg-amber-500/10'}`}><AlertCircle className={`w-4 h-4 mt-0.5 ${danger ? 'text-red-400' : 'text-amber-400'}`} /><p className={`text-xs ${danger ? 'text-red-300' : 'text-amber-300'}`}>{danger ? 'Stop trading. Protect the account.' : 'Caution — reduce size or stop.'}</p></div>}
-          </div>
-          <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-5 space-y-4">
-            <h3 className="text-sm font-bold text-gray-400 flex items-center gap-2"><Target className="w-4 h-4 text-emerald-400" /> Challenge Progress</h3>
-            <DDGauge value={Math.max(0, c.totalPnl)} max={c.targetD} label={`Target: ${account.profit_target_pct}%`} sublabel={`${account.currency} ${fmt(c.targetD, 0)} needed`} variant="progress" />
-            <div className="bg-gray-900/50 rounded-lg p-3 space-y-2 text-xs">
-              <div className="flex justify-between"><span className="text-gray-400">Total P&L</span><span className={c.totalPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}>{fmtM(c.totalPnl, account.currency)}</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Total R</span><span className={c.totalR >= 0 ? 'text-emerald-400' : 'text-red-400'}>{c.totalR >= 0 ? '+' : ''}{fmt(c.totalR)}R</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Risk/Trade</span><span className="text-sky-400">{fmt(c.effectiveRisk, 1)}% · {account.currency} {fmt(c.effectiveRiskD, 0)}</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Survival</span><span className={c.survivalCount <= 2 ? 'text-red-400' : 'text-emerald-400'}>{c.survivalCount} losses before breach</span></div>
+        {(() => {
+          const acType = account.account_type || 'prop_challenge';
+          const isProp = acType === 'prop_challenge' || acType === 'funded';
+          const isDemo = acType === 'demo';
+          const showTarget = acType === 'prop_challenge' && account.profit_target_pct > 0;
+
+          return (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+            {/* DD Monitor — show for all except demo */}
+            {!isDemo && (
+            <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-5 space-y-4">
+              <h3 className="text-sm font-bold text-gray-400 flex items-center gap-2"><Shield className="w-4 h-4 text-sky-400" /> {isProp ? 'Drawdown Monitor' : 'Risk Monitor'}</h3>
+              <DDGauge value={c.ddUsed} max={c.dailyDdLimit} label="Daily Drawdown" sublabel={isProp ? `${account.daily_dd_calc}` : undefined} />
+              <DDGauge value={c.ddUsed} max={c.maxDdLimit} label="Max Drawdown" sublabel={isProp ? `${account.max_dd_type} · Floor: ${account.currency} ${fmt(account.balance - c.maxDdLimit, 0)}` : `Floor: ${account.currency} ${fmt(account.balance - c.maxDdLimit, 0)}`} />
+              {c.ddPct >= 60 && <div className={`flex items-start gap-2 p-3 rounded-lg ${danger ? 'bg-red-500/10' : 'bg-amber-500/10'}`}><AlertCircle className={`w-4 h-4 mt-0.5 ${danger ? 'text-red-400' : 'text-amber-400'}`} /><p className={`text-xs ${danger ? 'text-red-300' : 'text-amber-300'}`}>{danger ? 'Stop trading. Protect the account.' : 'Caution — reduce size or stop.'}</p></div>}
+            </div>
+            )}
+            {/* Right panel — Challenge Progress for prop, P&L Summary for others */}
+            <div className="bg-[#12121a] border border-gray-800/30 rounded-xl p-5 space-y-4">
+              <h3 className="text-sm font-bold text-gray-400 flex items-center gap-2"><Target className="w-4 h-4 text-emerald-400" /> {showTarget ? 'Challenge Progress' : 'Performance'}</h3>
+              {showTarget && (
+                <DDGauge value={Math.max(0, c.totalPnl)} max={c.targetD} label={`Target: ${account.profit_target_pct}%`} sublabel={`${account.currency} ${fmt(c.targetD, 0)} needed`} variant="progress" />
+              )}
+              <div className="bg-gray-900/50 rounded-lg p-3 space-y-2 text-xs">
+                <div className="flex justify-between"><span className="text-gray-400">Total P&L</span><span className={c.totalPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}>{fmtM(c.totalPnl, account.currency)}</span></div>
+                <div className="flex justify-between"><span className="text-gray-400">Total R</span><span className={c.totalR >= 0 ? 'text-emerald-400' : 'text-red-400'}>{c.totalR >= 0 ? '+' : ''}{fmt(c.totalR)}R</span></div>
+                <div className="flex justify-between"><span className="text-gray-400">Risk/Trade</span><span className="text-sky-400">{fmt(c.effectiveRisk, 1)}% · {account.currency} {fmt(c.effectiveRiskD, 0)}</span></div>
+                {!isDemo && <div className="flex justify-between"><span className="text-gray-400">Survival</span><span className={c.survivalCount <= 2 ? 'text-red-400' : 'text-emerald-400'}>{c.survivalCount} losses before {isProp ? 'breach' : 'limit'}</span></div>}
+              </div>
             </div>
           </div>
-        </div>
+          );
+        })()}
 
         {/* ── OPEN POSITIONS ──────────────────────────────────────────────── */}
         {c.openTrades.length > 0 && (

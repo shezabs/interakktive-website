@@ -383,14 +383,29 @@ export default function PropDashboard() {
                       <div className="min-w-0 flex-1">
                         <h3 className="font-bold text-lg text-white truncate">{account.name}</h3>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          {account.currency} {account.balance.toLocaleString()} · {account.phase}
+                          {account.currency} {account.balance.toLocaleString()}
+                          {(account.account_type === 'prop_challenge' || account.account_type === 'funded' || !account.account_type) ? ` · ${account.phase}` : ''}
                         </p>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ml-2 flex-shrink-0 ${
-                        account.phase === 'Funded' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                        account.phase === 'Phase 2' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                        'bg-sky-500/10 text-sky-400 border border-sky-500/20'
-                      }`}>{account.phase}</span>
+                      {(() => {
+                        const at = account.account_type || 'prop_challenge';
+                        const isPropType = at === 'prop_challenge' || at === 'funded';
+                        if (isPropType) {
+                          return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ml-2 flex-shrink-0 ${
+                            account.phase === 'Funded' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                            account.phase === 'Phase 2' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                            'bg-sky-500/10 text-sky-400 border border-sky-500/20'
+                          }`}>{account.phase}</span>;
+                        }
+                        const typeLabels: Record<string, [string, string]> = {
+                          'personal': ['Personal', 'bg-purple-500/10 text-purple-400 border border-purple-500/20'],
+                          'futures': ['Futures', 'bg-orange-500/10 text-orange-400 border border-orange-500/20'],
+                          'spread_bet': ['Spread Bet', 'bg-pink-500/10 text-pink-400 border border-pink-500/20'],
+                          'demo': ['Demo', 'bg-gray-500/10 text-gray-400 border border-gray-500/20'],
+                        };
+                        const [label, cls] = typeLabels[at] || ['Account', 'bg-gray-500/10 text-gray-400 border border-gray-500/20'];
+                        return <span className={`text-xs px-2 py-0.5 rounded-full font-bold ml-2 flex-shrink-0 ${cls}`}>{label}</span>;
+                      })()}
                     </div>
 
                     <div className="flex items-end justify-between mb-1">
@@ -501,7 +516,8 @@ export default function PropDashboard() {
 
         return (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <style>{`.create-scroll::-webkit-scrollbar { width: 6px; } .create-scroll::-webkit-scrollbar-track { background: transparent; } .create-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; } .create-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }`}</style>
+          <div className="create-scroll bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-[#12121a] border-b border-gray-800/50 p-5 flex items-center justify-between z-10">
               <h2 className="text-lg font-bold">Add Account</h2>
               <button onClick={() => setShowCreate(false)} className="text-gray-500 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
