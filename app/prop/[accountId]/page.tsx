@@ -34,6 +34,22 @@ interface Trade {
 const fmt = (n: number, d = 2) => n.toFixed(d);
 const fmtM = (n: number, c: string) => `${c} ${n >= 0 ? '+' : ''}${fmt(n)}`;
 
+// Multi-asset pip/P&L calculation
+function getAssetCalc(sym: string, entry: number) {
+  const s = sym.toUpperCase();
+  const jpyPairs = ['USDJPY','EURJPY','GBPJPY','AUDJPY','CADJPY','NZDJPY','CHFJPY'];
+  if (jpyPairs.includes(s)) return { pipSize: 0.01, pipValue: 1000 / entry, label: 'pips' };
+  if (s === 'XAUUSD' || s === 'GOLD') return { pipSize: 0.1, pipValue: 10, label: 'pips' };
+  if (s === 'XAGUSD' || s === 'SILVER') return { pipSize: 0.01, pipValue: 50, label: 'pips' };
+  if (s.includes('BTC') || s.includes('ETH') || s.includes('SOL') || s.includes('XRP') || s.includes('ADA'))
+    return { pipSize: 1, pipValue: 1, label: 'pts' };
+  if (['US30','NAS100','SPX500','US500','DE40','UK100','JP225','USTEC','DJ30'].includes(s))
+    return { pipSize: 1, pipValue: 1, label: 'pts' };
+  if (['USOIL','UKOIL','WTI','BRENT','XTIUSD','XBRUSD'].includes(s))
+    return { pipSize: 0.01, pipValue: 10, label: 'pips' };
+  return { pipSize: 0.0001, pipValue: 10, label: 'pips' };
+}
+
 // ── SURVIVAL BAR ────────────────────────────────────────────────────────────
 
 function SurvivalBar({ remaining, total, currency, budgetLeft }: { remaining: number; total: number; currency: string; budgetLeft: number }) {
@@ -409,8 +425,10 @@ export default function TradeDesk() {
     if (!entry || !stop) return;
     setSubmitting(true);
     const dist = Math.abs(entry - stop);
-    const pips = dist * 10000;
-    const lots = pips > 0 ? c.effectiveRiskD / (pips * 10) : 0;
+    const ac = getAssetCalc(tradeForm.symbol, entry);
+    const pips = dist / ac.pipSize;
+    const riskPerLot = pips * ac.pipValue;
+    const lots = riskPerLot > 0 ? c.effectiveRiskD / riskPerLot : 0;
     await supabase.from('prop_trades').insert({ account_id: account.id, user_id: user.id, symbol: tradeForm.symbol, direction: tradeForm.direction, entry_price: entry, stop_price: stop, lot_size: Math.round(lots * 100) / 100, risk_dollars: Math.round(c.effectiveRiskD * 100) / 100, risk_pct: c.effectiveRisk, notes: tradeForm.notes || null, status: 'open' });
     await loadData(user.id);
     setShowNewTrade(false);
@@ -428,7 +446,9 @@ export default function TradeDesk() {
     const move = trade.direction === 'long' ? price - trade.entry_price : trade.entry_price - price;
     const dist = Math.abs(trade.entry_price - trade.stop_price);
     const rR = dist > 0 ? move / dist : 0;
-    const pnl = move * (trade.lot_size || 0) * 100000;
+    const ac = getAssetCalc(trade.symbol, trade.entry_price);
+    const pipMove = move / ac.pipSize;
+    const pnl = pipMove * ac.pipValue * (trade.lot_size || 0);
     await supabase.from('prop_trades').update({ close_price: price, pnl: Math.round(pnl * 100) / 100, r_result: Math.round(rR * 100) / 100, status: 'closed', closed_at: new Date().toISOString() }).eq('id', tid);
     await loadData(user.id);
     setClosingTradeId(null); setClosePrice('');
@@ -612,7 +632,9 @@ export default function TradeDesk() {
                 : null;
               const dist = Math.abs(t.entry_price - t.stop_price);
               const unrealizedR = move !== null && dist > 0 ? move / dist : null;
-              const unrealizedPnl = move !== null ? move * (t.lot_size || 0) * 100000 : null;
+              const ac = getAssetCalc(t.symbol, t.entry_price);
+              const pipMove = move !== null ? move / ac.pipSize : null;
+              const unrealizedPnl = move !== null && pipMove !== null ? pipMove * ac.pipValue * (t.lot_size || 0) : null;
               const pnlColor = unrealizedPnl !== null ? (unrealizedPnl >= 0 ? 'text-emerald-400' : 'text-red-400') : 'text-gray-500';
               const pnlBorder = unrealizedPnl !== null ? (unrealizedPnl >= 0 ? 'border-emerald-500/20' : 'border-red-500/20') : 'border-sky-500/20';
 
@@ -682,9 +704,9 @@ export default function TradeDesk() {
                         <>
                           <div className="w-px h-4 bg-gray-800" />
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-gray-500 uppercase">Pips</span>
+                            <span className="text-[10px] text-gray-500 uppercase">{ac.label}</span>
                             <span className={`text-xs tabular-nums ${pnlColor}`}>
-                              {move !== null ? `${move >= 0 ? '+' : ''}${fmt(move * 10000, 1)}` : '—'}
+                              {pipMove !== null ? `${pipMove >= 0 ? '+' : ''}${fmt(pipMove, 1)}` : '—'}
                             </span>
                           </div>
                         </>
