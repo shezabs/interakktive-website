@@ -8,9 +8,11 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   ArrowLeft, TrendingUp, TrendingDown, Shield, Target, AlertTriangle,
   X, Check, Loader2, Trash2, DollarSign, Crosshair, BarChart3, Zap, Heart, Activity,
-  AlertCircle, Settings, ChevronDown, ChevronUp, LineChart, Calendar, Tv, Minimize2, Maximize2
+  AlertCircle, Settings, ChevronDown, ChevronUp, LineChart, Calendar, Tv, Minimize2, Maximize2,
+  Calculator, BookOpen
 } from 'lucide-react';
 import PreTradeEngine from '../components/PreTradeEngine';
+import LogTrade from '../components/LogTrade';
 
 interface PropAccount {
   id: string; name: string; balance: number; currency: string;
@@ -298,6 +300,7 @@ export default function TradeDesk() {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNewTrade, setShowNewTrade] = useState(false);
+  const [showLogTrade, setShowLogTrade] = useState(false);
   const [tradeForm, setTradeForm] = useState({ symbol: 'EURUSD', direction: 'long', entry_price: '', stop_price: '', notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [closingTradeId, setClosingTradeId] = useState<string | null>(null);
@@ -311,6 +314,7 @@ export default function TradeDesk() {
   const [chartHeight, setChartHeight] = useState(400);
   const [livePrices, setLivePrices] = useState<Record<string, number | null>>({});
   const [priceLoading, setPriceLoading] = useState(false);
+  const [chartSymbol, setChartSymbol] = useState<string>('');
 
   const loadData = useCallback(async (uid: string) => {
     const [a, t] = await Promise.all([
@@ -344,6 +348,19 @@ export default function TradeDesk() {
     const interval = setInterval(fetchPrices, 5000); // poll every 5s
     return () => clearInterval(interval);
   }, [trades]);
+
+  // Set initial chart symbol (only once when data loads)
+  useEffect(() => {
+    if (chartSymbol) return; // already set by user or previous load
+    const openTrades = trades.filter(t => t.status === 'open');
+    if (openTrades.length > 0) {
+      setChartSymbol(openTrades[0].symbol);
+    } else if (trades.length > 0) {
+      setChartSymbol(trades[0].symbol);
+    } else {
+      setChartSymbol('EURUSD');
+    }
+  }, [trades, chartSymbol]);
 
   const c = useMemo(() => {
     if (!account) return null;
@@ -485,9 +502,14 @@ export default function TradeDesk() {
               className="p-2.5 text-gray-500 hover:text-white bg-gray-800/50 hover:bg-gray-700/50 rounded-lg transition-all">
               <Settings className="w-4 h-4" />
             </button>
-            <button onClick={() => setShowNewTrade(true)} disabled={c.tradesLeft <= 0 || c.ddPct >= 100}
-              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${c.tradesLeft <= 0 || c.ddPct >= 100 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20'}`}>
-              <Zap className="w-4 h-4" /> <span className="hidden sm:inline">New Trade</span>
+            <button onClick={() => setShowNewTrade(true)}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white transition-all">
+              <Calculator className="w-4 h-4" /> <span className="hidden sm:inline">Calculator</span>
+            </button>
+            <button onClick={() => setShowLogTrade(true)}
+              className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${c.tradesLeft <= 0 || c.ddPct >= 100 ? 'bg-gray-800 text-gray-600 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/20'}`}
+              disabled={c.tradesLeft <= 0 || c.ddPct >= 100}>
+              <BookOpen className="w-4 h-4" /> <span className="hidden sm:inline">Log Trade</span>
             </button>
           </div>
         </div>
@@ -509,13 +531,7 @@ export default function TradeDesk() {
         </div>
 
         {/* ── TRADINGVIEW CHART ────────────────────────────────────────────── */}
-        {(() => {
-          const chartSymbol = c.openTrades.length > 0
-            ? c.openTrades[0].symbol
-            : trades.length > 0
-              ? trades[0].symbol
-              : 'EURUSD';
-          return (
+        {chartSymbol && (
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
@@ -523,13 +539,23 @@ export default function TradeDesk() {
                     <Tv className="w-4 h-4 text-sky-400" /> Chart
                   </h3>
                   <span className="text-xs text-gray-500 bg-gray-900/50 px-2 py-0.5 rounded">{chartSymbol}</span>
-                  {c.openTrades.length > 0 && c.openTrades.length > 1 && (
-                    <div className="flex items-center gap-1">
-                      {c.openTrades.map(t => (
-                        <span key={t.id} className="text-[10px] text-gray-600 bg-gray-800/50 px-1.5 py-0.5 rounded cursor-default">{t.symbol}</span>
-                      ))}
-                    </div>
-                  )}
+                  {/* Quick symbol switcher from open/recent trades */}
+                  {(() => {
+                    const syms = [...new Set([
+                      ...c.openTrades.map(t => t.symbol),
+                      ...trades.slice(0, 5).map(t => t.symbol),
+                    ])].filter(s => s !== chartSymbol).slice(0, 4);
+                    return syms.length > 0 ? (
+                      <div className="flex items-center gap-1">
+                        {syms.map(s => (
+                          <button key={s} onClick={() => setChartSymbol(s)}
+                            className="text-[10px] text-gray-600 bg-gray-800/50 px-1.5 py-0.5 rounded hover:text-sky-400 hover:bg-gray-800 transition-colors cursor-pointer">
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => setChartHeight(h => h === 400 ? 550 : 400)}
@@ -544,8 +570,7 @@ export default function TradeDesk() {
               </div>
               {showChart && <TradingViewChart symbol={chartSymbol} height={chartHeight} />}
             </div>
-          );
-        })()}
+        )}
 
         {/* ── DD & PROGRESS PANELS ────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
@@ -722,14 +747,21 @@ export default function TradeDesk() {
         </div>
       </div>
 
-      {/* ── PRE-TRADE ENGINE ──────────────────────────────────────────────── */}
+      {/* ── PRE-TRADE CALCULATOR ────────────────────────────────────────── */}
       {showNewTrade && (
         <PreTradeEngine
           account={account}
           trades={trades}
-          onExecute={async (data) => {
+          onClose={() => setShowNewTrade(false)}
+        />
+      )}
+
+      {/* ── LOG TRADE ────────────────────────────────────────────────────── */}
+      {showLogTrade && (
+        <LogTrade
+          account={account}
+          onLog={async (data) => {
             if (!user) return;
-            setSubmitting(true);
             await supabase.from('prop_trades').insert({
               account_id: account.id,
               user_id: user.id,
@@ -737,17 +769,23 @@ export default function TradeDesk() {
               direction: data.direction,
               entry_price: data.entry_price,
               stop_price: data.stop_price,
+              close_price: data.close_price,
               lot_size: data.lot_size,
               risk_dollars: data.risk_dollars,
               risk_pct: data.risk_pct,
+              pnl: data.pnl,
+              r_result: data.r_result,
+              commission: data.commission,
+              swap: data.swap,
               notes: data.notes || null,
-              status: 'open',
+              status: data.status,
+              opened_at: new Date().toISOString(),
+              closed_at: data.status === 'closed' ? new Date().toISOString() : null,
             });
             await loadData(user.id);
-            setShowNewTrade(false);
-            setSubmitting(false);
+            setShowLogTrade(false);
           }}
-          onClose={() => setShowNewTrade(false)}
+          onClose={() => setShowLogTrade(false)}
         />
       )}
 
