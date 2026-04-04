@@ -119,9 +119,10 @@ function ImpactGauge({ label, before, after, max, unit, invert }: {
 // ── MAIN COMPONENT ──────────────────────────────────────────────────────────
 
 export default function PreTradeCalculator({
-  account, trades, onClose,
+  account, trades, onClose, onSendToLog,
 }: {
   account: PropAccount; trades: Trade[]; onClose: () => void;
+  onSendToLog?: (data: { symbol: string; direction: string; entry: string; stop: string; lots: string; risk: string }) => void;
 }) {
   const [symbol, setSymbol] = useState('EURUSD');
   const [direction, setDirection] = useState<'long' | 'short'>('long');
@@ -369,8 +370,17 @@ export default function PreTradeCalculator({
             </div>
 
             {/* Info box — not an execute button */}
-            <div className="bg-gray-900/30 border border-gray-800/30 rounded-xl p-4 text-center">
-              <p className="text-xs text-gray-500">This is a calculator only. Execute your trade on your broker platform, then use <span className="text-sky-400">Log Trade</span> to record it.</p>
+            <div className="flex items-center gap-3 mt-2">
+              <div className="flex-1 bg-gray-900/30 border border-gray-800/30 rounded-xl p-3">
+                <p className="text-xs text-gray-500">Calculator only — execute on your broker, then log it.</p>
+              </div>
+              {onSendToLog && result.verdict !== 'STOP' && (
+                <button onClick={() => {
+                  onSendToLog({ symbol, direction, entry: entryStr, stop: stopStr, lots: String(result.lotSize), risk: String(result.riskDollars) });
+                }} className="flex items-center gap-2 px-5 py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-sky-600/20 whitespace-nowrap">
+                  Send to Log →
+                </button>
+              )}
             </div>
           </>
         )}

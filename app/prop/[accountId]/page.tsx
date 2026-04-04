@@ -301,6 +301,7 @@ export default function TradeDesk() {
   const [loading, setLoading] = useState(true);
   const [showNewTrade, setShowNewTrade] = useState(false);
   const [showLogTrade, setShowLogTrade] = useState(false);
+  const [calcPrefill, setCalcPrefill] = useState<{ symbol: string; direction: string; entry: string; stop: string; lots: string; risk: string } | null>(null);
   const [tradeForm, setTradeForm] = useState({ symbol: 'EURUSD', direction: 'long', entry_price: '', stop_price: '', notes: '' });
   const [submitting, setSubmitting] = useState(false);
   const [closingTradeId, setClosingTradeId] = useState<string | null>(null);
@@ -753,6 +754,11 @@ export default function TradeDesk() {
           account={account}
           trades={trades}
           onClose={() => setShowNewTrade(false)}
+          onSendToLog={(data) => {
+            setCalcPrefill(data);
+            setShowNewTrade(false);
+            setShowLogTrade(true);
+          }}
         />
       )}
 
@@ -760,6 +766,7 @@ export default function TradeDesk() {
       {showLogTrade && (
         <LogTrade
           account={account}
+          prefill={calcPrefill}
           onLog={async (data) => {
             if (!user) return;
             await supabase.from('prop_trades').insert({
@@ -784,8 +791,9 @@ export default function TradeDesk() {
             });
             await loadData(user.id);
             setShowLogTrade(false);
+            setCalcPrefill(null);
           }}
-          onClose={() => setShowLogTrade(false)}
+          onClose={() => { setShowLogTrade(false); setCalcPrefill(null); }}
         />
       )}
 
