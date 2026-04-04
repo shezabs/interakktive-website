@@ -32,6 +32,7 @@ interface PropAccount {
   max_trades_per_day: number;
   is_active: boolean;
   created_at: string;
+  account_type?: string;
 }
 
 interface AccountStats {
@@ -76,6 +77,7 @@ const DEFAULT_ACCOUNT: Omit<PropAccount, 'id' | 'created_at' | 'is_active'> = {
   consistency_pct: 0,
   risk_pct: 1,
   max_trades_per_day: 3,
+  account_type: 'prop_challenge',
 };
 
 // ── MINI EQUITY SPARKLINE ───────────────────────────────────────────────────
@@ -285,9 +287,9 @@ export default function PropDashboard() {
             </Link>
             <div>
               <h1 className="text-lg sm:text-xl font-bold tracking-tight">
-                <span className="text-sky-400">ATLAS</span> Prop Dashboard
+                <span className="text-sky-400">ATLAS</span> Trading Dashboard
               </h1>
-              <p className="text-xs text-gray-500 mt-0.5">Prop Firm Survival Intelligence</p>
+              <p className="text-xs text-gray-500 mt-0.5">Trading Intelligence & Risk Management</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -489,22 +491,55 @@ export default function PropDashboard() {
       </div>
 
       {/* ── CREATE ACCOUNT MODAL ────────────────────────────────────────────── */}
-      {showCreate && (
+      {showCreate && (() => {
+        const acType = (newAccount as any).account_type || 'prop_challenge';
+        const isProp = acType === 'prop_challenge' || acType === 'funded';
+        const isDemo = acType === 'demo';
+        const showDD = !isDemo;
+        const showChallenge = acType === 'prop_challenge';
+        const showPhase = isProp;
+
+        return (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="sticky top-0 bg-[#12121a] border-b border-gray-800/50 p-5 flex items-center justify-between z-10">
-              <h2 className="text-lg font-bold">Add Prop Account</h2>
+              <h2 className="text-lg font-bold">Add Account</h2>
               <button onClick={() => setShowCreate(false)} className="text-gray-500 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
             </div>
-            <div className="p-5 space-y-6">
+            <div className="p-5 space-y-5">
+              {/* Account Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">Account Type</label>
+                <select value={acType} onChange={e => setNewAccount({ ...newAccount, account_type: e.target.value } as any)}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:border-sky-500 focus:outline-none transition-colors">
+                  <option value="prop_challenge">Prop Firm Challenge</option>
+                  <option value="funded">Funded Account</option>
+                  <option value="personal">Personal (Forex/CFD)</option>
+                  <option value="futures">Personal (Futures)</option>
+                  <option value="spread_bet">Spread Betting</option>
+                  <option value="demo">Demo / Paper</option>
+                </select>
+                <div className="text-[10px] text-gray-600 mt-1">
+                  {acType === 'prop_challenge' ? 'Track challenge rules, DD limits, profit targets.' :
+                   acType === 'funded' ? 'Funded account with payout tracking.' :
+                   acType === 'personal' ? 'Your own capital. Set your own risk rules.' :
+                   acType === 'futures' ? 'Contract-based. Tick values and margin.' :
+                   acType === 'spread_bet' ? '£/point trading. Tax-free (UK).' :
+                   'Paper trading for practice.'}
+                </div>
+              </div>
+
+              {/* Account Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">Account Name</label>
-                <input type="text" placeholder="e.g. FTMO 100K Challenge" value={newAccount.name}
-                  onChange={e => setNewAccount({ ...newAccount, name: e.target.value })}
+                <input type="text" placeholder={isProp ? 'e.g. FTMO 100K Challenge' : acType === 'personal' ? 'e.g. IC Markets Live' : 'e.g. My Demo Account'}
+                  value={newAccount.name} onChange={e => setNewAccount({ ...newAccount, name: e.target.value })}
                   className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:border-sky-500 focus:outline-none transition-colors" />
               </div>
+
+              {/* Balance + Currency */}
               <div className="grid grid-cols-2 gap-4">
-                <div><label className="block text-sm font-medium text-gray-300 mb-1.5">Balance</label>
+                <div><label className="block text-sm font-medium text-gray-300 mb-1.5">{isDemo ? 'Starting Balance' : 'Balance'}</label>
                   <input type="number" value={newAccount.balance} onChange={e => setNewAccount({ ...newAccount, balance: parseFloat(e.target.value) || 0 })}
                     className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:border-sky-500 focus:outline-none transition-colors" /></div>
                 <div><label className="block text-sm font-medium text-gray-300 mb-1.5">Currency</label>
@@ -513,35 +548,53 @@ export default function PropDashboard() {
                     {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select></div>
               </div>
+
+              {/* Drawdown Rules */}
+              {showDD && (
               <div>
-                <h3 className="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Drawdown Rules</h3>
+                <h3 className="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" /> {isProp ? 'Drawdown Rules' : 'Risk Limits'}
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div><label className="block text-xs text-gray-400 mb-1">Daily Loss Limit (%)</label>
                     <input type="number" step="0.5" value={newAccount.daily_dd_pct} onChange={e => setNewAccount({ ...newAccount, daily_dd_pct: parseFloat(e.target.value) || 0 })}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none transition-colors" /></div>
+                  {isProp && (
                   <div><label className="block text-xs text-gray-400 mb-1">DD Calculation</label>
                     <select value={newAccount.daily_dd_calc} onChange={e => setNewAccount({ ...newAccount, daily_dd_calc: e.target.value })}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none transition-colors">
                       {DD_CALC_TYPES.map(t => <option key={t} value={t}>{t}</option>)}</select></div>
+                  )}
                   <div><label className="block text-xs text-gray-400 mb-1">Max Drawdown (%)</label>
                     <input type="number" step="0.5" value={newAccount.max_dd_pct} onChange={e => setNewAccount({ ...newAccount, max_dd_pct: parseFloat(e.target.value) || 0 })}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none transition-colors" /></div>
+                  {isProp && (
                   <div><label className="block text-xs text-gray-400 mb-1">Max DD Type</label>
                     <select value={newAccount.max_dd_type} onChange={e => setNewAccount({ ...newAccount, max_dd_type: e.target.value })}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none transition-colors">
                       {DD_TYPES.map(t => <option key={t} value={t}>{t}</option>)}</select></div>
+                  )}
                 </div>
               </div>
+              )}
+
+              {/* Challenge / Risk */}
               <div>
-                <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Challenge Phase</h3>
+                <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2">
+                  <Target className="w-4 h-4" /> {showChallenge ? 'Challenge & Risk' : 'Risk Settings'}
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
+                  {showChallenge && (
                   <div><label className="block text-xs text-gray-400 mb-1">Profit Target (%)</label>
                     <input type="number" step="0.5" value={newAccount.profit_target_pct} onChange={e => setNewAccount({ ...newAccount, profit_target_pct: parseFloat(e.target.value) || 0 })}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none transition-colors" /></div>
+                  )}
+                  {showPhase && (
                   <div><label className="block text-xs text-gray-400 mb-1">Phase</label>
                     <select value={newAccount.phase} onChange={e => setNewAccount({ ...newAccount, phase: e.target.value })}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none transition-colors">
-                      {PHASES.map(p => <option key={p} value={p}>{p}</option>)}</select></div>
+                      {acType === 'funded' ? ['Funded'].map(p => <option key={p} value={p}>{p}</option>) : PHASES.map(p => <option key={p} value={p}>{p}</option>)}</select></div>
+                  )}
                   <div><label className="block text-xs text-gray-400 mb-1">Risk Per Trade (%)</label>
                     <input type="number" step="0.1" value={newAccount.risk_pct} onChange={e => setNewAccount({ ...newAccount, risk_pct: parseFloat(e.target.value) || 0 })}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none transition-colors" /></div>
@@ -560,7 +613,8 @@ export default function PropDashboard() {
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
