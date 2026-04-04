@@ -1,63 +1,38 @@
 import { NextResponse } from 'next/server';
 
-// Cache
+// Twelve Data /price endpoint — simplest, returns just the price
+// Free tier: 8 API credits/minute, 800/day
+// /price uses 1 credit per symbol
+
 const cache: Record<string, { price: number; timestamp: number }> = {};
-const CACHE_TTL = 4000;
+const CACHE_TTL = 8000; // 8 seconds to stay within rate limits
 
-let forexRatesCache: { rates: Record<string, number>; timestamp: number } | null = null;
-const FOREX_CACHE_TTL = 3000;
+// Map trade symbols to Twelve Data format
+// Twelve Data uses: EUR/USD, GBP/USD, XAU/USD, BTC/USD etc.
+function toTwelveDataSymbol(sym: string): string {
+  const upper = sym.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-const FOREX_PAIRS: Record<string, [string, string]> = {
-  'EURUSD': ['EUR', 'USD'], 'GBPUSD': ['GBP', 'USD'], 'USDJPY': ['USD', 'JPY'],
-  'USDCHF': ['USD', 'CHF'], 'AUDUSD': ['AUD', 'USD'], 'USDCAD': ['USD', 'CAD'],
-  'NZDUSD': ['NZD', 'USD'], 'EURGBP': ['EUR', 'GBP'], 'EURJPY': ['EUR', 'JPY'],
-  'GBPJPY': ['GBP', 'JPY'], 'AUDNZD': ['AUD', 'NZD'], 'EURCHF': ['EUR', 'CHF'],
-  'AUDCAD': ['AUD', 'CAD'], 'GBPCAD': ['GBP', 'CAD'], 'GBPCHF': ['GBP', 'CHF'],
-  'CADJPY': ['CAD', 'JPY'], 'EURAUD': ['EUR', 'AUD'], 'EURCAD': ['EUR', 'CAD'],
-  'EURNZD': ['EUR', 'NZD'], 'GBPAUD': ['GBP', 'AUD'], 'GBPNZD': ['GBP', 'NZD'],
-  'AUDCHF': ['AUD', 'CHF'], 'AUDJPY': ['AUD', 'JPY'], 'NZDJPY': ['NZD', 'JPY'],
-  'NZDCAD': ['NZD', 'CAD'], 'NZDCHF': ['NZD', 'CHF'], 'CHFJPY': ['CHF', 'JPY'],
-  'XAUUSD': ['XAU', 'USD'], 'GOLD': ['XAU', 'USD'], 'XAGUSD': ['XAG', 'USD'],
-};
-
-async function getForexRates(apiKey: string): Promise<{ rates: Record<string, number> | null; debug: string }> {
-  const now = Date.now();
-  if (forexRatesCache && (now - forexRatesCache.timestamp) < FOREX_CACHE_TTL) {
-    return { rates: forexRatesCache.rates, debug: 'cached' };
+  // Forex pairs (6 chars, all letters) → insert /
+  if (upper.length === 6 && /^[A-Z]+$/.test(upper)) {
+    return `${upper.slice(0, 3)}/${upper.slice(3)}`;
   }
 
-  try {
-    const url = `https://finnhub.io/api/v1/forex/rates?base=USD&token=${apiKey}`;
-    const res = await fetch(url, { cache: 'no-store' });
-    const text = await res.text();
-    
-    if (!res.ok) {
-      return { rates: null, debug: `finnhub_error: status=${res.status} body=${text.slice(0, 200)}` };
-    }
-    
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      return { rates: null, debug: `json_parse_error: ${text.slice(0, 200)}` };
-    }
+  // Gold / Silver
+  if (upper === 'GOLD') return 'XAU/USD';
+  if (upper === 'XAUUSD') return 'XAU/USD';
+  if (upper === 'XAGUSD') return 'XAG/USD';
 
-    if (data && data.quote && typeof data.quote === 'object') {
-      forexRatesCache = { rates: data.quote, timestamp: now };
-      return { rates: data.quote, debug: `ok: ${Object.keys(data.quote).length} currencies` };
-    }
-    
-    return { rates: null, debug: `unexpected_format: ${JSON.stringify(data).slice(0, 300)}` };
-  } catch (err: any) {
-    return { rates: null, debug: `fetch_error: ${err?.message || 'unknown'}` };
-  }
-}
+  // Crypto
+  if (upper === 'BTCUSD' || upper === 'BTCUSDT') return 'BTC/USD';
+  if (upper === 'ETHUSD' || upper === 'ETHUSDT') return 'ETH/USD';
 
-function calcForexPrice(base: string, quote: string, rates: Record<string, number>): number | null {
-  if (base === 'USD' && rates[quote]) return rates[quote];
-  if (quote === 'USD' && rates[base]) return 1 / rates[base];
-  if (rates[base] && rates[quote]) return rates[quote] / rates[base];
-  return null;
+  // Indices
+  if (upper === 'US30') return 'DJI';
+  if (upper === 'NAS100' || upper === 'USTEC') return 'IXIC';
+  if (upper === 'SPX500' || upper === 'US500') return 'SPX';
+
+  // Fallback: return as-is
+  return upper;
 }
 
 export async function GET(request: Request) {
@@ -69,42 +44,49 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Missing symbols parameter' }, { status: 400 });
   }
 
-  const apiKey = process.env.FINNHUB_API_KEY;
+  // Support both FINNHUB_API_KEY (legacy) and TWELVEDATA_API_KEY
+  const apiKey = process.env.TWELVEDATA_API_KEY || process.env.FINNHUB_API_KEY;
   if (!apiKey) {
-    return NextResponse.json({ error: 'FINNHUB_API_KEY not set', hasKey: false }, { status: 503 });
+    return NextResponse.json({ error: 'TWELVEDATA_API_KEY not set', hasKey: false }, { status: 503 });
   }
 
-  const symbolList = symbols.split(',').map(s => s.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 10);
+  const symbolList = symbols.split(',').map(s => s.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 5);
   const results: Record<string, number | null> = {};
+  const debugInfo: string[] = [];
   const now = Date.now();
 
-  // Fetch forex rates
-  const { rates, debug: ratesDebug } = await getForexRates(apiKey);
-
   for (const sym of symbolList) {
+    // Check cache
     const cached = cache[sym];
     if (cached && (now - cached.timestamp) < CACHE_TTL) {
       results[sym] = cached.price;
+      if (debug) debugInfo.push(`${sym}: cached=${cached.price}`);
       continue;
     }
 
-    const pair = FOREX_PAIRS[sym];
-    if (pair && rates) {
-      const [base, quote] = pair;
-      const price = calcForexPrice(base, quote, rates);
-      if (price !== null) {
-        // Round appropriately
-        const isJpy = quote === 'JPY';
-        const isXau = base === 'XAU';
-        const isXag = base === 'XAG';
-        const decimals = isJpy ? 3 : isXau ? 2 : isXag ? 4 : 5;
-        const rounded = Math.round(price * Math.pow(10, decimals)) / Math.pow(10, decimals);
-        results[sym] = rounded;
-        cache[sym] = { price: rounded, timestamp: now };
-      } else {
-        results[sym] = null;
+    const tdSymbol = toTwelveDataSymbol(sym);
+
+    try {
+      const url = `https://api.twelvedata.com/price?symbol=${encodeURIComponent(tdSymbol)}&apikey=${apiKey}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      const data = await res.json();
+
+      if (debug) debugInfo.push(`${sym}: td_sym=${tdSymbol} status=${res.status} body=${JSON.stringify(data).slice(0, 150)}`);
+
+      // Twelve Data returns: { "price": "1.15340" } on success
+      // Or: { "code": 400, "message": "..." } on error
+      if (data && data.price) {
+        const price = parseFloat(data.price);
+        if (!isNaN(price) && price > 0) {
+          results[sym] = price;
+          cache[sym] = { price, timestamp: now };
+          continue;
+        }
       }
-    } else {
+
+      results[sym] = null;
+    } catch (err: any) {
+      if (debug) debugInfo.push(`${sym}: error=${err?.message}`);
       results[sym] = null;
     }
   }
@@ -112,9 +94,10 @@ export async function GET(request: Request) {
   const response: any = { prices: results, timestamp: now };
   if (debug) {
     response._debug = {
-      ratesStatus: ratesDebug,
+      provider: 'twelvedata',
+      info: debugInfo,
       hasApiKey: !!apiKey,
-      apiKeyPrefix: apiKey ? apiKey.slice(0, 6) + '...' : null,
+      keyPrefix: apiKey ? apiKey.slice(0, 8) + '...' : null,
     };
   }
 
