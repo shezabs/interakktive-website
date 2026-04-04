@@ -302,7 +302,15 @@ export default function Analytics() {
     const avgR = trades.length > 0 ? totalR / trades.length : 0;
     const profitFactor = Math.abs(avgLoss) > 0 ? (avgWin * wins.length) / Math.abs(avgLoss * losses.length) : wins.length > 0 ? Infinity : 0;
 
-    // By date
+    // Equity curve — PER TRADE (not per day) for granularity
+    let cumPnlTrade = 0;
+    const eqCurvePerTrade = trades.map(t => {
+      cumPnlTrade += t.pnl || 0;
+      const d = t.closed_at ? t.closed_at.split('T')[0] : t.opened_at.split('T')[0];
+      return { date: d, cumPnl: cumPnlTrade };
+    });
+
+    // Also keep per-day for calendar
     const byDate: Record<string, number> = {};
     for (const t of trades) {
       const d = t.closed_at ? t.closed_at.split('T')[0] : t.opened_at.split('T')[0];
@@ -314,18 +322,18 @@ export default function Analytics() {
     const bestDay = sortedDates.length > 0 ? Math.max(...Object.values(byDate)) : 0;
     const worstDay = sortedDates.length > 0 ? Math.min(...Object.values(byDate)) : 0;
 
-    // Equity curve
-    let cumPnl = 0;
+    // Per-day equity curve for the EquityCurve component (uses date labels)
+    let cumPnlDay = 0;
     const eqCurve = sortedDates.map(d => {
-      cumPnl += byDate[d];
-      return { date: d, cumPnl };
+      cumPnlDay += byDate[d];
+      return { date: d, cumPnl: cumPnlDay };
     });
 
-    // Max drawdown from equity curve
-    let peak = 0, maxDD = 0;
-    for (const pt of eqCurve) {
-      if (pt.cumPnl > peak) peak = pt.cumPnl;
-      const dd = peak - pt.cumPnl;
+    // Max drawdown from HIGH WATER MARK across all trades
+    let hwm = 0, maxDD = 0;
+    for (const pt of eqCurvePerTrade) {
+      if (pt.cumPnl > hwm) hwm = pt.cumPnl;
+      const dd = hwm - pt.cumPnl;
       if (dd > maxDD) maxDD = dd;
     }
 

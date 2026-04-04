@@ -139,8 +139,7 @@ export default function PreTradeCalculator({
     const stop = parseFloat(stopStr);
     if (!entry || !stop || entry === stop) return null;
 
-    const phaseMult = account.phase === 'Phase 1' ? 1 : account.phase === 'Phase 2' ? 0.75 : 0.5;
-    const effectiveRisk = account.risk_pct * phaseMult;
+    const effectiveRisk = account.risk_pct;
     const riskDollars = account.balance * effectiveRisk / 100;
     const inst = getInstrumentInfo(symbol, entry);
     const dist = Math.abs(entry - stop);

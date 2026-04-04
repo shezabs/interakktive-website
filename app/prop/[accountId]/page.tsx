@@ -393,8 +393,8 @@ export default function TradeDesk() {
     const wins = closedToday.filter(t => (t.pnl || 0) > 0).length;
     const losses = closedToday.filter(t => (t.pnl || 0) <= 0 && t.pnl !== null).length;
     const avgR = closedToday.length > 0 ? sessionR / closedToday.length : 0;
-    const phaseMult = account.phase === 'Phase 1' ? 1 : account.phase === 'Phase 2' ? 0.75 : 0.5;
-    const effectiveRisk = account.risk_pct * phaseMult;
+    // Risk — no phase scaling (user controls risk_pct directly in settings)
+    const effectiveRisk = account.risk_pct;
     const effectiveRiskD = account.balance * effectiveRisk / 100;
     const riskD = account.balance * account.risk_pct / 100;
     const dailyDdLimit = account.balance * account.daily_dd_pct / 100;
@@ -490,10 +490,30 @@ export default function TradeDesk() {
   const narr: string[] = [account.phase];
   if (c.wins + c.losses > 0) narr.push(`${c.wins}W ${c.losses}L`);
   narr.push(fmtM(c.sessionPnl, account.currency));
-  if (c.ddPct >= 80) narr.push('DD DANGER'); else if (c.ddPct >= 60) narr.push(`DD ${fmt(c.ddPct, 0)}%`);
-  if (c.tradesLeft === 0) narr.push('NO TRADES LEFT'); else if (c.tradesLeft === 1) narr.push('1 trade left');
+  // Loss callout
+  if (c.losses > 0 && c.wins === 0) narr.push('ALL LOSSES');
+  else if (c.losses > 0 && c.sessionPnl < 0) narr.push('NET NEGATIVE');
+  // Consecutive loss detection
+  const recentTrades = c.closedToday.slice().reverse();
+  let consLosses = 0;
+  for (const t of recentTrades) { if ((t.pnl || 0) <= 0) consLosses++; else break; }
+  if (consLosses >= 2) narr.push(`${consLosses} CONSECUTIVE LOSSES`);
+  // DD warnings
+  if (c.ddPct >= 80) narr.push('DD DANGER');
+  else if (c.ddPct >= 60) narr.push(`DD ${fmt(c.ddPct, 0)}%`);
+  else if (c.ddPct >= 30) narr.push(`DD ${fmt(c.ddPct, 0)}%`);
+  // Trade limits
+  if (c.tradesLeft === 0) narr.push('NO TRADES LEFT');
+  else if (c.tradesLeft === 1) narr.push('LAST TRADE');
+  // Target
   if (c.progressPct >= 100) narr.push('TARGET REACHED');
-  const narrBg = danger ? 'bg-red-500/10 border-red-500/30' : warn ? 'bg-amber-500/10 border-amber-500/30' : c.sessionPnl > 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-sky-500/10 border-sky-500/30';
+  else if (c.progressPct >= 80) narr.push(`${fmt(c.progressPct, 0)}% TO TARGET`);
+  const narrBg = danger ? 'bg-red-500/10 border-red-500/30'
+    : warn ? 'bg-amber-500/10 border-amber-500/30'
+    : consLosses >= 2 ? 'bg-amber-500/10 border-amber-500/30'
+    : c.sessionPnl > 0 ? 'bg-emerald-500/10 border-emerald-500/30'
+    : c.sessionPnl < 0 ? 'bg-red-500/10 border-red-500/30'
+    : 'bg-sky-500/10 border-sky-500/30';
 
   const todayStr = new Date().toISOString().split('T')[0];
   const journalDates = journalView === 'today' ? c.sortedDates.filter(d => d === todayStr) : c.sortedDates;
@@ -548,7 +568,7 @@ export default function TradeDesk() {
           <StatCard label="Budget" icon={Target} value={`${account.currency} ${fmt(c.budgetLeft, 0)}`} color={c.budgetLeft > c.dailyDdLimit * 0.5 ? 'text-emerald-400' : c.budgetLeft > 0 ? 'text-amber-400' : 'text-red-400'} />
           <StatCard label="Trades" icon={BarChart3} value={`${c.todayTrades.length} / ${account.max_trades_per_day}`} color={c.tradesLeft <= 0 ? 'text-red-400' : 'text-white'} sub={`${c.tradesLeft} remaining`} />
           <StatCard label="Target" icon={Crosshair} value={`${fmt(c.progressPct, 0)}%`} color={c.progressPct >= 100 ? 'text-emerald-400' : 'text-amber-400'} sub={`${account.currency} ${fmt(c.totalPnl)} / ${fmt(c.targetD)}`} />
-          <StatCard label="Risk/Trade" icon={AlertTriangle} value={`${fmt(c.effectiveRisk, 1)}%`} color="text-sky-400" sub={`${account.currency} ${fmt(c.effectiveRiskD, 0)} · ${account.phase === 'Funded' ? '50%' : account.phase === 'Phase 2' ? '75%' : 'Full'}`} />
+          <StatCard label="Risk/Trade" icon={AlertTriangle} value={`${fmt(c.effectiveRisk, 1)}%`} color="text-sky-400" sub={`${account.currency} ${fmt(c.effectiveRiskD, 0)} per trade`} />
         </div>
 
         {/* ── TRADINGVIEW CHART ────────────────────────────────────────────── */}
@@ -607,7 +627,7 @@ export default function TradeDesk() {
             <div className="bg-gray-900/50 rounded-lg p-3 space-y-2 text-xs">
               <div className="flex justify-between"><span className="text-gray-400">Total P&L</span><span className={c.totalPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}>{fmtM(c.totalPnl, account.currency)}</span></div>
               <div className="flex justify-between"><span className="text-gray-400">Total R</span><span className={c.totalR >= 0 ? 'text-emerald-400' : 'text-red-400'}>{c.totalR >= 0 ? '+' : ''}{fmt(c.totalR)}R</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Risk Mode</span><span className={account.phase === 'Funded' ? 'text-emerald-400' : 'text-sky-400'}>{account.phase === 'Funded' ? `Funded · ${fmt(c.effectiveRisk, 1)}% per trade` : account.phase === 'Phase 2' ? `P2 · ${fmt(c.effectiveRisk, 1)}% per trade` : `P1 · ${fmt(c.effectiveRisk, 1)}% per trade`}</span></div>
+              <div className="flex justify-between"><span className="text-gray-400">Risk/Trade</span><span className="text-sky-400">{fmt(c.effectiveRisk, 1)}% · {account.currency} {fmt(c.effectiveRiskD, 0)}</span></div>
               <div className="flex justify-between"><span className="text-gray-400">Survival</span><span className={c.survivalCount <= 2 ? 'text-red-400' : 'text-emerald-400'}>{c.survivalCount} losses before breach</span></div>
             </div>
           </div>
