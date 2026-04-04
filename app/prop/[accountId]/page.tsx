@@ -20,6 +20,7 @@ interface PropAccount {
   trail_lock: boolean; trail_lock_pct: number;
   profit_target_pct: number; phase: string; min_days: number; consistency_pct: number;
   risk_pct: number; max_trades_per_day: number;
+  account_type?: string; // prop_challenge | funded | personal | futures | spread_bet | demo
 }
 
 interface Trade {
@@ -474,6 +475,7 @@ export default function TradeDesk() {
       risk_pct: editAccount.risk_pct, max_trades_per_day: editAccount.max_trades_per_day,
       profit_split: (editAccount as any).profit_split ?? 80,
       challenge_fee: (editAccount as any).challenge_fee ?? 0,
+      account_type: (editAccount as any).account_type ?? 'prop_challenge',
     }).eq('id', editAccount.id);
     await loadData(user.id);
     setShowSettings(false);
@@ -840,7 +842,18 @@ export default function TradeDesk() {
       )}
 
       {/* ── SETTINGS MODAL ───────────────────────────────────────────────── */}
-      {showSettings && editAccount && (
+      {showSettings && editAccount && (() => {
+        const acType = (editAccount as any).account_type || 'prop_challenge';
+        const isProp = acType === 'prop_challenge' || acType === 'funded';
+        const isFutures = acType === 'futures';
+        const isSpreadBet = acType === 'spread_bet';
+        const isDemo = acType === 'demo';
+        const showDD = !isDemo;
+        const showChallenge = isProp;
+        const showPayout = acType === 'funded';
+        const showPhase = isProp;
+
+        return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <style>{`.modal-scroll::-webkit-scrollbar { width: 6px; } .modal-scroll::-webkit-scrollbar-track { background: transparent; } .modal-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; } .modal-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }`}</style>
           <div className="modal-scroll bg-[#12121a] border border-gray-800 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -849,75 +862,136 @@ export default function TradeDesk() {
               <button onClick={() => setShowSettings(false)} className="text-gray-500 hover:text-white"><X className="w-5 h-5" /></button>
             </div>
             <div className="p-5 space-y-5">
+              {/* Account Type */}
+              <div>
+                <label className="block text-xs text-gray-400 mb-1.5">Account Type</label>
+                <select value={acType} onChange={e => setEditAccount({...editAccount, account_type: e.target.value} as any)}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none">
+                  <option value="prop_challenge">Prop Firm Challenge</option>
+                  <option value="funded">Funded Account</option>
+                  <option value="personal">Personal (Forex/CFD)</option>
+                  <option value="futures">Personal (Futures)</option>
+                  <option value="spread_bet">Spread Betting</option>
+                  <option value="demo">Demo / Paper</option>
+                </select>
+                <div className="text-[10px] text-gray-600 mt-1">
+                  {acType === 'prop_challenge' ? 'Track challenge rules, DD limits, profit targets, and consistency.' :
+                   acType === 'funded' ? 'Funded account — survival mode with payout tracking.' :
+                   acType === 'personal' ? 'Your own capital. Set your own risk rules.' :
+                   acType === 'futures' ? 'Contract-based trading. Tick values and margin.' :
+                   acType === 'spread_bet' ? '£/point trading. Tax-free (UK). No lot sizes.' :
+                   'Paper trading for practice. No real money at risk.'}
+                </div>
+              </div>
+
+              {/* Name + Balance */}
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-xs text-gray-400 mb-1.5">Account Name</label>
                   <input type="text" value={editAccount.name} onChange={e => setEditAccount({...editAccount, name: e.target.value})}
                     className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none" /></div>
-                <div><label className="block text-xs text-gray-400 mb-1.5">Balance</label>
+                <div><label className="block text-xs text-gray-400 mb-1.5">{isDemo ? 'Starting Balance' : 'Balance'}</label>
                   <input type="number" value={editAccount.balance} onChange={e => setEditAccount({...editAccount, balance: parseFloat(e.target.value) || 0})}
                     className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none" /></div>
               </div>
+
+              {/* Currency + Phase */}
               <div className="grid grid-cols-2 gap-4">
                 <div><label className="block text-xs text-gray-400 mb-1.5">Currency</label>
                   <select value={editAccount.currency} onChange={e => setEditAccount({...editAccount, currency: e.target.value})}
                     className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none">
                     {['USD','EUR','GBP','JPY','AUD','CAD','CHF'].map(c => <option key={c} value={c}>{c}</option>)}
                   </select></div>
-                <div><label className="block text-xs text-gray-400 mb-1.5">Phase</label>
-                  <select value={editAccount.phase} onChange={e => setEditAccount({...editAccount, phase: e.target.value})}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none">
-                    {['Phase 1','Phase 2','Funded'].map(p => <option key={p} value={p}>{p}</option>)}
-                  </select></div>
+                {showPhase ? (
+                  <div><label className="block text-xs text-gray-400 mb-1.5">Phase</label>
+                    <select value={editAccount.phase} onChange={e => setEditAccount({...editAccount, phase: e.target.value})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2.5 text-white focus:border-sky-500 focus:outline-none">
+                      {acType === 'funded' ? ['Funded'].map(p => <option key={p} value={p}>{p}</option>) :
+                        ['Phase 1','Phase 2','Funded'].map(p => <option key={p} value={p}>{p}</option>)}
+                    </select></div>
+                ) : (
+                  <div><label className="block text-xs text-gray-400 mb-1.5">Max Trades / Day</label>
+                    <input type="number" value={editAccount.max_trades_per_day} onChange={e => setEditAccount({...editAccount, max_trades_per_day: parseInt(e.target.value) || 1})}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                )}
               </div>
+
+              {/* Drawdown Rules */}
+              {showDD && (
               <div>
-                <h3 className="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> Drawdown Rules</h3>
+                <h3 className="text-sm font-bold text-amber-400 mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" /> {isProp ? 'Drawdown Rules (Firm)' : 'Risk Limits (Self-Imposed)'}
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div><label className="block text-xs text-gray-400 mb-1">Daily Loss Limit (%)</label>
                     <input type="number" step="0.5" value={editAccount.daily_dd_pct} onChange={e => setEditAccount({...editAccount, daily_dd_pct: parseFloat(e.target.value) || 0})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  {isProp && (
                   <div><label className="block text-xs text-gray-400 mb-1">DD Calculation</label>
                     <select value={editAccount.daily_dd_calc} onChange={e => setEditAccount({...editAccount, daily_dd_calc: e.target.value})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none">
                       {['Balance-Based','Equity-Based','Intraday Trailing'].map(t => <option key={t} value={t}>{t}</option>)}
                     </select></div>
+                  )}
                   <div><label className="block text-xs text-gray-400 mb-1">Max Drawdown (%)</label>
                     <input type="number" step="0.5" value={editAccount.max_dd_pct} onChange={e => setEditAccount({...editAccount, max_dd_pct: parseFloat(e.target.value) || 0})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  {isProp && (
                   <div><label className="block text-xs text-gray-400 mb-1">Max DD Type</label>
                     <select value={editAccount.max_dd_type} onChange={e => setEditAccount({...editAccount, max_dd_type: e.target.value})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none">
                       {['Static','EOD Trailing','Intraday Trailing'].map(t => <option key={t} value={t}>{t}</option>)}
                     </select></div>
+                  )}
+                  {isProp && (
                   <div><label className="block text-xs text-gray-400 mb-1">Trailing DD Locks at BE</label>
                     <select value={editAccount.trail_lock ? 'Yes' : 'No'} onChange={e => setEditAccount({...editAccount, trail_lock: e.target.value === 'Yes'})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none">
                       <option value="No">No</option><option value="Yes">Yes</option>
                     </select></div>
-                  {editAccount.trail_lock && <div><label className="block text-xs text-gray-400 mb-1">Lock Threshold (%)</label>
+                  )}
+                  {isProp && editAccount.trail_lock && (
+                  <div><label className="block text-xs text-gray-400 mb-1">Lock Threshold (%)</label>
                     <input type="number" step="1" value={editAccount.trail_lock_pct} onChange={e => setEditAccount({...editAccount, trail_lock_pct: parseFloat(e.target.value) || 0})}
-                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>}
+                      className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  )}
                 </div>
               </div>
+              )}
+
+              {/* Challenge & Risk */}
               <div>
-                <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2"><Target className="w-4 h-4" /> Challenge & Risk</h3>
+                <h3 className="text-sm font-bold text-sky-400 mb-3 flex items-center gap-2">
+                  <Target className="w-4 h-4" /> {showChallenge ? 'Challenge & Risk' : 'Risk Settings'}
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
+                  {showChallenge && (
                   <div><label className="block text-xs text-gray-400 mb-1">Profit Target (%)</label>
                     <input type="number" step="0.5" value={editAccount.profit_target_pct} onChange={e => setEditAccount({...editAccount, profit_target_pct: parseFloat(e.target.value) || 0})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  )}
+                  {showChallenge && (
                   <div><label className="block text-xs text-gray-400 mb-1">Min Trading Days</label>
                     <input type="number" value={editAccount.min_days} onChange={e => setEditAccount({...editAccount, min_days: parseInt(e.target.value) || 0})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  )}
+                  {showChallenge && (
                   <div><label className="block text-xs text-gray-400 mb-1">Consistency Rule (%)</label>
                     <input type="number" step="5" value={editAccount.consistency_pct} onChange={e => setEditAccount({...editAccount, consistency_pct: parseFloat(e.target.value) || 0})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  )}
                   <div><label className="block text-xs text-gray-400 mb-1">Risk Per Trade (%)</label>
                     <input type="number" step="0.1" value={editAccount.risk_pct} onChange={e => setEditAccount({...editAccount, risk_pct: parseFloat(e.target.value) || 0})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  {showPhase && (
                   <div><label className="block text-xs text-gray-400 mb-1">Max Trades / Day</label>
                     <input type="number" value={editAccount.max_trades_per_day} onChange={e => setEditAccount({...editAccount, max_trades_per_day: parseInt(e.target.value) || 1})}
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
+                  )}
                 </div>
               </div>
+
+              {/* Payout & Fees (funded only) */}
+              {(showPayout || isProp) && (
               <div>
                 <h3 className="text-sm font-bold text-emerald-400 mb-3 flex items-center gap-2"><DollarSign className="w-4 h-4" /> Payout & Fees</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -929,6 +1003,7 @@ export default function TradeDesk() {
                       className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-sky-500 focus:outline-none" /></div>
                 </div>
               </div>
+              )}
             </div>
             <div className="sticky bottom-0 bg-[#12121a] border-t border-gray-800/50 p-5 flex items-center justify-end gap-3">
               <button onClick={() => setShowSettings(false)} className="px-4 py-2 text-gray-400 hover:text-white text-sm">Cancel</button>
@@ -939,7 +1014,8 @@ export default function TradeDesk() {
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
