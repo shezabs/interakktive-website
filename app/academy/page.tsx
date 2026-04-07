@@ -92,7 +92,7 @@ export default function AcademyPage() {
             {/* Lesson Cards */}
             <div className="space-y-2.5 mb-16">
               {course.lessons.map((lesson, li) => {
-                const isLive = lesson.id === 'what-is-trading' || lesson.id === 'asset-classes' || lesson.id === 'candlestick-anatomy' || lesson.id === 'reading-charts' || lesson.id === 'risk-basics' || lesson.id === 'position-sizing';
+                const isLive = lesson.id === 'what-is-trading' || lesson.id === 'asset-classes' || lesson.id === 'candlestick-anatomy' || lesson.id === 'reading-charts' || lesson.id === 'risk-basics' || lesson.id === 'position-sizing' || lesson.id === 'support-resistance';
                 return (
                   <Link
                     key={lesson.id}
@@ -146,9 +146,9 @@ export default function AcademyPage() {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           className="text-center py-16 border border-dashed border-white/[0.06] rounded-2xl"
         >
-          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Levels 2–9 Coming Soon</p>
+          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Levels 3–9 Coming Soon</p>
           <p className="text-sm text-gray-600 max-w-md mx-auto">
-            Technical Analysis · Smart Money · Indicator Intelligence · Options · Risk Management · Psychology · Prop Trading · ATLAS Mastery
+            Smart Money Concepts · Indicator Intelligence · Trading Psychology · Strategy Building · Options · Prop Trading · ATLAS Mastery
           </p>
         </motion.div>
       </section>

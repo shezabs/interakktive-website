@@ -98,6 +98,27 @@ export const academyCourses: AcademyCourse[] = [
       },
     ],
   },
+  {
+    id: 'level-2-technical-analysis',
+    title: 'Level 2 — Technical Analysis',
+    description: 'Master the tools and techniques that professional traders use to read the market. 12 in-depth lessons.',
+    level: 2,
+    isFree: false,
+    lessons: [
+      { id: 'support-resistance', courseId: 'level-2-technical-analysis', title: 'Support & Resistance Mastery', subtitle: 'The invisible battlegrounds', description: 'Learn to identify, draw, and trade the most important levels on any chart.', estimatedMinutes: 15, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'trendlines-channels', courseId: 'level-2-technical-analysis', title: 'Trendlines & Channels', subtitle: 'Drawing the roadmap', description: 'Master diagonal support/resistance and trading within price channels.', estimatedMinutes: 12, isFree: false, totalSections: 6, quizPassThreshold: 66 },
+      { id: 'moving-averages', courseId: 'level-2-technical-analysis', title: 'Moving Averages', subtitle: 'The trend\'s best friend', description: 'SMA, EMA, crossovers, golden cross, death cross — the indicator every trader must know.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'rsi', courseId: 'level-2-technical-analysis', title: 'RSI — Relative Strength Index', subtitle: 'Momentum decoded', description: 'Overbought, oversold, divergences, and RSI strategies that actually work.', estimatedMinutes: 12, isFree: false, totalSections: 6, quizPassThreshold: 66 },
+      { id: 'macd', courseId: 'level-2-technical-analysis', title: 'MACD — Momentum Master', subtitle: 'Signal line, histogram & more', description: 'How MACD is built, what it tells you, and how to spot momentum shifts before they happen.', estimatedMinutes: 12, isFree: false, totalSections: 6, quizPassThreshold: 66 },
+      { id: 'bollinger-bands', courseId: 'level-2-technical-analysis', title: 'Bollinger Bands & Volatility', subtitle: 'Squeeze, expand, trade', description: 'Volatility-based trading with band squeezes, expansions, and mean reversion.', estimatedMinutes: 12, isFree: false, totalSections: 6, quizPassThreshold: 66 },
+      { id: 'volume-analysis', courseId: 'level-2-technical-analysis', title: 'Volume Analysis', subtitle: 'The truth behind the move', description: 'Volume confirms everything. Learn to read it, spot divergences, and identify climax events.', estimatedMinutes: 12, isFree: false, totalSections: 6, quizPassThreshold: 66 },
+      { id: 'candlestick-advanced', courseId: 'level-2-technical-analysis', title: 'Advanced Candlestick Patterns', subtitle: 'Multi-candle mastery', description: 'Engulfing, morning star, three soldiers, evening star — the patterns institutions watch.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'chart-patterns', courseId: 'level-2-technical-analysis', title: 'Chart Patterns', subtitle: 'The shapes that predict', description: 'Head & shoulders, double tops, triangles, flags, wedges — with breakout targets.', estimatedMinutes: 16, isFree: false, totalSections: 8, quizPassThreshold: 66 },
+      { id: 'fibonacci', courseId: 'level-2-technical-analysis', title: 'Fibonacci Retracements', subtitle: 'Nature\'s trading tool', description: 'The golden ratio in markets. Key levels, extensions, and confluence with S/R.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'multi-timeframe', courseId: 'level-2-technical-analysis', title: 'Multiple Timeframe Analysis', subtitle: 'See the full picture', description: 'Top-down analysis from monthly to minutes. Align the big picture with your entries.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'first-strategy', courseId: 'level-2-technical-analysis', title: 'Building Your First Strategy', subtitle: 'Putting it all together', description: 'Combine everything from Level 2 into a complete, rules-based trading strategy.', estimatedMinutes: 18, isFree: false, totalSections: 8, quizPassThreshold: 66 },
+    ],
+  },
 ];
 
 export function getCourse(courseId: string): AcademyCourse | undefined {
