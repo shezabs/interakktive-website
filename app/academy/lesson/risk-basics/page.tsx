@@ -22,15 +22,32 @@ function BlowupSimulator() {
     setRunning(true); setFinalBalance(null);
     const results: { result: 'win' | 'loss'; balance: number }[] = [];
     let bal = 10000;
-    const winRate = 0.45; // realistic 45% win rate
-    const rr = 1.5; // 1:1.5 risk-reward
+    const winRate = 0.42; // realistic beginner win rate
+    const rr = 1.0; // beginners rarely hold to better than 1:1
 
-    for (let i = 0; i < 50 && bal > 100; i++) {
-      const win = Math.random() < winRate;
+    // Pre-generate trades with guaranteed losing streak
+    const tradeResults: boolean[] = [];
+    for (let i = 0; i < 50; i++) tradeResults.push(Math.random() < winRate);
+    
+    // Force a losing streak of 5-8 trades somewhere in the middle (this happens in real trading)
+    const streakStart = 10 + Math.floor(Math.random() * 15);
+    const streakLen = 5 + Math.floor(Math.random() * 4);
+    for (let i = streakStart; i < Math.min(streakStart + streakLen, 50); i++) tradeResults[i] = false;
+    
+    // At high risk, add a second losing streak (emotional trading spiral)
+    if (riskPct > 8) {
+      const streak2Start = streakStart + streakLen + 3 + Math.floor(Math.random() * 5);
+      const streak2Len = 3 + Math.floor(Math.random() * 4);
+      for (let i = streak2Start; i < Math.min(streak2Start + streak2Len, 50); i++) tradeResults[i] = false;
+    }
+
+    for (let i = 0; i < 50 && bal > 50; i++) {
+      const win = tradeResults[i];
       const riskAmount = bal * (riskPct / 100);
       if (win) { bal += riskAmount * rr; } else { bal -= riskAmount; }
       bal = Math.max(0, bal);
       results.push({ result: win ? 'win' : 'loss', balance: bal });
+      if (bal < 50) break; // account blown
     }
 
     let idx = 0;
