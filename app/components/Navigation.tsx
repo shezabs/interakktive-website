@@ -68,12 +68,14 @@ export default function Navigation() {
             <Link href="/learn" className="text-gray-300 hover:text-white transition-colors">
               Docs
             </Link>
+            {/* Academy link hidden until launch
             <Link href="/academy" className="relative text-gray-300 hover:text-white transition-colors">
               Academy
               <span className="absolute -top-2 -right-7 text-[8px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 text-black">
                 NEW
               </span>
             </Link>
+            */}
             <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
               About
             </Link>
@@ -156,6 +158,7 @@ export default function Navigation() {
             >
               Docs
             </Link>
+            {/* Academy link hidden until launch
             <Link
               href="/academy"
               className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
@@ -166,6 +169,7 @@ export default function Navigation() {
                 NEW
               </span>
             </Link>
+            */}
             <Link
               href="/about"
               className="block text-gray-300 hover:text-white transition-colors"
