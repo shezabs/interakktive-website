@@ -70,7 +70,7 @@ export default function Navigation() {
             </Link>
             <Link href="/academy" className="relative text-gray-300 hover:text-white transition-colors">
               Academy
-              <span className="absolute -top-2 -right-7 text-[8px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-gradient-to-r from-[#26A69A] to-[#FFB300] text-black">
+              <span className="absolute -top-2 -right-7 text-[8px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 text-black">
                 NEW
               </span>
             </Link>
@@ -162,7 +162,7 @@ export default function Navigation() {
               onClick={() => setIsMenuOpen(false)}
             >
               Academy
-              <span className="text-[8px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-gradient-to-r from-[#26A69A] to-[#FFB300] text-black">
+              <span className="text-[8px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 text-black">
                 NEW
               </span>
             </Link>
