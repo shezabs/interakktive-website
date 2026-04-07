@@ -85,6 +85,17 @@ export const academyCourses: AcademyCourse[] = [
         totalSections: 5,
         quizPassThreshold: 66,
       },
+      {
+        id: 'position-sizing',
+        courseId: 'level-1-foundations',
+        title: 'Position Sizing Mastery',
+        subtitle: 'The exact formula for every trade',
+        description: 'Master the formula that turns risk management into precise lot sizes. Includes a 10-round speed challenge.',
+        estimatedMinutes: 12,
+        isFree: false,
+        totalSections: 7,
+        quizPassThreshold: 66,
+      },
     ],
   },
 ];
