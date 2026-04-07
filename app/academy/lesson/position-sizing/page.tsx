@@ -89,44 +89,93 @@ function FormulaAnimator() {
 // MULTI-ASSET CALCULATOR
 // ============================================================
 function MultiAssetCalc() {
-  const [asset, setAsset] = useState<'forex' | 'crypto' | 'stocks'>('forex');
+  const [asset, setAsset] = useState<'forex' | 'crypto' | 'stocks' | 'commodities'>('forex');
   const [account, setAccount] = useState(5000);
   const [riskPct, setRiskPct] = useState(1);
   const [stopDist, setStopDist] = useState(30);
-  const [entryPrice, setEntryPrice] = useState(65000); // for crypto/stocks
+  const [commodity, setCommodity] = useState<'gold' | 'oil' | 'silver'>('gold');
 
   const riskAmount = account * (riskPct / 100);
 
-  let result = { size: '', unit: '', perUnit: '' };
+  // Commodity configs: point value per 1 standard lot
+  const commodityConfig = {
+    gold:   { name: 'Gold (XAUUSD)', pointVal: 1, unit: 'lots', symbol: '🥇', stopLabel: '$ move', stopMin: 1, stopMax: 50, stopStep: 1, defaultStop: 15, desc: '1 lot = 100 oz. $1 move = $100.' },
+    oil:    { name: 'Oil (USOIL)', pointVal: 1, unit: 'lots', symbol: '🛢️', stopLabel: '$ move', stopMin: 0.5, stopMax: 10, stopStep: 0.5, defaultStop: 3, desc: '1 lot = 1000 bbl. $1 move = $1,000.' },
+    silver: { name: 'Silver (XAGUSD)', pointVal: 5, unit: 'lots', symbol: '🪙', stopLabel: '$ move', stopMin: 0.1, stopMax: 5, stopStep: 0.1, defaultStop: 0.5, desc: '1 lot = 5000 oz. $1 move = $5,000.' },
+  };
+
+  // Dollar per $1 move per 1 lot
+  const lotDollarPerPoint: Record<string, number> = { gold: 100, oil: 1000, silver: 5000 };
+
+  let result = { size: '', unit: '', perUnit: '', note: '' };
   if (asset === 'forex') {
     const pipValue = riskAmount / stopDist;
     const lots = pipValue / 10;
-    result = { size: lots.toFixed(2), unit: 'lots', perUnit: `$${pipValue.toFixed(2)}/pip` };
+    result = { size: lots.toFixed(2), unit: 'lots', perUnit: `$${pipValue.toFixed(2)}/pip`, note: '' };
   } else if (asset === 'crypto') {
-    const priceMove = entryPrice * (stopDist / 100); // stop as % for crypto
+    const priceMove = 65000 * (stopDist / 100);
     const units = riskAmount / priceMove;
-    result = { size: units.toFixed(6), unit: 'BTC', perUnit: `Stop: $${priceMove.toFixed(0)}` };
+    result = { size: units.toFixed(6), unit: 'BTC', perUnit: `Stop: $${priceMove.toFixed(0)}`, note: '' };
+  } else if (asset === 'stocks') {
+    const shares = Math.floor(riskAmount / stopDist);
+    result = { size: shares.toString(), unit: 'shares', perUnit: `$${stopDist} stop per share`, note: '' };
   } else {
-    const shares = Math.floor(riskAmount / stopDist); // stop in $ for stocks
-    result = { size: shares.toString(), unit: 'shares', perUnit: `$${stopDist} stop per share` };
+    // Commodities
+    const cfg = commodityConfig[commodity];
+    const dppl = lotDollarPerPoint[commodity]; // $ per $1 move per lot
+    const dollarPerPointNeeded = riskAmount / stopDist; // how much $ per $1 move we can afford
+    const lots = dollarPerPointNeeded / dppl;
+    result = {
+      size: lots.toFixed(lots < 0.1 ? 3 : 2),
+      unit: 'lots',
+      perUnit: `$${dollarPerPointNeeded.toFixed(0)} per $1 move`,
+      note: cfg.desc,
+    };
   }
+
+  // Reset stop when switching assets
+  const handleAssetChange = (a: typeof asset) => {
+    setAsset(a);
+    if (a === 'forex') setStopDist(30);
+    else if (a === 'crypto') setStopDist(3);
+    else if (a === 'stocks') setStopDist(5);
+    else setStopDist(commodityConfig[commodity].defaultStop);
+  };
+
+  const handleCommodityChange = (c: typeof commodity) => {
+    setCommodity(c);
+    setStopDist(commodityConfig[c].defaultStop);
+  };
 
   return (
     <div className="glass-card rounded-2xl p-5">
       {/* Asset tabs */}
-      <div className="flex gap-2 mb-5">
+      <div className="grid grid-cols-4 gap-2 mb-5">
         {([
           { id: 'forex' as const, label: '🌍 Forex', sub: 'Pips → Lots' },
           { id: 'crypto' as const, label: '₿ Crypto', sub: '% → Units' },
           { id: 'stocks' as const, label: '📊 Stocks', sub: '$ → Shares' },
+          { id: 'commodities' as const, label: '🥇 Commod.', sub: '$ → Lots' },
         ]).map(a => (
-          <button key={a.id} onClick={() => setAsset(a.id)}
-            className={`flex-1 p-3 rounded-xl text-center transition-all active:scale-95 border ${asset === a.id ? 'bg-amber-500/10 border-amber-500/25 text-amber-400' : 'glass text-gray-500'}`}>
-            <div className="text-sm font-bold">{a.label}</div>
-            <div className="text-[9px] text-gray-500 mt-0.5">{a.sub}</div>
+          <button key={a.id} onClick={() => handleAssetChange(a.id)}
+            className={`p-2.5 rounded-xl text-center transition-all active:scale-95 border ${asset === a.id ? 'bg-amber-500/10 border-amber-500/25 text-amber-400' : 'glass text-gray-500'}`}>
+            <div className="text-xs font-bold">{a.label}</div>
+            <div className="text-[8px] text-gray-500 mt-0.5">{a.sub}</div>
           </button>
         ))}
       </div>
+
+      {/* Commodity selector */}
+      {asset === 'commodities' && (
+        <div className="flex gap-2 mb-4">
+          {(['gold', 'oil', 'silver'] as const).map(c => (
+            <button key={c} onClick={() => handleCommodityChange(c)}
+              className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 ${commodity === c ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25' : 'bg-white/5 text-gray-500 border border-transparent'}`}>
+              {commodityConfig[c].symbol} {commodityConfig[c].name.split(' ')[0]}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Inputs */}
       <div className="space-y-4 mb-5">
@@ -148,10 +197,18 @@ function MultiAssetCalc() {
         </div>
         <div>
           <div className="flex justify-between text-xs mb-1.5">
-            <span className="text-gray-500">{asset === 'forex' ? 'Stop Loss (pips)' : asset === 'crypto' ? 'Stop Loss (%)' : 'Stop Loss ($ per share)'}</span>
-            <span className="font-mono font-semibold">{asset === 'forex' ? `${stopDist} pips` : asset === 'crypto' ? `${stopDist}%` : `$${stopDist}`}</span>
+            <span className="text-gray-500">
+              {asset === 'forex' ? 'Stop Loss (pips)' : asset === 'crypto' ? 'Stop Loss (%)' : asset === 'stocks' ? 'Stop Loss ($ per share)' : `Stop Loss (${commodityConfig[commodity].stopLabel})`}
+            </span>
+            <span className="font-mono font-semibold">
+              {asset === 'forex' ? `${stopDist} pips` : asset === 'crypto' ? `${stopDist}%` : asset === 'stocks' ? `$${stopDist}` : `$${stopDist}`}
+            </span>
           </div>
-          <input type="range" min={asset === 'crypto' ? 1 : 5} max={asset === 'forex' ? 100 : asset === 'crypto' ? 20 : 50} step={asset === 'crypto' ? 0.5 : 1} value={stopDist} onChange={e => setStopDist(Number(e.target.value))}
+          <input type="range"
+            min={asset === 'forex' ? 5 : asset === 'crypto' ? 1 : asset === 'stocks' ? 1 : commodityConfig[commodity].stopMin}
+            max={asset === 'forex' ? 100 : asset === 'crypto' ? 20 : asset === 'stocks' ? 50 : commodityConfig[commodity].stopMax}
+            step={asset === 'crypto' ? 0.5 : asset === 'commodities' ? commodityConfig[commodity].stopStep : 1}
+            value={stopDist} onChange={e => setStopDist(Number(e.target.value))}
             className="w-full h-1.5 rounded-full appearance-none bg-white/10 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-400 [&::-webkit-slider-thumb]:cursor-pointer" />
         </div>
       </div>
@@ -162,6 +219,7 @@ function MultiAssetCalc() {
         <div className="text-3xl font-extrabold text-amber-400 font-mono">{result.size}</div>
         <div className="text-sm text-gray-400 mt-1">{result.unit}</div>
         <div className="text-xs text-gray-500 mt-2">{result.perUnit} · Risk: ${riskAmount.toFixed(0)}</div>
+        {result.note && <div className="text-[10px] text-gray-600 mt-1">{result.note}</div>}
       </div>
     </div>
   );
