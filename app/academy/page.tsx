@@ -53,6 +53,13 @@ export default function AcademyPage() {
             <span className="flex items-center gap-1.5"><Trophy className="w-4 h-4" /> Certificates</span>
             <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> Self-paced</span>
           </motion.div>
+
+          <motion.div variants={fadeUp} className="mt-6">
+            <Link href="/academy/glossary" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass hover:bg-white/[0.08] transition-all text-sm text-gray-400 hover:text-white">
+              <BookOpen className="w-4 h-4" />
+              Trading Glossary — 35+ terms explained
+            </Link>
+          </motion.div>
         </motion.div>
       </section>
 
