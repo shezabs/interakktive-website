@@ -26,6 +26,55 @@ const mainPrices = seededPrices(42, 200);
 const flipPrices = seededPrices(77, 150, 0.3);
 
 // ============================================================
+// REAL S/R DETECTION — finds actual bounce zones
+// ============================================================
+function detectSR(prices: number[], lookback: number = 5): { support: number; resistance: number } {
+  // Step 1: Find swing lows (potential support) and swing highs (potential resistance)
+  const swingLows: number[] = [];
+  const swingHighs: number[] = [];
+
+  for (let i = lookback; i < prices.length - lookback; i++) {
+    let isLow = true, isHigh = true;
+    for (let j = 1; j <= lookback; j++) {
+      if (prices[i] > prices[i - j] || prices[i] > prices[i + j]) isLow = false;
+      if (prices[i] < prices[i - j] || prices[i] < prices[i + j]) isHigh = false;
+    }
+    if (isLow) swingLows.push(prices[i]);
+    if (isHigh) swingHighs.push(prices[i]);
+  }
+
+  // Step 2: Cluster nearby swing points into zones
+  // Use a tolerance based on the price range
+  const range = Math.max(...prices) - Math.min(...prices);
+  const tolerance = range * 0.06; // 6% of range
+
+  function findBestCluster(swings: number[]): number {
+    if (swings.length === 0) return prices[prices.length - 1];
+    // Count how many swing points fall near each swing point
+    let bestLevel = swings[0], bestCount = 0;
+    for (const level of swings) {
+      const count = swings.filter(s => Math.abs(s - level) < tolerance).length;
+      if (count > bestCount) { bestCount = count; bestLevel = level; }
+    }
+    // Return the average of all points in the best cluster
+    const cluster = swings.filter(s => Math.abs(s - bestLevel) < tolerance);
+    return cluster.reduce((a, b) => a + b, 0) / cluster.length;
+  }
+
+  const support = findBestCluster(swingLows);
+  let resistance = findBestCluster(swingHighs);
+
+  // Make sure resistance is above support
+  if (resistance <= support) {
+    // Find second-best cluster for highs that's above support
+    const highsAbove = swingHighs.filter(h => h > support + tolerance);
+    resistance = highsAbove.length > 0 ? findBestCluster(highsAbove) : Math.max(...prices) - range * 0.1;
+  }
+
+  return { support, resistance };
+}
+
+// ============================================================
 // CHART DRAWING UTILITY
 // ============================================================
 function drawPriceChart(ctx: CanvasRenderingContext2D, W: number, H: number, prices: number[], opts?: {
@@ -121,26 +170,27 @@ function SRFormationDemo() {
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
     const prices = mainPrices.slice(0, 120);
 
-    const supportLevel = Math.min(...prices) + (Math.max(...prices) - Math.min(...prices)) * 0.25;
-    const resistanceLevel = Math.min(...prices) + (Math.max(...prices) - Math.min(...prices)) * 0.75;
+    const { support: supportLevel, resistance: resistanceLevel } = detectSR(prices);
+    const range = Math.max(...prices) - Math.min(...prices);
+    const tol = range * 0.06;
 
     const lines: any[] = [];
     const zones: any[] = [];
     const bounces: any[] = [];
 
     if (step >= 1) {
-      bounces.push({ priceLevel: supportLevel, tolerance: 2.5, color: 'rgba(34,197,94,0.6)' });
+      bounces.push({ priceLevel: supportLevel, tolerance: tol, color: 'rgba(34,197,94,0.6)' });
     }
     if (step >= 2) {
       lines.push({ y: supportLevel, color: 'rgba(34,197,94,0.5)', label: 'SUPPORT', dashed: true });
     }
     if (step >= 3) {
-      bounces.push({ priceLevel: resistanceLevel, tolerance: 2.5, color: 'rgba(239,68,68,0.6)' });
+      bounces.push({ priceLevel: resistanceLevel, tolerance: tol, color: 'rgba(239,68,68,0.6)' });
     }
     if (step >= 4) {
       lines.push({ y: resistanceLevel, color: 'rgba(239,68,68,0.5)', label: 'RESISTANCE', dashed: true });
-      zones.push({ y1: supportLevel - 1, y2: supportLevel + 1, color: 'rgba(34,197,94,0.06)', label: '' });
-      zones.push({ y1: resistanceLevel - 1, y2: resistanceLevel + 1, color: 'rgba(239,68,68,0.06)', label: '' });
+      zones.push({ y1: supportLevel - tol * 0.5, y2: supportLevel + tol * 0.5, color: 'rgba(34,197,94,0.06)', label: '' });
+      zones.push({ y1: resistanceLevel - tol * 0.5, y2: resistanceLevel + tol * 0.5, color: 'rgba(239,68,68,0.06)', label: '' });
     }
 
     drawPriceChart(ctx, W, H, prices, { lines, zones, highlightBounces: bounces });
@@ -190,19 +240,21 @@ function FlipZoneDemo() {
   const drawFlip = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number) => {
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
     const prices = flipPrices.slice(0, 120);
-    const flipLevel = Math.min(...prices) + (Math.max(...prices) - Math.min(...prices)) * 0.55;
+    const { support: flipLevel } = detectSR(prices);
+    const range = Math.max(...prices) - Math.min(...prices);
+    const tol = range * 0.06;
 
     const lines: any[] = [];
     const zones: any[] = [];
 
     if (phase === 0) {
       lines.push({ y: flipLevel, color: 'rgba(34,197,94,0.5)', label: 'SUPPORT', dashed: true });
-      zones.push({ y1: flipLevel - 1.5, y2: flipLevel + 1.5, color: 'rgba(34,197,94,0.06)', label: '' });
+      zones.push({ y1: flipLevel - tol * 0.5, y2: flipLevel + tol * 0.5, color: 'rgba(34,197,94,0.06)', label: '' });
     } else if (phase === 1) {
       lines.push({ y: flipLevel, color: 'rgba(239,68,68,0.5)', label: 'BREAK ↓', dashed: false });
     } else {
       lines.push({ y: flipLevel, color: 'rgba(239,68,68,0.5)', label: 'NOW RESISTANCE', dashed: true });
-      zones.push({ y1: flipLevel - 1.5, y2: flipLevel + 1.5, color: 'rgba(239,68,68,0.06)', label: '' });
+      zones.push({ y1: flipLevel - tol * 0.5, y2: flipLevel + tol * 0.5, color: 'rgba(239,68,68,0.06)', label: '' });
     }
 
     drawPriceChart(ctx, W, H, prices, { lines, zones });
@@ -251,9 +303,8 @@ function DrawSRGame() {
   const prices = mainPrices.slice(20, 160);
   const priceMin = Math.min(...prices) - 2, priceMax = Math.max(...prices) + 2;
 
-  // Actual S/R levels (where most bounces happen)
-  const actualSupport = Math.min(...prices) + (priceMax - priceMin) * 0.22;
-  const actualResistance = Math.min(...prices) + (priceMax - priceMin) * 0.78;
+  // Detect actual S/R from the price data using swing point clustering
+  const { support: actualSupport, resistance: actualResistance } = detectSR(prices);
 
   useEffect(() => {
     const c = canvasRef.current, d = containerRef.current; if (!c || !d) return;
