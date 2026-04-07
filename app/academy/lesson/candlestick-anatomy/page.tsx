@@ -46,8 +46,8 @@ function CandleBuilder({ type, step, height = 320 }: { type: 'bull' | 'bear'; st
       ctx.strokeStyle = 'rgba(255,255,255,0.02)'; ctx.lineWidth = 1;
       for (let y = 0; y < h; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
 
-      const cx = w / 2;
-      const BW = 52;
+      const cx = w * 0.35;
+      const BW = 48;
 
       // Price scale on right
       ctx.font = '500 9px monospace'; ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(255,255,255,0.12)';
@@ -63,25 +63,25 @@ function CandleBuilder({ type, step, height = 320 }: { type: 'bull' | 'bear'; st
       // Step 0: Open line
       if (step >= 0) {
         ctx.strokeStyle = colFaded + '0.5)'; ctx.lineWidth = 1; ctx.setLineDash([5, 4]);
-        ctx.beginPath(); ctx.moveTo(cx - 80, cfg.open); ctx.lineTo(cx + 80, cfg.open); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx - 50, cfg.open); ctx.lineTo(cx + 50, cfg.open); ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx, cfg.open, 4, 0, Math.PI * 2); ctx.fill();
         ctx.font = '600 11px sans-serif'; ctx.fillStyle = col; ctx.textAlign = 'left';
-        ctx.fillText('OPEN', cx + 65, cfg.open - 8);
+        ctx.fillText('OPEN', cx + 55, cfg.open - 8);
         ctx.font = '400 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.35)';
-        ctx.fillText(type === 'bull' ? 'Where price started (lower)' : 'Where price started (higher)', cx + 65, cfg.open + 6);
+        ctx.fillText(type === 'bull' ? 'Price started here (lower)' : 'Price started here (higher)', cx + 55, cfg.open + 6);
       }
 
       // Step 1: Close line
       if (step >= 1) {
         ctx.strokeStyle = colFaded + '0.5)'; ctx.lineWidth = 1; ctx.setLineDash([5, 4]);
-        ctx.beginPath(); ctx.moveTo(cx - 80, cfg.close); ctx.lineTo(cx + 80, cfg.close); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(cx - 50, cfg.close); ctx.lineTo(cx + 50, cfg.close); ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx, cfg.close, 4, 0, Math.PI * 2); ctx.fill();
         ctx.font = '600 11px sans-serif'; ctx.fillStyle = col; ctx.textAlign = 'left';
-        ctx.fillText('CLOSE', cx + 65, cfg.close - 8);
+        ctx.fillText('CLOSE', cx + 55, cfg.close - 8);
         ctx.font = '400 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.35)';
-        ctx.fillText(type === 'bull' ? 'Where price ended (higher) ✓' : 'Where price ended (lower) ✗', cx + 65, cfg.close + 6);
+        ctx.fillText(type === 'bull' ? 'Price ended here (higher) ✓' : 'Price ended here (lower) ✗', cx + 55, cfg.close + 6);
       }
 
       // Step 2: Body
@@ -91,14 +91,13 @@ function CandleBuilder({ type, step, height = 320 }: { type: 'bull' | 'bear'; st
         ctx.fillStyle = col;
         ctx.beginPath(); ctx.roundRect(cx - BW / 2, bodyTop, BW, animBodyH, 4); ctx.fill();
         if (animBodyH >= bodyH) {
-          // Body bracket + label
+          // Body bracket + label on right
           ctx.strokeStyle = colFaded + '0.3)'; ctx.lineWidth = 1.5;
-          ctx.beginPath(); ctx.moveTo(30, bodyTop + 4); ctx.lineTo(22, bodyTop + 4); ctx.lineTo(22, bodyBot - 4); ctx.lineTo(30, bodyBot - 4); ctx.stroke();
-          ctx.font = '600 10px sans-serif'; ctx.fillStyle = col; ctx.textAlign = 'right';
-          ctx.fillText('BODY', 18, bodyTop + bodyH / 2 - 4);
+          ctx.beginPath(); ctx.moveTo(cx + BW/2 + 12, bodyTop + 4); ctx.lineTo(cx + BW/2 + 20, bodyTop + 4); ctx.lineTo(cx + BW/2 + 20, bodyBot - 4); ctx.lineTo(cx + BW/2 + 12, bodyBot - 4); ctx.stroke();
+          ctx.font = '600 10px sans-serif'; ctx.fillStyle = col; ctx.textAlign = 'left';
+          ctx.fillText('BODY', cx + BW/2 + 26, bodyTop + bodyH / 2 - 4);
           ctx.font = '400 8px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
-          ctx.fillText('The real', 18, bodyTop + bodyH / 2 + 8);
-          ctx.fillText('move', 18, bodyTop + bodyH / 2 + 18);
+          ctx.fillText('The real move', cx + BW/2 + 26, bodyTop + bodyH / 2 + 8);
         }
       }
 
@@ -110,13 +109,12 @@ function CandleBuilder({ type, step, height = 320 }: { type: 'bull' | 'bear'; st
           ctx.fillStyle = '#f59e0b'; ctx.beginPath();
           ctx.moveTo(cx, cfg.high - 3); ctx.lineTo(cx - 5, cfg.high + 7); ctx.lineTo(cx + 5, cfg.high + 7); ctx.fill();
           ctx.font = '600 10px sans-serif'; ctx.fillStyle = '#f59e0b'; ctx.textAlign = 'left';
-          ctx.fillText('HIGH', cx + 65, cfg.high - 2);
+          ctx.fillText('HIGH', cx + 55, cfg.high - 2);
           ctx.font = '400 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.35)';
-          ctx.fillText('Buyers\' maximum push', cx + 65, cfg.high + 12);
-          // Wick label
-          ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.textAlign = 'right';
-          ctx.fillText('UPPER', 18, (bodyTop + cfg.high) / 2 - 3);
-          ctx.fillText('WICK', 18, (bodyTop + cfg.high) / 2 + 8);
+          ctx.fillText('Buyers\' max push', cx + 55, cfg.high + 12);
+          // Wick label on right
+          ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.textAlign = 'left';
+          ctx.fillText('UPPER WICK', cx + BW/2 + 26, (bodyTop + cfg.high) / 2 + 3);
         }
       }
 
@@ -128,12 +126,11 @@ function CandleBuilder({ type, step, height = 320 }: { type: 'bull' | 'bear'; st
           ctx.fillStyle = '#ef4444'; ctx.beginPath();
           ctx.moveTo(cx, cfg.low + 3); ctx.lineTo(cx - 5, cfg.low - 7); ctx.lineTo(cx + 5, cfg.low - 7); ctx.fill();
           ctx.font = '600 10px sans-serif'; ctx.fillStyle = '#ef4444'; ctx.textAlign = 'left';
-          ctx.fillText('LOW', cx + 65, cfg.low + 4);
+          ctx.fillText('LOW', cx + 55, cfg.low + 4);
           ctx.font = '400 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.35)';
-          ctx.fillText('Sellers\' maximum push', cx + 65, cfg.low + 18);
-          ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.textAlign = 'right';
-          ctx.fillText('LOWER', 18, (bodyBot + cfg.low) / 2 - 3);
-          ctx.fillText('WICK', 18, (bodyBot + cfg.low) / 2 + 8);
+          ctx.fillText('Sellers\' max push', cx + 55, cfg.low + 18);
+          ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.textAlign = 'left';
+          ctx.fillText('LOWER WICK', cx + BW/2 + 26, (bodyBot + cfg.low) / 2 + 3);
         }
       }
 
