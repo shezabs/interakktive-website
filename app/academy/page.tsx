@@ -85,11 +85,11 @@ export default function AcademyPage() {
             {/* Lesson Cards */}
             <div className="space-y-2.5 mb-16">
               {course.lessons.map((lesson, li) => {
-                const isLive = lesson.id === 'what-is-trading';
+                const isLive = lesson.id === 'what-is-trading' || lesson.id === 'asset-classes';
                 return (
                   <Link
                     key={lesson.id}
-                    href={isLive ? `/academy/lesson/what-is-trading` : '#'}
+                    href={isLive ? `/academy/lesson/${lesson.id}` : '#'}
                     className={`block group ${!isLive ? 'pointer-events-none' : ''}`}
                   >
                     <motion.div
