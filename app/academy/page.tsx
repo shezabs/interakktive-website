@@ -92,7 +92,7 @@ export default function AcademyPage() {
             {/* Lesson Cards */}
             <div className="space-y-2.5 mb-16">
               {course.lessons.map((lesson, li) => {
-                const isLive = lesson.id === 'what-is-trading' || lesson.id === 'asset-classes' || lesson.id === 'candlestick-anatomy';
+                const isLive = lesson.id === 'what-is-trading' || lesson.id === 'asset-classes' || lesson.id === 'candlestick-anatomy' || lesson.id === 'reading-charts';
                 return (
                   <Link
                     key={lesson.id}
