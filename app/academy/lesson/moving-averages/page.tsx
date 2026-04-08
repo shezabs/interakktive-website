@@ -744,11 +744,6 @@ export default function MovingAveragesLesson() {
         <WeatherClimateAnimation />
       </section>
 
-      <section className="max-w-2xl mx-auto px-5 pt-4">
-          </motion.div>
-        </motion.div>
-      </section>
-
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Concept</motion.p>
