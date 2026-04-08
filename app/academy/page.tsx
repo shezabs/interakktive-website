@@ -20,6 +20,7 @@ const liveLessons = new Set([
   'moving-averages',
   'rsi',
   'macd',
+  'bollinger-bands',
 ]);
 
 export default function AcademyPage() {
