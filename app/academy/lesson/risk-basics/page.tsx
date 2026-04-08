@@ -406,15 +406,18 @@ export default function RiskBasicsLesson() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Hard Truth</motion.p>
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Why Most Traders Fail</motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">It&apos;s not bad entries. It&apos;s not wrong predictions. It&apos;s not the market being &quot;unfair&quot;. <strong className="text-white">90% of traders fail because they risk too much per trade.</strong></motion.p>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">A trader with mediocre entries but excellent risk management will <strong className="text-white">always</strong> outperform a trader with perfect entries but no risk control. Always. The math guarantees it.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">It&apos;s not bad timing. It&apos;s not picking the wrong direction. It&apos;s not the market being &quot;unfair&quot;. <strong className="text-white">90% of traders fail because they bet too much on each trade.</strong></motion.p>
+          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-4">
+            <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like poker:</strong> Even the best poker player in the world loses hands. Lots of them. But they never bet their entire stack on a single hand. They bet small enough to survive the losing hands, so they&apos;re still at the table when the winning hands come. Trading is the same game.</p>
+          </motion.div>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">A trader who picks the wrong direction 60% of the time but controls their losses will <strong className="text-white">always</strong> beat a trader who picks right 60% of the time but bets too big. Sound crazy? The maths proves it. And you&apos;re about to see it.</motion.p>
         </motion.div>
 
         <div className="space-y-3">
           {[
-            { icon: <AlertTriangle className="w-5 h-5 text-red-400" />, title: 'The Gambler\'s Trap', desc: 'Risking 10-20% per trade because "this setup is a sure thing." There are no sure things. Every trade can lose. Every. Single. One.', bg: 'bg-red-500/10' },
-            { icon: <TrendingDown className="w-5 h-5 text-amber-400" />, title: 'The Revenge Spiral', desc: 'After a loss, doubling down to "make it back quickly." This compounds losses exponentially. One bad day becomes an account-ending week.', bg: 'bg-amber-500/10' },
-            { icon: <Shield className="w-5 h-5 text-green-400" />, title: 'The Professional\'s Secret', desc: 'Risk 1-2% per trade. Accept that losses are part of the game. Survive long enough for your edge to play out over hundreds of trades.', bg: 'bg-green-500/10' },
+            { icon: <AlertTriangle className="w-5 h-5 text-red-400" />, title: 'The Gambler\'s Trap', desc: '"This trade is a sure thing, I\'ll risk 20%!" — There are no sure things. Even the best setup in the world can lose. If you bet big on ONE trade, you\'re not trading — you\'re gambling. And the house always wins.', bg: 'bg-red-500/10' },
+            { icon: <TrendingDown className="w-5 h-5 text-amber-400" />, title: 'The Revenge Spiral', desc: 'You lose $200 and think "I\'ll double my next trade to win it back fast." Then that loses too. Now you\'re down $600 and panicking. This is how accounts die — not from one bad trade, but from the emotional spiral AFTER a bad trade.', bg: 'bg-amber-500/10' },
+            { icon: <Shield className="w-5 h-5 text-green-400" />, title: 'The Professional\'s Secret', desc: 'Risk only 1-2% of your account per trade. That means if you have $5,000, you never lose more than $50-$100 on any single trade. Sounds boring? It\'s how every successful trader on the planet operates. Boring = profitable.', bg: 'bg-green-500/10' },
           ].map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
               className="flex items-start gap-4 p-5 glass-card rounded-2xl">
@@ -429,8 +432,11 @@ export default function RiskBasicsLesson() {
       <section className="max-w-2xl mx-auto px-5 py-10">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">02 — See It Yourself</motion.p>
-          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Account Blowup Simulator</motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Set a risk percentage, run 50 simulated trades (45% win rate, 1:1.5 R:R), and watch what happens to your account. <strong className="text-white">Try 2%, then try 15%.</strong> See the difference.</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Watch Your Account Live or Die</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-3">This simulator runs 50 trades with a realistic 42% win rate (most traders win less than half their trades). Drag the slider to choose how much you risk per trade, then hit play.</motion.p>
+          <motion.div variants={fadeUp} className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/10 mb-6">
+            <p className="text-xs text-amber-400 leading-relaxed">💡 <strong>Try this experiment:</strong> First run it at 1-2%. Watch the curve survive the losing streaks. Then crank it to 15-20% and run it again. The difference is devastating — and it&apos;s the single most important lesson in all of trading.</p>
+          </motion.div>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <BlowupSimulator />

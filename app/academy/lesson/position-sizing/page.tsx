@@ -500,14 +500,17 @@ export default function PositionSizingLesson() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — Why This Matters</motion.p>
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">The Bridge Between Knowledge and Survival</motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">You know you should risk 1-2% per trade. But <strong className="text-white">how do you actually translate that into a lot size?</strong> That&apos;s position sizing — and getting it wrong makes every other rule pointless.</motion.p>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">Two traders can take the exact same trade with the exact same stop loss. One risks 1% and survives. The other &quot;eyeballs it&quot; at 8% and blows up. <strong className="text-white">The difference is position sizing.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">You know you should only risk 1-2% per trade. Great. But <strong className="text-white">how do you actually figure out how much to buy or sell?</strong> That&apos;s what position sizing answers. It&apos;s the formula that turns &quot;risk 1%&quot; into an actual number you type into your trading platform.</motion.p>
+          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-4">
+            <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like medication dosage:</strong> A doctor doesn&apos;t just say &quot;take some paracetamol.&quot; They prescribe an EXACT amount based on your weight. Too little = doesn&apos;t work. Too much = dangerous. Position sizing is your trading dosage — calculated precisely for YOUR account.</p>
+          </motion.div>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">Two traders can take the exact same trade. One calculated their size = risks 1% and sleeps well. The other guessed = risks 8% and wakes up to a margin call. <strong className="text-white">Same trade. Opposite outcomes. The only difference is the maths.</strong></motion.p>
         </motion.div>
 
         <div className="space-y-3">
           {[
-            { icon: <AlertTriangle className="w-5 h-5 text-red-400" />, title: 'The Wrong Way', desc: '"I\'ll just trade 0.5 lots" — picking a random size without calculating risk. This is how accounts die.', bg: 'bg-red-500/10' },
-            { icon: <CheckCircle className="w-5 h-5 text-green-400" />, title: 'The Right Way', desc: 'Account → Risk % → Dollar risk → Stop distance → Pip value → Lot size. A formula that adapts to EVERY trade.', bg: 'bg-green-500/10' },
+            { icon: <AlertTriangle className="w-5 h-5 text-red-400" />, title: 'The Wrong Way (Guessing)', desc: '"I\'ll just trade 0.5 lots because that feels about right." This is like prescribing medicine by gut feeling. Sometimes you\'ll be fine. Other times you\'ll overdose your account. Never guess your lot size.', bg: 'bg-red-500/10' },
+            { icon: <CheckCircle className="w-5 h-5 text-green-400" />, title: 'The Right Way (The Formula)', desc: 'Start with your account balance → decide your risk % → calculate the dollar amount you can lose → divide by your stop loss distance → that gives you your exact lot size. It takes 10 seconds and saves your account.', bg: 'bg-green-500/10' },
           ].map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
               className="flex items-start gap-4 p-5 glass-card rounded-2xl">

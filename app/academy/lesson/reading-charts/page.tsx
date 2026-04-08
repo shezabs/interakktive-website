@@ -338,17 +338,20 @@ export default function ReadingChartsLesson() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Basics</motion.p>
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">What Is a Price Chart?</motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">A chart is simply a <strong className="text-white">visual history of price over time</strong>. The horizontal axis is time, the vertical axis is price. Every chart answers one question: <em>&quot;What has this asset&apos;s price done?&quot;</em></motion.p>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">But a chart is more than history — it reveals <strong className="text-white">patterns, levels, and sentiment</strong> that help you predict what might happen next. Learning to read charts is like learning to read a language.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">A chart is simply a <strong className="text-white">picture of how price has moved over time</strong>. Time goes left to right. Price goes bottom to top. That&apos;s it — nothing more complicated than that.</motion.p>
+          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-4">
+            <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like this:</strong> Imagine a fitness tracker that records your weight every day and draws a line. After a month you can SEE if you&apos;re trending up or down. A price chart does the same thing — but for the price of Bitcoin, gold, stocks, or any asset.</p>
+          </motion.div>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">But here&apos;s the magic: a chart doesn&apos;t just show history. It reveals <strong className="text-white">patterns</strong> — spots where price keeps bouncing, levels where it keeps getting rejected, and moments where everything changes. Once you learn to read these patterns, you&apos;ll see opportunities that invisible to everyone else.</motion.p>
         </motion.div>
 
-        {/* Chart Type Comparison */}
+        {/* Chart Type Comparison — with layman descriptions */}
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={{ visible: { transition: { staggerChildren: 0.08 } } }}>
-          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-gray-500 mb-4">Three Chart Types</motion.p>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-gray-500 mb-4">Three Ways to View Price</motion.p>
           {[
-            { type: 'line' as const, name: 'Line Chart', icon: '📉', desc: 'Simplest chart — connects closing prices with a smooth line. Great for seeing the big picture and overall trend. Hides the detail within each period.', best: 'Best for: Quick trend overview, beginners' },
-            { type: 'bar' as const, name: 'Bar Chart (OHLC)', icon: '📊', desc: 'Shows Open, High, Low, Close as a vertical bar with small horizontal ticks. More information than a line chart but harder to read quickly.', best: 'Best for: Traditional traders, futures markets' },
-            { type: 'candle' as const, name: 'Candlestick Chart', icon: '🕯️', desc: 'The gold standard. Same OHLC data as bars but with colour-coded bodies that make bullish vs bearish instantly visible. This is what 90% of traders use.', best: 'Best for: Everything. This is what you should learn.' },
+            { type: 'line' as const, name: 'Line Chart', icon: '📉', desc: 'The simplest view — just a smooth line connecting the price at the end of each period. Like watching the outline of mountains from far away — you see the big picture but miss the details.', best: 'Best for: Getting a quick sense of direction', layman: 'Think of it like a heart rate monitor — one smooth line showing the rhythm.' },
+            { type: 'bar' as const, name: 'Bar Chart', icon: '📊', desc: 'Each bar shows four prices: where price started, the highest it went, the lowest it went, and where it ended. More detail than a line, but takes practice to read quickly.', best: 'Best for: Traders who want detail without colour coding', layman: 'Like a weather report that shows you the high AND low temperature for each day, not just the average.' },
+            { type: 'candle' as const, name: 'Candlestick Chart', icon: '🕯️', desc: 'Same information as a bar but MUCH easier to read. Green (or hollow) candles = price went UP. Red (or filled) candles = price went DOWN. You can tell the story of each period at a glance.', best: 'Best for: Everything. This is what 90% of traders use — and what you should learn.', layman: 'Like traffic lights for price — green means go (buyers won), red means stop (sellers won). Instant clarity.' },
           ].map((ct, i) => (
             <motion.div key={ct.type} variants={fadeUp}
               onClick={() => setChartType(ct.type)}
@@ -357,7 +360,8 @@ export default function ReadingChartsLesson() {
               <div className="flex-1">
                 <h4 className="font-bold text-[15px] mb-1">{ct.name}</h4>
                 <p className="text-sm text-gray-400 leading-relaxed mb-1">{ct.desc}</p>
-                <p className="text-[11px] text-primary-400">{ct.best}</p>
+                <p className="text-[11px] text-primary-400 mb-2">{ct.best}</p>
+                <p className="text-[11px] text-amber-400/70 italic">{ct.layman}</p>
               </div>
               {chartType === ct.type && <span className="text-amber-400 text-xs font-semibold mt-1">ACTIVE ✓</span>}
             </motion.div>
@@ -369,8 +373,11 @@ export default function ReadingChartsLesson() {
       <section className="max-w-2xl mx-auto px-5 py-10">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">02 — Chart Playground</motion.p>
-          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Explore & Interact</motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Toggle chart types, switch timeframes, and add support/resistance levels. This is YOUR sandbox.</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Your First Chart — Play With It!</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-3">This is a real chart. Go ahead — tap the buttons. Break things. Explore. You can&apos;t lose any money here.</motion.p>
+          <motion.div variants={fadeUp} className="p-3 rounded-xl bg-amber-500/5 border border-amber-500/10 mb-6">
+            <p className="text-xs text-amber-400 leading-relaxed">💡 <strong>Try this:</strong> Switch from Line → Candle and see how much more detail appears. Then switch timeframes from 15m → Daily and watch how the same market tells a completely different story. Finally, toggle Support/Resistance ON — those lines show you where buyers and sellers are fighting.</p>
+          </motion.div>
         </motion.div>
 
         <div className="glass-card rounded-2xl overflow-hidden">
@@ -408,7 +415,7 @@ export default function ReadingChartsLesson() {
 
         <div className="mt-4 p-4 glass rounded-2xl">
           <p className="text-sm text-gray-400 leading-relaxed">
-            <strong className="text-white">What to notice:</strong> Switch between 15m → 1H → Daily and see how the <strong>same market looks completely different</strong> at each timeframe. The Daily chart shows the big picture. The 15m chart shows the noise. Toggle Support/Resistance to see how price reacts at key levels.
+            <strong className="text-white">What to notice:</strong> Switch between 15m → 1H → Daily. See how the <strong>same market looks completely different</strong> at each timeframe? The 15-minute chart is like watching a football match second by second — chaotic and stressful. The Daily chart is like reading the season results — calm, clear, and full of patterns. Toggle Support/Resistance to see invisible &quot;walls&quot; where price keeps bouncing.
           </p>
         </div>
       </section>
@@ -418,15 +425,18 @@ export default function ReadingChartsLesson() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">03 — Timeframes</motion.p>
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Same Market, Different Stories</motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">A 1-minute chart and a daily chart show the same asset — but tell completely different stories. Choosing the right timeframe is one of the most important decisions you&apos;ll make.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-4">A timeframe is <strong className="text-white">how much time each candle represents</strong>. On a 1-hour chart, each candle = 1 hour of trading. On a daily chart, each candle = one full day.</motion.p>
+          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-8">
+            <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like Google Maps zoom:</strong> Zoom out = you see the whole country and major motorways (daily/weekly chart). Zoom in = you see every street and every pothole (1-minute chart). Both views are useful, but they show different things. Most people need the motorway view, not the pothole view.</p>
+          </motion.div>
         </motion.div>
 
         <div className="space-y-3">
           {[
-            { tf: '1m — 5m', who: 'Scalpers', desc: 'Extreme detail, extreme noise. Trades last seconds to minutes. Requires intense focus and fast execution. Not for beginners.', col: 'text-red-400', bg: 'bg-red-500/10' },
-            { tf: '15m — 1H', who: 'Day Traders', desc: 'The sweet spot for intraday. Enough detail to find entries, enough structure to spot trends. Trades last minutes to hours.', col: 'text-amber-400', bg: 'bg-amber-500/10' },
-            { tf: '4H — Daily', who: 'Swing Traders', desc: 'The most reliable timeframes. Trades last days to weeks. Less screen time needed. Higher probability setups. Best for beginners.', col: 'text-green-400', bg: 'bg-green-500/10' },
-            { tf: 'Weekly — Monthly', who: 'Investors', desc: 'The big picture. Used to identify major trends and key levels. One candle = one week or month of data. Extremely powerful for context.', col: 'text-primary-400', bg: 'bg-primary-500/10' },
+            { tf: '1m — 5m', who: 'Scalpers', desc: 'Each candle is just 1-5 minutes. Extreme detail, extreme chaos. Like watching a stock ticker refresh every second — stressful and full of false signals. Not for beginners.', col: 'text-red-400', bg: 'bg-red-500/10' },
+            { tf: '15m — 1H', who: 'Day Traders', desc: 'The sweet spot for people who trade within a single day. Enough detail to find good entries, but not so zoomed in that every little wiggle scares you. Trades last minutes to hours.', col: 'text-amber-400', bg: 'bg-amber-500/10' },
+            { tf: '4H — Daily', who: 'Swing Traders', desc: 'The most reliable timeframes. Each candle represents 4 hours or a full day of trading. You only need to check your charts 1-2 times per day. Less stress, higher quality setups. Best for beginners.', col: 'text-green-400', bg: 'bg-green-500/10' },
+            { tf: 'Weekly — Monthly', who: 'Investors', desc: 'The bird\'s eye view. One candle = one week or one month. Used to spot major trends that last months or years. If you\'re thinking long-term, this is your view.', col: 'text-primary-400', bg: 'bg-primary-500/10' },
           ].map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
               className="flex items-start gap-4 p-5 glass-card rounded-2xl hover:translate-x-1 transition-all">
@@ -447,7 +457,7 @@ export default function ReadingChartsLesson() {
           className="mt-6 p-5 glass-card rounded-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-accent-500 to-primary-500" />
           <p className="text-sm text-gray-300 leading-relaxed">
-            <strong className="text-amber-400">Pro Tip:</strong> Always check the higher timeframe FIRST. If the Daily chart shows a strong uptrend, don&apos;t fight it on the 15-minute chart. <strong className="text-white">Trade with the current of the river, not against it.</strong>
+            <strong className="text-amber-400">Pro Tip:</strong> Always check the bigger picture FIRST. If the Daily chart shows a strong uptrend, don&apos;t fight it on the 15-minute chart. It&apos;s like swimming — <strong className="text-white">you want to swim WITH the current, not against it.</strong> Check the Daily chart for direction, then zoom into the 1H for your entry.
           </p>
         </motion.div>
       </section>
@@ -474,10 +484,10 @@ export default function ReadingChartsLesson() {
 
         <div className="space-y-3">
           {[
-            { icon: '🟢', title: 'Support = Floor', desc: 'A price level where buyers consistently step in. Price "bounces" off this level. The more times it holds, the stronger it becomes. When it finally breaks, it often becomes resistance.', col: 'border-l-green-500' },
-            { icon: '🔴', title: 'Resistance = Ceiling', desc: 'A price level where sellers consistently appear. Price gets "rejected" here. Breaking through resistance with strong volume often leads to rapid moves higher.', col: 'border-l-red-500' },
-            { icon: '🔄', title: 'The Flip', desc: 'When support breaks, it becomes resistance. When resistance breaks, it becomes support. This "role reversal" is one of the most reliable patterns in all of trading.', col: 'border-l-primary-500' },
-            { icon: '🎯', title: 'How to Draw Levels', desc: 'Look for price points that have been tested 2-3+ times. Use the bodies of candles (not just wicks). Draw zones, not exact lines — markets are messy. Focus on the most obvious levels first.', col: 'border-l-amber-500' },
+            { icon: '🟢', title: 'Support = The Floor', desc: 'Think of a price where buyers always show up — like a sale price people can\'t resist. Every time the price drops here, people buy and push it back up. The more times it bounces, the stronger the floor.', col: 'border-l-green-500' },
+            { icon: '🔴', title: 'Resistance = The Ceiling', desc: 'The opposite — a price where sellers always appear. Think of it as a price where people go "that\'s too expensive" and start selling. Price hits this ceiling and gets pushed back down.', col: 'border-l-red-500' },
+            { icon: '🔄', title: 'The Flip (Floors Become Ceilings)', desc: 'When a floor breaks, it often becomes a ceiling. Why? Everyone who bought at that level is now losing money — when price comes back, they sell to escape. Their selling creates the new ceiling. This works in reverse too.', col: 'border-l-primary-500' },
+            { icon: '🎯', title: 'How to Spot Levels', desc: 'Look for prices that keep appearing — where price bounces 2-3+ times. Don\'t try to be exact — draw a rough zone, not a precise line. If the level is obvious to you, it\'s probably obvious to thousands of other traders too — and that\'s what makes it powerful.', col: 'border-l-amber-500' },
           ].map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
               className={`p-5 glass-card rounded-2xl border-l-4 ${item.col}`}>
