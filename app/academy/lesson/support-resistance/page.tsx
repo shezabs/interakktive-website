@@ -2,7 +2,7 @@
 // ATLAS Academy — Lesson 2.1: Support & Resistance Mastery [PRO]
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { Crown, ArrowRight, Target, Award, Zap, Eye, Shield, TrendingUp, RotateCcw } from 'lucide-react';
@@ -10,6 +10,11 @@ import { Crown, ArrowRight, Target, Award, Zap, Eye, Shield, TrendingUp, RotateC
 // ============================================================
 // PRICE DATA
 // ============================================================
+function seededRandom(seed: number): () => number {
+  let s = seed;
+  return () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+}
+
 function seededPrices(seed: number, count: number, trend: number = 0): number[] {
   const p: number[] = [100]; let s = seed;
   for (let i = 1; i < count; i++) {
@@ -237,33 +242,68 @@ function SRFormationDemo() {
 function FlipZoneDemo() {
   const [phase, setPhase] = useState(0);
 
+  // Hand-crafted price data that shows: bounces → break → retest as resistance
+  const flipData = useMemo(() => {
+    const rand = seededRandom(77);
+    const p: number[] = [100];
+    const supportLevel = 92;
+    for (let i = 1; i < 150; i++) {
+      const noise = (rand() - 0.5) * 2;
+      let bias = 0;
+      if (i < 25) bias = -0.2; // drift down to support
+      else if (i < 35) bias = 0.3; // bounce 1
+      else if (i < 50) bias = -0.25; // back to support
+      else if (i < 60) bias = 0.35; // bounce 2
+      else if (i < 75) bias = -0.3; // back to support
+      else if (i < 80) bias = 0.1; // weak bounce (failing)
+      else if (i < 95) bias = -0.5; // BREAK through support
+      else if (i < 110) bias = 0.3; // rally back toward old support
+      else if (i < 120) bias = -0.2; // rejected at old support (now resistance)
+      else bias = -0.3; // continues down
+
+      let price = p[i - 1] + noise + bias;
+      // Phase 1-2: keep price near/above support
+      if (i < 80 && price < supportLevel - 1) price = supportLevel - 1 + (rand() * 2);
+      // Phase 3: break below
+      if (i >= 85 && i < 95 && price > supportLevel) price = supportLevel - (rand() * 3);
+      // Phase 3: retest from below — cap below the level
+      if (i >= 105 && i < 125 && price > supportLevel + 1) price = supportLevel + 0.5 - (rand() * 2);
+
+      p.push(price);
+    }
+    return { prices: p, level: supportLevel };
+  }, []);
+
   const drawFlip = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number) => {
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
-    const prices = flipPrices.slice(0, 120);
-    const { support: flipLevel } = detectSR(prices);
-    const range = Math.max(...prices) - Math.min(...prices);
-    const tol = range * 0.06;
 
+    // Show different portions of data for each phase
+    let prices: number[];
+    if (phase === 0) prices = flipData.prices.slice(0, 75); // bounces only
+    else if (phase === 1) prices = flipData.prices.slice(0, 100); // bounces + break
+    else prices = flipData.prices.slice(0, 140); // full story including retest
+
+    const level = flipData.level;
     const lines: any[] = [];
     const zones: any[] = [];
 
     if (phase === 0) {
-      lines.push({ y: flipLevel, color: 'rgba(34,197,94,0.5)', label: 'SUPPORT', dashed: true });
-      zones.push({ y1: flipLevel - tol * 0.5, y2: flipLevel + tol * 0.5, color: 'rgba(34,197,94,0.06)', label: '' });
+      lines.push({ y: level, color: 'rgba(34,197,94,0.5)', label: 'SUPPORT ✓', dashed: true });
+      zones.push({ y1: level - 1.5, y2: level + 1.5, color: 'rgba(34,197,94,0.08)', label: '' });
     } else if (phase === 1) {
-      lines.push({ y: flipLevel, color: 'rgba(239,68,68,0.5)', label: 'BREAK ↓', dashed: false });
+      lines.push({ y: level, color: 'rgba(245,158,11,0.6)', label: 'BROKEN ↓', dashed: false });
     } else {
-      lines.push({ y: flipLevel, color: 'rgba(239,68,68,0.5)', label: 'NOW RESISTANCE', dashed: true });
-      zones.push({ y1: flipLevel - tol * 0.5, y2: flipLevel + tol * 0.5, color: 'rgba(239,68,68,0.06)', label: '' });
+      lines.push({ y: level, color: 'rgba(239,68,68,0.5)', label: 'NOW RESISTANCE ✗', dashed: true });
+      zones.push({ y1: level - 1.5, y2: level + 1.5, color: 'rgba(239,68,68,0.08)', label: '' });
     }
 
     drawPriceChart(ctx, W, H, prices, { lines, zones });
-  }, [phase]);
+  }, [phase, flipData]);
 
   const phases = [
-    { title: 'Step 1: Price Respects Support', desc: 'Price bounces off this level — buyers are defending it. It\'s acting as a floor.' },
-    { title: 'Step 2: Support Breaks', desc: 'Eventually, selling pressure overwhelms the buyers. Price crashes through the level. The "floor" is broken.' },
-    { title: 'Step 3: Old Support = New Resistance', desc: 'When price tries to come back up, the old support now acts as a ceiling. Those who bought at support are now trapped — they sell to break even, creating resistance. This is the "flip".' },
+    { title: 'Step 1: Price Bounces Off Support', desc: 'Watch the green line — price drops to this level and bounces back up. Twice. Three times. Buyers are defending this price. It\'s a reliable floor... for now.' },
+    { title: 'Step 2: The Floor Breaks', desc: 'On the next test, sellers finally overwhelm the buyers. Price smashes through the support level and keeps falling. The floor that held 3 times has been destroyed.' },
+    { title: 'Step 3: Old Floor = New Ceiling', desc: 'Price tries to recover and rallies back up toward the old support level. But now it gets REJECTED there. The old floor has become a ceiling. Why? All those traders who bought at "support" are now trapped underwater — they sell to escape at breakeven, creating resistance.' },
   ];
 
   return (
