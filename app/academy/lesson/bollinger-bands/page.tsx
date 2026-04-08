@@ -300,27 +300,49 @@ function BBSignalGame() {
   const [done, setDone] = useState(false);
 
   const scenarios = useMemo(() => {
-    function makeData(seed: number, pattern: 'squeeze' | 'upper_touch' | 'lower_touch' | 'walk_up' | 'mean_revert'): number[] {
+    function makeData(seed: number, phases: { len: number; bias: number; vol: number }[]): number[] {
       const rand = seededRandom(seed);
       const p: number[] = [100];
-      for (let i = 1; i < 120; i++) {
-        const noise = (rand() - 0.5) * 2;
-        let vol = 1, trend = 0;
-        if (pattern === 'squeeze') { vol = i < 80 ? 0.3 : 2; trend = i > 80 ? 0.3 : 0; }
-        else if (pattern === 'upper_touch') { trend = 0.4; vol = 1.2; }
-        else if (pattern === 'lower_touch') { trend = -0.4; vol = 1.2; }
-        else if (pattern === 'walk_up') { trend = 0.5; vol = 0.8; }
-        else { trend = i < 60 ? 0.4 : -0.2; vol = 1.5; }
-        p.push(p[i - 1] + noise * vol + trend);
+      for (const phase of phases) {
+        for (let j = 0; j < phase.len; j++) {
+          const noise = (rand() - 0.5) * 2 * phase.vol;
+          p.push(p[p.length - 1] + noise + phase.bias);
+        }
       }
-      return p;
+      return p.slice(0, 120);
     }
+
     return [
-      { prices: makeData(111, 'squeeze'), correct: 'squeeze', explain: 'The bands are extremely narrow — a squeeze. Low volatility is compressing like a spring. A big breakout move is likely coming. Watch the direction of the breakout.' },
-      { prices: makeData(222, 'upper_touch'), correct: 'upper_resistance', explain: 'Price touched the upper band — it\'s at the edge of "normal" volatility. In a ranging market, this often means price is overextended and may pull back toward the middle.' },
-      { prices: makeData(333, 'lower_touch'), correct: 'lower_support', explain: 'Price touched the lower band — it\'s stretched to the downside. A bounce back toward the middle band is possible. Look for bullish candle patterns for confirmation.' },
-      { prices: makeData(444, 'walk_up'), correct: 'band_walk', explain: 'Price is "walking" along the upper band — continuously touching or staying near it. This is a STRONG trend signal. Don\'t sell just because price is at the upper band in a trending market!' },
-      { prices: makeData(555, 'mean_revert'), correct: 'mean_reversion', explain: 'Price moved far from the middle band and is now pulling back toward it. This is mean reversion — the tendency for price to return to its average. The middle band acts as a magnet.' },
+      {
+        // Squeeze: low vol for most of chart, then expansion
+        prices: makeData(111, [{ len: 30, bias: 0, vol: 1 }, { len: 60, bias: 0, vol: 0.25 }, { len: 30, bias: 0.4, vol: 2.5 }]),
+        correct: 'squeeze',
+        explain: 'The bands are extremely narrow — a squeeze. Low volatility is compressing like a spring. A big breakout move is likely coming. Watch the direction of the breakout.'
+      },
+      {
+        // Upper touch in RANGE: sideways market, price rallies to upper band at the end
+        prices: makeData(222, [{ len: 50, bias: 0, vol: 1.2 }, { len: 40, bias: -0.1, vol: 1 }, { len: 30, bias: 0.35, vol: 1.5 }]),
+        correct: 'upper_resistance',
+        explain: 'Price touched the upper band in a RANGING market — it\'s stretched to the upside. A pullback toward the middle band is likely. This is different from a band walk because the market isn\'t trending.'
+      },
+      {
+        // Lower touch in RANGE: sideways then drops to lower band
+        prices: makeData(333, [{ len: 50, bias: 0, vol: 1.2 }, { len: 30, bias: 0.1, vol: 1 }, { len: 40, bias: -0.35, vol: 1.5 }]),
+        correct: 'lower_support',
+        explain: 'Price touched the lower band — it\'s stretched to the downside. In a ranging market, a bounce back toward the middle band is possible. Look for bullish candle patterns.'
+      },
+      {
+        // Band walk: strong sustained uptrend, price hugs upper band
+        prices: makeData(444, [{ len: 20, bias: 0.05, vol: 0.8 }, { len: 100, bias: 0.45, vol: 0.7 }]),
+        correct: 'band_walk',
+        explain: 'Price is "walking" along the upper band — continuously touching it. This is a STRONG trend signal. Don\'t sell just because price is at the upper band — in a trending market, that\'s where it belongs!'
+      },
+      {
+        // Mean reversion: strong rally then pulling back toward middle
+        prices: makeData(555, [{ len: 60, bias: 0.35, vol: 1.3 }, { len: 60, bias: -0.2, vol: 1.5 }]),
+        correct: 'mean_reversion',
+        explain: 'Price moved far from the middle band and is now pulling back toward it. This is mean reversion — price acts like a rubber band, always tending to snap back to the average.'
+      },
     ];
   }, []);
 
