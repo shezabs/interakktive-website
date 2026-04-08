@@ -49,8 +49,40 @@ function calcEMA(prices: number[], period: number): (number | null)[] {
 }
 
 const mainPrices = generatePrices(42, 300, 0.04);
-const crossPrices = generatePrices(17, 250, 0.06);
-const bouncePrices = generatePrices(88, 200, 0.08);
+
+// Generate prices with trend reversals to create actual crossovers
+function generateCrossPrices(): number[] {
+  const rand = seededRandom(17);
+  const p: number[] = [100];
+  for (let i = 1; i < 350; i++) {
+    const noise = (rand() - 0.5) * 2;
+    // Phase 1: downtrend (0-80), Phase 2: uptrend (80-200), Phase 3: downtrend (200-280), Phase 4: uptrend (280+)
+    let trend = 0;
+    if (i < 80) trend = -0.25;
+    else if (i < 200) trend = 0.3;
+    else if (i < 280) trend = -0.25;
+    else trend = 0.2;
+    p.push(p[i - 1] + noise + trend);
+  }
+  return p;
+}
+const crossPrices = generateCrossPrices();
+// Generate uptrend with periodic pullbacks that touch the MA
+function generateBouncePrices(): number[] {
+  const rand = seededRandom(88);
+  const p: number[] = [80];
+  for (let i = 1; i < 200; i++) {
+    const noise = (rand() - 0.5) * 2;
+    const trend = 0.2; // steady uptrend
+    // Every ~25 candles, create a pullback (sharp dip for 8-10 candles)
+    const cyclePos = i % 30;
+    let pullback = 0;
+    if (cyclePos >= 20 && cyclePos <= 27) pullback = -0.8; // pullback phase
+    p.push(p[i - 1] + noise + trend + pullback);
+  }
+  return p;
+}
+const bouncePrices = generateBouncePrices();
 
 // ============================================================
 // CHART RENDERER WITH MA OVERLAYS
@@ -128,15 +160,20 @@ function renderChart(
 
   // Bounce dots
   opts?.showBounceDots?.forEach(bd => {
-    prices.forEach((p, i) => {
+    for (let i = 3; i < prices.length - 2; i++) {
       const maVal = bd.ma[i];
       if (maVal === null) return;
-      if (Math.abs(p - maVal) < bd.tolerance && i > 0 && prices[i - 1] < maVal && p >= maVal) {
-        ctx.fillStyle = bd.color; ctx.beginPath(); ctx.arc(toX(i), toY(p), 4, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = bd.color.replace(/[\d.]+\)$/, '0.12)');
-        ctx.beginPath(); ctx.arc(toX(i), toY(p), 12, 0, Math.PI * 2); ctx.fill();
+      // A bounce: price comes close to the MA from above, then moves back up
+      // Check if this candle is a local low near the MA
+      const isLocalLow = prices[i] < prices[i - 1] && prices[i] < prices[i - 2] && prices[i + 1] > prices[i] && prices[i + 2] > prices[i];
+      const nearMA = Math.abs(prices[i] - maVal) < bd.tolerance;
+      const aboveMA = prices[i] >= maVal - bd.tolerance * 0.5; // allow slight dip below
+      if (isLocalLow && nearMA && aboveMA) {
+        ctx.fillStyle = bd.color; ctx.beginPath(); ctx.arc(toX(i), toY(prices[i]), 5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bd.color.replace(/[\d.]+\)$/, '0.15)');
+        ctx.beginPath(); ctx.arc(toX(i), toY(prices[i]), 14, 0, Math.PI * 2); ctx.fill();
       }
-    });
+    }
   });
 
   return { toX, toY };
@@ -357,7 +394,23 @@ function CrossoverDemo() {
 // EMA vs SMA RACE
 // ============================================================
 function EMAvsSMADemo() {
-  const prices = mainPrices.slice(0, 150);
+  // Generate choppy data with sharp reversals to highlight EMA speed advantage
+  const prices = useMemo(() => {
+    const rand = seededRandom(777);
+    const p: number[] = [100];
+    for (let i = 1; i < 150; i++) {
+      const noise = (rand() - 0.5) * 3;
+      // Sharp reversals every ~30 candles
+      let trend = 0;
+      if (i < 30) trend = 0.5;
+      else if (i < 55) trend = -0.6;
+      else if (i < 85) trend = 0.7;
+      else if (i < 115) trend = -0.5;
+      else trend = 0.6;
+      p.push(p[i - 1] + noise + trend);
+    }
+    return p;
+  }, []);
   const sma20 = useMemo(() => calcSMA(prices, 20), [prices]);
   const ema20 = useMemo(() => calcEMA(prices, 20), [prices]);
 
@@ -404,7 +457,7 @@ function DynamicSupportDemo() {
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
     renderChart(ctx, W, H, prices, [
       { data: sma50, color: 'rgba(14,165,233,0.7)', width: 2.5, label: '50 SMA' },
-    ], { showBounceDots: [{ ma: sma50, tolerance: 2, color: 'rgba(34,197,94,0.7)' }] });
+    ], { showBounceDots: [{ ma: sma50, tolerance: 4, color: 'rgba(34,197,94,0.7)' }] });
   }, [prices, sma50]);
 
   return (
