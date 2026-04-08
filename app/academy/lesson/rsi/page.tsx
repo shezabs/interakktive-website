@@ -514,6 +514,84 @@ function GoldConfetti({ active }: { active: boolean }) {
 // ============================================================
 // MAIN PAGE
 // ============================================================
+
+// ============================================================
+// ANIMATED CONCEPT: Rubber band stretching and snapping
+// ============================================================
+function RubberBandAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const midY = H / 2;
+    const midX = W / 2;
+    const cycle = (f % 180) / 180; // 0 to 1
+
+    // Equilibrium line
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(30, midY); ctx.lineTo(W - 30, midY); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '600 7px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.15)'; ctx.textAlign = 'center';
+    ctx.fillText('RSI 50 (neutral)', midX, midY + 4);
+
+    // Overbought zone
+    ctx.fillStyle = 'rgba(239,68,68,0.06)'; ctx.fillRect(30, 8, W - 60, midY - 30);
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.4)'; ctx.textAlign = 'right';
+    ctx.fillText('OVERBOUGHT (70+)', W - 35, 20);
+
+    // Oversold zone
+    ctx.fillStyle = 'rgba(34,197,94,0.06)'; ctx.fillRect(30, midY + 22, W - 60, midY - 30);
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.4)'; ctx.textAlign = 'right';
+    ctx.fillText('OVERSOLD (30-)', W - 35, H - 10);
+
+    // Rubber band stretching animation
+    let stretch = 0;
+    let bandColor = 'rgba(245,158,11,0.7)';
+    if (cycle < 0.4) {
+      // Stretching up (becoming overbought)
+      stretch = -(cycle / 0.4) * (midY - 25);
+      bandColor = 'rgba(239,68,68,' + (0.3 + (cycle / 0.4) * 0.5) + ')';
+    } else if (cycle < 0.5) {
+      // SNAP back!
+      const snapProgress = (cycle - 0.4) / 0.1;
+      stretch = -(1 - snapProgress) * (midY - 25) + snapProgress * 10;
+      bandColor = 'rgba(245,158,11,0.8)';
+    } else if (cycle < 0.55) {
+      // Settle
+      stretch = (1 - (cycle - 0.5) / 0.05) * 10;
+    } else if (cycle < 0.95) {
+      // Stretching down (becoming oversold)
+      const downProgress = (cycle - 0.55) / 0.4;
+      stretch = downProgress * (midY - 25);
+      bandColor = 'rgba(34,197,94,' + (0.3 + downProgress * 0.5) + ')';
+    } else {
+      // SNAP back from oversold!
+      const snapProgress = (cycle - 0.95) / 0.05;
+      stretch = (1 - snapProgress) * (midY - 25) - snapProgress * 10;
+      bandColor = 'rgba(245,158,11,0.8)';
+    }
+
+    const bandY = midY + stretch;
+
+    // Rubber band line
+    ctx.strokeStyle = bandColor; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(midX - 60, midY);
+    ctx.quadraticCurveTo(midX, bandY, midX + 60, midY);
+    ctx.stroke();
+
+    // Ball at stretch point
+    const gradient = ctx.createRadialGradient(midX, bandY, 0, midX, bandY, 10);
+    gradient.addColorStop(0, bandColor); gradient.addColorStop(1, bandColor.replace(/[\d.]+\)$/, '0.1)'));
+    ctx.fillStyle = gradient;
+    ctx.beginPath(); ctx.arc(midX, bandY, 10, 0, Math.PI * 2); ctx.fill();
+
+    // Label on ball
+    ctx.font = '700 8px sans-serif'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+    if (stretch < -20) ctx.fillText('70+', midX, bandY + 3);
+    else if (stretch > 20) ctx.fillText('30-', midX, bandY + 3);
+    else ctx.fillText('50', midX, bandY + 3);
+  }, []);
+  return <AnimScene drawFn={draw} height={170} />;
+}
+
 export default function RSILesson() {
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>(Array(quizQuestions.length).fill(null));
   const [quizDone, setQuizDone] = useState(false);
@@ -587,7 +665,8 @@ export default function RSILesson() {
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">The Rubber Band Effect</motion.h2>
           <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Stretch a rubber band between your fingers. Pull it further... further... eventually it <strong className="text-white">snaps back</strong>. The further you stretch it, the harder it snaps. <strong className="text-white">RSI measures how far the market&apos;s rubber band is stretched.</strong></motion.p>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">When buying pressure has been relentless (RSI above 70), the rubber band is stretched to the upside — a snap back (pullback) becomes likely. When selling has been extreme (RSI below 30), it&apos;s stretched to the downside — a bounce becomes likely. RSI doesn&apos;t predict the future, but it tells you when the pressure is unsustainable.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-4">When buying pressure has been relentless (RSI above 70), the rubber band is stretched to the upside — a snap back (pullback) becomes likely. When selling has been extreme (RSI below 30), it&apos;s stretched to the downside — a bounce becomes likely. RSI doesn&apos;t predict the future, but it tells you when the pressure is unsustainable.</motion.p>
+          <motion.div variants={fadeUp} className="mb-4"><RubberBandAnimation /></motion.div>
           <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-500 via-purple-500 to-pink-500" />
             <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> GBP/USD has rallied 400 pips in 5 days. RSI hits 82. Your friend says &quot;buy, it&apos;s going to the moon!&quot; But you see the stretched rubber band. You wait. Next day: 120-pip pullback. <strong className="text-white">You buy the dip at a much better price — because RSI warned you the rally was exhausted.</strong></p>

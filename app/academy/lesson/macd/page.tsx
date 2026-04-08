@@ -426,6 +426,87 @@ function GoldConfetti({ active }: { active: boolean }) {
 // ============================================================
 // MAIN PAGE
 // ============================================================
+
+// ============================================================
+// ANIMATED CONCEPT: Two runners racing — fast overtakes slow
+// ============================================================
+function RunnersAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const cycle = (f % 300) / 300;
+
+    // Track
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1;
+    const trackY1 = H * 0.35, trackY2 = H * 0.65;
+    ctx.beginPath(); ctx.moveTo(20, trackY1); ctx.lineTo(W - 20, trackY1); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(20, trackY2); ctx.lineTo(W - 20, trackY2); ctx.stroke();
+
+    // Runner positions
+    const trackW = W - 60;
+    let fastX = 0, slowX = 0;
+
+    if (cycle < 0.3) {
+      // Both running, slow is ahead
+      slowX = 30 + (cycle / 0.3) * trackW * 0.5;
+      fastX = 30 + (cycle / 0.3) * trackW * 0.35;
+    } else if (cycle < 0.5) {
+      // Fast accelerates, catches up
+      const p = (cycle - 0.3) / 0.2;
+      slowX = 30 + trackW * 0.5 + p * trackW * 0.15;
+      fastX = 30 + trackW * 0.35 + p * trackW * 0.35;
+    } else if (cycle < 0.7) {
+      // Fast overtakes! (bullish crossover)
+      const p = (cycle - 0.5) / 0.2;
+      slowX = 30 + trackW * 0.65 + p * trackW * 0.1;
+      fastX = 30 + trackW * 0.7 + p * trackW * 0.2;
+    } else {
+      // Fast pulls ahead further
+      const p = (cycle - 0.7) / 0.3;
+      slowX = 30 + trackW * 0.75 + p * trackW * 0.15;
+      fastX = 30 + trackW * 0.9 + p * trackW * 0.08;
+    }
+
+    // Fast runner (12 EMA)
+    ctx.font = '18px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('🏃', fastX, trackY1 + 6);
+    ctx.font = '600 7px sans-serif'; ctx.fillStyle = 'rgba(14,165,233,0.6)';
+    ctx.fillText('FAST (12 EMA)', fastX, trackY1 - 10);
+
+    // Slow runner (26 EMA)
+    ctx.font = '18px sans-serif';
+    ctx.fillText('🚶', slowX, trackY2 + 6);
+    ctx.font = '600 7px sans-serif'; ctx.fillStyle = 'rgba(245,158,11,0.6)';
+    ctx.fillText('SLOW (26 EMA)', slowX, trackY2 + 22);
+
+    // Gap measurement (MACD)
+    const gap = fastX - slowX;
+    ctx.strokeStyle = gap > 0 ? 'rgba(34,197,94,0.4)' : 'rgba(239,68,68,0.4)';
+    ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(fastX, trackY1 + 10); ctx.lineTo(fastX, trackY2 - 10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(slowX, trackY1 + 10); ctx.lineTo(slowX, trackY2 - 10); ctx.stroke(); ctx.setLineDash([]);
+
+    // MACD label
+    ctx.font = '700 9px sans-serif'; ctx.textAlign = 'center';
+    if (gap > 5) {
+      ctx.fillStyle = 'rgba(34,197,94,0.7)';
+      ctx.fillText('✦ BULLISH — Fast ahead!', W / 2, H - 8);
+    } else if (gap < -5) {
+      ctx.fillStyle = 'rgba(239,68,68,0.7)';
+      ctx.fillText('✗ BEARISH — Slow ahead', W / 2, H - 8);
+    } else {
+      ctx.fillStyle = 'rgba(245,158,11,0.7)';
+      ctx.fillText('⚡ CROSSOVER — Momentum shift!', W / 2, H - 8);
+    }
+
+    // Crossover flash
+    if (Math.abs(gap) < 8 && cycle > 0.45 && cycle < 0.55) {
+      ctx.fillStyle = 'rgba(245,158,11,0.15)';
+      ctx.beginPath(); ctx.arc((fastX + slowX) / 2, H / 2, 30, 0, Math.PI * 2); ctx.fill();
+    }
+  }, []);
+  return <AnimScene drawFn={draw} height={170} />;
+}
+
 export default function MACDLesson() {
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>(Array(quizQuestions.length).fill(null));
   const [quizDone, setQuizDone] = useState(false);
@@ -500,6 +581,7 @@ export default function MACDLesson() {
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Two Runners Racing</motion.h2>
           <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Imagine two runners on a track — one fast (short-term momentum) and one slow (long-term trend). When the fast runner is ahead, momentum is bullish. When the fast runner falls behind, momentum is fading. <strong className="text-white">MACD measures the gap between the two runners.</strong></motion.p>
           <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">The moment the fast runner overtakes the slow one? That&apos;s a bullish crossover — momentum has shifted. The moment the fast runner falls behind? Bearish crossover. MACD catches these momentum shifts early, often before the price move is obvious on the chart.</motion.p>
+          <motion.div variants={fadeUp} className="mb-4"><RunnersAnimation /></motion.div>
           <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 via-amber-500 to-green-500" />
             <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> You&apos;re watching XAUUSD (Gold). Price looks flat, nothing happening. But you notice the MACD histogram bars are growing — the fast runner is quietly pulling ahead. Two days later: Gold breaks out for a $40 move. <strong className="text-white">MACD showed you the momentum building BEFORE the breakout happened.</strong></p>

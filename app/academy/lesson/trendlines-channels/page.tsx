@@ -368,6 +368,71 @@ function GoldConfetti({ active }: { active: boolean }) {
 // ============================================================
 // MAIN PAGE
 // ============================================================
+
+// ============================================================
+// ANIMATED CONCEPT: Escalator carrying price upward
+// ============================================================
+function EscalatorAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const t = f * 0.01;
+    const mid = W / 2;
+
+    // LEFT: Escalator going up (uptrend)
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('UPTREND = ESCALATOR UP', mid / 2, 14);
+
+    // Escalator line (ascending)
+    ctx.strokeStyle = 'rgba(34,197,94,0.4)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(15, H - 20); ctx.lineTo(mid - 15, 30); ctx.stroke();
+
+    // Steps on escalator
+    const steps = 8;
+    for (let i = 0; i < steps; i++) {
+      const progress = ((i / steps) + (f * 0.003) % 1) % 1;
+      const x = 15 + progress * (mid - 30);
+      const y = (H - 20) - progress * (H - 50);
+      ctx.strokeStyle = 'rgba(34,197,94,0.2)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x - 8, y); ctx.lineTo(x + 8, y); ctx.stroke();
+    }
+
+    // Person riding up
+    const riderP = ((f * 0.005) % 1);
+    const riderX = 15 + riderP * (mid - 30);
+    const riderY = (H - 20) - riderP * (H - 50);
+    ctx.font = '16px sans-serif'; ctx.fillText('🧑', riderX, riderY - 4);
+    ctx.font = '8px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.4)';
+    ctx.fillText('Trend carries you up', mid / 2, H - 6);
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(mid, 8); ctx.lineTo(mid, H - 4); ctx.stroke(); ctx.setLineDash([]);
+
+    // RIGHT: Escalator stopped (trend broken)
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('TREND BREAK = ESCALATOR STOPS', mid + mid / 2, 14);
+
+    // Broken escalator line
+    const breakPoint = 0.6;
+    ctx.strokeStyle = 'rgba(34,197,94,0.3)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(mid + 15, H - 20); ctx.lineTo(mid + 15 + breakPoint * (mid - 30), (H - 20) - breakPoint * (H - 50)); ctx.stroke();
+
+    // Broken part (goes down)
+    ctx.strokeStyle = 'rgba(239,68,68,0.4)'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]);
+    const bx = mid + 15 + breakPoint * (mid - 30);
+    const by = (H - 20) - breakPoint * (H - 50);
+    ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(W - 15, H - 25); ctx.stroke(); ctx.setLineDash([]);
+
+    // Person stuck/falling
+    ctx.font = '16px sans-serif'; ctx.fillText('🧑', bx, by - 4);
+    ctx.font = '10px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.5)';
+    ctx.fillText('⚠️', bx + 12, by - 8);
+    ctx.font = '8px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.4)';
+    ctx.fillText('Time to step off!', mid + mid / 2, H - 6);
+  }, []);
+  return <AnimScene drawFn={draw} height={170} />;
+}
+
 export default function TrendlinesChannelsLesson() {
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>(Array(quizQuestions.length).fill(null));
   const [quizDone, setQuizDone] = useState(false);
@@ -443,6 +508,7 @@ export default function TrendlinesChannelsLesson() {
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Riding an Escalator</motion.h2>
           <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Stand on an escalator going up. You keep rising without effort — that&apos;s a trend. Now imagine the escalator stops. You&apos;re still standing, but no longer rising. <strong className="text-white">A trendline tells you if the escalator is still running.</strong></motion.p>
           <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">When price is trending up, it follows a diagonal path — like an escalator. A trendline drawn along the lows shows you the angle and speed. When price breaks below that line? The escalator just stopped. Time to step off.</motion.p>
+          <motion.div variants={fadeUp} className="mb-4"><EscalatorAnimation /></motion.div>
           <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-primary-500" />
             <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> EUR/USD has been climbing for 3 weeks following a clean trendline. You buy on each pullback to the trendline and ride the bounce. On the fourth touch, price breaks through and closes below. <strong className="text-white">You exit immediately — saving yourself from a 150-pip drop that followed.</strong></p>

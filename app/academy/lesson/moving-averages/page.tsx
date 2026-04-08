@@ -597,6 +597,63 @@ function GoldConfetti({ active }: { active: boolean }) {
 // ============================================================
 // MAIN PAGE
 // ============================================================
+
+// ============================================================
+// ANIMATED CONCEPT: Weather (noisy) vs Climate (smooth average)
+// ============================================================
+function WeatherClimateAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const t = f * 0.02;
+    const pad = 10;
+
+    // Generate "daily temperature" (noisy) and "seasonal average" (smooth)
+    const days = 80;
+    const daily: number[] = [];
+    const avg: number[] = [];
+    for (let i = 0; i < days; i++) {
+      const season = Math.sin((i + t * 5) * 0.08) * 30 + 50; // smooth seasonal curve
+      const noise = Math.sin(i * 2.3 + t) * 12 + Math.cos(i * 3.7 + t * 0.5) * 8;
+      daily.push(season + noise);
+      avg.push(season);
+    }
+
+    const min = 10, max = 100;
+    const toX = (i: number) => pad + (i / (days - 1)) * (W - pad * 2);
+    const toY = (v: number) => pad + 16 + (1 - (v - min) / (max - min)) * (H - pad * 2 - 24);
+
+    // Labels
+    ctx.font = '600 8px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(239,68,68,0.5)'; ctx.fillText('Daily Price (noisy, chaotic)', pad, 12);
+    ctx.fillStyle = 'rgba(14,165,233,0.7)'; ctx.fillText('Moving Average (smooth, clear trend)', W / 2, 12);
+
+    // Daily line (noisy - red)
+    ctx.beginPath();
+    daily.forEach((v, i) => { const x = toX(i), y = toY(v); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+    ctx.strokeStyle = 'rgba(239,68,68,0.35)'; ctx.lineWidth = 1; ctx.stroke();
+
+    // Daily dots
+    daily.forEach((v, i) => {
+      if (i % 3 !== 0) return;
+      ctx.fillStyle = 'rgba(239,68,68,0.25)';
+      ctx.beginPath(); ctx.arc(toX(i), toY(v), 2, 0, Math.PI * 2); ctx.fill();
+    });
+
+    // Average line (smooth - blue)
+    ctx.beginPath();
+    avg.forEach((v, i) => { const x = toX(i), y = toY(v); if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+    ctx.strokeStyle = 'rgba(14,165,233,0.7)'; ctx.lineWidth = 2.5; ctx.stroke();
+
+    // Arrow showing trend direction
+    const lastAvg = avg[avg.length - 1];
+    const prevAvg = avg[avg.length - 10];
+    const trendUp = lastAvg > prevAvg;
+    ctx.font = '14px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(trendUp ? '📈' : '📉', W - pad, toY(lastAvg));
+  }, []);
+  return <AnimScene drawFn={draw} height={160} />;
+}
+
 export default function MovingAveragesLesson() {
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>(Array(quizQuestions.length).fill(null));
   const [quizDone, setQuizDone] = useState(false);
@@ -678,6 +735,16 @@ export default function MovingAveragesLesson() {
           <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 via-green-500 to-amber-500" />
             <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> Gold drops $30 in a single day. Panic? The 200-day moving average is still trending up and price is still above it. The long-term trend is intact — this is just a noisy day. <strong className="text-white">Institutions use the 200 MA to define bull vs bear markets. Now you will too.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Weather vs Climate Animation */}
+      <section className="max-w-2xl mx-auto px-5 pb-4">
+        <WeatherClimateAnimation />
+      </section>
+
+      <section className="max-w-2xl mx-auto px-5 pt-4">
           </motion.div>
         </motion.div>
       </section>

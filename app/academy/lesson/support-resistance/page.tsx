@@ -441,6 +441,69 @@ function GoldConfetti({ active }: { active: boolean }) {
 // ============================================================
 // MAIN PAGE
 // ============================================================
+
+// ============================================================
+// ANIMATED CONCEPT: Ball bouncing between floor and ceiling
+// ============================================================
+function BouncingBallAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const floorY = H - 25;
+    const ceilY = 25;
+
+    // Floor (support)
+    ctx.fillStyle = 'rgba(34,197,94,0.15)'; ctx.fillRect(0, floorY - 4, W, 8);
+    ctx.strokeStyle = 'rgba(34,197,94,0.4)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, floorY); ctx.lineTo(W, floorY); ctx.stroke();
+    ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.6)'; ctx.textAlign = 'left';
+    ctx.fillText('SUPPORT (Floor)', 10, floorY + 14);
+
+    // Ceiling (resistance)
+    ctx.fillStyle = 'rgba(239,68,68,0.15)'; ctx.fillRect(0, ceilY - 4, W, 8);
+    ctx.strokeStyle = 'rgba(239,68,68,0.4)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, ceilY); ctx.lineTo(W, ceilY); ctx.stroke();
+    ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.6)'; ctx.textAlign = 'left';
+    ctx.fillText('RESISTANCE (Ceiling)', 10, ceilY - 8);
+
+    // Bouncing ball
+    const range = floorY - ceilY;
+    const period = 120;
+    const phase = (f % period) / period;
+    const ballY = ceilY + Math.abs(Math.sin(phase * Math.PI)) * range;
+    const ballX = 40 + ((f * 0.8) % (W - 80));
+
+    // Ball trail
+    for (let i = 5; i > 0; i--) {
+      const trailPhase = ((f - i * 6) % period) / period;
+      const trailY = ceilY + Math.abs(Math.sin(trailPhase * Math.PI)) * range;
+      const trailX = 40 + (((f - i * 6) * 0.8) % (W - 80));
+      ctx.fillStyle = 'rgba(245,158,11,' + (0.03 * (6 - i)) + ')';
+      ctx.beginPath(); ctx.arc(trailX, trailY, 8, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Main ball
+    const gradient = ctx.createRadialGradient(ballX, ballY, 0, ballX, ballY, 12);
+    gradient.addColorStop(0, 'rgba(245,158,11,0.9)'); gradient.addColorStop(1, 'rgba(245,158,11,0.3)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath(); ctx.arc(ballX, ballY, 12, 0, Math.PI * 2); ctx.fill();
+
+    // Bounce impact flash
+    if (ballY > floorY - 15) {
+      ctx.fillStyle = 'rgba(34,197,94,0.2)';
+      ctx.beginPath(); ctx.arc(ballX, floorY, 20, 0, Math.PI * 2); ctx.fill();
+    }
+    if (ballY < ceilY + 15) {
+      ctx.fillStyle = 'rgba(239,68,68,0.2)';
+      ctx.beginPath(); ctx.arc(ballX, ceilY, 20, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Label
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(245,158,11,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('PRICE', ballX, ballY - 16);
+  }, []);
+  return <AnimScene drawFn={draw} height={170} />;
+}
+
 export default function SupportResistanceLesson() {
   const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>(Array(quizQuestions.length).fill(null));
   const [quizDone, setQuizDone] = useState(false);
@@ -516,7 +579,8 @@ export default function SupportResistanceLesson() {
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">A Ball Between Floor &amp; Ceiling</motion.h2>
           <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Throw a rubber ball in a room. It hits the ceiling and bounces down. It hits the floor and bounces up. It keeps bouncing between the two — until someone opens a door and it escapes. <strong className="text-white">That&apos;s exactly how price moves between support and resistance.</strong></motion.p>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Support is the floor. Resistance is the ceiling. Price bounces between them. When the &quot;door opens&quot; (a level breaks), price escapes and moves fast. If you can identify these levels, you know where to buy, where to sell, and when a breakout is happening.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-4">Support is the floor. Resistance is the ceiling. Price bounces between them. When the &quot;door opens&quot; (a level breaks), price escapes and moves fast. If you can identify these levels, you know where to buy, where to sell, and when a breakout is happening.</motion.p>
+          <motion.div variants={fadeUp} className="mb-4"><BouncingBallAnimation /></motion.div>
           <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-amber-500 to-red-500" />
             <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> Bitcoin has bounced off $60,000 four times this month. You see it dropping toward $60,000 again. Instead of panicking, you place a buy order at $60,200 with a stop at $59,500. Price bounces again, rallies to $64,000. <strong className="text-white">You made $3,800 per BTC because you knew the floor.</strong></p>
