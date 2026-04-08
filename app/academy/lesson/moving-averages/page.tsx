@@ -104,9 +104,10 @@ function renderChart(
     ctx.stroke(); ctx.setLineDash([]);
     // Label at end
     if (o.label) {
-      const lastIdx = o.data.reduce((acc, v, i) => v !== null ? i : acc, 0);
+      let lastIdx = 0;
+      for (let li = o.data.length - 1; li >= 0; li--) { if (o.data[li] !== null) { lastIdx = li; break; } }
       const lastVal = o.data[lastIdx];
-      if (lastVal !== null) {
+      if (lastVal !== null && lastVal !== undefined) {
         ctx.font = '600 8px sans-serif'; ctx.fillStyle = o.color; ctx.textAlign = 'left';
         ctx.fillText(o.label, toX(lastIdx) + 4, toY(lastVal) - 3);
       }
