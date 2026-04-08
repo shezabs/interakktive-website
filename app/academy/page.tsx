@@ -21,6 +21,7 @@ const liveLessons = new Set([
   'rsi',
   'macd',
   'bollinger-bands',
+  'volume-analysis',
 ]);
 
 export default function AcademyPage() {
