@@ -18,6 +18,7 @@ const liveLessons = new Set([
   'support-resistance',
   'trendlines-channels',
   'moving-averages',
+  'rsi',
 ]);
 
 export default function AcademyPage() {
