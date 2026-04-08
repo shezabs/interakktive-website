@@ -3,9 +3,85 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { Crown, ArrowRight, Calculator, Target, Award, Zap, AlertTriangle, CheckCircle } from 'lucide-react';
+
+// ============================================================
+// ANIMATED SCENE (reusable)
+// ============================================================
+function AnimScene({ drawFn, height = 160 }: { drawFn: (ctx: CanvasRenderingContext2D, w: number, h: number, f: number) => void; height?: number }) {
+  const cRef = useRef<HTMLCanvasElement>(null); const dRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(dRef, { amount: 0.1 }); const fRef = useRef(0);
+  useEffect(() => {
+    const c = cRef.current, d = dRef.current; if (!c || !d) return;
+    const ctx = c.getContext('2d'); if (!ctx) return; let id: number;
+    const rs = () => { const r = d.getBoundingClientRect(); c.width = r.width * 2; c.height = r.height * 2; c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; };
+    rs(); window.addEventListener('resize', rs);
+    const loop = () => { if (inView) { ctx.setTransform(2, 0, 0, 2, 0, 0); ctx.clearRect(0, 0, c.width, c.height); drawFn(ctx, c.width / 2, c.height / 2, fRef.current); } fRef.current++; id = requestAnimationFrame(loop); };
+    loop(); return () => { cancelAnimationFrame(id); window.removeEventListener('resize', rs); };
+  }, [inView, drawFn]);
+  return <div ref={dRef} className="w-full rounded-2xl overflow-hidden" style={{ height, background: 'rgba(0,0,0,0.3)' }}><canvas ref={cRef} /></div>;
+}
+
+// ============================================================
+// ANIMATED CONCEPT: Measuring vs Eyeballing
+// ============================================================
+function MeasuringAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const mid = W / 2;
+    const cycle = (f % 240) / 240; // 0 to 1 cycle
+
+    // LEFT: Eyeballing (wrong way)
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('GUESSING LOT SIZE', mid / 2, 14);
+
+    // Random-sized cups/portions
+    const cups = [0.3, 0.8, 0.15, 0.95, 0.4];
+    cups.forEach((size, i) => {
+      const x = 15 + (i / cups.length) * (mid - 40);
+      const h = size * (H - 50);
+      const y = H - 10 - h;
+      ctx.fillStyle = `rgba(239,68,68,${0.2 + size * 0.4})`;
+      ctx.fillRect(x, y, 22, h);
+      ctx.strokeStyle = 'rgba(239,68,68,0.3)'; ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, 22, h);
+    });
+    ctx.font = '8px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.5)';
+    ctx.fillText('Different size every time!', mid / 2, H - 2);
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(mid, 8); ctx.lineTo(mid, H - 4); ctx.stroke(); ctx.setLineDash([]);
+
+    // RIGHT: Measuring (right way)
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('CALCULATED LOT SIZE', mid + mid / 2, 14);
+
+    // Equal-sized portions
+    const targetH = (H - 50) * 0.3;
+    for (let i = 0; i < 5; i++) {
+      const x = mid + 15 + (i / 5) * (mid - 40);
+      const y = H - 10 - targetH;
+      ctx.fillStyle = 'rgba(34,197,94,0.35)';
+      ctx.fillRect(x, y, 22, targetH);
+      ctx.strokeStyle = 'rgba(34,197,94,0.4)'; ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, 22, targetH);
+    }
+
+    // Target line
+    ctx.strokeStyle = 'rgba(34,197,94,0.3)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(mid + 10, H - 10 - targetH); ctx.lineTo(W - 10, H - 10 - targetH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = '7px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.5)'; ctx.textAlign = 'right';
+    ctx.fillText('1% risk', W - 12, H - 10 - targetH - 3);
+
+    ctx.font = '8px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('Same risk every time ✓', mid + mid / 2, H - 2);
+  }, []);
+
+  return <AnimScene drawFn={draw} height={150} />;
+}
 
 // ============================================================
 // FORMULA STEP ANIMATOR
@@ -504,6 +580,7 @@ export default function PositionSizingLesson() {
           <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-4">
             <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like medication dosage:</strong> A doctor doesn&apos;t just say &quot;take some paracetamol.&quot; They prescribe an EXACT amount based on your weight. Too little = doesn&apos;t work. Too much = dangerous. Position sizing is your trading dosage — calculated precisely for YOUR account.</p>
           </motion.div>
+          <motion.div variants={fadeUp} className="mb-4"><MeasuringAnimation /></motion.div>
           <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">Two traders can take the exact same trade. One calculated their size = risks 1% and sleeps well. The other guessed = risks 8% and wakes up to a margin call. <strong className="text-white">Same trade. Opposite outcomes. The only difference is the maths.</strong></motion.p>
         </motion.div>
 

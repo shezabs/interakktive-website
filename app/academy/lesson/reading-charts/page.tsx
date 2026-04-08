@@ -47,6 +47,127 @@ function AnimScene({ drawFn, height = 220 }: { drawFn: (ctx: CanvasRenderingCont
 }
 
 // ============================================================
+// ANIMATED CONCEPT: Driving Without a Map
+// ============================================================
+function MapAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const mid = W / 2;
+    const t = f * 0.02;
+
+    // LEFT SIDE: Without chart — chaotic path
+    ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.6)'; ctx.textAlign = 'center';
+    ctx.fillText('WITHOUT A CHART', mid / 2, 16);
+
+    // Draw chaotic road
+    ctx.beginPath(); ctx.strokeStyle = 'rgba(239,68,68,0.3)'; ctx.lineWidth = 2;
+    let x = 20, y = H / 2;
+    ctx.moveTo(x, y);
+    for (let i = 0; i < 12; i++) {
+      x += 18;
+      y += Math.sin(t + i * 1.7) * 25 + Math.cos(t * 0.7 + i * 2.3) * 15;
+      y = Math.max(30, Math.min(H - 20, y));
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Lost car emoji
+    const carX = 20 + (((f * 0.5) % 200) / 200) * (mid - 60);
+    const carY = H / 2 + Math.sin(t * 2) * 30 + Math.cos(t * 1.3) * 20;
+    ctx.font = '18px sans-serif'; ctx.fillText('🚗', carX, Math.max(30, Math.min(H - 10, carY)));
+    ctx.font = '10px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.5)'; ctx.fillText('???', carX + 5, carY - 14);
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(mid, 10); ctx.lineTo(mid, H - 10); ctx.stroke(); ctx.setLineDash([]);
+
+    // RIGHT SIDE: With chart — smooth path to target
+    ctx.font = '600 9px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.6)'; ctx.textAlign = 'center';
+    ctx.fillText('WITH A CHART', mid + mid / 2, 16);
+
+    // Draw smooth road with slight curves
+    ctx.beginPath(); ctx.strokeStyle = 'rgba(34,197,94,0.3)'; ctx.lineWidth = 2;
+    ctx.moveTo(mid + 20, H * 0.65);
+    for (let i = 0; i < 8; i++) {
+      const px = mid + 20 + (i / 7) * (mid - 50);
+      const py = H * 0.65 - (i / 7) * (H * 0.35) + Math.sin(i * 0.8) * 8;
+      ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // Target at end
+    ctx.font = '16px sans-serif'; ctx.fillText('🎯', W - 30, H * 0.28);
+
+    // Smooth car
+    const car2X = mid + 20 + (((f * 0.4) % 200) / 200) * (mid - 60);
+    const car2Y = H * 0.65 - (((f * 0.4) % 200) / 200) * (H * 0.35);
+    ctx.font = '18px sans-serif'; ctx.fillText('🚗', car2X, car2Y);
+    ctx.font = '10px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.5)'; ctx.fillText('📍', car2X + 5, car2Y - 14);
+  }, []);
+
+  return <AnimScene drawFn={draw} height={160} />;
+}
+
+// ============================================================
+// ANIMATED CONCEPT: Timeframe Zoom — same data at different scales
+// ============================================================
+function TimeframeZoomAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const t = f * 0.015;
+
+    // Generate one set of price data
+    const prices: number[] = [];
+    for (let i = 0; i < 100; i++) {
+      prices.push(50 + Math.sin(i * 0.06 + t) * 20 + Math.sin(i * 0.2) * 8 + Math.sin(i * 0.5 + t * 2) * 3);
+    }
+
+    const sections = [
+      { label: 'DAILY (Big Picture)', start: 0, end: 100, color: 'rgba(245,158,11,0.5)', x: 0 },
+      { label: '1 HOUR (Medium)', start: 30, end: 60, color: 'rgba(14,165,233,0.5)', x: W * 0.35 },
+      { label: '5 MIN (Zoomed In)', start: 42, end: 52, color: 'rgba(217,70,239,0.5)', x: W * 0.7 },
+    ];
+
+    const sw = W * 0.28;
+    sections.forEach((sec, si) => {
+      const sx = sec.x + 8;
+      const slice = prices.slice(sec.start, sec.end);
+      const min = Math.min(...slice) - 2, max = Math.max(...slice) + 2;
+      
+      // Background
+      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      ctx.fillRect(sx, 22, sw, H - 32);
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+      ctx.strokeRect(sx, 22, sw, H - 32);
+
+      // Label
+      ctx.font = '600 8px sans-serif'; ctx.fillStyle = sec.color; ctx.textAlign = 'center';
+      ctx.fillText(sec.label, sx + sw / 2, 16);
+
+      // Price line
+      ctx.beginPath(); ctx.strokeStyle = sec.color; ctx.lineWidth = 1.5;
+      slice.forEach((p, i) => {
+        const x = sx + (i / (slice.length - 1)) * sw;
+        const y = 26 + (1 - (p - min) / (max - min)) * (H - 40);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Zoom lines connecting sections
+      if (si < 2) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(sx + sw, H * 0.3); ctx.lineTo(sections[si + 1].x + 8, 26);
+        ctx.moveTo(sx + sw, H * 0.7); ctx.lineTo(sections[si + 1].x + 8, H - 10);
+        ctx.stroke(); ctx.setLineDash([]);
+      }
+    });
+  }, []);
+
+  return <AnimScene drawFn={draw} height={180} />;
+}
+
+// ============================================================
 // CHART RENDERER — draws price data as line, bar or candle
 // ============================================================
 function drawChart(ctx: CanvasRenderingContext2D, W: number, H: number, prices: number[], type: 'line' | 'candle' | 'bar', highlights?: { support?: number; resistance?: number; trendline?: [number, number, number, number] }) {
@@ -326,7 +447,8 @@ export default function ReadingChartsLesson() {
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Imagine Driving Without a Map</motion.h2>
           <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">You wouldn&apos;t drive across the country without Google Maps. You&apos;d get lost, take wrong turns, waste time, and run out of fuel. <strong className="text-white">Trading without a chart is the same thing.</strong></motion.p>
           <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">A chart is your GPS for the markets. It shows you where price has been, where it might go, and — most importantly — where the danger zones are. Every professional trader on Earth reads charts. After this lesson, so will you.</motion.p>
-          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+          <motion.div variants={fadeUp}><MapAnimation /></motion.div>
+          <motion.div variants={fadeUp} className="mt-4 p-5 glass-card rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-accent-500" />
             <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> You hear that Tesla stock is &quot;going up&quot;. Without a chart, you buy at $280 based on a gut feeling. With a chart, you see it&apos;s already hit resistance at $285 three times and rejected — you wait for a pullback to $260 and buy at a much better price. <strong className="text-white">Same stock, completely different outcome.</strong></p>
           </motion.div>
@@ -429,6 +551,7 @@ export default function ReadingChartsLesson() {
           <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-8">
             <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like Google Maps zoom:</strong> Zoom out = you see the whole country and major motorways (daily/weekly chart). Zoom in = you see every street and every pothole (1-minute chart). Both views are useful, but they show different things. Most people need the motorway view, not the pothole view.</p>
           </motion.div>
+          <motion.div variants={fadeUp} className="mb-6"><TimeframeZoomAnimation /></motion.div>
         </motion.div>
 
         <div className="space-y-3">

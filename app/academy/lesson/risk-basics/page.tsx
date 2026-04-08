@@ -8,8 +8,126 @@ import Link from 'next/link';
 import { Crown, ArrowRight, Shield, AlertTriangle, TrendingDown, Calculator, Target, Award } from 'lucide-react';
 
 // ============================================================
-// ACCOUNT BLOWUP SIMULATOR
+// ANIMATED SCENE (reusable)
 // ============================================================
+function AnimScene({ drawFn, height = 160 }: { drawFn: (ctx: CanvasRenderingContext2D, w: number, h: number, f: number) => void; height?: number }) {
+  const cRef = useRef<HTMLCanvasElement>(null); const dRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(dRef, { amount: 0.1 }); const fRef = useRef(0);
+  useEffect(() => {
+    const c = cRef.current, d = dRef.current; if (!c || !d) return;
+    const ctx = c.getContext('2d'); if (!ctx) return; let id: number;
+    const rs = () => { const r = d.getBoundingClientRect(); c.width = r.width * 2; c.height = r.height * 2; c.style.width = r.width + 'px'; c.style.height = r.height + 'px'; };
+    rs(); window.addEventListener('resize', rs);
+    const loop = () => { if (inView) { ctx.setTransform(2, 0, 0, 2, 0, 0); ctx.clearRect(0, 0, c.width, c.height); drawFn(ctx, c.width / 2, c.height / 2, fRef.current); } fRef.current++; id = requestAnimationFrame(loop); };
+    loop(); return () => { cancelAnimationFrame(id); window.removeEventListener('resize', rs); };
+  }, [inView, drawFn]);
+  return <div ref={dRef} className="w-full rounded-2xl overflow-hidden" style={{ height, background: 'rgba(0,0,0,0.3)' }}><canvas ref={cRef} /></div>;
+}
+
+// ============================================================
+// ANIMATED CONCEPT: Seatbelt — with/without risk management
+// ============================================================
+function SeatbeltAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const mid = W / 2;
+    const t = f * 0.03;
+    const crashFrame = Math.floor((f % 300) / 300 * 100); // 0-100 cycle
+
+    // LEFT: No seatbelt (no risk management)
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(239,68,68,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('NO RISK MANAGEMENT', mid / 2, 14);
+
+    // Account bar that shrinks rapidly
+    const leftAccount = crashFrame < 50 ? 100 - crashFrame * 1.8 : Math.max(5, 10 - (crashFrame - 50) * 0.2);
+    ctx.fillStyle = 'rgba(239,68,68,0.15)'; ctx.fillRect(mid / 2 - 30, 28, 60, H - 42);
+    ctx.fillStyle = `rgba(239,68,68,${leftAccount > 30 ? 0.4 : 0.7})`;
+    const leftH = (leftAccount / 100) * (H - 42);
+    ctx.fillRect(mid / 2 - 30, 28 + (H - 42) - leftH, 60, leftH);
+    ctx.font = '700 11px monospace'; ctx.fillStyle = leftAccount > 20 ? 'rgba(239,68,68,0.8)' : '#ef4444';
+    ctx.fillText(`$${Math.round(leftAccount * 100)}`, mid / 2, H - 8);
+    if (leftAccount < 15) { ctx.font = '20px sans-serif'; ctx.fillText('💀', mid / 2, H / 2); }
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(mid, 8); ctx.lineTo(mid, H - 4); ctx.stroke(); ctx.setLineDash([]);
+
+    // RIGHT: With seatbelt (risk management)
+    ctx.font = '600 8px sans-serif'; ctx.fillStyle = 'rgba(34,197,94,0.5)'; ctx.textAlign = 'center';
+    ctx.fillText('WITH RISK MANAGEMENT', mid + mid / 2, 14);
+
+    // Account bar that dips slightly but recovers
+    const rightAccount = crashFrame < 50 ? 100 - crashFrame * 0.3 : 85 + (crashFrame - 50) * 0.3;
+    ctx.fillStyle = 'rgba(34,197,94,0.15)'; ctx.fillRect(mid + mid / 2 - 30, 28, 60, H - 42);
+    ctx.fillStyle = 'rgba(34,197,94,0.4)';
+    const rightH = (Math.min(100, rightAccount) / 100) * (H - 42);
+    ctx.fillRect(mid + mid / 2 - 30, 28 + (H - 42) - rightH, 60, rightH);
+    ctx.font = '700 11px monospace'; ctx.fillStyle = 'rgba(34,197,94,0.8)';
+    ctx.fillText(`$${Math.round(rightAccount * 100)}`, mid + mid / 2, H - 8);
+    ctx.font = '16px sans-serif'; ctx.fillText('🛡️', mid + mid / 2, H / 2 - 10);
+  }, []);
+
+  return <AnimScene drawFn={draw} height={170} />;
+}
+
+// ============================================================
+// ANIMATED CONCEPT: Snowball — compounding losses
+// ============================================================
+function SnowballAnimation() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number, f: number) => {
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
+    const t = (f * 0.4) % W;
+
+    // Hill (slope)
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.beginPath(); ctx.moveTo(0, 30); ctx.lineTo(W, H - 10); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, 30); ctx.lineTo(W, H - 10); ctx.stroke();
+
+    // Snowball gets bigger as it rolls downhill
+    const progress = t / W;
+    const ballR = 5 + progress * 25;
+    const ballX = t;
+    const ballY = 30 + progress * (H - 45);
+
+    // Trail
+    ctx.fillStyle = 'rgba(239,68,68,0.05)';
+    for (let i = 0; i < ballX; i += 8) {
+      const p = i / W;
+      const r = 3 + p * 15;
+      ctx.beginPath(); ctx.arc(i, 30 + p * (H - 45), r, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Ball
+    const gradient = ctx.createRadialGradient(ballX, ballY, 0, ballX, ballY, ballR);
+    gradient.addColorStop(0, 'rgba(239,68,68,0.6)'); gradient.addColorStop(1, 'rgba(239,68,68,0.2)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath(); ctx.arc(ballX, ballY, ballR, 0, Math.PI * 2); ctx.fill();
+
+    // Labels
+    ctx.font = '700 9px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText('Small loss', 30, 22);
+    ctx.fillStyle = 'rgba(239,68,68,0.6)';
+    ctx.fillText('BIGGER loss', W * 0.5, 22);
+    ctx.fillStyle = 'rgba(239,68,68,0.9)';
+    ctx.fillText('ACCOUNT GONE', W - 50, 22);
+
+    // Loss % labels along the hill
+    ctx.font = '600 8px monospace'; ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillText('-2%', W * 0.15, 30 + 0.15 * (H - 45) + 4);
+    ctx.fillText('-10%', W * 0.35, 30 + 0.35 * (H - 45) + 4);
+    ctx.fillStyle = 'rgba(239,68,68,0.4)';
+    ctx.fillText('-30%', W * 0.55, 30 + 0.55 * (H - 45) + 4);
+    ctx.fillStyle = 'rgba(239,68,68,0.7)';
+    ctx.fillText('-60%', W * 0.75, 30 + 0.75 * (H - 45) + 4);
+    ctx.fillText('-90%', W * 0.9, 30 + 0.9 * (H - 45) + 4);
+  }, []);
+
+  return <AnimScene drawFn={draw} height={150} />;
+}
+
+
 function BlowupSimulator() {
   const [riskPct, setRiskPct] = useState(2);
   const [running, setRunning] = useState(false);
@@ -396,6 +514,7 @@ export default function RiskBasicsLesson() {
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
           <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">You Always Wear a Seatbelt</motion.h2>
           <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">You don&apos;t get in a car expecting to crash. But you always click your seatbelt. Why? Because the ONE time it matters, it saves your life. <strong className="text-white">Risk management is your trading seatbelt.</strong></motion.p>
+          <motion.div variants={fadeUp} className="mb-4"><SeatbeltAnimation /></motion.div>
           <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Every single trade can lose money. Every. Single. One. Even the best traders in the world lose 40-50% of their trades. The difference? Their losses are small and controlled. Their wins are bigger. The seatbelt keeps them alive long enough for the wins to compound.</motion.p>
           <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-amber-500 to-green-500" />
@@ -497,9 +616,10 @@ export default function RiskBasicsLesson() {
             <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-red-400">What is a &quot;drawdown&quot;?</strong> It&apos;s simply how far your account has fallen from its peak. If you started with $10,000 and you&apos;re now at $8,000 — that&apos;s a 20% drawdown. Simple. But here&apos;s where it gets scary...</p>
           </motion.div>
           <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Losing money and making money are <strong className="text-white">NOT equal</strong>. If you lose 50% of your account, you DON&apos;T need a 50% gain to get back to where you started. You need <strong className="text-white">100%</strong>. You need to DOUBLE your remaining money.</motion.p>
-          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-6">
+          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-4">
             <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like this:</strong> You have $10,000. You lose 50% — now you have $5,000. To get back to $10,000, you need to make $5,000 from your remaining $5,000. That&apos;s a 100% return. <strong className="text-white">How long does it take to double your money?</strong> Months. Sometimes years. One bad week of trading can take years to recover from.</p>
           </motion.div>
+          <motion.div variants={fadeUp} className="mb-6"><SnowballAnimation /></motion.div>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <DrawdownTable />
