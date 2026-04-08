@@ -17,6 +17,7 @@ const liveLessons = new Set([
   'reading-charts', 'risk-basics', 'position-sizing',
   'support-resistance',
   'trendlines-channels',
+  'moving-averages',
 ]);
 
 export default function AcademyPage() {
