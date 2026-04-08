@@ -482,13 +482,26 @@ function CrossoverGame() {
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
 
-  const scenarios = useMemo(() => [
-    { prices: generatePrices(11, 120, 0.1), correct: 'buy' as const, explain: 'The fast MA crossed ABOVE the slow MA — a bullish crossover signal. Buy.' },
-    { prices: generatePrices(22, 120, -0.08), correct: 'sell' as const, explain: 'The fast MA crossed BELOW the slow MA — a bearish crossover. Sell or exit longs.' },
-    { prices: generatePrices(33, 120, 0.12), correct: 'buy' as const, explain: 'Another bullish crossover with price above both MAs — strong buy signal.' },
-    { prices: generatePrices(44, 120, -0.1), correct: 'sell' as const, explain: 'Fast MA diving below slow MA, price is falling — sell signal confirmed.' },
-    { prices: generatePrices(55, 120, 0.06), correct: 'buy' as const, explain: 'Bullish crossover in an uptrend — momentum is accelerating. Buy.' },
-  ], []);
+  const scenarios = useMemo(() => {
+    // Helper: generate prices with a trend shift to create a crossover
+    function crossData(seed: number, firstTrend: number, secondTrend: number, switchAt: number = 60): number[] {
+      const rand = seededRandom(seed);
+      const p: number[] = [100];
+      for (let i = 1; i < 120; i++) {
+        const noise = (rand() - 0.5) * 2;
+        const trend = i < switchAt ? firstTrend : secondTrend;
+        p.push(p[i - 1] + noise + trend);
+      }
+      return p;
+    }
+    return [
+      { prices: crossData(101, -0.3, 0.5, 50), correct: 'buy' as const, explain: 'Price was falling, then reversed upward. The fast MA crossed ABOVE the slow MA — bullish crossover. Buy.' },
+      { prices: crossData(202, 0.4, -0.6, 55), correct: 'sell' as const, explain: 'Price was rising, then reversed downward. The fast MA crossed BELOW the slow MA — bearish crossover. Sell.' },
+      { prices: crossData(303, -0.25, 0.45, 45), correct: 'buy' as const, explain: 'Downtrend turned into an uptrend. Fast MA is now above slow MA — bullish signal. Buy.' },
+      { prices: crossData(404, 0.35, -0.5, 60), correct: 'sell' as const, explain: 'Uptrend collapsed. Fast MA dove below slow MA — bearish crossover. Sell or go short.' },
+      { prices: crossData(505, -0.35, 0.55, 50), correct: 'buy' as const, explain: 'Strong reversal from downtrend to uptrend. Fast MA crossed above — buy signal confirmed.' },
+    ];
+  }, []);
 
   const sc = scenarios[round];
   const fast = useMemo(() => calcEMA(sc.prices, 10), [sc.prices]);
