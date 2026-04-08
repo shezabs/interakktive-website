@@ -16,6 +16,7 @@ const liveLessons = new Set([
   'what-is-trading', 'asset-classes', 'candlestick-anatomy',
   'reading-charts', 'risk-basics', 'position-sizing',
   'support-resistance',
+  'trendlines-channels',
 ]);
 
 export default function AcademyPage() {
