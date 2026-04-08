@@ -236,24 +236,25 @@ function PositionCalculator() {
 // ============================================================
 function DrawdownTable() {
   const rows = [
-    { loss: 10, needed: 11.1 }, { loss: 20, needed: 25 }, { loss: 30, needed: 42.9 },
-    { loss: 40, needed: 66.7 }, { loss: 50, needed: 100 }, { loss: 60, needed: 150 },
-    { loss: 70, needed: 233 }, { loss: 80, needed: 400 }, { loss: 90, needed: 900 },
+    { loss: 10, needed: 11.1, example: '$10K → $9K' }, { loss: 20, needed: 25, example: '$10K → $8K' }, { loss: 30, needed: 42.9, example: '$10K → $7K' },
+    { loss: 40, needed: 66.7, example: '$10K → $6K' }, { loss: 50, needed: 100, example: '$10K → $5K' }, { loss: 60, needed: 150, example: '$10K → $4K' },
+    { loss: 70, needed: 233, example: '$10K → $3K' }, { loss: 80, needed: 400, example: '$10K → $2K' }, { loss: 90, needed: 900, example: '$10K → $1K' },
   ];
 
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
       <div className="p-4 border-b border-white/[0.06]">
         <h4 className="font-bold text-[15px] flex items-center gap-2"><TrendingDown className="w-4 h-4 text-red-400" /> The Drawdown Trap</h4>
-        <p className="text-xs text-gray-500 mt-1">The more you lose, the harder it is to recover. This is why protection matters more than profit.</p>
+        <p className="text-xs text-gray-500 mt-1">Look how unfair the maths is — the deeper the hole, the harder (almost impossible) it is to climb out.</p>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="p-3 text-left text-[10px] text-gray-500 uppercase tracking-wider">Account Loss</th>
-              <th className="p-3 text-right text-[10px] text-gray-500 uppercase tracking-wider">Gain Needed to Recover</th>
-              <th className="p-3 text-right text-[10px] text-gray-500 uppercase tracking-wider">Difficulty</th>
+              <th className="p-3 text-left text-[10px] text-gray-500 uppercase tracking-wider">You Lose</th>
+              <th className="p-3 text-center text-[10px] text-gray-500 uppercase tracking-wider">Your $10K Becomes</th>
+              <th className="p-3 text-right text-[10px] text-gray-500 uppercase tracking-wider">Gain Needed to Get Back</th>
+              <th className="p-3 text-right text-[10px] text-gray-500 uppercase tracking-wider">How Hard?</th>
             </tr>
           </thead>
           <tbody>
@@ -261,6 +262,7 @@ function DrawdownTable() {
               <motion.tr key={i} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                 className="border-b border-white/[0.03]">
                 <td className="p-3 font-mono font-semibold text-red-400">-{r.loss}%</td>
+                <td className="p-3 text-center font-mono text-xs text-gray-400">{r.example}</td>
                 <td className="p-3 text-right font-mono font-semibold text-amber-400">+{r.needed}%</td>
                 <td className="p-3 text-right">
                   <div className="inline-flex">
@@ -276,7 +278,7 @@ function DrawdownTable() {
       </div>
       <div className="p-4 bg-red-500/5 border-t border-red-500/10">
         <p className="text-xs text-gray-400 leading-relaxed text-center">
-          <strong className="text-red-400">A 50% loss requires a 100% gain just to break even.</strong> This is why professional traders obsess over limiting drawdown — not maximising profit.
+          <strong className="text-red-400">Lose 50% and you need to DOUBLE your remaining money just to break even.</strong> Lose 90% and you need a 900% gain — practically impossible. This is why the #1 rule of trading is: <strong className="text-white">protect your capital first, grow it second.</strong>
         </p>
       </div>
     </div>
@@ -490,8 +492,14 @@ export default function RiskBasicsLesson() {
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">05 — The Maths of Recovery</motion.p>
-          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Why Drawdowns Are Deadly</motion.h2>
-          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Losses and gains are NOT symmetrical. A 50% loss requires a 100% gain to recover. This table shows why protecting capital is more important than growing it.</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-3">Why Losing Money Is Harder to Fix Than You Think</motion.h2>
+          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-red-500/5 border border-red-500/10 mb-4">
+            <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-red-400">What is a &quot;drawdown&quot;?</strong> It&apos;s simply how far your account has fallen from its peak. If you started with $10,000 and you&apos;re now at $8,000 — that&apos;s a 20% drawdown. Simple. But here&apos;s where it gets scary...</p>
+          </motion.div>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Losing money and making money are <strong className="text-white">NOT equal</strong>. If you lose 50% of your account, you DON&apos;T need a 50% gain to get back to where you started. You need <strong className="text-white">100%</strong>. You need to DOUBLE your remaining money.</motion.p>
+          <motion.div variants={fadeUp} className="p-4 rounded-xl bg-primary-500/5 border border-primary-500/10 mb-6">
+            <p className="text-sm text-gray-300 leading-relaxed">💡 <strong className="text-primary-400">Think of it like this:</strong> You have $10,000. You lose 50% — now you have $5,000. To get back to $10,000, you need to make $5,000 from your remaining $5,000. That&apos;s a 100% return. <strong className="text-white">How long does it take to double your money?</strong> Months. Sometimes years. One bad week of trading can take years to recover from.</p>
+          </motion.div>
         </motion.div>
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <DrawdownTable />
