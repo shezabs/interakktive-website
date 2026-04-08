@@ -228,11 +228,11 @@ function AnimScene({ drawFn, height = 300 }: { drawFn: (ctx: CanvasRenderingCont
 function MACDConstructionDemo() {
   const [step, setStep] = useState(0);
   const steps = [
-    { title: 'Step 1: Calculate the 12-period EMA', desc: 'The fast EMA. It tracks short-term price momentum closely. This is the "fast" component of MACD.', formula: 'EMA(12) of closing prices', color: 'text-primary-400' },
-    { title: 'Step 2: Calculate the 26-period EMA', desc: 'The slow EMA. It represents the longer-term trend. The gap between the fast and slow EMA is what MACD measures.', formula: 'EMA(26) of closing prices', color: 'text-amber-400' },
-    { title: 'Step 3: MACD Line = Fast - Slow', desc: 'Subtract the 26 EMA from the 12 EMA. When the MACD line is positive, short-term momentum is above the long-term trend (bullish). When negative, it\'s bearish.', formula: 'MACD = EMA(12) - EMA(26)', color: 'text-primary-400' },
-    { title: 'Step 4: Signal Line = EMA(9) of MACD', desc: 'A 9-period EMA of the MACD line itself. This smooths the MACD and creates the trigger for buy/sell signals. When MACD crosses the signal line, that\'s your entry.', formula: 'Signal = EMA(9) of MACD Line', color: 'text-amber-400' },
-    { title: 'Step 5: Histogram = MACD - Signal', desc: 'The histogram visualises the gap between MACD and its signal line. Growing bars = momentum increasing. Shrinking bars = momentum fading. The histogram often signals turns BEFORE the lines cross.', formula: 'Histogram = MACD - Signal', color: 'text-green-400' },
+    { title: 'Step 1: Track the Fast Runner', desc: 'Calculate a 12-period moving average. This follows price closely — it\'s the sprinter. When price makes a sudden move, this line reacts quickly. Think of it as the "what\'s happening RIGHT NOW" line.', formula: 'EMA(12) of closing prices', color: 'text-primary-400' },
+    { title: 'Step 2: Track the Slow Runner', desc: 'Calculate a 26-period moving average. This moves slowly and smoothly — it\'s the marathon runner. It shows the "average" direction over a longer time. The gap between the sprinter and the marathon runner tells you if momentum is shifting.', formula: 'EMA(26) of closing prices', color: 'text-amber-400' },
+    { title: 'Step 3: Measure the Gap', desc: 'Subtract the slow runner\'s position from the fast runner\'s. If the fast runner is ahead, the gap is positive (bullish — short-term is outperforming). If behind, negative (bearish). This gap IS the MACD line.', formula: 'MACD = EMA(12) - EMA(26)', color: 'text-primary-400' },
+    { title: 'Step 4: The Trigger Line', desc: 'Now smooth the MACD line itself with a 9-period average. This creates the signal line — your trigger. When the MACD crosses above the signal, it\'s like a traffic light turning green. Below it? Red light.', formula: 'Signal = EMA(9) of MACD Line', color: 'text-amber-400' },
+    { title: 'Step 5: The Early Warning Bars', desc: 'Finally, show the gap between MACD and signal as bars. When the bars grow, the gap is widening — momentum is building. When they shrink, the lines are converging — a crossover is approaching. These bars often flash the warning BEFORE the actual crossover. Your secret early alarm.', formula: 'Histogram = MACD - Signal', color: 'text-green-400' },
   ];
 
   return (
@@ -516,9 +516,9 @@ export default function MACDLesson() {
         </motion.div>
 
         {[
-          { icon: '📈', title: 'MACD Line (Blue)', desc: 'The difference between the 12 EMA and 26 EMA. Positive = fast EMA above slow EMA (bullish). Negative = fast below slow (bearish).', border: 'border-l-sky-500' },
-          { icon: '📉', title: 'Signal Line (Orange)', desc: 'A 9-period EMA of the MACD line. Acts as the trigger. When MACD crosses above signal = buy. Below = sell.', border: 'border-l-amber-500' },
-          { icon: '📊', title: 'Histogram (Bars)', desc: 'The visual gap between MACD and signal. Growing bars = momentum strengthening. Shrinking bars = momentum fading. The histogram is your EARLIEST warning signal.', border: 'border-l-green-500' },
+          { icon: '📈', title: 'MACD Line (Blue)', desc: 'This measures the gap between the fast runner and the slow runner. When the fast runner is ahead (MACD is positive), momentum is bullish — the market is accelerating upward. When behind (negative), momentum is bearish.', border: 'border-l-sky-500' },
+          { icon: '📉', title: 'Signal Line (Orange)', desc: 'Think of this as the "average speed" of the MACD. When the MACD (actual speed) crosses above the signal (average speed), it\'s like a car accelerating past its average — momentum is picking up. That crossing moment is your buy or sell signal.', border: 'border-l-amber-500' },
+          { icon: '📊', title: 'Histogram (The Bars)', desc: 'The bars show the gap between the MACD and signal lines — visually. Growing bars = the runners are pulling further apart (momentum increasing). Shrinking bars = they\'re getting closer (momentum fading). The bars often warn you BEFORE the actual crossover happens — your early alarm system.', border: 'border-l-green-500' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
             className={`p-5 glass-card rounded-2xl mb-3 border-l-4 ${item.border}`}>
@@ -561,10 +561,10 @@ export default function MACDLesson() {
         </motion.div>
 
         {[
-          { icon: '📊', title: 'Growing Green Bars', desc: 'MACD is pulling away from signal line. Bullish momentum is accelerating. Stay in your long position — the trend is strengthening.', col: 'text-green-400' },
-          { icon: '📊', title: 'Shrinking Green Bars', desc: 'MACD is converging toward signal. Bullish momentum is FADING. The crossover hasn\'t happened yet, but the warning is clear. Tighten your stops.', col: 'text-green-400/60' },
-          { icon: '📊', title: 'Growing Red Bars', desc: 'MACD is pulling away from signal to the downside. Bearish momentum is accelerating. Avoid buying. If you\'re short, hold.', col: 'text-red-400' },
-          { icon: '📊', title: 'Shrinking Red Bars', desc: 'Bearish momentum is weakening. The selling is losing steam. A bullish crossover may be approaching. Start watching for buy signals.', col: 'text-red-400/60' },
+          { icon: '📊', title: 'Growing Green Bars', desc: 'The fast runner is pulling further ahead of the slow runner. Imagine a car speeding up on a motorway — the gap between it and the car behind keeps widening. The trend is STRONG. Stay in your trade and enjoy the ride.', col: 'text-green-400' },
+          { icon: '📊', title: 'Shrinking Green Bars', desc: 'The fast runner is still ahead but slowing down — the gap is closing. The car is still moving forward but taking its foot off the accelerator. The trend isn\'t over YET, but the early warning light is flashing. Time to tighten your seatbelt (stop loss).', col: 'text-green-400/60' },
+          { icon: '📊', title: 'Growing Red Bars', desc: 'Sellers are accelerating — like a car rolling downhill and gaining speed. The drop is getting stronger, not weaker. This is NOT the time to try to catch the bottom. Let it play out. If you\'re already short (betting on the drop), hold your position.', col: 'text-red-400' },
+          { icon: '📊', title: 'Shrinking Red Bars', desc: 'The downhill car is hitting the brakes. Sellers are running out of energy. The drop isn\'t over yet, but the worst may be behind. Start paying attention — a reversal could be building. This is where early buyers start getting interested.', col: 'text-red-400/60' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
             className="flex items-start gap-4 p-5 glass-card rounded-2xl mb-3 hover:translate-x-1 transition-all">

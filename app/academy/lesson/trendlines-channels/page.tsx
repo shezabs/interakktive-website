@@ -230,10 +230,10 @@ function TrendlineRulesDemo() {
   const [rule, setRule] = useState(0);
   const rules = [
     { title: 'Rule 1: Minimum 2 Touches', desc: 'A trendline needs at least 2 swing points to be valid. One point is nothing. Two points make a line. Three or more? That\'s a confirmed trendline.', icon: '✌️', importance: 'Essential' },
-    { title: 'Rule 2: Connect Bodies, Not Wicks', desc: 'Use candle bodies (not just wicks) for cleaner lines. Wicks represent temporary extremes. Bodies show where price actually settled — more reliable.', icon: '📐', importance: 'Important' },
-    { title: 'Rule 3: Don\'t Force It', desc: 'If you have to bend the line through candles to make it fit, it\'s not a valid trendline. Good trendlines are obvious — they practically draw themselves.', icon: '🚫', importance: 'Critical' },
+    { title: 'Rule 2: Use the Thick Part of Candles', desc: 'Candles have thin lines (wicks) and thick coloured parts (bodies). Use the thick parts to draw your line. The thin wicks are just momentary spikes — the body is where price actually decided to settle. It\'s like using someone\'s average height, not the height of their hair.', icon: '📐', importance: 'Important' },
+    { title: 'Rule 3: If You Have to Squint, It\'s Not Real', desc: 'A good trendline is OBVIOUS. If you\'re twisting the line through candles trying to make it fit, it\'s not valid. It\'s like constellation spotting — if someone has to explain for 5 minutes why those stars look like a bear, it\'s probably not a bear.', icon: '🚫', importance: 'Critical' },
     { title: 'Rule 4: More Touches = Stronger', desc: 'A trendline with 5 touches is far more significant than one with 2. Each additional touch confirms that traders are respecting the diagonal level.', icon: '💪', importance: 'Key' },
-    { title: 'Rule 5: Steepness Matters', desc: 'Very steep trendlines (45°+) break quickly. Moderate angles (20-35°) are more sustainable. If your trendline looks like a wall, it won\'t last.', icon: '📏', importance: 'Practical' },
+    { title: 'Rule 5: Too Steep = Too Fragile', desc: 'A gentle slope is sustainable — like walking up a hill. A near-vertical slope is unsustainable — like trying to run up a cliff. If your trendline looks almost vertical, it WILL break soon. The best trends move at a comfortable, steady angle.', icon: '📏', importance: 'Practical' },
     { title: 'Rule 6: Break = Signal', desc: 'When price breaks through a well-established trendline, it\'s a significant event. An uptrend line break signals potential reversal to downside. Always have a plan.', icon: '💥', importance: 'Actionable' },
   ];
 
@@ -463,9 +463,9 @@ export default function TrendlinesChannelsLesson() {
         </motion.div>
 
         {[
-          { icon: <TrendingUp className="w-5 h-5 text-green-400" />, title: 'Ascending Trendline', desc: 'Connect rising swing lows. Acts as diagonal support — price bounces off it on dips. The uptrend is intact as long as this line holds.', border: 'border-l-green-500', bg: 'bg-green-500/10' },
-          { icon: <TrendingDown className="w-5 h-5 text-red-400" />, title: 'Descending Trendline', desc: 'Connect falling swing highs. Acts as diagonal resistance — price gets rejected here on rallies. The downtrend continues until this line breaks.', border: 'border-l-red-500', bg: 'bg-red-500/10' },
-          { icon: '📊', title: 'Price Channel', desc: 'Two parallel trendlines — one along highs, one along lows. Price oscillates between them. Buy at the bottom, sell at the top, until the channel breaks.', border: 'border-l-primary-500', bg: 'bg-primary-500/10' },
+          { icon: <TrendingUp className="w-5 h-5 text-green-400" />, title: 'Ascending Trendline (Going Up)', desc: 'When price is trending upward, each dip is higher than the last — like climbing stairs. Draw a line along those dips and you get an ascending trendline. As long as price stays above this line, the uptrend is alive. Think of it as a rising floor that keeps lifting you higher.', border: 'border-l-green-500', bg: 'bg-green-500/10' },
+          { icon: <TrendingDown className="w-5 h-5 text-red-400" />, title: 'Descending Trendline (Going Down)', desc: 'The opposite — each rally is weaker than the last, like a ball bouncing lower each time. Draw a line along those weakening rallies and you get a descending trendline. It\'s a falling ceiling that keeps pushing price lower.', border: 'border-l-red-500', bg: 'bg-red-500/10' },
+          { icon: '📊', title: 'Price Channel (The Corridor)', desc: 'Imagine a bowling lane — price bounces between the gutters. Draw one line along the lows and another along the highs. That\'s a channel. Price ping-pongs between the two lines. Buy when it hits the bottom line, sell when it hits the top. Simple and effective.', border: 'border-l-primary-500', bg: 'bg-primary-500/10' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
             className={`p-5 glass-card rounded-2xl mb-3 border-l-4 ${item.border}`}>
@@ -511,8 +511,8 @@ export default function TrendlinesChannelsLesson() {
         {[
           { icon: '🟢', title: 'Buy at Lower Bound', desc: 'When price touches the lower channel line, look for bullish candle patterns. Enter long with a stop just below the channel.', col: 'text-green-400' },
           { icon: '🔴', title: 'Sell at Upper Bound', desc: 'When price reaches the upper channel line, take profit or open shorts. The upper line is resistance — expect rejection.', col: 'text-red-400' },
-          { icon: '💥', title: 'Channel Break = Big Move', desc: 'When price breaks out of a channel (especially with strong volume), the measured move target is the width of the channel projected from the breakout point.', col: 'text-amber-400' },
-          { icon: '📏', title: 'Midline as Support/Resistance', desc: 'Draw an invisible line through the middle of the channel. Price often hesitates here — it acts as minor S/R within the channel.', col: 'text-primary-400' },
+          { icon: '💥', title: 'Channel Break = Something Big', desc: 'When price finally escapes the channel, it often makes a big move — like a compressed spring releasing. The bigger the channel (wider and longer), the bigger the breakout move tends to be. This is where significant profits are made.', col: 'text-amber-400' },
+          { icon: '📏', title: 'The Middle Line Matters Too', desc: 'Draw an invisible line through the centre of the channel. Price often pauses or bounces here — it\'s like the centre line of a road. Not as powerful as the channel edges, but useful for fine-tuning your entries and exits.', col: 'text-primary-400' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
             className="flex items-start gap-4 p-5 glass-card rounded-2xl mb-3 hover:translate-x-1 transition-all">

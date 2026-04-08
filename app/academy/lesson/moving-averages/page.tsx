@@ -692,9 +692,9 @@ export default function MovingAveragesLesson() {
         </motion.div>
 
         {[
-          { period: '20', use: 'Short-term trend', desc: 'Reacts quickly. Used by day traders and scalpers for entries. Hugs price closely.', color: 'text-primary-400', border: 'border-l-sky-500' },
-          { period: '50', use: 'Medium-term trend', desc: 'The sweet spot. Balances speed and smoothness. Most popular for swing traders.', color: 'text-accent-400', border: 'border-l-purple-500' },
-          { period: '200', use: 'Long-term trend', desc: 'The king of MAs. Price above 200 = bull market. Below = bear. Institutions watch this.', color: 'text-amber-400', border: 'border-l-amber-500' },
+          { period: '20', use: 'Short-term trend', desc: 'Like checking the weather forecast for this week — very responsive to what\'s happening NOW. Hugs the price closely and reacts to every move. Best for traders who make quick, short-term decisions.', color: 'text-primary-400', border: 'border-l-sky-500' },
+          { period: '50', use: 'Medium-term trend', desc: 'Like checking the weather for this season — filters out daily noise but still tells you what\'s happening right now. The most popular MA for traders who hold positions for days to weeks.', color: 'text-accent-400', border: 'border-l-purple-500' },
+          { period: '200', use: 'Long-term trend', desc: 'The yearly climate report. If price is above the 200 MA, the long-term trend is UP (bull market). Below it = DOWN (bear market). Banks, hedge funds, and pension funds all watch this one line. When you hear "the market is in a bull market" — this is usually what they mean.', color: 'text-amber-400', border: 'border-l-amber-500' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
             className={`p-5 glass-card rounded-2xl mb-3 border-l-4 ${item.border}`}>

@@ -238,11 +238,11 @@ function AnimScene({ drawFn, height = 300 }: { drawFn: (ctx: CanvasRenderingCont
 function RSIFormulaDemo() {
   const [step, setStep] = useState(0);
   const steps = [
-    { title: 'Step 1: Calculate Price Changes', desc: 'For each candle, calculate the change from the previous close. If price went up, it\'s a "gain". If it went down, it\'s a "loss" (stored as positive).', formula: 'Change = Close[today] - Close[yesterday]', highlight: 'changes' },
-    { title: 'Step 2: Separate Gains & Losses', desc: 'Split changes into two columns: gains (positive changes) and losses (absolute value of negative changes). If a day was up, loss = 0. If down, gain = 0.', formula: 'Gain = max(change, 0) · Loss = |min(change, 0)|', highlight: 'split' },
-    { title: 'Step 3: Average Gain & Loss (14 periods)', desc: 'First calculation: simple average of the first 14 gains and 14 losses. Subsequent calculations use Wilder\'s smoothing: (prev × 13 + current) ÷ 14.', formula: 'AvgGain = (prevAvgGain × 13 + gain) ÷ 14', highlight: 'average' },
-    { title: 'Step 4: Relative Strength (RS)', desc: 'Divide average gain by average loss. If gains dominate, RS is high. If losses dominate, RS is low. This is the "relative strength" — how strong are the bulls vs bears.', formula: 'RS = AvgGain ÷ AvgLoss', highlight: 'rs' },
-    { title: 'Step 5: RSI = 0 to 100', desc: 'The final formula normalizes RS into a 0-100 scale. When RS is very high (all gains), RSI → 100. When RS is zero (all losses), RSI → 0. Above 70 = overbought. Below 30 = oversold.', formula: 'RSI = 100 - (100 ÷ (1 + RS))', highlight: 'rsi' },
+    { title: 'Step 1: Did Price Go Up or Down?', desc: 'Simple — compare today\'s closing price to yesterday\'s. If it went up, write down the gain. If it went down, write down the loss (as a positive number). Do this for every day in the period.', formula: 'Change = Close[today] - Close[yesterday]', highlight: 'changes' },
+    { title: 'Step 2: Make Two Lists', desc: 'Create two columns: "Good Days" (gains) and "Bad Days" (losses). If Monday was up $2, put $2 in gains and $0 in losses. If Tuesday was down $1, put $0 in gains and $1 in losses. Simple bookkeeping.', formula: 'Gain = max(change, 0) · Loss = |min(change, 0)|', highlight: 'split' },
+    { title: 'Step 3: Average the Good and Bad Days', desc: 'Add up all the gains from the last 14 days and divide by 14. Same for losses. Now you know: on average, how much does this asset go UP per day vs how much does it go DOWN per day? That ratio is the key to everything.', formula: 'AvgGain = (prevAvgGain × 13 + gain) ÷ 14', highlight: 'average' },
+    { title: 'Step 4: Who\'s Winning — Buyers or Sellers?', desc: 'Divide the average gain by the average loss. If buyers are winning (bigger average gains than losses), this number is above 1. If sellers are winning, it\'s below 1. This ratio tells you who has the upper hand right now.', formula: 'RS = AvgGain ÷ AvgLoss', highlight: 'rs' },
+    { title: 'Step 5: Convert to a Score Out of 100', desc: 'The final step converts that ratio into a score between 0 and 100 — like a test grade. 100 = buyers completely dominating (stretched too far up). 0 = sellers completely dominating (stretched too far down). Above 70 = "overbought" warning. Below 30 = "oversold" warning.', formula: 'RSI = 100 - (100 ÷ (1 + RS))', highlight: 'rsi' },
   ];
 
   return (
@@ -604,9 +604,9 @@ export default function RSILesson() {
         </motion.div>
 
         {[
-          { value: '70+', label: 'Overbought', desc: 'Buying pressure has been dominant. Price may be due for a pullback. Doesn\'t mean sell immediately — but be cautious about new buys.', color: 'text-red-400', border: 'border-l-red-500', bg: 'bg-red-500/10' },
-          { value: '50', label: 'Neutral / Midline', desc: 'Gains and losses are roughly equal. No clear momentum. Watch for a break above (bullish) or below (bearish) for direction.', color: 'text-gray-400', border: 'border-l-gray-500', bg: 'bg-white/5' },
-          { value: '30-', label: 'Oversold', desc: 'Selling pressure has been dominant. Price may be due for a bounce. Doesn\'t mean buy immediately — but be alert for reversal signs.', color: 'text-green-400', border: 'border-l-green-500', bg: 'bg-green-500/10' },
+          { value: '70+', label: 'Overbought (Stretched Up)', desc: 'Think of a rubber band pulled too far upward. Buyers have been dominant for too long — the "snap back" (price pullback) becomes more likely. This doesn\'t mean sell RIGHT NOW — but it means be careful about buying at these levels. The rubber band could snap any moment.', color: 'text-red-400', border: 'border-l-red-500', bg: 'bg-red-500/10' },
+          { value: '50', label: 'Neutral (No Man\'s Land)', desc: 'The rubber band is relaxed — not stretched in either direction. Buyers and sellers are roughly equal. This is the waiting zone. When RSI breaks above 50, it\'s like the rubber band starting to stretch upward. Below 50, it\'s stretching down.', color: 'text-gray-400', border: 'border-l-gray-500', bg: 'bg-white/5' },
+          { value: '30-', label: 'Oversold (Stretched Down)', desc: 'The rubber band is pulled too far downward. Sellers have been relentless — a bounce becomes more likely. This is where smart traders start WATCHING for buy signals. Not buying blindly — but getting ready for the snap back.', color: 'text-green-400', border: 'border-l-green-500', bg: 'bg-green-500/10' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
             className={`p-5 glass-card rounded-2xl mb-3 border-l-4 ${item.border}`}>

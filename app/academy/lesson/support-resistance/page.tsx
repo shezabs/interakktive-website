@@ -535,15 +535,15 @@ export default function SupportResistanceLesson() {
             <strong className="text-white">Resistance</strong> is a price level where selling pressure stops price from rising further. Think of it as a ceiling.
           </motion.p>
           <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-8">
-            These levels exist because <strong className="text-white">thousands of traders are watching the same prices</strong>. When everyone agrees a price is &quot;cheap&quot;, they buy — creating support. When everyone agrees it&apos;s &quot;expensive&quot;, they sell — creating resistance.
+            These levels exist because <strong className="text-white">thousands of traders are watching the same prices</strong> — it\'s like a crowd at an auction. When enough people agree a price is a bargain, their buying creates a floor. When enough agree it\'s overpriced, their selling creates a ceiling. When everyone agrees a price is &quot;cheap&quot;, they buy — creating support. When everyone agrees it&apos;s &quot;expensive&quot;, they sell — creating resistance.
           </motion.p>
         </motion.div>
 
         {[
-          { icon: '🟢', title: 'Support = Demand Zone', desc: 'Buyers see value here. Orders stack up. Price bounces. The more times it bounces, the more traders trust it, and the stronger it gets.', border: 'border-l-green-500' },
-          { icon: '🔴', title: 'Resistance = Supply Zone', desc: 'Sellers take profit or open shorts here. Price gets rejected. Each rejection reinforces the level as a ceiling for future price action.', border: 'border-l-red-500' },
-          { icon: '📐', title: 'Zones, Not Lines', desc: 'Markets are messy. S/R works as zones (areas), not exact prices. A support "zone" might span 5-10 pips. Draw areas, not precise lines.', border: 'border-l-amber-500' },
-          { icon: '🔢', title: 'Psychological Levels', desc: 'Round numbers ($100, $50,000, 1.3000) naturally attract orders. Thousands of traders set stops and limits at round numbers, creating self-fulfilling S/R.', border: 'border-l-primary-500' },
+          { icon: '🟢', title: 'Support = The Floor', desc: 'Imagine a price where bargain hunters always show up. Every time the price drops here, people think "that\'s cheap!" and buy. This buying pushes price back up. The more times this happens, the stronger and more reliable the floor becomes.', border: 'border-l-green-500' },
+          { icon: '🔴', title: 'Resistance = The Ceiling', desc: 'Now imagine a price where people always think "that\'s expensive enough, I\'m selling." Every time price rises here, selling pushes it back down. Like a ceiling you keep bumping your head on — until something powerful enough breaks through it.', border: 'border-l-red-500' },
+          { icon: '📐', title: 'Zones, Not Lines', desc: 'Here\'s something important: support and resistance aren\'t exact prices like $100.00. They\'re ZONES — rough areas. Think of it like a speed bump, not a razor blade. Price might bounce at $99.80 one time and $100.20 the next. Both are "the same level". Don\'t be a perfectionist — draw rough areas.', border: 'border-l-amber-500' },
+          { icon: '🔢', title: 'Round Numbers Are Magnetic', desc: 'Ever noticed how Bitcoin always seems to fight around $60,000 or $70,000? Round numbers like $100, $50,000, or 1.3000 attract huge attention. Thousands of traders set their buy/sell orders at round numbers. This creates natural floors and ceilings that are self-fulfilling — they work BECAUSE everyone watches them.', border: 'border-l-primary-500' },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
             className={`p-5 glass-card rounded-2xl mb-3 border-l-4 ${item.border}`}>
@@ -594,10 +594,10 @@ export default function SupportResistanceLesson() {
         {[
           { factor: 'Number of Touches', desc: 'More bounces = stronger level. 2 touches is minimum. 3+ is significant. 5+ is a fortress.', weight: 5 },
           { factor: 'Timeframe', desc: 'A level on the Daily chart crushes one on the 5-minute. Weekly levels are the strongest of all.', weight: 5 },
-          { factor: 'Volume at Level', desc: 'High volume bounces are more meaningful. It means serious money is defending that price.', weight: 4 },
+          { factor: 'Volume (How Busy)', desc: 'If the price bounced on a quiet day, it\'s less meaningful. If it bounced on a day with millions of trades? That\'s serious money defending that price. More activity = more reliable.', weight: 4 },
           { factor: 'Recency', desc: 'A level tested last week is more relevant than one tested 6 months ago. Markets have short memories.', weight: 3 },
           { factor: 'Clean Rejections', desc: 'Sharp, V-shaped bounces are stronger than slow, sloppy ones. Clean rejections show decisive buying/selling.', weight: 4 },
-          { factor: 'Confluence', desc: 'A level that aligns with a Fibonacci level, a moving average, AND a round number? That\'s high-probability.', weight: 5 },
+          { factor: 'Multiple Reasons (Confluence)', desc: 'If a level is JUST a support zone, it\'s decent. If it\'s a support zone AND a round number AND a moving average all at the same price? Now you have 3 reasons to trust it. More reasons = more traders watching = stronger level.', weight: 5 },
         ].map((item, i) => (
           <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
             className="flex items-start gap-4 p-5 glass-card rounded-2xl mb-3 hover:translate-x-1 transition-all">
