@@ -67,18 +67,18 @@ function generateCrossPrices(): number[] {
   return p;
 }
 const crossPrices = generateCrossPrices();
-// Generate uptrend with periodic pullbacks that touch the MA
+// Generate uptrend with deep pullbacks that visibly touch the MA
 function generateBouncePrices(): number[] {
   const rand = seededRandom(88);
-  const p: number[] = [80];
+  const p: number[] = [60];
   for (let i = 1; i < 200; i++) {
-    const noise = (rand() - 0.5) * 2;
-    const trend = 0.2; // steady uptrend
-    // Every ~25 candles, create a pullback (sharp dip for 8-10 candles)
-    const cyclePos = i % 30;
-    let pullback = 0;
-    if (cyclePos >= 20 && cyclePos <= 27) pullback = -0.8; // pullback phase
-    p.push(p[i - 1] + noise + trend + pullback);
+    const noise = (rand() - 0.5) * 1.5;
+    // Strong uptrend with deep pullbacks every ~25 candles
+    const cycle = i % 25;
+    let move = 0.35; // uptrend bias
+    if (cycle >= 17 && cycle <= 22) move = -1.2; // sharp pullback
+    if (cycle === 23) move = 0.1; // bottom
+    p.push(p[i - 1] + noise + move);
   }
   return p;
 }
@@ -160,15 +160,16 @@ function renderChart(
 
   // Bounce dots
   opts?.showBounceDots?.forEach(bd => {
-    for (let i = 3; i < prices.length - 2; i++) {
+    for (let i = 2; i < prices.length - 2; i++) {
       const maVal = bd.ma[i];
       if (maVal === null) return;
-      // A bounce: price comes close to the MA from above, then moves back up
-      // Check if this candle is a local low near the MA
-      const isLocalLow = prices[i] < prices[i - 1] && prices[i] < prices[i - 2] && prices[i + 1] > prices[i] && prices[i + 2] > prices[i];
-      const nearMA = Math.abs(prices[i] - maVal) < bd.tolerance;
-      const aboveMA = prices[i] >= maVal - bd.tolerance * 0.5; // allow slight dip below
-      if (isLocalLow && nearMA && aboveMA) {
+      const dist = Math.abs(prices[i] - maVal);
+      const nearMA = dist < bd.tolerance;
+      // Price was falling toward MA and now recovering (or at the low point near MA)
+      const dippedToMA = prices[i] <= prices[i - 1] && prices[i] <= prices[i - 2] && prices[i + 1] >= prices[i];
+      // Or price just touched the MA from above
+      const touchedFromAbove = prices[i - 1] > maVal && prices[i] <= maVal + bd.tolerance && prices[i + 1] > prices[i];
+      if (nearMA && (dippedToMA || touchedFromAbove)) {
         ctx.fillStyle = bd.color; ctx.beginPath(); ctx.arc(toX(i), toY(prices[i]), 5, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = bd.color.replace(/[\d.]+\)$/, '0.15)');
         ctx.beginPath(); ctx.arc(toX(i), toY(prices[i]), 14, 0, Math.PI * 2); ctx.fill();
@@ -451,21 +452,21 @@ function EMAvsSMADemo() {
 // ============================================================
 function DynamicSupportDemo() {
   const prices = bouncePrices;
-  const sma50 = useMemo(() => calcSMA(prices, 50), [prices]);
+  const sma20 = useMemo(() => calcSMA(prices, 20), [prices]);
 
   const drawBounce = useCallback((ctx: CanvasRenderingContext2D, W: number, H: number) => {
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
     renderChart(ctx, W, H, prices, [
-      { data: sma50, color: 'rgba(14,165,233,0.7)', width: 2.5, label: '50 SMA' },
-    ], { showBounceDots: [{ ma: sma50, tolerance: 4, color: 'rgba(34,197,94,0.7)' }] });
-  }, [prices, sma50]);
+      { data: sma20, color: 'rgba(14,165,233,0.7)', width: 2.5, label: '20 SMA' },
+    ], { showBounceDots: [{ ma: sma20, tolerance: 3, color: 'rgba(34,197,94,0.8)' }] });
+  }, [prices, sma20]);
 
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
       <AnimScene drawFn={drawBounce} height={230} />
       <div className="p-5">
         <h4 className="font-bold text-[15px] mb-2">Moving Averages as Dynamic Support</h4>
-        <p className="text-sm text-gray-400 leading-relaxed mb-3">In an uptrend, price often <strong className="text-white">bounces off the moving average</strong> like it&apos;s a trampoline. The green dots show where price dipped to the 50 SMA and bounced — each one was a buying opportunity.</p>
+        <p className="text-sm text-gray-400 leading-relaxed mb-3">In an uptrend, price often <strong className="text-white">bounces off the moving average</strong> like it&apos;s a trampoline. The green dots show where price dipped to the 20 SMA and bounced — each one was a buying opportunity.</p>
         <p className="text-sm text-gray-400 leading-relaxed">This is called <strong className="text-primary-400">&quot;dynamic support&quot;</strong> — unlike horizontal support which stays at one price, the MA moves WITH the trend, providing a rising floor that guides your entries.</p>
       </div>
     </div>
