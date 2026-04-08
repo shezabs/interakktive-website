@@ -67,17 +67,18 @@ function generateCrossPrices(): number[] {
   return p;
 }
 const crossPrices = generateCrossPrices();
-// Generate uptrend with deep pullbacks that visibly touch the MA
+// Generate a clear uptrend where price periodically dips TO the MA then bounces
 function generateBouncePrices(): number[] {
-  const rand = seededRandom(88);
-  const p: number[] = [60];
-  for (let i = 1; i < 200; i++) {
-    const noise = (rand() - 0.5) * 1.5;
-    // Strong uptrend with deep pullbacks every ~25 candles
-    const cycle = i % 25;
-    let move = 0.35; // uptrend bias
-    if (cycle >= 17 && cycle <= 22) move = -1.2; // sharp pullback
-    if (cycle === 23) move = 0.1; // bottom
+  const rand = seededRandom(123);
+  const p: number[] = [50];
+  for (let i = 1; i < 180; i++) {
+    const noise = (rand() - 0.5) * 1;
+    // Strong base uptrend
+    let move = 0.4;
+    // Create gentle pullbacks every ~30 candles (only 4-5 candles of mild dip)
+    const cycle = i % 30;
+    if (cycle >= 22 && cycle <= 26) move = -0.5; // mild pullback
+    if (cycle === 27) move = 0.2; // recovery starts
     p.push(p[i - 1] + noise + move);
   }
   return p;
@@ -458,7 +459,7 @@ function DynamicSupportDemo() {
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 0, W, H);
     renderChart(ctx, W, H, prices, [
       { data: sma20, color: 'rgba(14,165,233,0.7)', width: 2.5, label: '20 SMA' },
-    ], { showBounceDots: [{ ma: sma20, tolerance: 3, color: 'rgba(34,197,94,0.8)' }] });
+    ], { showBounceDots: [{ ma: sma20, tolerance: 4, color: 'rgba(34,197,94,0.8)' }] });
   }, [prices, sma20]);
 
   return (
