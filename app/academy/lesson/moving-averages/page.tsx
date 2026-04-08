@@ -667,6 +667,21 @@ export default function MovingAveragesLesson() {
       </section>
 
       {/* Section 1: What Is a Moving Average */}
+      
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Weather vs Climate</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Monday is 22°C. Tuesday drops to 15°C. Wednesday jumps to 25°C. Is it getting warmer or colder? You can&apos;t tell from individual days — they&apos;re too noisy. But the <strong className="text-white">monthly average</strong> tells you clearly: it&apos;s spring, temperatures are rising. <strong className="text-white">Moving averages do the same for price.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Individual candles jump around randomly. A moving average smooths the noise and reveals the true direction. If the average is going up, the trend is up — regardless of what today&apos;s candle does. It&apos;s the difference between reacting to weather and understanding the climate.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 via-green-500 to-amber-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> Gold drops $30 in a single day. Panic? The 200-day moving average is still trending up and price is still above it. The long-term trend is intact — this is just a noisy day. <strong className="text-white">Institutions use the 200 MA to define bull vs bear markets. Now you will too.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Concept</motion.p>

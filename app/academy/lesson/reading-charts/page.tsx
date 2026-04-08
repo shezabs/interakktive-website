@@ -319,6 +319,20 @@ export default function ReadingChartsLesson() {
         </motion.div>
       </section>
 
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Imagine Driving Without a Map</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">You wouldn&apos;t drive across the country without Google Maps. You&apos;d get lost, take wrong turns, waste time, and run out of fuel. <strong className="text-white">Trading without a chart is the same thing.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">A chart is your GPS for the markets. It shows you where price has been, where it might go, and — most importantly — where the danger zones are. Every professional trader on Earth reads charts. After this lesson, so will you.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-accent-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> You hear that Tesla stock is &quot;going up&quot;. Without a chart, you buy at $280 based on a gut feeling. With a chart, you see it&apos;s already hit resistance at $285 three times and rejected — you wait for a pullback to $260 and buy at a much better price. <strong className="text-white">Same stock, completely different outcome.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       {/* Section 1: What IS a Chart */}
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>

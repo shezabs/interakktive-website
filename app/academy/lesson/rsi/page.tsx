@@ -580,6 +580,21 @@ export default function RSILesson() {
       </section>
 
       {/* Section 1: What Is RSI */}
+      
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">The Rubber Band Effect</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Stretch a rubber band between your fingers. Pull it further... further... eventually it <strong className="text-white">snaps back</strong>. The further you stretch it, the harder it snaps. <strong className="text-white">RSI measures how far the market&apos;s rubber band is stretched.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">When buying pressure has been relentless (RSI above 70), the rubber band is stretched to the upside — a snap back (pullback) becomes likely. When selling has been extreme (RSI below 30), it&apos;s stretched to the downside — a bounce becomes likely. RSI doesn&apos;t predict the future, but it tells you when the pressure is unsustainable.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-500 via-purple-500 to-pink-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> GBP/USD has rallied 400 pips in 5 days. RSI hits 82. Your friend says &quot;buy, it&apos;s going to the moon!&quot; But you see the stretched rubber band. You wait. Next day: 120-pip pullback. <strong className="text-white">You buy the dip at a much better price — because RSI warned you the rally was exhausted.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Concept</motion.p>

@@ -509,6 +509,21 @@ export default function SupportResistanceLesson() {
       </section>
 
       {/* Section 1: What is S/R */}
+      
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">A Ball Between Floor &amp; Ceiling</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Throw a rubber ball in a room. It hits the ceiling and bounces down. It hits the floor and bounces up. It keeps bouncing between the two — until someone opens a door and it escapes. <strong className="text-white">That&apos;s exactly how price moves between support and resistance.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Support is the floor. Resistance is the ceiling. Price bounces between them. When the &quot;door opens&quot; (a level breaks), price escapes and moves fast. If you can identify these levels, you know where to buy, where to sell, and when a breakout is happening.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-amber-500 to-red-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> Bitcoin has bounced off $60,000 four times this month. You see it dropping toward $60,000 again. Instead of panicking, you place a buy order at $60,200 with a stop at $59,500. Price bounces again, rallies to $64,000. <strong className="text-white">You made $3,800 per BTC because you knew the floor.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Foundation</motion.p>

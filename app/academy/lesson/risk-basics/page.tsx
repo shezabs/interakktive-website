@@ -387,6 +387,21 @@ export default function RiskBasicsLesson() {
       </section>
 
       {/* Section 1: The Hard Truth */}
+      
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">You Always Wear a Seatbelt</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">You don&apos;t get in a car expecting to crash. But you always click your seatbelt. Why? Because the ONE time it matters, it saves your life. <strong className="text-white">Risk management is your trading seatbelt.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Every single trade can lose money. Every. Single. One. Even the best traders in the world lose 40-50% of their trades. The difference? Their losses are small and controlled. Their wins are bigger. The seatbelt keeps them alive long enough for the wins to compound.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-amber-500 to-green-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> Two traders both start with $10,000. Trader A risks 10% per trade. After 5 losses in a row (which WILL happen), they&apos;re down to $5,900. Trader B risks 1% per trade. After the same 5 losses, they still have $9,510. <strong className="text-white">Trader A needs a 69% gain to recover. Trader B needs 5%.</strong> Who survives?</p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Hard Truth</motion.p>

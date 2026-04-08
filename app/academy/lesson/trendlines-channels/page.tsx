@@ -435,6 +435,21 @@ export default function TrendlinesChannelsLesson() {
       </section>
 
       {/* Section 1: What Are Trendlines */}
+      
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Riding an Escalator</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Stand on an escalator going up. You keep rising without effort — that&apos;s a trend. Now imagine the escalator stops. You&apos;re still standing, but no longer rising. <strong className="text-white">A trendline tells you if the escalator is still running.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">When price is trending up, it follows a diagonal path — like an escalator. A trendline drawn along the lows shows you the angle and speed. When price breaks below that line? The escalator just stopped. Time to step off.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-primary-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> EUR/USD has been climbing for 3 weeks following a clean trendline. You buy on each pullback to the trendline and ride the bounce. On the fourth touch, price breaks through and closes below. <strong className="text-white">You exit immediately — saving yourself from a 150-pip drop that followed.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Concept</motion.p>

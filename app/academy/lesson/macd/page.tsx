@@ -492,6 +492,21 @@ export default function MACDLesson() {
       </section>
 
       {/* Section 1: What Is MACD */}
+      
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Two Runners Racing</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Imagine two runners on a track — one fast (short-term momentum) and one slow (long-term trend). When the fast runner is ahead, momentum is bullish. When the fast runner falls behind, momentum is fading. <strong className="text-white">MACD measures the gap between the two runners.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">The moment the fast runner overtakes the slow one? That&apos;s a bullish crossover — momentum has shifted. The moment the fast runner falls behind? Bearish crossover. MACD catches these momentum shifts early, often before the price move is obvious on the chart.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 via-amber-500 to-green-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> You&apos;re watching XAUUSD (Gold). Price looks flat, nothing happening. But you notice the MACD histogram bars are growing — the fast runner is quietly pulling ahead. Two days later: Gold breaks out for a $40 move. <strong className="text-white">MACD showed you the momentum building BEFORE the breakout happened.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — The Concept</motion.p>

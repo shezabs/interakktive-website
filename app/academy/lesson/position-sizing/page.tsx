@@ -481,6 +481,21 @@ export default function PositionSizingLesson() {
       </section>
 
       {/* Section 1: Why This Matters */}
+      
+      {/* Section 00: Real-World Analogy */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+          <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">First — Why This Matters</motion.p>
+          <motion.h2 variants={fadeUp} className="text-[clamp(26px,5vw,36px)] font-bold tracking-tight leading-tight mb-4">Baking Without Measuring</motion.h2>
+          <motion.p variants={fadeUp} className="text-gray-300 text-base leading-relaxed mb-4">Imagine making a cake by throwing in &quot;some flour, some sugar, some eggs&quot; without measuring. Sometimes it works. Most of the time? Disaster. <strong className="text-white">Trading without position sizing is the same gamble.</strong></motion.p>
+          <motion.p variants={fadeUp} className="text-gray-400 text-base leading-relaxed mb-6">Position sizing is your measuring cup. It tells you <strong className="text-white">exactly</strong> how much to trade based on your account, your risk tolerance, and how far away your stop loss is. Get the proportions right and your account grows steadily. Get them wrong and one bad trade ruins the whole recipe.</motion.p>
+          <motion.div variants={fadeUp} className="p-5 glass-card rounded-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-accent-500" />
+            <p className="text-sm text-gray-300 leading-relaxed"><strong className="text-amber-400">Real scenario:</strong> You have a $3,000 account and want to buy gold (XAUUSD). Without position sizing, you open 1.0 lots because it &quot;feels right&quot;. A $10 move against you = $1,000 loss (33% of your account gone in minutes). With position sizing: 1% risk = $30 max loss, 0.03 lots. <strong className="text-white">Same trade, same stop — but you survive.</strong></p>
+          </motion.div>
+        </motion.div>
+      </section>
+
       <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
           <motion.p variants={fadeUp} className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">01 — Why This Matters</motion.p>
