@@ -361,27 +361,65 @@ function RSISignalGame() {
   const [done, setDone] = useState(false);
 
   const scenarios = useMemo(() => {
-    function makeData(seed: number, pattern: 'ob' | 'os' | 'mid_bull' | 'mid_bear' | 'div'): number[] {
+    // Each scenario has carefully crafted price data to produce a clear RSI condition
+    function makeOB(seed: number): number[] {
+      // Strong sustained rally — RSI will be well above 70
+      const rand = seededRandom(seed);
+      const p: number[] = [80];
+      for (let i = 1; i < 100; i++) {
+        p.push(p[i - 1] + (rand() - 0.3) * 1.5 + 0.6);
+      }
+      return p;
+    }
+    function makeOS(seed: number): number[] {
+      // Strong sustained sell-off — RSI will be well below 30
+      const rand = seededRandom(seed);
+      const p: number[] = [120];
+      for (let i = 1; i < 100; i++) {
+        p.push(p[i - 1] + (rand() - 0.7) * 1.5 - 0.6);
+      }
+      return p;
+    }
+    function makeBull(seed: number): number[] {
+      // Gentle uptrend — RSI stays 50-65 range
       const rand = seededRandom(seed);
       const p: number[] = [100];
-      for (let i = 1; i < 120; i++) {
-        const noise = (rand() - 0.5) * 1.5;
+      for (let i = 1; i < 100; i++) {
+        p.push(p[i - 1] + (rand() - 0.45) * 2 + 0.1);
+      }
+      return p;
+    }
+    function makeBear(seed: number): number[] {
+      // Gentle downtrend — RSI stays 35-50 range
+      const rand = seededRandom(seed);
+      const p: number[] = [100];
+      for (let i = 1; i < 100; i++) {
+        p.push(p[i - 1] + (rand() - 0.55) * 2 - 0.1);
+      }
+      return p;
+    }
+    function makeDiv(seed: number): number[] {
+      // Price makes lower low but with weakening momentum (RSI higher low)
+      const rand = seededRandom(seed);
+      const p: number[] = [100];
+      for (let i = 1; i < 100; i++) {
+        const noise = (rand() - 0.5) * 1.2;
         let trend = 0;
-        if (pattern === 'ob') trend = i < 80 ? 0.4 : -0.1; // strong rally → overbought
-        else if (pattern === 'os') trend = i < 80 ? -0.4 : 0.1; // strong sell → oversold
-        else if (pattern === 'mid_bull') trend = 0.15; // steady up, RSI stays above 50
-        else if (pattern === 'mid_bear') trend = -0.15; // steady down, RSI below 50
-        else trend = i < 60 ? -0.3 : 0.2; // divergence pattern
+        if (i < 30) trend = -0.5;       // first drop
+        else if (i < 50) trend = 0.3;    // recovery
+        else if (i < 80) trend = -0.25;  // second drop (shallower momentum)
+        else trend = 0.15;               // start of recovery
         p.push(p[i - 1] + noise + trend);
       }
       return p;
     }
+
     return [
-      { prices: makeData(111, 'ob'), correct: 'overbought', explain: 'RSI surged above 70 after a strong rally. The market is overbought — momentum is stretched. Watch for a pullback or reversal.' },
-      { prices: makeData(222, 'os'), correct: 'oversold', explain: 'RSI dropped below 30 after heavy selling. The market is oversold — selling pressure may be exhausted. Watch for a bounce.' },
-      { prices: makeData(333, 'mid_bull'), correct: 'bullish_momentum', explain: 'RSI is above 50 and trending higher. This confirms bullish momentum — the trend is healthy. Look for pullback entries, not shorts.' },
-      { prices: makeData(444, 'mid_bear'), correct: 'bearish_momentum', explain: 'RSI is below 50 and trending lower. Bearish momentum confirmed. Avoid buying — look for short setups or stay out.' },
-      { prices: makeData(555, 'div'), correct: 'divergence', explain: 'Price made new lows but RSI didn\'t — bullish divergence. The selling momentum is weakening. A reversal may be forming.' },
+      { prices: makeOB(111), correct: 'overbought', explain: 'RSI surged above 70 after a strong rally. The market is overbought — momentum is stretched. Watch for a pullback.' },
+      { prices: makeOS(222), correct: 'oversold', explain: 'RSI dropped below 30 after heavy selling. The market is oversold — selling pressure may be exhausted. Watch for a bounce.' },
+      { prices: makeBull(333), correct: 'bullish_momentum', explain: 'RSI is above 50 and steady. Bullish momentum confirmed — the trend is healthy. Look for pullback entries.' },
+      { prices: makeBear(444), correct: 'bearish_momentum', explain: 'RSI is below 50. Bearish momentum — avoid buying. Look for short setups or stay out.' },
+      { prices: makeDiv(555), correct: 'divergence', explain: 'Price made a lower low but RSI made a higher low — bullish divergence. Selling is weakening. A reversal may be forming.' },
     ];
   }, []);
 
@@ -405,10 +443,11 @@ function RSISignalGame() {
     if (answer) return;
     setAnswer(ans);
     if (ans === sc.correct) setScore(s => s + 1);
-    setTimeout(() => {
-      if (round < scenarios.length - 1) { setRound(r => r + 1); setAnswer(null); }
-      else setDone(true);
-    }, 2500);
+  };
+
+  const nextRound = () => {
+    if (round < scenarios.length - 1) { setRound(r => r + 1); setAnswer(null); }
+    else setDone(true);
   };
 
   if (done) return (
@@ -440,9 +479,14 @@ function RSISignalGame() {
           })}
         </div>
         {answer && (
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 text-xs text-gray-400 text-center leading-relaxed">
-            {answer === sc.correct ? '✅ Correct! ' : '❌ Not quite. '}{sc.explain}
-          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <p className="mt-3 text-xs text-gray-400 text-center leading-relaxed">
+              {answer === sc.correct ? '✅ Correct! ' : '❌ Not quite. '}{sc.explain}
+            </p>
+            <button onClick={nextRound} className="w-full mt-3 py-2.5 rounded-xl glass text-xs font-semibold text-amber-400 active:scale-95">
+              {round >= scenarios.length - 1 ? 'See Results' : 'Next Round →'}
+            </button>
+          </motion.div>
         )}
       </div>
     </div>
