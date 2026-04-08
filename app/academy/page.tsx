@@ -22,6 +22,7 @@ const liveLessons = new Set([
   'macd',
   'bollinger-bands',
   'volume-analysis',
+  'candlestick-advanced',
 ]);
 
 export default function AcademyPage() {
