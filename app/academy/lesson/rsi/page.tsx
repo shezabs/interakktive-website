@@ -361,65 +361,51 @@ function RSISignalGame() {
   const [done, setDone] = useState(false);
 
   const scenarios = useMemo(() => {
-    // Each scenario has carefully crafted price data to produce a clear RSI condition
-    function makeOB(seed: number): number[] {
-      // Strong sustained rally — RSI will be well above 70
-      const rand = seededRandom(seed);
-      const p: number[] = [80];
-      for (let i = 1; i < 100; i++) {
-        p.push(p[i - 1] + (rand() - 0.3) * 1.5 + 0.6);
-      }
-      return p;
-    }
-    function makeOS(seed: number): number[] {
-      // Strong sustained sell-off — RSI will be well below 30
-      const rand = seededRandom(seed);
-      const p: number[] = [120];
-      for (let i = 1; i < 100; i++) {
-        p.push(p[i - 1] + (rand() - 0.7) * 1.5 - 0.6);
-      }
-      return p;
-    }
-    function makeBull(seed: number): number[] {
-      // Gentle uptrend — RSI stays 50-65 range
+    // KEY: RSI needs BOTH gains AND losses to oscillate. Use wide noise (rand()-0.5)*3
+    // plus a directional bias to push RSI toward the desired zone.
+    function makeData(seed: number, phases: { len: number; bias: number }[]): number[] {
       const rand = seededRandom(seed);
       const p: number[] = [100];
-      for (let i = 1; i < 100; i++) {
-        p.push(p[i - 1] + (rand() - 0.45) * 2 + 0.1);
-      }
-      return p;
-    }
-    function makeBear(seed: number): number[] {
-      // Gentle downtrend — RSI stays 35-50 range
-      const rand = seededRandom(seed);
-      const p: number[] = [100];
-      for (let i = 1; i < 100; i++) {
-        p.push(p[i - 1] + (rand() - 0.55) * 2 - 0.1);
-      }
-      return p;
-    }
-    function makeDiv(seed: number): number[] {
-      // Price makes lower low but with weakening momentum (RSI higher low)
-      const rand = seededRandom(seed);
-      const p: number[] = [100];
-      for (let i = 1; i < 100; i++) {
-        const noise = (rand() - 0.5) * 1.2;
-        let trend = 0;
-        if (i < 30) trend = -0.5;       // first drop
-        else if (i < 50) trend = 0.3;    // recovery
-        else if (i < 80) trend = -0.25;  // second drop (shallower momentum)
-        else trend = 0.15;               // start of recovery
-        p.push(p[i - 1] + noise + trend);
+      for (const phase of phases) {
+        for (let j = 0; j < phase.len; j++) {
+          const noise = (rand() - 0.5) * 3; // wide noise ensures both gains and losses
+          p.push(p[p.length - 1] + noise + phase.bias);
+        }
       }
       return p;
     }
 
     return [
-      { prices: makeOB(111), correct: 'overbought', explain: 'RSI surged above 70 after a strong rally. The market is overbought — momentum is stretched. Watch for a pullback.' },
-      { prices: makeOS(222), correct: 'oversold', explain: 'RSI dropped below 30 after heavy selling. The market is oversold — selling pressure may be exhausted. Watch for a bounce.' },
-      { prices: makeBull(333), correct: 'bullish_momentum', explain: 'RSI is above 50 and steady. Bullish momentum confirmed — the trend is healthy. Look for pullback entries.' },
-      { prices: makeBear(444), correct: 'bearish_momentum', explain: 'RSI is below 50. Bearish momentum — avoid buying. Look for short setups or stay out.' },
-      { prices: makeDiv(555), correct: 'divergence', explain: 'Price made a lower low but RSI made a higher low — bullish divergence. Selling is weakening. A reversal may be forming.' },
+      {
+        prices: makeData(111, [{ len: 20, bias: 0.05 }, { len: 80, bias: 0.5 }]),
+        correct: 'overbought',
+        explain: 'RSI surged above 70 after a sustained rally. The market is overbought — momentum is stretched. Watch for a pullback.'
+      },
+      {
+        prices: makeData(222, [{ len: 20, bias: -0.05 }, { len: 80, bias: -0.5 }]),
+        correct: 'oversold',
+        explain: 'RSI dropped below 30 after heavy selling. The market is oversold — selling may be exhausted. Watch for a bounce.'
+      },
+      {
+        prices: makeData(333, [{ len: 100, bias: 0.18 }]),
+        correct: 'bullish_momentum',
+        explain: 'RSI is above 50 and steady. Bullish momentum confirmed — the uptrend is healthy.'
+      },
+      {
+        prices: makeData(444, [{ len: 100, bias: -0.18 }]),
+        correct: 'bearish_momentum',
+        explain: 'RSI is below 50. Bearish momentum — avoid buying. The downtrend has control.'
+      },
+      {
+        prices: makeData(555, [
+          { len: 30, bias: -0.35 },
+          { len: 20, bias: 0.25 },
+          { len: 35, bias: -0.15 },
+          { len: 15, bias: 0.2 },
+        ]),
+        correct: 'divergence',
+        explain: 'Price made a lower low but RSI made a higher low — bullish divergence. Selling is weakening. A reversal may be forming.'
+      },
     ];
   }, []);
 
