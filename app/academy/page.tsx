@@ -29,6 +29,7 @@ const liveLessons = new Set([
   'first-strategy',
   'who-are-smart-money',
   'market-structure-smc',
+  'liquidity',
 ]);
 
 export default function AcademyPage() {
