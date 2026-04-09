@@ -45,6 +45,7 @@ const liveLessons = new Set([
   'traders-mind',
   'fear-and-greed',
   'fomo',
+  'revenge-trading',
 ]);
 
 export default function AcademyPage() {
