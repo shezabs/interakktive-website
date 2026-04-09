@@ -26,6 +26,7 @@ const liveLessons = new Set([
   'chart-patterns',
   'fibonacci',
   'multi-timeframe',
+  'first-strategy',
 ]);
 
 export default function AcademyPage() {
