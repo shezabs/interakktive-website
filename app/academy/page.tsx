@@ -37,6 +37,7 @@ const liveLessons = new Set([
   'optimal-trade-entry',
   'breaker-blocks',
   'kill-zones',
+  'power-of-three',
 ]);
 
 export default function AcademyPage() {
