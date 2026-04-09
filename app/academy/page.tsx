@@ -44,6 +44,7 @@ const liveLessons = new Set([
   'smc-strategy',
   'traders-mind',
   'fear-and-greed',
+  'fomo',
 ]);
 
 export default function AcademyPage() {
