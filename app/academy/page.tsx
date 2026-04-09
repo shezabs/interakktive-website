@@ -32,6 +32,7 @@ const liveLessons = new Set([
   'liquidity',
   'liquidity-sweeps',
   'order-blocks',
+  'fair-value-gaps',
 ]);
 
 export default function AcademyPage() {
