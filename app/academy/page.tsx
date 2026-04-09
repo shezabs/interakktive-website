@@ -39,6 +39,7 @@ const liveLessons = new Set([
   'kill-zones',
   'power-of-three',
   'smc-trade-models',
+  'smc-phantom-pro',
 ]);
 
 export default function AcademyPage() {
