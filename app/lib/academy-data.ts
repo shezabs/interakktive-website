@@ -143,6 +143,29 @@ export const academyCourses: AcademyCourse[] = [
       { id: 'smc-strategy', courseId: 'level-3-smart-money', title: 'Building Your SMC Strategy', subtitle: 'The Level 3 capstone', description: 'Build a complete Smart Money strategy with session, structure, entry model, and risk rules.', estimatedMinutes: 20, isFree: false, totalSections: 8, quizPassThreshold: 66 },
     ],
   },
+  {
+    id: 'level-4-psychology',
+    title: 'Level 4 — Trading Psychology & Mental Performance',
+    description: 'The 90% of trading that happens between your ears. Master fear, greed, discipline, and the mental edge that separates professionals from gamblers. 14 in-depth lessons.',
+    level: 4,
+    isFree: false,
+    lessons: [
+      { id: 'traders-mind', courseId: 'level-4-psychology', title: 'The Trader\'s Mind', subtitle: 'Know your psychological type', description: 'Why 90% of trading is psychology. Discover your trader personality type with an interactive profiler.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'fear-and-greed', courseId: 'level-4-psychology', title: 'Fear & Greed — The Twin Killers', subtitle: 'The two emotions that destroy accounts', description: 'An interactive tug-of-war between the forces that make you exit too early or hold too long.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'fomo', courseId: 'level-4-psychology', title: 'FOMO — The Trade You Should Never Take', subtitle: 'Chasing the move that already left', description: 'Why chasing feels irresistible and how to sit with the discomfort of missing out.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'revenge-trading', courseId: 'level-4-psychology', title: 'Revenge Trading — Breaking the Cycle', subtitle: 'When losses become a spiral', description: 'The 1% loss that becomes 15%. Circuit breakers, cooling periods, and stopping the spiral.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'loss-acceptance', courseId: 'level-4-psychology', title: 'Loss Acceptance — Your Superpower', subtitle: 'Losses are a cost of business', description: 'The casino owner mindset. Why profitable traders lose 55% of their trades and still win.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'confidence-overconfidence', courseId: 'level-4-psychology', title: 'Confidence vs Overconfidence', subtitle: 'The winning streak trap', description: 'After 5 wins you feel invincible. That is the most dangerous moment in trading.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'process-over-outcome', courseId: 'level-4-psychology', title: 'Process Over Outcome', subtitle: 'Grade the trade, not the P&L', description: 'A losing trade with perfect process beats a winning trade with broken rules. Every time.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'patience-skill', courseId: 'level-4-psychology', title: 'The Waiting Game — Patience as a Skill', subtitle: '90% watching, 10% trading', description: 'Most losses come from doing something when you should be doing nothing.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'trading-routine', courseId: 'level-4-psychology', title: 'Building Your Trading Routine', subtitle: 'Structure kills emotion', description: 'Pre-session, in-session, post-session — the routine that becomes your psychological armour.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'trading-journal', courseId: 'level-4-psychology', title: 'The Trading Journal — Your Psychologist', subtitle: 'Data-driven self-awareness', description: 'Beyond recording trades. Journal emotions, decisions, and patterns to find your edge.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'drawdown-psychology', courseId: 'level-4-psychology', title: 'Drawdown Psychology', subtitle: 'When the account bleeds', description: 'What to do when you are down 10%. The hardest test in trading.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'mental-reset', courseId: 'level-4-psychology', title: 'The 30-Day Mental Reset', subtitle: 'A complete recovery programme', description: 'Four weeks to rebuild your trading psychology from the ground up.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'performance-pressure', courseId: 'level-4-psychology', title: 'Performance Under Pressure', subtitle: 'When the lizard brain takes over', description: 'The amygdala hijack, breathing techniques, and the 10-second rule.', estimatedMinutes: 16, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'mental-edge-capstone', courseId: 'level-4-psychology', title: 'Building Your Mental Edge', subtitle: 'The Level 4 capstone', description: 'Build your Psychological Constitution — the companion to your SMC Strategy from Level 3.', estimatedMinutes: 20, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+    ],
+  },
 ];
 
 export function getCourse(courseId: string): AcademyCourse | undefined {

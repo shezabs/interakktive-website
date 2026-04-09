@@ -42,6 +42,7 @@ const liveLessons = new Set([
   'smc-phantom-pro',
   'sessions-deep-dive',
   'smc-strategy',
+  'traders-mind',
 ]);
 
 export default function AcademyPage() {
