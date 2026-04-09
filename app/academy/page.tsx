@@ -47,6 +47,7 @@ const liveLessons = new Set([
   'fomo',
   'revenge-trading',
   'loss-acceptance',
+  'confidence-overconfidence',
 ]);
 
 export default function AcademyPage() {
