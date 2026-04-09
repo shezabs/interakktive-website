@@ -593,13 +593,11 @@ export default function BreakerBlocksLesson() {
   const certUnlocked = quizDone && score >= 66;
 
   return (
-    <div className="min-h-screen bg-[#060a12] text-white relative" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <div className="fixed top-0 left-0 w-full h-1 z-50 bg-black/50"><div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-150" style={{ width: `${scrollPct}%` }} /></div>
-      <nav className="sticky top-0 z-40 backdrop-blur-xl bg-[#060a12]/80 border-b border-white/5">
-        <div className="max-w-3xl mx-auto flex items-center justify-between px-5 py-3">
-          <Link href="/academy" className="text-xs text-gray-500 hover:text-white transition-colors">← Academy</Link>
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-amber-400"><Crown className="w-3 h-3" /> Pro</div>
-        </div>
+    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-900/50"><motion.div className="h-full bg-gradient-to-r from-amber-500 to-accent-500" style={{ width: `${Math.min((scrollPct), 100)}%` }} /></div>
+      <nav className="sticky top-0 z-40 px-5 py-3 flex items-center justify-between" style={{ background: 'rgba(6,10,18,0.85)', backdropFilter: 'blur(16px)' }}>
+        <Link href="/academy" className="text-xs text-gray-500 hover:text-gray-300 transition">&larr; Academy</Link>
+        <div className="flex items-center gap-2"><Crown className="w-3.5 h-3.5 text-amber-400" /><span className="text-xs font-bold text-amber-400">PRO &middot; LEVEL 3</span></div>
       </nav>
 
       {/* Hero */}
@@ -613,22 +611,26 @@ export default function BreakerBlocksLesson() {
 
       {/* S00: WHY THIS MATTERS */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First — Why This Matters</p>
-        <div className="glass-card p-6 rounded-2xl mb-6 border border-amber-500/10">
-          <p className="text-gray-300 leading-relaxed mb-4">Imagine a soldier who defects during a war. Yesterday they fought for your side. Today they fight <em>against</em> you. They know your tactics, your positions, your weaknesses — because they used to be one of you.</p>
-          <p className="text-gray-300 leading-relaxed mb-4">That's exactly what a <strong className="text-amber-400">Breaker Block</strong> is. It was once an Order Block — a zone where institutions placed their orders. But the OB <em>failed</em>. Price broke through it. And now that zone has switched allegiance. Former support becomes resistance. Former resistance becomes support.</p>
-          <p className="text-gray-300 leading-relaxed">This is one of the most powerful concepts in Smart Money trading because <strong className="text-white">most retail traders don't know zones can flip</strong>. They see a broken support level and assume it's dead. Smart money knows it's just changed sides.</p>
-        </div>
-        <TraitorAnimation />
-        <div className="mt-6 p-5 rounded-2xl bg-gradient-to-r from-amber-500/5 to-transparent border-l-2 border-amber-500">
-          <p className="text-sm text-gray-400 leading-relaxed"><span className="text-amber-400 font-bold">Real Scenario:</span> EUR/USD had a bullish OB at 1.0850-1.0870 that had held twice. On the third approach, price smashed through it — closing below 1.0850 with a strong bearish candle. Two days later, price retraced back up to 1.0860 (the old OB). Retail traders bought there thinking "it held before." Smart money sold — because the OB was now a bearish breaker. Price reversed from 1.0860 and fell 90 pips to 1.0770. <strong className="text-white">The traitor zone trapped the buyers.</strong></p>
-        </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-lg font-bold text-white mb-3">&#9889; Imagine a soldier who defects during a war.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">Yesterday they fought for your side. Today they fight <em>against</em> you. They know your tactics, your positions, your weaknesses &mdash; because they used to be one of you.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">That&apos;s exactly what a <strong className="text-amber-400">Breaker Block</strong> is. It was once an Order Block &mdash; a zone where institutions placed their orders. But the OB <em>failed</em>. Price broke through it. And now that zone has switched allegiance. Former support becomes resistance. Former resistance becomes support.</p>
+            <p className="text-gray-400 leading-relaxed">This is one of the most powerful concepts in Smart Money trading because <strong className="text-white">most retail traders don&apos;t know zones can flip</strong>. They see a broken support level and assume it&apos;s dead. Smart money knows it&apos;s just changed sides.</p>
+          </div>
+          <TraitorAnimation />
+          <div className="mt-6 p-5 rounded-2xl border border-amber-500/20 bg-amber-500/5">
+            <p className="text-xs font-bold text-amber-400 mb-2">&#9889; REAL SCENARIO</p>
+            <p className="text-sm text-gray-300 leading-relaxed">EUR/USD had a bullish OB at 1.0850&ndash;1.0870 that had held twice. On the third approach, price smashed through it &mdash; closing below 1.0850 with a strong bearish candle. Two days later, price retraced back up to 1.0860 (the old OB). Retail traders bought there thinking &quot;it held before.&quot; Smart money sold &mdash; because the OB was now a bearish breaker. Price reversed from 1.0860 and fell 90 pips to 1.0770. <em className="text-amber-400">The traitor zone trapped the buyers.</em></p>
+          </div>
+        </motion.div>
       </section>
 
       {/* S01: THE LIFECYCLE */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 — The Lifecycle</p>
-        <h2 className="text-2xl font-bold mb-6">The Lifecycle: OB → Failure → Breaker</h2>
+        <h2 className="text-2xl font-extrabold mb-6">The Lifecycle: OB → Failure → Breaker</h2>
         <p className="text-gray-400 leading-relaxed mb-6">Every breaker block starts life as an ordinary Order Block. It goes through three acts — like a story with a twist ending.</p>
         <MitigationCycleAnimation />
         <div className="space-y-3 mt-6">
@@ -650,7 +652,7 @@ export default function BreakerBlocksLesson() {
       {/* S02: BULLISH vs BEARISH BREAKERS */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 — Two Types</p>
-        <h2 className="text-2xl font-bold mb-3">Two Types of Breaker Blocks</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Two Types of Breaker Blocks</h2>
         <p className="text-gray-400 text-sm mb-6">Tap each type to understand the mechanics. Remember: the NAME of the breaker describes its NEW role, not its old one.</p>
         {[
           { title: 'Bullish Breaker (Now Support)', color: '#22c55e', emoji: '🟢',
@@ -690,7 +692,7 @@ export default function BreakerBlocksLesson() {
       {/* S03: WHAT INVALIDATION LOOKS LIKE */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 — Invalidation</p>
-        <h2 className="text-2xl font-bold mb-6">What Invalidation Looks Like</h2>
+        <h2 className="text-2xl font-extrabold mb-6">What Invalidation Looks Like</h2>
         <p className="text-gray-400 leading-relaxed mb-6">Not every OB becomes a breaker. The OB must be <em>decisively</em> broken — a strong candle closing through the zone, not just a wick poking below. Here's what the sequence looks like in slow motion:</p>
         <FailureSequenceAnimation />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
@@ -711,7 +713,7 @@ export default function BreakerBlocksLesson() {
       {/* S04: MITIGATION DEEP DIVE */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 — Mitigation</p>
-        <h2 className="text-2xl font-bold mb-3">Mitigation — Settling the Debt</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Mitigation — Settling the Debt</h2>
         <p className="text-gray-400 leading-relaxed mb-6">Mitigation means "completing the unfinished business." When price returns to a breaker zone and gets rejected, the remaining unfilled institutional orders are being executed. Think of it as returning to a restaurant to pick up the dishes you ordered but didn't receive.</p>
         {[
           { title: 'First-Touch Mitigation', color: '#22c55e', body: 'The first time price returns to the breaker zone. This is the HIGHEST probability reaction because all the unfilled orders are still waiting. The rejection is usually strong and decisive — a clear wick or engulfing candle. This is the entry you want.', strength: '🟢🟢🟢🟢🟢 Maximum' },
@@ -742,7 +744,7 @@ export default function BreakerBlocksLesson() {
       {/* S05: INTERACTIVE CHART */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 — Interactive Chart</p>
-        <h2 className="text-2xl font-bold mb-3">Interactive Breaker Chart</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Interactive Breaker Chart</h2>
         <p className="text-gray-400 text-sm mb-4">Switch between bullish and bearish breakers. Toggle the zone and mitigation point on and off to see how the flip works.</p>
         <div className="flex flex-wrap gap-2 mb-4">
           <button onClick={() => setChartType('bullish')} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${chartType === 'bullish' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'glass text-gray-500'}`}>🟢 Bullish Breaker</button>
@@ -765,7 +767,7 @@ export default function BreakerBlocksLesson() {
       {/* S06: GRADING SYSTEM */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 — Quality Grading</p>
-        <h2 className="text-2xl font-bold mb-3">Breaker Quality Grading</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Breaker Quality Grading</h2>
         <p className="text-gray-400 text-sm mb-6">Not all breakers are equal. Grade yours before risking capital.</p>
         {[
           { grade: 'A+', title: 'First-Touch + OTE + FVG', color: '#22c55e', emoji: '🎯', body: 'The breaker sits inside the OTE zone (61.8-78.6%) AND has an FVG overlapping. First touch. HTF trend aligned. This is the absolute elite setup — maximum confluence from Lessons 3.5, 3.6, 3.7, and 3.8 all combining. Expected R:R: 1:5+.', criteria: 'Breaker ✓ | OTE ✓ | FVG ✓ | First touch ✓ | HTF ✓' },
@@ -799,7 +801,7 @@ export default function BreakerBlocksLesson() {
       {/* S07: HOW TO TRADE — STEP BY STEP */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 — Step by Step</p>
-        <h2 className="text-2xl font-bold mb-3">How to Trade Breaker Blocks — 7 Steps</h2>
+        <h2 className="text-2xl font-extrabold mb-3">How to Trade Breaker Blocks — 7 Steps</h2>
         <p className="text-gray-400 text-sm mb-6">The complete execution framework. No guessing.</p>
         {[
           { step: 1, title: 'Identify a Failed Order Block', color: '#3b82f6', text: 'Find an OB that was decisively broken — a candle body closing through the zone, not just a wick. The stronger the break (multiple candles, high volume, structure break), the stronger the breaker will be.' },
@@ -823,7 +825,7 @@ export default function BreakerBlocksLesson() {
       {/* S08: OB vs BREAKER COMPARISON */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 — OB vs Breaker</p>
-        <h2 className="text-2xl font-bold mb-6">Order Block vs Breaker Block — Side by Side</h2>
+        <h2 className="text-2xl font-extrabold mb-6">Order Block vs Breaker Block — Side by Side</h2>
         <div className="overflow-x-auto">
           <div className="min-w-[500px] glass rounded-2xl overflow-hidden">
             {[
@@ -851,7 +853,7 @@ export default function BreakerBlocksLesson() {
       {/* S09: COMMON MISTAKES */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 — Common Mistakes</p>
-        <h2 className="text-2xl font-bold mb-3">Common Breaker Mistakes</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Common Breaker Mistakes</h2>
         <p className="text-gray-400 text-sm mb-6">Avoid these errors and you'll be ahead of 90% of traders who learn about breakers.</p>
         {[
           { title: 'Treating a Wick as a Break', wrong: 'Marking a breaker because a wick poked through the OB.', right: 'Only mark a breaker when a candle BODY closes through the zone. Wicks show rejection — the OB actually held.', tip: 'A wick through an OB means it\'s STRONGER, not broken.' },
@@ -882,7 +884,7 @@ export default function BreakerBlocksLesson() {
       {/* S10: GAME */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 — Spot the Breaker</p>
-        <h2 className="text-2xl font-bold mb-3">Breaker Block Game</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Breaker Block Game</h2>
         <p className="text-gray-400 text-sm mb-6">5 rounds. Identify breakers, mitigations, and failures. Can you spot when a zone flips?</p>
 
         {!gameComplete ? (

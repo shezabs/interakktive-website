@@ -673,16 +673,14 @@ export default function OTELesson() {
   const certUnlocked = quizDone && score >= 66;
 
   return (
-    <div className="min-h-screen bg-[#060a12] text-white relative" style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
       {/* Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1 z-50 bg-black/50"><div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-150" style={{ width: `${scrollPct}%` }} /></div>
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-900/50"><motion.div className="h-full bg-gradient-to-r from-amber-500 to-accent-500" style={{ width: `${Math.min((scrollPct), 100)}%` }} /></div>
 
       {/* Nav */}
-      <nav className="sticky top-0 z-40 backdrop-blur-xl bg-[#060a12]/80 border-b border-white/5">
-        <div className="max-w-3xl mx-auto flex items-center justify-between px-5 py-3">
-          <Link href="/academy" className="text-xs text-gray-500 hover:text-white transition-colors">← Academy</Link>
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest uppercase text-amber-400"><Crown className="w-3 h-3" /> Pro</div>
-        </div>
+      <nav className="sticky top-0 z-40 px-5 py-3 flex items-center justify-between" style={{ background: 'rgba(6,10,18,0.85)', backdropFilter: 'blur(16px)' }}>
+        <Link href="/academy" className="text-xs text-gray-500 hover:text-gray-300 transition">&larr; Academy</Link>
+        <div className="flex items-center gap-2"><Crown className="w-3.5 h-3.5 text-amber-400" /><span className="text-xs font-bold text-amber-400">PRO &middot; LEVEL 3</span></div>
       </nav>
 
       {/* Hero */}
@@ -696,23 +694,26 @@ export default function OTELesson() {
 
       {/* ============ SECTION 00: WHY THIS MATTERS ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First — Why This Matters</p>
-        <div className="glass-card p-6 rounded-2xl mb-6 border border-amber-500/10">
-          <p className="text-gray-300 leading-relaxed mb-4">Imagine two people shooting at a target. One stands wherever they like, squinting, and fires. The other waits for the perfect angle, uses a scope, steadies their breathing, and <em>then</em> fires.</p>
-          <p className="text-gray-300 leading-relaxed mb-4">Who hits the bullseye? The sniper. Every time.</p>
-          <p className="text-gray-300 leading-relaxed mb-4">The <strong className="text-amber-400">Optimal Trade Entry</strong> is the sniper's scope for traders. Instead of buying randomly, you wait for price to pull back to a <em>mathematically precise zone</em> — the <strong className="text-white">61.8% to 78.6% Fibonacci retracement</strong> of the last impulsive move. This zone has a name among professional traders: the <strong className="text-amber-400">OTE</strong>.</p>
-          <p className="text-gray-300 leading-relaxed">Why does it work? Because institutions — the banks, the hedge funds, the market movers — place the majority of their unfilled orders in this zone. When price returns to the OTE, it's not random. It's <strong className="text-white">engineering</strong>.</p>
-        </div>
-        <SniperAnimation />
-        <div className="mt-6 p-5 rounded-2xl bg-gradient-to-r from-amber-500/5 to-transparent border-l-2 border-amber-500">
-          <p className="text-sm text-gray-400 leading-relaxed"><span className="text-amber-400 font-bold">Real Scenario:</span> Gold rallied from $1,980 to $2,075 — a $95 impulse. It then pulled back. The OTE zone sat between $2,016.30 (61.8%) and $2,000.33 (78.6%). Price retraced to $2,008, right in the OTE — and an Order Block was sitting there from the initial rally. Entry at $2,008, stop at $1,997 (below 78.6%), target $2,090. <strong className="text-white">Risk: $11. Reward: $82. That's 1:7.5 R:R.</strong></p>
-        </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-lg font-bold text-white mb-3">&#127919; Imagine two people shooting at a target.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">One stands wherever they like, squinting, and fires. The other waits for the perfect angle, uses a scope, steadies their breathing, and <em>then</em> fires. Who hits the bullseye? The sniper. Every time.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">The <strong className="text-amber-400">Optimal Trade Entry</strong> is the sniper&apos;s scope for traders. Instead of buying randomly, you wait for price to pull back to a <em>mathematically precise zone</em> &mdash; the <strong className="text-white">61.8% to 78.6% Fibonacci retracement</strong> of the last impulsive move. This zone has a name among professional traders: the <strong className="text-amber-400">OTE</strong>.</p>
+            <p className="text-gray-400 leading-relaxed">Why does it work? Because institutions &mdash; the banks, the hedge funds, the market movers &mdash; place the majority of their unfilled orders in this zone. When price returns to the OTE, it&apos;s not random. It&apos;s <strong className="text-white">engineering</strong>.</p>
+          </div>
+          <SniperAnimation />
+          <div className="mt-6 p-5 rounded-2xl border border-amber-500/20 bg-amber-500/5">
+            <p className="text-xs font-bold text-amber-400 mb-2">&#127919; REAL SCENARIO</p>
+            <p className="text-sm text-gray-300 leading-relaxed">Gold rallied from $1,980 to $2,075 &mdash; a $95 impulse. It then pulled back. The OTE zone sat between $2,016.30 (61.8%) and $2,000.33 (78.6%). Price retraced to $2,008, right in the OTE &mdash; and an Order Block was sitting there from the initial rally. Entry at $2,008, stop at $1,997 (below 78.6%), target $2,090. <em className="text-amber-400">Risk: $11. Reward: $82. That&apos;s 1:7.5 R:R.</em></p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ============ SECTION 01: RETAIL vs OTE ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 — Retail vs OTE</p>
-        <h2 className="text-2xl font-bold mb-6">The Difference OTE Makes</h2>
+        <h2 className="text-2xl font-extrabold mb-6">The Difference OTE Makes</h2>
         <p className="text-gray-400 leading-relaxed mb-6">Most retail traders enter at the <em>worst</em> possible time — at the top of an impulse move, chasing price because they're scared of missing out. Smart money enters during the pullback, at the OTE zone. Same market. Same asset. Completely different results.</p>
         <BeforeAfterAnimation />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
@@ -733,7 +734,7 @@ export default function OTELesson() {
       {/* ============ SECTION 02: THE OTE ZONE EXPLAINED ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 — The Zone</p>
-        <h2 className="text-2xl font-bold mb-6">The OTE Zone — Explained Simply</h2>
+        <h2 className="text-2xl font-extrabold mb-6">The OTE Zone — Explained Simply</h2>
         <p className="text-gray-400 leading-relaxed mb-6">The OTE zone is defined by two Fibonacci levels that sit between the swing high and swing low of an impulse leg:</p>
         <div className="space-y-3 mb-6">
           <div className="p-4 rounded-xl border border-amber-500/15 bg-amber-500/5">
@@ -760,7 +761,7 @@ export default function OTELesson() {
       {/* ============ SECTION 03: DEEP DIVE EACH LEVEL ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 — Level Deep Dive</p>
-        <h2 className="text-2xl font-bold mb-3">Every Fib Level — What It Means for OTE</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Every Fib Level — What It Means for OTE</h2>
         <p className="text-gray-400 text-sm mb-6">Tap each level to understand its role in the OTE framework. Not all retracements are created equal.</p>
         {[
           { level: '23.6%', title: 'The Sprinter\'s Pause', color: '#94a3b8', body: 'This is barely a pullback — like a sprinter pausing for half a second. Price has only given back a quarter of the impulse. The trend is extremely strong, but the risk:reward for entry here is terrible because your stop loss (below 78.6%) is miles away. Institutions haven\'t had time to accumulate. Skip this level for entries.', verdict: '⚠️ Not an OTE level. Too shallow. Poor R:R.' },
@@ -795,7 +796,7 @@ export default function OTELesson() {
       {/* ============ SECTION 04: INTERACTIVE CHART ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 — Interactive Chart</p>
-        <h2 className="text-2xl font-bold mb-3">Interactive OTE Chart</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Interactive OTE Chart</h2>
         <p className="text-gray-400 text-sm mb-4">Toggle each layer on and off to see how OTE, Order Blocks, and FVGs overlap. This is how smart money sees the chart — in layers of confluence.</p>
         <div className="flex flex-wrap gap-2 mb-4">
           <button onClick={() => setShowOTE(!showOTE)} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${showOTE ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'glass text-gray-500'}`}>🎯 OTE Zone</button>
@@ -819,7 +820,7 @@ export default function OTELesson() {
       {/* ============ SECTION 05: THE BULLSEYE CONCEPT ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 — Triple Confluence</p>
-        <h2 className="text-2xl font-bold mb-6">The Bullseye — Triple Confluence</h2>
+        <h2 className="text-2xl font-extrabold mb-6">The Bullseye — Triple Confluence</h2>
         <p className="text-gray-400 leading-relaxed mb-6">In archery, the bullseye is the smallest circle in the center of the target — the hardest to hit but the most rewarding. In trading, the bullseye is when three independent confirmation layers all point to the <em>same price area</em>:</p>
         <ComboAnimation />
         <div className="space-y-3 mt-6">
@@ -845,7 +846,7 @@ export default function OTELesson() {
       {/* ============ SECTION 06: OTE CALCULATOR ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 — Calculator</p>
-        <h2 className="text-2xl font-bold mb-3">OTE Calculator</h2>
+        <h2 className="text-2xl font-extrabold mb-3">OTE Calculator</h2>
         <p className="text-gray-400 text-sm mb-6">Enter any swing high and swing low — the calculator instantly shows your OTE zone and every key Fib level. Try it with Gold, Bitcoin, EUR/USD, or any asset you trade.</p>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
@@ -878,7 +879,7 @@ export default function OTELesson() {
       {/* ============ SECTION 07: OTE GRADING SYSTEM ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 — Quality Grading</p>
-        <h2 className="text-2xl font-bold mb-3">OTE Quality Grading</h2>
+        <h2 className="text-2xl font-extrabold mb-3">OTE Quality Grading</h2>
         <p className="text-gray-400 text-sm mb-6">Not all OTE setups are equal. Just like Order Blocks have grades (Lesson 3.5), OTE entries have a quality spectrum. Tap each grade to see the criteria.</p>
         {[
           { grade: 'A+', title: 'The Bullseye', color: '#22c55e', emoji: '🎯', body: 'OTE zone + Order Block + FVG + Liquidity sweep before entry. All three layers overlap. HTF trend aligns. This is the rarest setup — you might see 1-2 per week on your timeframe. When it appears, it deserves your full position size. Expected R:R: 1:5 to 1:10.', criteria: 'OTE ✓ | OB ✓ | FVG ✓ | Sweep ✓ | HTF aligned ✓' },
@@ -912,7 +913,7 @@ export default function OTELesson() {
       {/* ============ SECTION 08: HOW TO TRADE OTE — STEP BY STEP ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 — Step by Step</p>
-        <h2 className="text-2xl font-bold mb-3">How to Trade the OTE — Step by Step</h2>
+        <h2 className="text-2xl font-extrabold mb-3">How to Trade the OTE — Step by Step</h2>
         <p className="text-gray-400 text-sm mb-6">This is the complete execution framework. Follow it in order, every time. No shortcuts.</p>
         {[
           { step: 1, title: 'Identify the Impulse Leg', color: '#3b82f6', text: 'Find a clear, strong move — the kind that makes you say "I wish I was in that." Mark the swing low (where it started) and swing high (where it ended). This impulse leg is your Fibonacci anchor. If the move is choppy, weak, or overlapping — skip it. OTE only works on clean impulse legs.' },
@@ -936,7 +937,7 @@ export default function OTELesson() {
       {/* ============ SECTION 09: COMMON MISTAKES ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 — Common Mistakes</p>
-        <h2 className="text-2xl font-bold mb-3">Common OTE Mistakes</h2>
+        <h2 className="text-2xl font-extrabold mb-3">Common OTE Mistakes</h2>
         <p className="text-gray-400 text-sm mb-6">Even traders who know the OTE concept make these errors. Tap each to learn how to avoid them.</p>
         {[
           { title: 'Entering Before the Zone', wrong: 'Buying at 50% because "it\'s close enough."', right: 'Wait for 61.8% minimum. Close enough is not good enough — your risk:reward degrades significantly with every percentage point of early entry.', tip: 'Set a price alert at 61.8% so you don\'t have to stare at the screen.' },
@@ -968,7 +969,7 @@ export default function OTELesson() {
       {/* ============ SECTION 10: GAME ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 — Spot the OTE</p>
-        <h2 className="text-2xl font-bold mb-3">OTE Identification Game</h2>
+        <h2 className="text-2xl font-extrabold mb-3">OTE Identification Game</h2>
         <p className="text-gray-400 text-sm mb-6">5 rounds. Identify the correct OTE action for each scenario. Let's see if you can trade like a sniper.</p>
 
         {!gameComplete ? (
