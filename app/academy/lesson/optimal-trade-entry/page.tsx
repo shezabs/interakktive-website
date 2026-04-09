@@ -688,7 +688,7 @@ export default function OTELesson() {
       {/* Hero */}
       <header className="px-5 pt-16 pb-10 text-center max-w-2xl mx-auto">
         <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-500/70 mb-3">Level 3 · Lesson 8</p>
-        <h1 className="text-4xl sm:text-5xl font-extrabold leading-[1.1] mb-4">Optimal Trade Entry</h1>
+        <h1 className="text-4xl sm:text-5xl font-black leading-[1.1] mb-4"><span className="bg-gradient-to-r from-amber-400 via-green-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Optimal Trade<br/>Entry</span></h1>
         <p className="text-lg text-gray-400 leading-relaxed">The sniper zone — where Fibonacci, Order Blocks, and Fair Value Gaps converge into the highest-probability entry in all of trading.</p>
       </header>
 

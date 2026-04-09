@@ -605,7 +605,7 @@ export default function BreakerBlocksLesson() {
       {/* Hero */}
       <header className="px-5 pt-16 pb-10 text-center max-w-2xl mx-auto">
         <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-500/70 mb-3">Level 3 · Lesson 9</p>
-        <h1 className="text-4xl sm:text-5xl font-extrabold leading-[1.1] mb-4">Breaker Blocks & Mitigation</h1>
+        <h1 className="text-4xl sm:text-5xl font-black leading-[1.1] mb-4"><span className="bg-gradient-to-r from-red-400 via-amber-400 to-red-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Breaker Blocks<br/>& Mitigation</span></h1>
         <p className="text-lg text-gray-400 leading-relaxed">When an Order Block fails, it doesn't disappear — it switches sides. The traitor zone that now works <em>against</em> its original purpose.</p>
       </header>
 
