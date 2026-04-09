@@ -43,6 +43,7 @@ const liveLessons = new Set([
   'sessions-deep-dive',
   'smc-strategy',
   'traders-mind',
+  'fear-and-greed',
 ]);
 
 export default function AcademyPage() {
