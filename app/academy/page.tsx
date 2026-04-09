@@ -31,6 +31,7 @@ const liveLessons = new Set([
   'market-structure-smc',
   'liquidity',
   'liquidity-sweeps',
+  'order-blocks',
 ]);
 
 export default function AcademyPage() {
