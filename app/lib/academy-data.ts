@@ -119,6 +119,29 @@ export const academyCourses: AcademyCourse[] = [
       { id: 'first-strategy', courseId: 'level-2-technical-analysis', title: 'Building Your First Strategy', subtitle: 'Putting it all together', description: 'Combine everything from Level 2 into a complete, rules-based trading strategy.', estimatedMinutes: 18, isFree: false, totalSections: 8, quizPassThreshold: 66 },
     ],
   },
+  {
+    id: 'level-3-smart-money',
+    title: 'Level 3 — Smart Money Concepts',
+    description: 'How institutions really move the market. Liquidity, order blocks, FVGs, and the strategies banks use against retail traders. 14 in-depth lessons.',
+    level: 3,
+    isFree: false,
+    lessons: [
+      { id: 'who-are-smart-money', courseId: 'level-3-smart-money', title: 'Who Are the Smart Money?', subtitle: 'Meet the players who move markets', description: 'Banks, hedge funds, and market makers — who they are, how they think, and why retail traders are their liquidity.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'market-structure-smc', courseId: 'level-3-smart-money', title: 'Market Structure Mastery', subtitle: 'BOS, CHoCH & structure shifts', description: 'Break of Structure, Change of Character, and Market Structure Shifts — the language institutions speak.', estimatedMinutes: 16, isFree: false, totalSections: 8, quizPassThreshold: 66 },
+      { id: 'liquidity', courseId: 'level-3-smart-money', title: 'Liquidity — The #1 Concept', subtitle: 'Where the stops hide', description: 'Buy-side and sell-side liquidity. Equal highs and lows. Why your stop loss is their entry.', estimatedMinutes: 16, isFree: false, totalSections: 8, quizPassThreshold: 66 },
+      { id: 'liquidity-sweeps', courseId: 'level-3-smart-money', title: 'Liquidity Sweeps & Inducement', subtitle: 'The trap before the move', description: 'How institutions trigger your stops before reversing. The fake breakout explained.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'order-blocks', courseId: 'level-3-smart-money', title: 'Order Blocks', subtitle: 'Institutional footprints', description: 'Where the big players placed their orders. Bullish and bearish OBs with mitigation.', estimatedMinutes: 16, isFree: false, totalSections: 8, quizPassThreshold: 66 },
+      { id: 'fair-value-gaps', courseId: 'level-3-smart-money', title: 'Fair Value Gaps (FVGs)', subtitle: 'The imbalance magnet', description: 'Price imbalances that act as magnets. How to identify and trade them.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'premium-discount', courseId: 'level-3-smart-money', title: 'Premium & Discount Zones', subtitle: 'Buy cheap, sell expensive', description: 'The 50% equilibrium. Above = premium (sell). Below = discount (buy).', estimatedMinutes: 12, isFree: false, totalSections: 6, quizPassThreshold: 66 },
+      { id: 'optimal-trade-entry', courseId: 'level-3-smart-money', title: 'Optimal Trade Entry (OTE)', subtitle: 'The precision zone', description: 'The 62-79% retracement zone where order blocks meet Fibonacci.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'breaker-blocks', courseId: 'level-3-smart-money', title: 'Breaker Blocks & Mitigation', subtitle: 'When zones flip', description: 'Failed order blocks become breakers. Understanding mitigation and invalidation.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'kill-zones', courseId: 'level-3-smart-money', title: 'Kill Zones — When to Trade', subtitle: 'Timing is everything', description: 'Asian accumulation, London manipulation, New York distribution. Session-based trading.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'power-of-three', courseId: 'level-3-smart-money', title: 'Power of Three', subtitle: 'Accumulate, manipulate, distribute', description: 'ICT\'s model: how each session unfolds in three predictable phases.', estimatedMinutes: 14, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'smc-trade-models', courseId: 'level-3-smart-money', title: 'SMC Trade Models', subtitle: 'Complete setups A to Z', description: 'Two battle-tested trade models combining every SMC concept into executable strategies.', estimatedMinutes: 18, isFree: false, totalSections: 8, quizPassThreshold: 66 },
+      { id: 'smc-phantom-pro', courseId: 'level-3-smart-money', title: 'SMC + ATLAS PHANTOM PRO', subtitle: 'Automate your edge', description: 'How PHANTOM PRO detects BOS, CHoCH, order blocks, FVGs, and liquidity sweeps automatically.', estimatedMinutes: 16, isFree: false, totalSections: 7, quizPassThreshold: 66 },
+      { id: 'smc-strategy', courseId: 'level-3-smart-money', title: 'Building Your SMC Strategy', subtitle: 'The Level 3 capstone', description: 'Build a complete Smart Money strategy with session, structure, entry model, and risk rules.', estimatedMinutes: 20, isFree: false, totalSections: 8, quizPassThreshold: 66 },
+    ],
+  },
 ];
 
 export function getCourse(courseId: string): AcademyCourse | undefined {
