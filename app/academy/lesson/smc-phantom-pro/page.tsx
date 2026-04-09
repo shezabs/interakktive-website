@@ -535,7 +535,7 @@ export default function SMCPhantomProLesson() {
 
       <section className="text-center px-5 pt-10 pb-24">
         <p className="text-xs tracking-widest uppercase text-gray-600 mb-4">Up Next</p>
-        <h2 className="text-xl font-bold mb-6">Lesson 3.14 &mdash; Building Your SMC Strategy</h2>
+        <h2 className="text-xl font-bold mb-6">Lesson 3.14 &mdash; Sessions Deep Dive</h2>
         <Link href="/academy" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 hover:from-amber-600 hover:to-accent-600 text-white font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95">
           Continue <ArrowRight className="w-4 h-4" />
         </Link>

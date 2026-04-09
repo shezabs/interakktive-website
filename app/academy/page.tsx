@@ -40,6 +40,7 @@ const liveLessons = new Set([
   'power-of-three',
   'smc-trade-models',
   'smc-phantom-pro',
+  'sessions-deep-dive',
 ]);
 
 export default function AcademyPage() {
