@@ -603,10 +603,43 @@ export default function SMCTradeModelsLesson() {
         ))}
       </section>
 
-      {/* S04 — PRE-TRADE CHECKLIST */}
+      {/* S04 — REAL TRADE WALKTHROUGHS */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Pre-Trade Checklist</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Real Trade Walkthroughs</p>
+          <h2 className="text-2xl font-extrabold mb-4">Two Complete Trades &mdash; Step by Step</h2>
+          <p className="text-sm text-gray-400 mb-6">Let&apos;s walk through one trade for each model exactly as it would happen in real time.</p>
+          <div className="p-5 rounded-2xl border-l-4 border-red-500 bg-red-500/5 mb-4">
+            <p className="text-red-400 font-bold text-sm mb-2">Model 1 Walkthrough &mdash; EUR/USD London Open</p>
+            <div className="space-y-2 text-sm text-gray-400 leading-relaxed">
+              <p><strong className="text-white">06:50 UTC:</strong> Asian range marked: 1.0880 (high) &ndash; 1.0862 (low). Equal lows visible at 1.0862. HTF Daily bias: bullish (HH/HL structure). SSL sitting below 1.0860.</p>
+              <p><strong className="text-white">07:08 UTC:</strong> London opens. Price spikes to 1.0855 &mdash; sweeping the Asian low and SSL by 7 pips. Long wick forms on the 15M.</p>
+              <p><strong className="text-white">07:25 UTC:</strong> 15M prints a bullish engulfing. BOS confirms above 1.0868. MSS confirmed.</p>
+              <p><strong className="text-white">07:40 UTC:</strong> Price pulls back to 1.0865 &mdash; the OB formed during the sweep. This OB sits at the 70.5% OTE level. Entry: 1.0865.</p>
+              <p><strong className="text-white">Stop:</strong> Below sweep wick at 1.0852. <strong className="text-white">Risk:</strong> 13 pips.</p>
+              <p><strong className="text-white">Target:</strong> BSL above Asian high at 1.0885, then 1.0900 (next HTF liquidity). <strong className="text-white">Reward:</strong> 20&ndash;35 pips. <strong className="text-amber-400">R:R: 1:1.5 to 1:2.7.</strong></p>
+              <p><strong className="text-white">14:30 UTC:</strong> Price reaches 1.0903 during the overlap. Close full position. <strong className="text-amber-400">+38 pips. 1:2.9 R:R.</strong></p>
+            </div>
+          </div>
+          <div className="p-5 rounded-2xl border-l-4 border-green-500 bg-green-500/5">
+            <p className="text-green-400 font-bold text-sm mb-2">Model 2 Walkthrough &mdash; XAU/USD Swing Entry</p>
+            <div className="space-y-2 text-sm text-gray-400 leading-relaxed">
+              <p><strong className="text-white">Daily chart:</strong> Gold in uptrend (HH/HL). Last impulse: $2,310 &rarr; $2,365. OB at $2,328&ndash;$2,335 sits at the 67% Fib level (deep inside OTE). FVG overlaps at $2,330&ndash;$2,338. A+ grade.</p>
+              <p><strong className="text-white">Day 1:</strong> Price retracing from $2,365. Watching for price to reach the $2,328&ndash;$2,335 OB zone.</p>
+              <p><strong className="text-white">Day 2, 08:15 UTC:</strong> Price touches $2,332 &mdash; inside the OB + OTE + FVG confluence. Drop to 1H chart.</p>
+              <p><strong className="text-white">Day 2, 09:00 UTC:</strong> 1H prints bullish engulfing at $2,331. BOS confirms above $2,340 on the next candle.</p>
+              <p><strong className="text-white">Entry:</strong> $2,338 (pullback after BOS). <strong className="text-white">Stop:</strong> Below OB at $2,325. <strong className="text-white">Risk:</strong> $13.</p>
+              <p><strong className="text-white">Target:</strong> Previous swing high at $2,365, then $2,380 (1.618 extension). <strong className="text-white">Reward:</strong> $27&ndash;$42.</p>
+              <p><strong className="text-white">Day 4:</strong> Price reaches $2,378. Close at $2,375. <strong className="text-amber-400">+$37. R:R: 1:2.8.</strong></p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S05 — PRE-TRADE CHECKLIST */}
+      <section className="px-5 py-12 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Pre-Trade Checklist</p>
           <h2 className="text-2xl font-extrabold mb-4">Before Every Trade &mdash; 6 Checks</h2>
           <p className="text-sm text-gray-400 mb-6">Run this checklist before entering ANY trade. If any check fails, do not enter.</p>
           {[
@@ -631,7 +664,7 @@ export default function SMCTradeModelsLesson() {
       {/* S05 — RISK MANAGEMENT */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Risk Rules for Models</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Risk Rules for Models</p>
           <h2 className="text-2xl font-extrabold mb-4">Non-Negotiable Risk Rules</h2>
           <div className="space-y-3">
             <div className="p-4 rounded-xl border-l-4 border-red-500 bg-red-500/5">
@@ -657,7 +690,7 @@ export default function SMCTradeModelsLesson() {
       {/* S06 — COMMON MISTAKES */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Common Mistakes</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Common Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-4">Model Execution Mistakes</h2>
         </motion.div>
         {[
@@ -689,7 +722,7 @@ export default function SMCTradeModelsLesson() {
       {/* S07 — GAME */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Pick the Model</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Pick the Model</p>
           <h2 className="text-2xl font-extrabold mb-2">Model Selection Game</h2>
           <p className="text-sm text-gray-400 mb-6">5 scenarios. Identify which model applies and what to do.</p>
         </motion.div>
@@ -734,7 +767,7 @@ export default function SMCTradeModelsLesson() {
       {/* S08 — QUIZ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Knowledge Check</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Knowledge Check</p>
           <h2 className="text-2xl font-extrabold mb-6">SMC Trade Models Quiz</h2>
         </motion.div>
         <div className="space-y-6">

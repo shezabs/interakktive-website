@@ -402,10 +402,62 @@ export default function SessionsDeepDiveLesson() {
         </motion.div>
       </section>
 
-      {/* S05 — MISTAKES */}
+      {/* S05 — WEEKLY PLANNING */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Session Mistakes</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Weekly Planning</p>
+          <h2 className="text-2xl font-extrabold mb-4">The Sunday Night Prep</h2>
+          <p className="text-sm text-gray-400 mb-6">Professional traders don&apos;t start Monday blind. They prepare on Sunday evening. Here&apos;s your weekly routine:</p>
+          {[
+            { step: 1, task: 'Check the economic calendar for the ENTIRE week. Mark all high-impact events (NFP, CPI, FOMC, ECB). Note which days to be cautious.', color: '#ef4444' },
+            { step: 2, task: 'Review the Weekly chart. Where is the current weekly candle relative to HTF structure? Is price in premium or discount on the Weekly?', color: '#f59e0b' },
+            { step: 3, task: 'Identify the Weekly OB/FVG/Liquidity levels that price is approaching. These are your &quot;big picture&quot; targets for the week.', color: '#3b82f6' },
+            { step: 4, task: 'Note the previous week&apos;s high and low. These are key liquidity levels that may get swept this week (especially Monday&ndash;Tuesday).', color: '#a855f7' },
+            { step: 5, task: 'Set your maximum risk for the week: e.g. &quot;If I lose 3% this week, I stop trading until next Monday.&quot; Write it down.', color: '#ef4444' },
+            { step: 6, task: 'Decide which pairs you will focus on this week based on the calendar and HTF setups. Maximum 3&ndash;4 pairs.', color: '#22c55e' },
+          ].map((item) => (
+            <div key={item.step} className="flex items-start gap-3 mb-3">
+              <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: item.color + '20', color: item.color }}>{item.step}</div>
+              <p className="text-sm text-gray-400 leading-relaxed">{item.task}</p>
+            </div>
+          ))}
+          <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/10">
+            <p className="text-sm text-gray-400 leading-relaxed">&#128161; <strong className="text-amber-400">Day-of-week tendencies:</strong> Monday &mdash; consolidation/range-building (accumulation for the week). Tuesday&ndash;Wednesday &mdash; the week&apos;s big move often starts. Thursday &mdash; continuation or reversal. Friday &mdash; profit-taking, especially after 13:00 UTC. These are tendencies, not rules &mdash; but they help set expectations.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S06 — SESSION JOURNALING */}
+      <section className="px-5 py-12 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Session Journaling</p>
+          <h2 className="text-2xl font-extrabold mb-4">Track Your Sessions, Not Just Your Trades</h2>
+          <p className="text-sm text-gray-400 mb-6">Most traders journal their trades. The best traders journal their <strong className="text-white">sessions</strong>. After each trading day, record:</p>
+          <div className="space-y-3">
+            <div className="p-4 rounded-xl border-l-4 border-purple-500 bg-purple-500/5">
+              <p className="text-purple-400 font-bold text-sm">Asian Range Accuracy</p>
+              <p className="text-gray-400 text-sm mt-1">Did you mark the Asian H/L correctly? Did London sweep one of them? Over time you&apos;ll see that 70&ndash;80% of days, London sweeps at least one side of the Asian range.</p>
+            </div>
+            <div className="p-4 rounded-xl border-l-4 border-blue-500 bg-blue-500/5">
+              <p className="text-blue-400 font-bold text-sm">Kill Zone Performance</p>
+              <p className="text-gray-400 text-sm mt-1">Which Kill Zone did you trade? What was the outcome? After 20&ndash;30 sessions, you&apos;ll discover which Kill Zone suits your style best. Some traders thrive at London open. Others perform better in the overlap.</p>
+            </div>
+            <div className="p-4 rounded-xl border-l-4 border-green-500 bg-green-500/5">
+              <p className="text-green-400 font-bold text-sm">Model Success Rate</p>
+              <p className="text-gray-400 text-sm mt-1">Which model did you use? Did it work? Track Model 1 vs Model 2 win rates separately. You might discover you&apos;re better at one than the other &mdash; and should focus accordingly.</p>
+            </div>
+            <div className="p-4 rounded-xl border-l-4 border-amber-500 bg-amber-500/5">
+              <p className="text-amber-400 font-bold text-sm">Emotional State</p>
+              <p className="text-gray-400 text-sm mt-1">Were you calm and focused? Or were you chasing, bored, or revenge trading? The pattern between your emotional state and your results will become obvious after 2&ndash;3 weeks of honest journaling.</p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S07 — MISTAKES */}
+      <section className="px-5 py-12 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Session Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-4">Mistakes That Kill Session Traders</h2>
         </motion.div>
         {[
@@ -437,7 +489,7 @@ export default function SessionsDeepDiveLesson() {
       {/* S06 — GAME */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Session Decisions</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Session Decisions</p>
           <h2 className="text-2xl font-extrabold mb-2">Daily Playbook Game</h2>
           <p className="text-sm text-gray-400 mb-6">5 real-world scenarios. Make the right decision based on session context.</p>
         </motion.div>
@@ -481,7 +533,7 @@ export default function SessionsDeepDiveLesson() {
       {/* S07 — QUIZ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Knowledge Check</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Knowledge Check</p>
           <h2 className="text-2xl font-extrabold mb-6">Sessions Deep Dive Quiz</h2>
         </motion.div>
         <div className="space-y-6">

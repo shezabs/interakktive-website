@@ -412,10 +412,70 @@ export default function SMCPhantomProLesson() {
         </div>
       </section>
 
-      {/* S05 */}
+      {/* S05 — SETUP EXAMPLES */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Common Myths</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Setup Examples</p>
+          <h2 className="text-2xl font-extrabold mb-4">What PHANTOM PRO Shows You in Real Setups</h2>
+          <p className="text-sm text-gray-400 mb-6">Here&apos;s exactly what you would see on your chart with PHANTOM PRO active during each trade model:</p>
+          <div className="p-5 rounded-2xl border-l-4 border-red-500 bg-red-500/5 mb-4">
+            <p className="text-red-400 font-bold text-sm mb-2">Model 1 Setup &mdash; What PHANTOM PRO Displays</p>
+            <div className="space-y-2 text-sm text-gray-400 leading-relaxed">
+              <p>&#8226; <strong className="text-amber-400">Structure labels:</strong> BOS/CHoCH auto-detected at the reversal point &mdash; you see the exact candle where structure shifted.</p>
+              <p>&#8226; <strong className="text-blue-400">OB zone:</strong> The Order Block from the sweep is automatically highlighted in blue with &quot;Untested&quot; status.</p>
+              <p>&#8226; <strong className="text-purple-400">FVG:</strong> Any Fair Value Gap within the reversal impulse is shaded &mdash; potential target or confluence.</p>
+              <p>&#8226; <strong className="text-red-400">Liquidity:</strong> Equal lows that were swept are marked, confirming the manipulation was a liquidity grab.</p>
+              <p>&#8226; <strong className="text-amber-400">Narrative:</strong> &quot;Bearish structure broken. Bullish MSS confirmed. Untested OB at 1.0865 in discount zone.&quot;</p>
+            </div>
+          </div>
+          <div className="p-5 rounded-2xl border-l-4 border-green-500 bg-green-500/5">
+            <p className="text-green-400 font-bold text-sm mb-2">Model 2 Setup &mdash; What PHANTOM PRO Displays</p>
+            <div className="space-y-2 text-sm text-gray-400 leading-relaxed">
+              <p>&#8226; <strong className="text-amber-400">HTF Structure:</strong> Bullish HH/HL labels on the 4H chart confirming the trend direction.</p>
+              <p>&#8226; <strong className="text-blue-400">OB zone:</strong> The 4H Order Block highlighted at the pullback level, graded &quot;A&quot; or &quot;A+&quot; based on confluence.</p>
+              <p>&#8226; <strong className="text-amber-400">OTE overlay:</strong> Premium/Discount zones showing the OB sits in the discount zone (61.8&ndash;78.6% Fib).</p>
+              <p>&#8226; <strong className="text-purple-400">FVG target:</strong> An unfilled FVG above current price acts as the take-profit magnet.</p>
+              <p>&#8226; <strong className="text-amber-400">Narrative:</strong> &quot;Bullish trend intact. Price in discount. A-grade OB at $2,332. FVG target at $2,358.&quot;</p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S06 — TIME SAVED */}
+      <section className="px-5 py-12 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Time Comparison</p>
+          <h2 className="text-2xl font-extrabold mb-4">Manual vs PHANTOM PRO &mdash; Real Numbers</h2>
+          <div className="overflow-x-auto">
+            <div className="min-w-[480px] glass rounded-2xl overflow-hidden text-xs">
+              {[
+                { task: '', manual: 'Manual', phantom: 'PHANTOM PRO' },
+                { task: 'Mark BOS/CHoCH', manual: '3\u20135 min per TF', phantom: 'Instant' },
+                { task: 'Identify Order Blocks', manual: '5\u201310 min per pair', phantom: 'Instant' },
+                { task: 'Find FVGs', manual: '3\u20135 min per pair', phantom: 'Instant' },
+                { task: 'Mark liquidity levels', manual: '2\u20134 min per pair', phantom: 'Instant' },
+                { task: 'Determine P&D zones', manual: '2\u20133 min', phantom: 'Instant' },
+                { task: 'Read narrative context', manual: '5\u201310 min thinking', phantom: '1 glance' },
+                { task: 'TOTAL (4 pairs, 2 TFs)', manual: '60\u201390 minutes', phantom: '~5 minutes' },
+              ].map((row, i) => (
+                <div key={i} className={`grid grid-cols-3 gap-0 ${i === 0 ? 'bg-amber-500/5 font-bold text-amber-400' : i === 7 ? 'bg-amber-500/5 font-bold' : i % 2 === 0 ? 'bg-white/[0.02]' : ''}`}>
+                  <div className="p-2.5 border-r border-white/5 text-gray-400">{row.task}</div>
+                  <div className="p-2.5 border-r border-white/5 text-red-400">{row.manual}</div>
+                  <div className="p-2.5 text-green-400">{row.phantom}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/10">
+            <p className="text-sm text-gray-400 leading-relaxed">&#128161; <strong className="text-amber-400">The maths is simple:</strong> 60 minutes saved per day &times; 250 trading days = <strong className="text-white">250 hours per year</strong> redirected from chart markup to decision-making, journaling, and improving your edge.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S07 */}
+      <section className="px-5 py-12 max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Common Myths</p>
           <h2 className="text-2xl font-extrabold mb-4">Myths About Indicators</h2>
         </motion.div>
         {[
@@ -443,7 +503,7 @@ export default function SMCPhantomProLesson() {
       {/* S06 — GAME */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Feature Knowledge</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Feature Knowledge</p>
           <h2 className="text-2xl font-extrabold mb-2">PHANTOM PRO Feature Game</h2>
           <p className="text-sm text-gray-400 mb-6">5 scenarios testing your understanding of how PHANTOM PRO maps to SMC concepts.</p>
         </motion.div>
@@ -487,7 +547,7 @@ export default function SMCPhantomProLesson() {
       {/* S07 — QUIZ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Knowledge Check</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Knowledge Check</p>
           <h2 className="text-2xl font-extrabold mb-6">PHANTOM PRO Quiz</h2>
         </motion.div>
         <div className="space-y-6">
