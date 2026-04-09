@@ -34,6 +34,7 @@ const liveLessons = new Set([
   'order-blocks',
   'fair-value-gaps',
   'premium-discount',
+  'optimal-trade-entry',
 ]);
 
 export default function AcademyPage() {
