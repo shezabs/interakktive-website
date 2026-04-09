@@ -611,7 +611,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S00: WHY THIS MATTERS */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6">First — Why This Matters</h2>
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First — Why This Matters</p>
         <div className="glass-card p-6 rounded-2xl mb-6 border border-amber-500/10">
           <p className="text-gray-300 leading-relaxed mb-4">Imagine a soldier who defects during a war. Yesterday they fought for your side. Today they fight <em>against</em> you. They know your tactics, your positions, your weaknesses — because they used to be one of you.</p>
           <p className="text-gray-300 leading-relaxed mb-4">That's exactly what a <strong className="text-amber-400">Breaker Block</strong> is. It was once an Order Block — a zone where institutions placed their orders. But the OB <em>failed</em>. Price broke through it. And now that zone has switched allegiance. Former support becomes resistance. Former resistance becomes support.</p>
@@ -625,6 +625,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S01: THE LIFECYCLE */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 — The Lifecycle</p>
         <h2 className="text-2xl font-bold mb-6">The Lifecycle: OB → Failure → Breaker</h2>
         <p className="text-gray-400 leading-relaxed mb-6">Every breaker block starts life as an ordinary Order Block. It goes through three acts — like a story with a twist ending.</p>
         <MitigationCycleAnimation />
@@ -646,6 +647,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S02: BULLISH vs BEARISH BREAKERS */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 — Two Types</p>
         <h2 className="text-2xl font-bold mb-3">Two Types of Breaker Blocks</h2>
         <p className="text-gray-400 text-sm mb-6">Tap each type to understand the mechanics. Remember: the NAME of the breaker describes its NEW role, not its old one.</p>
         {[
@@ -685,6 +687,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S03: WHAT INVALIDATION LOOKS LIKE */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 — Invalidation</p>
         <h2 className="text-2xl font-bold mb-6">What Invalidation Looks Like</h2>
         <p className="text-gray-400 leading-relaxed mb-6">Not every OB becomes a breaker. The OB must be <em>decisively</em> broken — a strong candle closing through the zone, not just a wick poking below. Here's what the sequence looks like in slow motion:</p>
         <FailureSequenceAnimation />
@@ -705,6 +708,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S04: MITIGATION DEEP DIVE */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 — Mitigation</p>
         <h2 className="text-2xl font-bold mb-3">Mitigation — Settling the Debt</h2>
         <p className="text-gray-400 leading-relaxed mb-6">Mitigation means "completing the unfinished business." When price returns to a breaker zone and gets rejected, the remaining unfilled institutional orders are being executed. Think of it as returning to a restaurant to pick up the dishes you ordered but didn't receive.</p>
         {[
@@ -735,6 +739,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S05: INTERACTIVE CHART */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 — Interactive Chart</p>
         <h2 className="text-2xl font-bold mb-3">Interactive Breaker Chart</h2>
         <p className="text-gray-400 text-sm mb-4">Switch between bullish and bearish breakers. Toggle the zone and mitigation point on and off to see how the flip works.</p>
         <div className="flex flex-wrap gap-2 mb-4">
@@ -757,6 +762,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S06: GRADING SYSTEM */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 — Quality Grading</p>
         <h2 className="text-2xl font-bold mb-3">Breaker Quality Grading</h2>
         <p className="text-gray-400 text-sm mb-6">Not all breakers are equal. Grade yours before risking capital.</p>
         {[
@@ -790,6 +796,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S07: HOW TO TRADE — STEP BY STEP */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 — Step by Step</p>
         <h2 className="text-2xl font-bold mb-3">How to Trade Breaker Blocks — 7 Steps</h2>
         <p className="text-gray-400 text-sm mb-6">The complete execution framework. No guessing.</p>
         {[
@@ -813,6 +820,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S08: OB vs BREAKER COMPARISON */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 — OB vs Breaker</p>
         <h2 className="text-2xl font-bold mb-6">Order Block vs Breaker Block — Side by Side</h2>
         <div className="overflow-x-auto">
           <div className="min-w-[500px] glass rounded-2xl overflow-hidden">
@@ -840,6 +848,7 @@ export default function BreakerBlocksLesson() {
 
       {/* S09: COMMON MISTAKES */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 — Common Mistakes</p>
         <h2 className="text-2xl font-bold mb-3">Common Breaker Mistakes</h2>
         <p className="text-gray-400 text-sm mb-6">Avoid these errors and you'll be ahead of 90% of traders who learn about breakers.</p>
         {[
@@ -870,7 +879,8 @@ export default function BreakerBlocksLesson() {
 
       {/* S10: GAME */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-3">🎮 Breaker Block Game</h2>
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 — Spot the Breaker</p>
+        <h2 className="text-2xl font-bold mb-3">Breaker Block Game</h2>
         <p className="text-gray-400 text-sm mb-6">5 rounds. Identify breakers, mitigations, and failures. Can you spot when a zone flips?</p>
 
         {!gameComplete ? (
@@ -925,7 +935,8 @@ export default function BreakerBlocksLesson() {
 
       {/* S11: QUIZ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6">📝 Knowledge Check — 8 Questions</h2>
+        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 — Knowledge Check</p>
+        <h2 className="text-2xl font-extrabold mb-6">Breaker Blocks Quiz</h2>
         <div className="space-y-4">
           {quizQuestions.map((q, qi) => (
             <motion.div key={qi} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: qi * 0.05 }}
