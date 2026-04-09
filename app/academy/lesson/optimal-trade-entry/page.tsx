@@ -686,11 +686,13 @@ export default function OTELesson() {
       </nav>
 
       {/* Hero */}
-      <header className="px-5 pt-16 pb-10 text-center max-w-2xl mx-auto">
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-amber-500/70 mb-3">Level 3 · Lesson 8</p>
-        <h1 className="text-4xl sm:text-5xl font-black leading-[1.1] mb-4"><span className="bg-gradient-to-r from-amber-400 via-green-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Optimal Trade<br/>Entry</span></h1>
-        <p className="text-lg text-gray-400 leading-relaxed">The sniper zone — where Fibonacci, Order Blocks, and Fair Value Gaps converge into the highest-probability entry in all of trading.</p>
-      </header>
+      <section className="px-5 pt-16 pb-12 text-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 3 · Lesson 8</p>
+          <h1 className="text-4xl sm:text-5xl font-black mb-4 leading-tight"><span className="bg-gradient-to-r from-amber-400 via-green-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Optimal Trade<br/>Entry</span></h1>
+          <p className="text-gray-400 text-base max-w-md mx-auto leading-relaxed">The sniper zone — where Fibonacci, Order Blocks, and Fair Value Gaps converge into the highest-probability entry in all of trading.</p>
+        </motion.div>
+      </section>
 
       {/* ============ SECTION 00: WHY THIS MATTERS ============ */}
       <section className="px-5 py-12 max-w-2xl mx-auto">
