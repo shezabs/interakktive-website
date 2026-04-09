@@ -23,6 +23,7 @@ const liveLessons = new Set([
   'bollinger-bands',
   'volume-analysis',
   'candlestick-advanced',
+  'chart-patterns',
 ]);
 
 export default function AcademyPage() {
