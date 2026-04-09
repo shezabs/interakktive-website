@@ -38,6 +38,7 @@ const liveLessons = new Set([
   'breaker-blocks',
   'kill-zones',
   'power-of-three',
+  'smc-trade-models',
 ]);
 
 export default function AcademyPage() {
