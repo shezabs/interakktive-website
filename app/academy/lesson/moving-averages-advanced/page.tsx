@@ -350,16 +350,17 @@ export default function MovingAveragesAdvancedPage() {
         </motion.div>
       </section>
 
-      {/* S00 — Why This Matters */}
-      <section className="max-w-2xl mx-auto px-5 py-12">
+      {/* S00 */}
+      <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <h2 className="text-2xl font-extrabold mb-4"><span className="text-amber-400">First</span> &mdash; Why This Matters</h2>
-          <div className="glass-card p-6 rounded-2xl mb-6">
-            <p className="text-sm text-gray-300 leading-relaxed">In Level 2, you learned what moving averages are. Now you&apos;ll learn why most traders use them WRONG. The golden cross isn&apos;t a buy signal. The death cross isn&apos;t a sell signal. And the real power of MAs isn&apos;t in the crossovers &mdash; it&apos;s in something far more subtle.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">The Tools Everyone Uses Wrong</p>
+            <p className="text-gray-400 leading-relaxed">In Level 2, you learned what moving averages are. Now you&apos;ll learn why most traders use them WRONG. The golden cross isn&apos;t a buy signal. The death cross isn&apos;t a sell signal. And the real power of MAs isn&apos;t in the crossovers &mdash; it&apos;s in something far more subtle.</p>
           </div>
           <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-2">REAL SCENARIO</p>
-            <p className="text-sm text-gray-300 leading-relaxed">An analysis of 15 years of S&amp;P 500 golden crosses found: traders who bought at the golden cross earned an average of +8.4% over 12 months. Traders who instead waited for the first pullback to the 21 EMA AFTER the golden cross earned +14.7% with 40% less drawdown. <strong>The cross tells you the direction. Other tools tell you the entry.</strong></p>
+            <p className="text-xs font-bold text-amber-400 mb-2">&#128270; REAL SCENARIO</p>
+            <p className="text-sm text-gray-400 leading-relaxed">An analysis of 15 years of S&amp;P 500 golden crosses found: traders who bought at the golden cross earned an average of <strong className="text-red-400">+8.4%</strong> over 12 months. Traders who instead waited for the first pullback to the 21 EMA AFTER the golden cross earned <strong className="text-green-400">+14.7%</strong> with 40% less drawdown. <strong>The cross tells you the direction. Other tools tell you the entry.</strong></p>
           </div>
         </motion.div>
       </section>

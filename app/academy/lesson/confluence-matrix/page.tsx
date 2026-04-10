@@ -346,16 +346,17 @@ export default function ConfluenceMatrixPage() {
         </motion.div>
       </section>
 
-      {/* S00 — Why This Matters */}
-      <section className="max-w-2xl mx-auto px-5 py-12">
+      {/* S00 */}
+      <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <h2 className="text-2xl font-extrabold mb-4"><span className="text-amber-400">First</span> &mdash; Why This Matters</h2>
-          <div className="glass-card p-6 rounded-2xl mb-6">
-            <p className="text-sm text-gray-300 leading-relaxed">You now know trend tools, momentum oscillators, volume analysis, and volatility measures. But knowing them individually is like having four ingredients and no recipe. This lesson is the recipe &mdash; how to COMBINE tools from different dimensions so they reinforce each other instead of repeating the same information.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">The Recipe, Not Just the Ingredients</p>
+            <p className="text-gray-400 leading-relaxed">You now know trend tools, momentum oscillators, volume analysis, and volatility measures. But knowing them individually is like having four ingredients and no recipe. This lesson is the recipe &mdash; how to COMBINE tools from different dimensions so they reinforce each other instead of repeating the same information.</p>
           </div>
           <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-2">REAL SCENARIO</p>
-            <p className="text-sm text-gray-300 leading-relaxed">A comparative study of 3,200 trades across 4 professional desks found: traders using <strong>4 independent dimensions</strong> achieved a 63% win rate with a Sharpe ratio of 1.8. Traders using <strong>3+ indicators from the same dimension</strong> (redundant stacking) achieved only 41% with a Sharpe of 0.4. <strong>The difference wasn&apos;t skill &mdash; it was how they combined their tools.</strong></p>
+            <p className="text-xs font-bold text-amber-400 mb-2">&#128270; REAL SCENARIO</p>
+            <p className="text-sm text-gray-400 leading-relaxed">A comparative study of 3,200 trades across 4 professional desks found: traders using 4 independent dimensions achieved a <strong className="text-green-400">63%</strong> win rate with a Sharpe ratio of 1.8. Traders using 3+ indicators from the same dimension (redundant stacking) achieved only <strong className="text-red-400">41%</strong> with a Sharpe of 0.4. <strong>The difference wasn&apos;t skill &mdash; it was how they combined their tools.</strong></p>
           </div>
         </motion.div>
       </section>

@@ -372,16 +372,17 @@ export default function VolatilityIntelligencePage() {
         </motion.div>
       </section>
 
-      {/* S00 — Why This Matters */}
-      <section className="max-w-2xl mx-auto px-5 py-12">
+      {/* S00 */}
+      <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <h2 className="text-2xl font-extrabold mb-4"><span className="text-amber-400">First</span> &mdash; Why This Matters</h2>
-          <div className="glass-card p-6 rounded-2xl mb-6">
-            <p className="text-sm text-gray-300 leading-relaxed">Trend tells you WHERE to trade. Momentum tells you WHEN. Volume tells you WHO is trading. But volatility tells you HOW MUCH to risk. Without volatility intelligence, your stop losses are guesses, your position sizes are arbitrary, and your timing is blind to the market&apos;s current personality.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">The Dimension You Cannot Ignore</p>
+            <p className="text-gray-400 leading-relaxed">Trend tells you WHERE to trade. Momentum tells you WHEN. Volume tells you WHO is trading. But volatility tells you HOW MUCH to risk. Without volatility intelligence, your stop losses are guesses, your position sizes are arbitrary, and your timing is blind to the market&apos;s current personality.</p>
           </div>
           <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-2">REAL SCENARIO</p>
-            <p className="text-sm text-gray-300 leading-relaxed">A prop firm study of 1,847 funded traders found: traders using ATR-based stops had a <strong>42% lower probability of blowing their challenge</strong> compared to those using fixed-pip stops. The reason was simple &mdash; ATR stops adapted to market conditions automatically. During high-volatility events, their stops were wider (avoiding false triggers). During low-vol periods, their stops tightened (protecting capital).</p>
+            <p className="text-xs font-bold text-amber-400 mb-2">&#128270; REAL SCENARIO</p>
+            <p className="text-sm text-gray-400 leading-relaxed">A prop firm study of 1,847 funded traders found: traders using ATR-based stops had a <strong className="text-green-400">42% lower probability</strong> of blowing their challenge compared to those using fixed-pip stops. The reason was simple &mdash; ATR stops adapted to market conditions automatically. During high-volatility events, their stops were wider (avoiding false triggers). During low-vol periods, their stops tightened (protecting capital).</p>
           </div>
         </motion.div>
       </section>

@@ -380,15 +380,16 @@ export default function IndicatorSMCFusionPage() {
       </section>
 
       {/* S00 */}
-      <section className="max-w-2xl mx-auto px-5 py-12">
+      <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <h2 className="text-2xl font-extrabold mb-4"><span className="text-amber-400">First</span> &mdash; Why This Matters</h2>
-          <div className="glass-card p-6 rounded-2xl mb-6">
-            <p className="text-sm text-gray-300 leading-relaxed">Level 3 taught you Smart Money Concepts &mdash; Order Blocks, FVGs, liquidity, structure. Level 5 taught you indicators &mdash; RSI, MACD, volume, volatility. Separately, each gives you part of the picture. Together, they give you the A+ setup &mdash; the trade where structure, momentum, volume, session, and volatility ALL agree.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">Where Structure Meets Confirmation</p>
+            <p className="text-gray-400 leading-relaxed">Level 3 taught you Smart Money Concepts &mdash; Order Blocks, FVGs, liquidity, structure. Level 5 taught you indicators &mdash; RSI, MACD, volume, volatility. Separately, each gives you part of the picture. Together, they give you the A+ setup &mdash; the trade where structure, momentum, volume, session, and volatility ALL agree.</p>
           </div>
           <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-2">REAL SCENARIO</p>
-            <p className="text-sm text-gray-300 leading-relaxed">A 6-month study tracked 1,200 Order Block entries. OBs entered with <strong>NO indicator confirmation</strong> had a 44% win rate. OBs entered with <strong>RSI divergence + above-average volume</strong> had a 67% win rate. <strong>Same structural levels. Wildly different results.</strong> The difference was the fusion layer.</p>
+            <p className="text-xs font-bold text-amber-400 mb-2">&#128270; REAL SCENARIO</p>
+            <p className="text-sm text-gray-400 leading-relaxed">A 6-month study tracked 1,200 Order Block entries. OBs entered with NO indicator confirmation had a <strong className="text-red-400">44%</strong> win rate. OBs entered with RSI divergence + above-average volume had a <strong className="text-green-400">67%</strong> win rate. <strong>Same structural levels. Wildly different results.</strong> The difference was the fusion layer.</p>
           </div>
         </motion.div>
       </section>

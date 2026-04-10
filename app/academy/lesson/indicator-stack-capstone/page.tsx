@@ -342,15 +342,16 @@ export default function IndicatorStackCapstonePage() {
       </section>
 
       {/* S00 */}
-      <section className="max-w-2xl mx-auto px-5 py-12">
+      <section className="max-w-2xl mx-auto px-5 py-20">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <h2 className="text-2xl font-extrabold mb-4"><span className="text-amber-400">First</span> &mdash; Why This Matters</h2>
-          <div className="glass-card p-6 rounded-2xl mb-6">
-            <p className="text-sm text-gray-300 leading-relaxed">You&apos;ve completed 13 lessons covering every major indicator category, the confluence matrix, and the fusion approach. Now it&apos;s time to do what most traders never do: deliberately and intentionally CHOOSE your personal indicator stack based on principles, not impulse. This is your trading playbook &mdash; the 4 tools you&apos;ll use on every chart from this point forward.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">Your Personal Indicator Playbook</p>
+            <p className="text-gray-400 leading-relaxed">You&apos;ve completed 13 lessons covering every major indicator category, the confluence matrix, and the fusion approach. Now it&apos;s time to do what most traders never do: deliberately and intentionally CHOOSE your personal indicator stack based on principles, not impulse. This is your trading playbook &mdash; the 4 tools you&apos;ll use on every chart from this point forward.</p>
           </div>
           <div className="p-5 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-2">REAL SCENARIO</p>
-            <p className="text-sm text-gray-300 leading-relaxed">A trading performance study followed 500 traders for 12 months. Those who <strong>documented their indicator stack in a written playbook</strong> and committed to using ONLY those tools had a 28% higher Sharpe ratio than those who &ldquo;used whatever felt right.&rdquo; The discipline of CHOOSING and STICKING to your tools was worth more than the specific tools chosen.</p>
+            <p className="text-xs font-bold text-amber-400 mb-2">&#128270; REAL SCENARIO</p>
+            <p className="text-sm text-gray-400 leading-relaxed">A trading performance study followed 500 traders for 12 months. Those who documented their indicator stack in a written playbook and committed to using ONLY those tools had a <strong className="text-green-400">28% higher Sharpe ratio</strong> than those who &ldquo;used whatever felt right.&rdquo; The discipline of CHOOSING and STICKING to your tools was worth more than the specific tools chosen.</p>
           </div>
         </motion.div>
       </section>
