@@ -48,6 +48,14 @@ const liveLessons = new Set([
   'revenge-trading',
   'loss-acceptance',
   'confidence-overconfidence',
+  'process-over-outcome',
+  'patience-skill',
+  'trading-routine',
+  'trading-journal',
+  'drawdown-psychology',
+  'mental-reset',
+  'performance-pressure',
+  'mental-edge-capstone',
 ]);
 
 export default function AcademyPage() {
