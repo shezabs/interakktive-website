@@ -65,6 +65,13 @@ const liveLessons = new Set([
   'rsi-masterclass',
   'macd-deep-dive',
   'stochastic-cci',
+  // Level 5 — Indicator Intelligence (5.9-5.14)
+  'volume-intelligence',
+  'moving-averages-advanced',
+  'volatility-intelligence',
+  'confluence-matrix',
+  'indicator-smc-fusion',
+  'indicator-stack-capstone',
 ]);
 
 export default function AcademyPage() {
