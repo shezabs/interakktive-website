@@ -56,6 +56,15 @@ const liveLessons = new Set([
   'mental-reset',
   'performance-pressure',
   'mental-edge-capstone',
+  // Level 5 — Indicator Intelligence (5.1–5.8)
+  'what-indicators-are',
+  'leading-vs-lagging',
+  'anatomy-of-oscillator',
+  'signal-vs-noise',
+  'momentum-hidden-force',
+  'rsi-masterclass',
+  'macd-deep-dive',
+  'stochastic-cci',
 ]);
 
 export default function AcademyPage() {

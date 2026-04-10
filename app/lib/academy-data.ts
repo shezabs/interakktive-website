@@ -166,6 +166,29 @@ export const academyCourses: AcademyCourse[] = [
       { id: 'mental-edge-capstone', courseId: 'level-4-psychology', title: 'Building Your Mental Edge', subtitle: 'The Level 4 capstone', description: 'Build your Psychological Constitution — the companion to your SMC Strategy from Level 3.', estimatedMinutes: 20, isFree: false, totalSections: 10, quizPassThreshold: 66 },
     ],
   },
+  {
+    id: 'level-5-indicators',
+    title: 'Level 5 — Indicator Intelligence',
+    description: 'What indicators actually do, why most traders use them wrong, and how to build confluence that prints money. Pure indicator education — no black boxes.',
+    level: 5,
+    isFree: false,
+    lessons: [
+      { id: 'what-indicators-are', courseId: 'level-5-indicators', title: 'What Indicators Actually Are', subtitle: 'Diagnostic tools, not crystal balls', description: 'Most traders think indicators predict the future. They don\'t. Learn what they really do and why that matters more.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'leading-vs-lagging', courseId: 'level-5-indicators', title: 'Leading vs Lagging — The Truth', subtitle: 'The biggest misunderstanding in retail trading', description: 'RSI doesn\'t predict reversals. MACD doesn\'t predict crossovers. Understand the difference between measurement and prediction.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'anatomy-of-oscillator', courseId: 'level-5-indicators', title: 'The Anatomy of an Oscillator', subtitle: 'Demystify the maths behind the lines', description: 'How RSI, MACD, and Stochastic actually calculate their values. No more black boxes — see inside the engine.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'signal-vs-noise', courseId: 'level-5-indicators', title: 'Signal vs Noise', subtitle: 'Why 90% of indicator signals lose money', description: 'Hundreds of signals fire every day. Learn to filter the noise and keep only the ones that pay.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'momentum-hidden-force', courseId: 'level-5-indicators', title: 'Momentum — The Hidden Force', subtitle: 'The engine behind every price move', description: 'What momentum actually is, why it matters more than price, and how acceleration and deceleration reveal what smart money is doing.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'rsi-masterclass', courseId: 'level-5-indicators', title: 'RSI Masterclass — Beyond Overbought/Oversold', subtitle: 'The 95% of RSI that retail traders never learn', description: 'Divergence, hidden divergence, failure swings, range shifts, RSI trendlines. Most traders use 5% of what RSI can do.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'macd-deep-dive', courseId: 'level-5-indicators', title: 'MACD & Histogram Deep Dive', subtitle: 'The momentum masterclass', description: 'Signal line crossovers, zero-line dynamics, histogram acceleration, and why MACD alone is useless but MACD with context is powerful.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'stochastic-cci', courseId: 'level-5-indicators', title: 'Stochastic & CCI', subtitle: 'The other momentum oscillators', description: 'When to use Stochastic over RSI. What CCI reveals that others miss. How each oscillator suits different market conditions.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'volume-intelligence', courseId: 'level-5-indicators', title: 'Volume Intelligence', subtitle: 'Smart money leaves footprints', description: 'OBV, VWAP, volume profile. Volume confirms conviction — a breakout on thin air fails. Learn to read the crowd.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'moving-averages-advanced', courseId: 'level-5-indicators', title: 'Moving Averages — Advanced', subtitle: 'Beyond the golden cross', description: 'EMA vs SMA in depth, dynamic support/resistance, MA ribbons, death/golden cross reality check, and institutional MA levels.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'volatility-intelligence', courseId: 'level-5-indicators', title: 'Volatility Intelligence', subtitle: 'The dimension most traders ignore', description: 'ATR for stop placement, Bollinger Band squeezes, Keltner Channels, and the volatility cycle that governs all markets.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'confluence-matrix', courseId: 'level-5-indicators', title: 'The Confluence Matrix', subtitle: 'Stack indicators without redundancy', description: 'The 4-dimension rule: trend + momentum + volume + volatility. Why 3 independent signals beat 10 redundant ones.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'indicator-smc-fusion', courseId: 'level-5-indicators', title: 'Indicator + SMC Fusion', subtitle: 'Where Level 3 meets Level 5', description: 'Order block + RSI divergence + volume spike + kill zone = A+ setup. The bridge between structure and confirmation.', estimatedMinutes: 18, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+      { id: 'indicator-stack-capstone', courseId: 'level-5-indicators', title: 'Building Your Indicator Stack — Capstone', subtitle: 'The Level 5 capstone', description: 'Build your complete personal indicator stack — which tools, why each one, how they combine. Your Indicator Playbook.', estimatedMinutes: 20, isFree: false, totalSections: 10, quizPassThreshold: 66 },
+    ],
+  },
 ];
 
 export function getCourse(courseId: string): AcademyCourse | undefined {
