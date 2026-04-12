@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Crown, ArrowRight, ChevronDown } from 'lucide-react';
+import { Crown,  ChevronDown } from 'lucide-react';
 
 function AnimScene({ drawFn, height = 300 }: { drawFn: (ctx: CanvasRenderingContext2D, w: number, h: number, f: number) => void; height?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -291,7 +291,7 @@ export default function StrategyEngineeringCapstoneLesson() {
   // Interactive — Strategy Builder
   const [builderValues, setBuilderValues] = useState<Record<string, string>>({});
   const updateField = (key: string, value: string) => setBuilderValues(prev => ({ ...prev, [key]: value }));
-  const totalFields = strategyTemplate.reduce((sum, s) => sum + s.fields.length, 0);
+  const totalFields = strategyTemplate.reduce<number>((sum, s) => sum + s.fields.length, 0);
   const filledFields = Object.values(builderValues).filter(v => v.trim().length > 0).length;
   const completePct = Math.round((filledFields / totalFields) * 100);
   const [openSection, setOpenSection] = useState<number | null>(0);

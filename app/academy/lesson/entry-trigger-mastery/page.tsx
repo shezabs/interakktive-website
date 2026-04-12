@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Crown, ArrowRight, ChevronDown } from 'lucide-react';
+import { Crown,  ChevronDown } from 'lucide-react';
 
 function AnimScene({ drawFn, height = 300 }: { drawFn: (ctx: CanvasRenderingContext2D, w: number, h: number, f: number) => void; height?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);

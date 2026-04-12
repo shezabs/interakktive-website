@@ -6,7 +6,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { Crown, ArrowRight, ChevronDown } from 'lucide-react';
+import { Crown,  ChevronDown } from 'lucide-react';
 
 function AnimScene({ drawFn, height = 300 }: { drawFn: (ctx: CanvasRenderingContext2D, w: number, h: number, f: number) => void; height?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -217,7 +217,7 @@ function ModelComparisonAnimation() {
       const py = top + y * (bot - top);
       if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     });
-    ctx.strokeStyle = i => '#a78bfa';
+    ctx.strokeStyle = '#a78bfa';
     // Red for down, green for up
     ctx.beginPath();
     for (let i = 0; i <= 7; i++) {
