@@ -192,10 +192,9 @@ export const academyCourses: AcademyCourse[] = [
   {
     id: 'level-6-strategy',
     title: 'Level 6 — Strategy Engineering',
-    subtitle: 'Build, test, and refine a complete trading strategy',
     description: 'The bridge from theory to execution. Design your edge, define your rules, and build a strategy that survives real markets.',
     level: 6,
-    icon: '🏗️',
+    isFree: false,
     lessons: [
       { id: 'anatomy-of-strategy', courseId: 'level-6-strategy', title: 'The Anatomy of a Strategy', subtitle: 'What separates a system from a gamble', description: 'Every profitable strategy has 7 components. Most traders have 3. Learn all 7 and why each one matters.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
       { id: 'choosing-your-battlefield', courseId: 'level-6-strategy', title: 'Choosing Your Battlefield', subtitle: 'Asset, timeframe, and session selection', description: 'Why specialising in one instrument beats dabbling in ten. Match your lifestyle, capital, and personality to the right market.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
