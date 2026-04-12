@@ -269,7 +269,7 @@ export default function AcademyPage() {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           className="text-center py-16 border border-dashed border-white/[0.06] rounded-2xl"
         >
-          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Levels 7–9 Coming Soon</p>
+          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Levels 8–9 Coming Soon</p>
           <p className="text-sm text-gray-600 max-w-md mx-auto">
             Options · Prop Trading · ATLAS Mastery
           </p>
