@@ -318,7 +318,7 @@ export default function StrategyJournalLesson() {
     { q: 'How often do you review?', opts: ['Never', 'Monthly', 'Weekly'], weights: [0, 1, 2] },
     { q: 'Have you made a change based on journal data?', opts: ['Never', 'Once', 'Multiple data-driven changes'], weights: [0, 1, 2] },
   ];
-  const healthScore = healthAnswers.reduce((sum, a, i) => sum + (a !== null ? healthQs[i].weights[a] : 0), 0);
+  const healthScore = healthAnswers.reduce<number>((sum, a, i) => sum + (a !== null ? healthQs[i].weights[a] : 0), 0);
   const healthGrade = healthScore >= 10 ? 'A' : healthScore >= 7 ? 'B' : healthScore >= 4 ? 'C' : 'F';
   const healthColor = healthGrade === 'A' ? 'text-green-400' : healthGrade === 'B' ? 'text-sky-400' : healthGrade === 'C' ? 'text-amber-400' : 'text-red-400';
   const allHealthAnswered = healthAnswers.every(a => a !== null);

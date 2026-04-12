@@ -286,7 +286,7 @@ export default function BacktestingFundamentalsLesson() {
     { q: 'Rules written before looking at charts?', opts: ['No — developed while testing', 'Partially', 'Yes — complete rules first'], weights: [0, 1, 2] },
     { q: 'Did you adjust rules to fit the data?', opts: ['Yes — tweaked several parameters', 'Minor adjustments', 'No — kept original rules'], weights: [0, 1, 2] },
   ];
-  const graderScore = graderAnswers.reduce((sum, a, i) => sum + (a !== null ? graderQs[i].weights[a] : 0), 0);
+  const graderScore = graderAnswers.reduce<number>((sum, a, i) => sum + (a !== null ? graderQs[i].weights[a] : 0), 0);
   const graderMax = 12;
   const graderGrade = graderScore >= 10 ? 'A' : graderScore >= 7 ? 'B' : graderScore >= 4 ? 'C' : 'F';
   const graderColor = graderGrade === 'A' ? 'text-green-400' : graderGrade === 'B' ? 'text-sky-400' : graderGrade === 'C' ? 'text-amber-400' : 'text-red-400';

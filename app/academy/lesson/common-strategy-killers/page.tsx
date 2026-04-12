@@ -258,7 +258,7 @@ export default function CommonStrategyKillersLesson() {
     { q: 'Do you journal and review weekly?', opts: ['No', 'Journal but no review', 'Journal + weekly review'], weights: [0, 1, 2], killer: 'No journal' },
     { q: 'Do you trade outside your asset\'s active sessions?', opts: ['Frequently', 'Sometimes', 'Never — KZ only'], weights: [0, 1, 2], killer: 'Session leaks' },
   ];
-  const diagScore = diagAnswers.reduce((sum, a, i) => sum + (a !== null ? diagQs[i].weights[a] : 0), 0);
+  const diagScore = diagAnswers.reduce<number>((sum, a, i) => sum + (a !== null ? diagQs[i].weights[a] : 0), 0);
   const diagMax = 16;
   const diagGrade = diagScore >= 14 ? 'HEALTHY' : diagScore >= 10 ? 'AT RISK' : diagScore >= 6 ? 'CRITICAL' : 'TERMINAL';
   const diagColor = diagGrade === 'HEALTHY' ? 'text-green-400' : diagGrade === 'AT RISK' ? 'text-amber-400' : diagGrade === 'CRITICAL' ? 'text-orange-400' : 'text-red-400';
