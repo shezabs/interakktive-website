@@ -189,6 +189,30 @@ export const academyCourses: AcademyCourse[] = [
       { id: 'indicator-stack-capstone', courseId: 'level-5-indicators', title: 'Building Your Indicator Stack — Capstone', subtitle: 'The Level 5 capstone', description: 'Build your complete personal indicator stack — which tools, why each one, how they combine. Your Indicator Playbook.', estimatedMinutes: 20, isFree: false, totalSections: 10, quizPassThreshold: 66 },
     ],
   },
+  {
+    id: 'level-6-strategy',
+    title: 'Level 6 — Strategy Engineering',
+    subtitle: 'Build, test, and refine a complete trading strategy',
+    description: 'The bridge from theory to execution. Design your edge, define your rules, and build a strategy that survives real markets.',
+    level: 6,
+    icon: '🏗️',
+    lessons: [
+      { id: 'anatomy-of-strategy', courseId: 'level-6-strategy', title: 'The Anatomy of a Strategy', subtitle: 'What separates a system from a gamble', description: 'Every profitable strategy has 7 components. Most traders have 3. Learn all 7 and why each one matters.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'choosing-your-battlefield', courseId: 'level-6-strategy', title: 'Choosing Your Battlefield', subtitle: 'Asset, timeframe, and session selection', description: 'Why specialising in one instrument beats dabbling in ten. Match your lifestyle, capital, and personality to the right market.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'model-1-trend-continuation', courseId: 'level-6-strategy', title: 'Model 1: Trend Continuation', subtitle: 'The bread and butter of professional trading', description: 'BOS + pullback to OB/FVG in the direction of the trend. The highest-probability model with a clear statistical edge.', estimatedMinutes: 22, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'model-2-reversal', courseId: 'level-6-strategy', title: 'Model 2: Reversal', subtitle: 'Catching the turn with precision', description: 'CHoCH + liquidity sweep + divergence at premium/discount extremes. Higher reward, lower probability. When and how to use it.', estimatedMinutes: 22, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'entry-trigger-mastery', courseId: 'level-6-strategy', title: 'Entry Trigger Mastery', subtitle: 'The difference between a setup and a trade', description: 'A setup without a trigger is a wish. Learn the 5 entry triggers that professional traders use and when each one applies.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'stop-placement-science', courseId: 'level-6-strategy', title: 'Stop Placement Science', subtitle: 'Where amateurs get stopped and pros survive', description: 'Structure-based stops, ATR stops, and why fixed-pip stops are a death sentence. Your stop IS your risk — get it right.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'target-selection', courseId: 'level-6-strategy', title: 'Target Selection & R:R', subtitle: 'Know where you are going before you enter', description: 'Fixed R:R vs structural targets vs trailing. How your target method changes your win rate, expectancy, and psychology.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'trade-management', courseId: 'level-6-strategy', title: 'Trade Management', subtitle: 'What happens between entry and exit', description: 'Partials, breakeven moves, trailing stops, and scaling. The decisions that separate breakeven traders from profitable ones.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'backtesting-fundamentals', courseId: 'level-6-strategy', title: 'Backtesting Fundamentals', subtitle: 'Prove your edge before risking capital', description: 'How to backtest properly — sample size, market conditions, avoiding hindsight bias, and the minimum 100-trade rule.', estimatedMinutes: 22, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'expectancy-edge', courseId: 'level-6-strategy', title: 'Expectancy & Edge', subtitle: 'The only number that matters', description: 'EV = (Win Rate × Avg Win) − (Loss Rate × Avg Loss). If this number is positive, you have an edge. If not, nothing else matters.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'strategy-journal', courseId: 'level-6-strategy', title: 'The Strategy Journal', subtitle: 'Track, measure, improve', description: 'What to record, how to review, and the metrics that reveal whether your strategy is working or slowly dying.', estimatedMinutes: 18, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'common-strategy-killers', courseId: 'level-6-strategy', title: 'Common Strategy Killers', subtitle: 'Why good strategies fail in practice', description: 'Over-optimisation, curve-fitting, ignoring commissions, regime change blindness, and the 6 other ways traders destroy working edges.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'strategy-stress-test', courseId: 'level-6-strategy', title: 'Strategy Stress Test', subtitle: 'Break it before the market does', description: 'Drawdown scenarios, losing streaks, slippage, spread widening, and news events. If your strategy survives this, it survives anything.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+      { id: 'strategy-engineering-capstone', courseId: 'level-6-strategy', title: 'Your Complete Strategy — Capstone', subtitle: 'The Level 6 capstone', description: 'Assemble everything: model + entry + stop + target + management + journal. Walk away with a complete, tested, documented trading strategy.', estimatedMinutes: 25, isFree: false, totalSections: 12, quizPassThreshold: 66 },
+    ],
+  },
 ];
 
 export function getCourse(courseId: string): AcademyCourse | undefined {

@@ -72,6 +72,21 @@ const liveLessons = new Set([
   'confluence-matrix',
   'indicator-smc-fusion',
   'indicator-stack-capstone',
+  // Level 6 — Strategy Engineering (COMPLETE — 6.1-6.14)
+  'anatomy-of-strategy',
+  'choosing-your-battlefield',
+  'model-1-trend-continuation',
+  'model-2-reversal',
+  'entry-trigger-mastery',
+  'stop-placement-science',
+  'target-selection',
+  'trade-management',
+  'backtesting-fundamentals',
+  'expectancy-edge',
+  'strategy-journal',
+  'common-strategy-killers',
+  'strategy-stress-test',
+  'strategy-engineering-capstone',
 ]);
 
 export default function AcademyPage() {
@@ -239,9 +254,9 @@ export default function AcademyPage() {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           className="text-center py-16 border border-dashed border-white/[0.06] rounded-2xl"
         >
-          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Levels 4–9 Coming Soon</p>
+          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Levels 7–9 Coming Soon</p>
           <p className="text-sm text-gray-600 max-w-md mx-auto">
-            Indicator Intelligence · Trading Psychology · Strategy Building · Options · Prop Trading · ATLAS Mastery
+            Options · Prop Trading · ATLAS Mastery
           </p>
         </motion.div>
       </section>
