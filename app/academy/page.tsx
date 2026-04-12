@@ -95,6 +95,13 @@ const liveLessons = new Set([
   'execution-timing',
   'multi-timeframe-execution',
   'managing-open-trades',
+  'reading-the-tape',
+  'session-transitions',
+  'trade-autopsy',
+  'scaling-when-and-how',
+  'trading-multiple-instruments',
+  'weekly-performance-review',
+  'level-7-capstone',
 ]);
 
 export default function AcademyPage() {
