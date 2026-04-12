@@ -87,6 +87,14 @@ const liveLessons = new Set([
   'common-strategy-killers',
   'strategy-stress-test',
   'strategy-engineering-capstone',
+  // Level 7 — Advanced Execution & Live Trading Mastery (7.1+)
+  'execution-gap',
+  'pre-session-routine',
+  'reading-live-price-action',
+  'first-five-seconds',
+  'execution-timing',
+  'multi-timeframe-execution',
+  'managing-open-trades',
 ]);
 
 export default function AcademyPage() {
