@@ -116,6 +116,7 @@ const liveLessons = new Set([
   'news-trading-strategies',
   'risk-management-around-events',
   'sentiment-positioning',
+  'level-8-capstone',
 ]);
 
 export default function AcademyPage() {
