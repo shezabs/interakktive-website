@@ -114,7 +114,7 @@ function YieldCurveAnimation() {
     // Labels
     ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.font = '7px system-ui'; ctx.textAlign = 'center';
     maturities.forEach((m, i) => ctx.fillText(m, chartL + (i / (maturities.length - 1)) * chartW, chartB + 14));
-    ctx.save(); ctx.translate(15, cy); ctx.rotate(-Math.PI / 2);
+    ctx.save(); ctx.translate(15, (chartT + chartB) / 2); ctx.rotate(-Math.PI / 2);
     ctx.fillText('YIELD', 0, 0); ctx.restore();
     // Curve
     const progress = Math.min(1, (t % 5) / 3);
