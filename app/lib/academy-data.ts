@@ -262,6 +262,8 @@ export const academyCourses: AcademyCourse[] = [
     id: 'level-9-prop',
     title: 'Level 9 — Prop Trading Mastery',
     description: 'Turn your proven edge into funded capital. Challenge mathematics, funded account management, dual drawdown engineering, scaling strategies, and building a prop trading business.',
+    level: 9,
+    isFree: false,
     lessons: [
       { id: 'what-is-prop-trading', courseId: 'level-9-prop', title: 'What Is Prop Trading?', subtitle: 'And why it changes everything', description: 'What prop firms are, how they work at a high level, the capital multiplier effect, and why this is the bridge between trading skill and trading income.', estimatedMinutes: 18, isFree: false, totalSections: 12, quizPassThreshold: 66 },
       { id: 'how-prop-firms-work', courseId: 'level-9-prop', title: 'How Prop Firms Actually Work', subtitle: 'The business model nobody explains', description: 'Why 85-90% of traders fail evaluations, the 3 firm types, challenge fees as revenue, and why understanding the house edge changes your approach.', estimatedMinutes: 20, isFree: false, totalSections: 12, quizPassThreshold: 66 },
