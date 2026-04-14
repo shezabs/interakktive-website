@@ -128,6 +128,10 @@ const liveLessons = new Set([
   'funded-account-management',
   'daily-vs-overall-drawdown',
   'scaling-funded-accounts',
+  'payout-optimisation',
+  'when-challenges-fail',
+  'building-a-prop-business',
+  'level-9-capstone',
 ]);
 
 export default function AcademyPage() {
