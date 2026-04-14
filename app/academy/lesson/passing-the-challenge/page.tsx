@@ -58,14 +58,14 @@ const consistencyRules = [
 ];
 
 const dayByDayMilestones = [
-  { day: 'Day 1', equity: '+0.3%', status: 'green', note: 'One trade, one small win. Cautious Phase confirmed. Do NOT take a second trade even if another setup appears.' },
-  { day: 'Day 5', equity: '+1.8%', status: 'green', note: 'End of Cautious Phase. Slightly above target. Transition to Build Phase: risk increases to 0.75%, up to 2 trades/day.' },
-  { day: 'Day 8', equity: '+1.2%', status: 'amber', note: 'Drawdown from Day 5 peak. 3 losses in Build Phase. Normal variance. The 2-loss rule saved you from a -3% day. Trust the process.' },
-  { day: 'Day 12', equity: '+3.5%', status: 'green', note: 'Recovery. 4 winning trades since Day 8. Equity path is choppy but trending up. Do NOT compare to linear 4% target at Day 12.' },
-  { day: 'Day 16', equity: '+5.8%', status: 'green', note: 'Past 50% of target. Strong position. Maintain Build Phase. No risk changes yet \u2014 80% trigger is at +8%.' },
-  { day: 'Day 20', equity: '+8.2%', status: 'amber', note: '80% TRIGGER HIT. Switch to Protect Phase NOW. Reduce risk to 0.5%. Max 1 trade/day. You need 1.8% in 10 days. The maths is overwhelmingly in your favour.' },
-  { day: 'Day 25', equity: '+9.1%', status: 'green', note: 'Slow, steady progress in Protect Phase. 0.9% in 5 days at reduced risk. 5 more days for 0.9% more. Patience. Do NOT sprint.' },
-  { day: 'Day 28', equity: '+10.3%', status: 'green', note: 'TARGET HIT. Phase 1 complete. Stop trading immediately. Do not risk the pass for "extra buffer." You are done.' },
+  { day: 'Day 1', equity: 0.3, status: 'green', note: 'One trade, one small win. Cautious Phase confirmed. Do NOT take a second trade even if another setup appears.' },
+  { day: 'Day 5', equity: 1.8, status: 'green', note: 'End of Cautious Phase. Slightly above target. Transition to Build Phase: risk increases to 0.75%, up to 2 trades/day.' },
+  { day: 'Day 8', equity: 1.2, status: 'amber', note: 'Drawdown from Day 5 peak. 3 losses in Build Phase. Normal variance. The 2-loss rule saved you from a -3% day. Trust the process.' },
+  { day: 'Day 12', equity: 3.5, status: 'green', note: 'Recovery. 4 winning trades since Day 8. Equity path is choppy but trending up. Do NOT compare to linear 4% target at Day 12.' },
+  { day: 'Day 16', equity: 5.8, status: 'green', note: 'Past 50% of target. Strong position. Maintain Build Phase. No risk changes yet \u2014 80% trigger is at +8%.' },
+  { day: 'Day 20', equity: 8.2, status: 'amber', note: '80% TRIGGER HIT. Switch to Protect Phase NOW. Reduce risk to 0.5%. Max 1 trade/day. You need 1.8% in 10 days. The maths is overwhelmingly in your favour.' },
+  { day: 'Day 25', equity: 9.1, status: 'green', note: 'Slow, steady progress in Protect Phase. 0.9% in 5 days at reduced risk. 5 more days for 0.9% more. Patience. Do NOT sprint.' },
+  { day: 'Day 28', equity: 10.3, status: 'green', note: 'TARGET HIT. Phase 1 complete. Stop trading immediately. Do not risk the pass for "extra buffer." You are done.' },
 ];
 
 const commonMistakes = [
