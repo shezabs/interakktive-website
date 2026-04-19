@@ -1542,7 +1542,7 @@ export default function MERDeepDiveLesson() {
         <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
           <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 10 &middot; Lesson 10</p></motion.div>
           <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">Market Efficiency<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Ratio</span></motion.h1>
-          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">The geometric oscillator. Not a measurement at any bar \u2014 a measurement of the shape of the path itself. The difference between travelling and progressing, finally quantified.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">The geometric oscillator. Not a measurement at any bar — a measurement of the shape of the path itself. The difference between travelling and progressing, finally quantified.</motion.p>
           <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5"><span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span><div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" /></motion.div>
         </motion.div>
       </section>
@@ -1553,13 +1553,13 @@ export default function MERDeepDiveLesson() {
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">The Simplest Oscillator in the Suite. And the Deepest.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">MER is the shortest Pine script in the ATLAS oscillator family. A few dozen lines. One calculation. One plotted line. No state classifier, no persistence contract, no event markers, no 4-pane logic. It\u2019s stripped down to a single question and a single answer.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">And yet conceptually it\u2019s the indicator that operates on the highest level of abstraction. Every other oscillator in the suite \u2014 MAE, MSI, MAZ, MPG, MPR, VSI, ERD \u2014 measures <strong className="text-white">scalar properties at individual bars</strong>. They reduce price to close, high, volume, range, momentum. None of them care about the <em>shape</em> of the path between bars. Price could walk five times the distance to reach the same destination, and none of those indicators would notice.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">MER is the shortest Pine script in the ATLAS oscillator family. A few dozen lines. One calculation. One plotted line. No state classifier, no persistence contract, no event markers, no 4-pane logic. It’s stripped down to a single question and a single answer.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">And yet conceptually it’s the indicator that operates on the highest level of abstraction. Every other oscillator in the suite — MAE, MSI, MAZ, MPG, MPR, VSI, ERD — measures <strong className="text-white">scalar properties at individual bars</strong>. They reduce price to close, high, volume, range, momentum. None of them care about the <em>shape</em> of the path between bars. Price could walk five times the distance to reach the same destination, and none of those indicators would notice.</p>
             <p className="text-gray-400 leading-relaxed">MER is the only indicator that treats price action as a <strong className="text-amber-400">geometric object</strong>. It asks: for all the distance price travelled in the last 14 bars, how much of it produced net movement? The answer is a single number between 0 and 100 that tells you more about trading regime than any trend line, moving-average cross, or ADX reading ever could. Because it measures something none of them can see.</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#128270; THE MER AXIOM</p>
-            <p className="text-sm text-gray-400 leading-relaxed">Motion is not progress. A chart that\u2019s moving is not necessarily going anywhere. MER is the instrument that quantifies this distinction with a single number.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Motion is not progress. A chart that’s moving is not necessarily going anywhere. MER is the instrument that quantifies this distinction with a single number.</p>
           </div>
         </motion.div>
       </section>
@@ -1569,11 +1569,11 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; The Two Measurements</p>
           <h2 className="text-2xl font-extrabold mb-4">Net Displacement and Path Length</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The entire indicator rests on two geometric quantities. <strong className="text-white">Net displacement</strong> is the straight-line distance from where price was 14 bars ago to where it is now \u2014 one subtraction, absolute value. <strong className="text-white">Path length</strong> is the total distance price actually walked, summed bar by bar, every move counted. Same two endpoints can have wildly different path lengths depending on how the path zig-zagged between them.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The entire indicator rests on two geometric quantities. <strong className="text-white">Net displacement</strong> is the straight-line distance from where price was 14 bars ago to where it is now — one subtraction, absolute value. <strong className="text-white">Path length</strong> is the total distance price actually walked, summed bar by bar, every move counted. Same two endpoints can have wildly different path lengths depending on how the path zig-zagged between them.</p>
           <NetVsPathAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Triangle Inequality</p>
-            <p className="text-sm text-gray-400">A mathematical guarantee: the straight-line distance between two points is always less than or equal to the total length of any path connecting them. Path length \u2265 net displacement, always. This is why MER is bounded on [0, 1] by construction \u2014 it cannot be larger than 1 because path cannot be smaller than net.</p>
+            <p className="text-sm text-gray-400">A mathematical guarantee: the straight-line distance between two points is always less than or equal to the total length of any path connecting them. Path length ≥ net displacement, always. This is why MER is bounded on [0, 1] by construction — it cannot be larger than 1 because path cannot be smaller than net.</p>
           </div>
         </motion.div>
       </section>
@@ -1583,7 +1583,7 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; The Ratio</p>
           <h2 className="text-2xl font-extrabold mb-4">Net Divided By Path</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Divide net displacement by path length and you get the <strong className="text-white">Market Efficiency Ratio</strong>. If price walks in a perfectly straight line from A to B, net equals path, and MER equals 1.0 (or 100 on the 0-100 scale). If price walks an enormous zig-zag from A to B, net stays the same but path becomes large, pushing MER toward 0. The ratio is a geometric efficiency score \u2014 how straight was the walk?</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Divide net displacement by path length and you get the <strong className="text-white">Market Efficiency Ratio</strong>. If price walks in a perfectly straight line from A to B, net equals path, and MER equals 1.0 (or 100 on the 0-100 scale). If price walks an enormous zig-zag from A to B, net stays the same but path becomes large, pushing MER toward 0. The ratio is a geometric efficiency score — how straight was the walk?</p>
           <RatioCalculationAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why This Is Profound</p>
@@ -1597,11 +1597,11 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; The Three Zones</p>
           <h2 className="text-2xl font-extrabold mb-4">Teal / Grey / Magenta</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The output line is colored by zone. <strong className="text-white">\u2265 70 = TEAL (efficient)</strong> \u2014 trending regime. <strong className="text-white">30\u201370 = GREY (mixed)</strong> \u2014 transitional or moderately efficient. <strong className="text-white">&lt; 30 = MAGENTA (inefficient)</strong> \u2014 chop or range regime. The thresholds are tunable via inputs, but 70/30 are calibrated for broad asset cross-compatibility and mirror the upper/lower quartiles of typical MER distributions.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The output line is colored by zone. <strong className="text-white">≥ 70 = TEAL (efficient)</strong> — trending regime. <strong className="text-white">30–70 = GREY (mixed)</strong> — transitional or moderately efficient. <strong className="text-white">&lt; 30 = MAGENTA (inefficient)</strong> — chop or range regime. The thresholds are tunable via inputs, but 70/30 are calibrated for broad asset cross-compatibility and mirror the upper/lower quartiles of typical MER distributions.</p>
           <ThreeZonesAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why 70/30 Specifically</p>
-            <p className="text-sm text-gray-400">Across a large cross-section of instruments and timeframes, MER distributions tend to spend about 70% of time in the 30-70 mid zone, with 15% each above 70 and below 30. The chosen thresholds roughly match the statistical tails \u2014 which means teal and magenta readings are genuinely above or below normal. Adjust the bands if you find your specific instrument systematically clustering differently.</p>
+            <p className="text-sm text-gray-400">Across a large cross-section of instruments and timeframes, MER distributions tend to spend about 70% of time in the 30-70 mid zone, with 15% each above 70 and below 30. The chosen thresholds roughly match the statistical tails — which means teal and magenta readings are genuinely above or below normal. Adjust the bands if you find your specific instrument systematically clustering differently.</p>
           </div>
         </motion.div>
       </section>
@@ -1611,19 +1611,19 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; The Path-Displacement Principle &#11088;</p>
           <h2 className="text-2xl font-extrabold mb-4">The Shape of the Path Carries the Signal</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">This is the conceptual breakthrough. Every other indicator you\u2019ve met \u2014 in the ATLAS suite and in retail trading generally \u2014 <strong className="text-white">reduces price action to scalar measurements at individual bars</strong>. Close prices, high prices, volumes, ranges, ATRs. None of them preserve information about the shape of the path between measurements. Price could walk 10x the distance to reach the same endpoints, and none of them would be any the wiser.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">This is the conceptual breakthrough. Every other indicator you’ve met — in the ATLAS suite and in retail trading generally — <strong className="text-white">reduces price action to scalar measurements at individual bars</strong>. Close prices, high prices, volumes, ranges, ATRs. None of them preserve information about the shape of the path between measurements. Price could walk 10x the distance to reach the same endpoints, and none of them would be any the wiser.</p>
           <PathDisplacementAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#127960; The Path-Displacement Principle</p>
-            <p className="text-sm text-gray-400 leading-relaxed">The recognition that <strong className="text-white">price action is a geometric object \u2014 a path with a length and a shape \u2014 and not just a sequence of scalar events</strong>. Two markets with identical closes 14 bars ago and identical closes now can have completely different trading characteristics depending on how price travelled between those endpoints. A straight-line walk at MER \u2248 95 is a trend. A violent zig-zag at MER \u2248 12 is a chop war. Same starting point, same ending point, same ATR, same net change in price. Totally different regime. MER is the only indicator in the suite that treats this distinction as foundational.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The recognition that <strong className="text-white">price action is a geometric object — a path with a length and a shape — and not just a sequence of scalar events</strong>. Two markets with identical closes 14 bars ago and identical closes now can have completely different trading characteristics depending on how price travelled between those endpoints. A straight-line walk at MER ≈ 95 is a trend. A violent zig-zag at MER ≈ 12 is a chop war. Same starting point, same ending point, same ATR, same net change in price. Totally different regime. MER is the only indicator in the suite that treats this distinction as foundational.</p>
           </div>
           <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
             <p className="text-xs font-bold text-white mb-2">Four portable applications:</p>
             <ul className="text-sm text-gray-400 space-y-2 leading-relaxed">
               <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Trend-follow filter.</strong> Trend systems need directional efficiency to work. MER &lt; 30 is a hard veto on new trend entries, regardless of what any other indicator says. The chop cost in a low-MER environment will systematically destroy trend P&L via repeated stop-outs, even when the directional call is correct. Use MER as the first gate: no MER, no trend trade.</li>
-              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Mean-reversion enabler.</strong> The exact opposite symmetry. Range/rotation strategies thrive in chop. MER &lt; 30 is a GREEN LIGHT for mean-reversion entries. The same chop that kills trenders feeds mean-rev P&L. Run DIFFERENT STRATEGIES in DIFFERENT MER ZONES \u2014 this is the heart of regime-aware trading.</li>
-              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Cross-instrument ranking.</strong> When scanning a watchlist for trend setups, rank by MER. The ticker with MER=75 and rising is geometrically a better trend candidate than the ticker with MER=20, regardless of their respective MPR or MSI readings. Pressure without efficiency converts to losses; efficiency without pressure doesn\u2019t generate trades. You need both \u2014 and MER is the cleanest efficiency filter you have.</li>
-              <li><strong className="text-amber-400">4.</strong> <strong className="text-white">Time-of-day awareness.</strong> US equity MER has a textbook intraday pattern \u2014 open chop, morning trend, lunch chop, afternoon trend, close drift. Professionals time entries to the efficient windows and stand aside during the chop phases. Knowing your instrument\u2019s intraday MER rhythm is a free edge most retail traders never acquire.</li>
+              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Mean-reversion enabler.</strong> The exact opposite symmetry. Range/rotation strategies thrive in chop. MER &lt; 30 is a GREEN LIGHT for mean-reversion entries. The same chop that kills trenders feeds mean-rev P&L. Run DIFFERENT STRATEGIES in DIFFERENT MER ZONES — this is the heart of regime-aware trading.</li>
+              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Cross-instrument ranking.</strong> When scanning a watchlist for trend setups, rank by MER. The ticker with MER=75 and rising is geometrically a better trend candidate than the ticker with MER=20, regardless of their respective MPR or MSI readings. Pressure without efficiency converts to losses; efficiency without pressure doesn’t generate trades. You need both — and MER is the cleanest efficiency filter you have.</li>
+              <li><strong className="text-amber-400">4.</strong> <strong className="text-white">Time-of-day awareness.</strong> US equity MER has a textbook intraday pattern — open chop, morning trend, lunch chop, afternoon trend, close drift. Professionals time entries to the efficient windows and stand aside during the chop phases. Knowing your instrument’s intraday MER rhythm is a free edge most retail traders never acquire.</li>
             </ul>
           </div>
         </motion.div>
@@ -1634,11 +1634,11 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Chop Cost</p>
           <h2 className="text-2xl font-extrabold mb-4">The Distance That Didn&apos;t Count</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">An intuitive companion measurement to MER: <code className="text-white">chopCost = pathLen - netMove</code>. This is the distance price walked that did NOT contribute to net displacement \u2014 all the zig-zags, retraces, and counter-moves added up. In a straight-line trend, chop cost is near zero. In a perfectly ranged market, chop cost is the vast majority of the path. The Pine source exports this as its own data window value.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">An intuitive companion measurement to MER: <code className="text-white">chopCost = pathLen - netMove</code>. This is the distance price walked that did NOT contribute to net displacement — all the zig-zags, retraces, and counter-moves added up. In a straight-line trend, chop cost is near zero. In a perfectly ranged market, chop cost is the vast majority of the path. The Pine source exports this as its own data window value.</p>
           <ChopCostAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Chop Cost Is Money Cost</p>
-            <p className="text-sm text-gray-400">Chop cost isn\u2019t just a geometric quantity \u2014 it\u2019s a monetary one for most strategy types. Trend-followers PAY for chop cost directly through stopped-out trades. Mean-reverters EARN on chop cost through fade trades. Breakout traders get chopped up by false signals during high-chop phases. Knowing the current chop cost as a percentage of total path is knowing how hostile your specific strategy\u2019s environment is right now.</p>
+            <p className="text-sm text-gray-400">Chop cost isn’t just a geometric quantity — it’s a monetary one for most strategy types. Trend-followers PAY for chop cost directly through stopped-out trades. Mean-reverters EARN on chop cost through fade trades. Breakout traders get chopped up by false signals during high-chop phases. Knowing the current chop cost as a percentage of total path is knowing how hostile your specific strategy’s environment is right now.</p>
           </div>
         </motion.div>
       </section>
@@ -1648,11 +1648,11 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Lookback Length</p>
           <h2 className="text-2xl font-extrabold mb-4">Tuning Window Size to Timeframe</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The <code className="text-white">len</code> input controls how many bars MER measures over. Default 14. <strong className="text-white">Shorter (5-8)</strong> \u2014 highly reactive, catches micro-regime changes, suitable for scalping and very short timeframes. <strong className="text-white">Default (14)</strong> \u2014 balanced for general analysis across asset classes. <strong className="text-white">Longer (20-30)</strong> \u2014 smooth, slow, confirms regime shifts only after they\u2019re well established, suitable for swing trading and higher timeframes.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The <code className="text-white">len</code> input controls how many bars MER measures over. Default 14. <strong className="text-white">Shorter (5-8)</strong> — highly reactive, catches micro-regime changes, suitable for scalping and very short timeframes. <strong className="text-white">Default (14)</strong> — balanced for general analysis across asset classes. <strong className="text-white">Longer (20-30)</strong> — smooth, slow, confirms regime shifts only after they’re well established, suitable for swing trading and higher timeframes.</p>
           <LookbackTuningAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Match Lookback to Trading Timeframe</p>
-            <p className="text-sm text-gray-400">A scalper trading 1m charts and using MER with a 30-bar lookback is getting MER\u2019s view of the last half hour \u2014 way too slow. A swing trader on daily charts using MER with 5-bar lookback is getting MER reacting to single-day flips \u2014 way too fast. Rough rule: use a lookback that covers about one-third of your average holding period. Adjust from there based on observed MER behavior on your specific instruments.</p>
+            <p className="text-sm text-gray-400">A scalper trading 1m charts and using MER with a 30-bar lookback is getting MER’s view of the last half hour — way too slow. A swing trader on daily charts using MER with 5-bar lookback is getting MER reacting to single-day flips — way too fast. Rough rule: use a lookback that covers about one-third of your average holding period. Adjust from there based on observed MER behavior on your specific instruments.</p>
           </div>
         </motion.div>
       </section>
@@ -1666,7 +1666,7 @@ export default function MERDeepDiveLesson() {
           <SmoothingAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Smoothing Trade-off</p>
-            <p className="text-sm text-gray-400">EMA(5) adds about 3 bars of lag in exchange for significantly fewer zone flips. For most use cases this trade is worth it \u2014 the confusion cost of constant color flickering exceeds the lag cost. For alert-driven entries where precision matters, consider disabling smoothing and using raw MER. For visual regime assessment on a chart, smoothing on is the default for a reason.</p>
+            <p className="text-sm text-gray-400">EMA(5) adds about 3 bars of lag in exchange for significantly fewer zone flips. For most use cases this trade is worth it — the confusion cost of constant color flickering exceeds the lag cost. For alert-driven entries where precision matters, consider disabling smoothing and using raw MER. For visual regime assessment on a chart, smoothing on is the default for a reason.</p>
           </div>
         </motion.div>
       </section>
@@ -1676,11 +1676,11 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Regime Detection</p>
           <h2 className="text-2xl font-extrabold mb-4">MER as an Intrinsic Trend-vs-Chop Detector</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">MER is arguably the cleanest trend-vs-chop detector available because it measures the defining property of trend (directional efficiency) directly, rather than inferring trend from derived quantities like moving averages or momentum oscillators. There\u2019s no MA cross to wait for, no ADX threshold to cross, no divergence to interpret \u2014 just a geometric ratio that goes high when the path is straight and low when the path is chaotic.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">MER is arguably the cleanest trend-vs-chop detector available because it measures the defining property of trend (directional efficiency) directly, rather than inferring trend from derived quantities like moving averages or momentum oscillators. There’s no MA cross to wait for, no ADX threshold to cross, no divergence to interpret — just a geometric ratio that goes high when the path is straight and low when the path is chaotic.</p>
           <TrendChopRegimeAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; MER vs ADX</p>
-            <p className="text-sm text-gray-400">ADX is the classical trend strength indicator. It measures momentum persistence via smoothed directional movement. The problem: ADX can be elevated during strong bi-directional chop \u2014 violent moves in both directions register as &ldquo;strong trend&rdquo; because ADX doesn\u2019t distinguish between directional efficiency and directional magnitude. MER does. An asset can have high ADX and low MER simultaneously (violent chop). MER is the more honest trend detector because it asks the right question.</p>
+            <p className="text-sm text-gray-400">ADX is the classical trend strength indicator. It measures momentum persistence via smoothed directional movement. The problem: ADX can be elevated during strong bi-directional chop — violent moves in both directions register as &ldquo;strong trend&rdquo; because ADX doesn’t distinguish between directional efficiency and directional magnitude. MER does. An asset can have high ADX and low MER simultaneously (violent chop). MER is the more honest trend detector because it asks the right question.</p>
           </div>
         </motion.div>
       </section>
@@ -1690,11 +1690,11 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Strategy Filter</p>
           <h2 className="text-2xl font-extrabold mb-4">The Symmetric Regime Gate</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The most important operational use of MER is as a symmetric strategy filter. For <strong className="text-white">trend-following</strong>: MER \u2265 70 = green light, 30-70 = caution, &lt; 30 = VETO. For <strong className="text-white">mean-reversion</strong>: the verdicts are exactly inverted \u2014 MER &lt; 30 = green light, 30-70 = caution, \u2265 70 = VETO. Same MER reading, opposite strategy verdicts. The disciplined trader runs DIFFERENT PLAYBOOKS in DIFFERENT MER ZONES rather than forcing one strategy across all regimes.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The most important operational use of MER is as a symmetric strategy filter. For <strong className="text-white">trend-following</strong>: MER ≥ 70 = green light, 30-70 = caution, &lt; 30 = VETO. For <strong className="text-white">mean-reversion</strong>: the verdicts are exactly inverted — MER &lt; 30 = green light, 30-70 = caution, ≥ 70 = VETO. Same MER reading, opposite strategy verdicts. The disciplined trader runs DIFFERENT PLAYBOOKS in DIFFERENT MER ZONES rather than forcing one strategy across all regimes.</p>
           <StrategyFilterAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Symmetric Regime Doctrine</p>
-            <p className="text-sm text-gray-400">Most retail traders learn one strategy (usually trend-follow via MA crosses) and run it regardless of regime. The result: systematic losses during chop phases. The professional response is regime-aware rotation: trend systems in high MER, mean-rev systems in low MER, reduced activity in the mid zone. This requires having multiple strategies in the toolkit, but the MER gate makes the rotation rule objective. You don\u2019t have to intuit when to switch \u2014 MER tells you.</p>
+            <p className="text-sm text-gray-400">Most retail traders learn one strategy (usually trend-follow via MA crosses) and run it regardless of regime. The result: systematic losses during chop phases. The professional response is regime-aware rotation: trend systems in high MER, mean-rev systems in low MER, reduced activity in the mid zone. This requires having multiple strategies in the toolkit, but the MER gate makes the rotation rule objective. You don’t have to intuit when to switch — MER tells you.</p>
           </div>
         </motion.div>
       </section>
@@ -1703,8 +1703,8 @@ export default function MERDeepDiveLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; The Three Oscillator Axes</p>
-          <h2 className="text-2xl font-extrabold mb-4">MER \u00d7 MSI \u00d7 MPR</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Three genuinely orthogonal oscillator axes. <strong className="text-white">MSI</strong> = regime classification (overall market state). <strong className="text-white">MPR</strong> = directional pressure. <strong className="text-white">MER</strong> = geometric efficiency. A clean-trend setup is the rare case where all three align: MSI in a trend state, MPR in RELEASE with a clear direction, MER above 70 and rising. When all three agree, the environment is actively cooperating with your trade. When they disagree, you\u2019re fighting the regime on at least one axis.</p>
+          <h2 className="text-2xl font-extrabold mb-4">MER × MSI × MPR</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Three genuinely orthogonal oscillator axes. <strong className="text-white">MSI</strong> = regime classification (overall market state). <strong className="text-white">MPR</strong> = directional pressure. <strong className="text-white">MER</strong> = geometric efficiency. A clean-trend setup is the rare case where all three align: MSI in a trend state, MPR in RELEASE with a clear direction, MER above 70 and rising. When all three agree, the environment is actively cooperating with your trade. When they disagree, you’re fighting the regime on at least one axis.</p>
           <ConfluenceStackAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; MER Is the Tiebreaker</p>
@@ -1718,7 +1718,7 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; Across Asset Classes</p>
           <h2 className="text-2xl font-extrabold mb-4">Typical MER Behavior by Market</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Different asset classes have characteristic MER distributions. <strong className="text-white">Crypto</strong> \u2014 high average MER (45-65) with occasional extreme readings in either direction; trends can be very clean and breakouts are often geometrically efficient. <strong className="text-white">Equities</strong> \u2014 moderate average MER (40-55); often efficient during trend days, often chop-dominated in range days. <strong className="text-white">FX Majors</strong> \u2014 lower average MER (30-45); range-biased by default, true trending phases are the exception. Knowing your asset class\u2019s typical MER distribution helps calibrate expectations.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Different asset classes have characteristic MER distributions. <strong className="text-white">Crypto</strong> — high average MER (45-65) with occasional extreme readings in either direction; trends can be very clean and breakouts are often geometrically efficient. <strong className="text-white">Equities</strong> — moderate average MER (40-55); often efficient during trend days, often chop-dominated in range days. <strong className="text-white">FX Majors</strong> — lower average MER (30-45); range-biased by default, true trending phases are the exception. Knowing your asset class’s typical MER distribution helps calibrate expectations.</p>
           <AssetClassAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; No Volume Dependency</p>
@@ -1732,7 +1732,7 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; Intraday Patterns</p>
           <h2 className="text-2xl font-extrabold mb-4">The Time-of-Day MER Cycle</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">US equity indices have a textbook intraday MER cycle driven by institutional participation patterns. <strong className="text-white">9:30-10:00 (Open)</strong> \u2014 low MER, price discovery chop. <strong className="text-white">10:00-11:30 (Morning trend)</strong> \u2014 high MER, institutional positioning. <strong className="text-white">11:30-14:00 (Lunch)</strong> \u2014 low MER, reduced volume and chop. <strong className="text-white">14:00-15:30 (Afternoon trend)</strong> \u2014 high MER, second institutional window. <strong className="text-white">15:30-16:00 (Close)</strong> \u2014 mid-high MER, positioning for close. Professionals time entries to the efficient windows.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">US equity indices have a textbook intraday MER cycle driven by institutional participation patterns. <strong className="text-white">9:30-10:00 (Open)</strong> — low MER, price discovery chop. <strong className="text-white">10:00-11:30 (Morning trend)</strong> — high MER, institutional positioning. <strong className="text-white">11:30-14:00 (Lunch)</strong> — low MER, reduced volume and chop. <strong className="text-white">14:00-15:30 (Afternoon trend)</strong> — high MER, second institutional window. <strong className="text-white">15:30-16:00 (Close)</strong> — mid-high MER, positioning for close. Professionals time entries to the efficient windows.</p>
           <IntradayPatternAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Lunch Chop Trap</p>
@@ -1746,7 +1746,7 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Common Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-4">Four Ways Traders Misuse MER</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Each mistake stems from a core misunderstanding of what MER measures \u2014 usually by confusing geometric efficiency with direction, volatility, or momentum.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Each mistake stems from a core misunderstanding of what MER measures — usually by confusing geometric efficiency with direction, volatility, or momentum.</p>
           <div className="space-y-3">
             {mistakes.map((m, i) => (
               <div key={i} className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
@@ -1774,14 +1774,14 @@ export default function MERDeepDiveLesson() {
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Core Formula</p>
-                <p className="text-sm text-gray-300">MER = |close - close[14]| / \u03A3|close[i] - close[i+1]| \u2014 net displacement over path length.</p>
+                <p className="text-sm text-gray-300">MER = |close - close[14]| / Σ|close[i] - close[i+1]| — net displacement over path length.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Zones</p>
-                <p className="text-sm text-gray-300">\u2265 70 (teal) = efficient/trending \u2022 30-70 (grey) = mixed \u2022 &lt; 30 (magenta) = chop/range.</p>
+                <p className="text-sm text-gray-300">≥ 70 (teal) = efficient/trending • 30-70 (grey) = mixed • &lt; 30 (magenta) = chop/range.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
-                <p className="text-xs font-bold text-amber-400 mb-1">Path-Displacement Principle (\u2605)</p>
+                <p className="text-xs font-bold text-amber-400 mb-1">Path-Displacement Principle (★)</p>
                 <p className="text-sm text-gray-300">Price action as a geometric object. Shape of path contains information no scalar indicator captures.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
@@ -1794,11 +1794,11 @@ export default function MERDeepDiveLesson() {
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Asset Class Reliability</p>
-                <p className="text-sm text-gray-300">Works on everything \u2014 price-only, no volume dependency. Especially valuable on Forex.</p>
+                <p className="text-sm text-gray-300">Works on everything — price-only, no volume dependency. Especially valuable on Forex.</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-amber-400 mb-1">Data Window Exports</p>
-                <p className="text-sm text-gray-300">Net displacement \u00b7 Path length \u00b7 Efficiency [0-1] \u00b7 Efficiency [0-100] \u00b7 Chop cost \u00b7 Chop %.</p>
+                <p className="text-sm text-gray-300">Net displacement · Path length · Efficiency [0-1] · Efficiency [0-100] · Chop cost · Chop %.</p>
               </div>
             </div>
           </div>
@@ -1810,7 +1810,7 @@ export default function MERDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-4">Reading MER Through the Path-Displacement Lens</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read MER as a geometric efficiency measurement with symmetric strategy implications \u2014 or whether you\u2019re still treating it as a trend signal or a direction tool.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read MER as a geometric efficiency measurement with symmetric strategy implications — or whether you’re still treating it as a trend signal or a direction tool.</p>
           <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
@@ -1856,7 +1856,7 @@ export default function MERDeepDiveLesson() {
               <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
                 <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
                 <div className="relative z-10 text-center">
-                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">\u2248</div>
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">≈</div>
                   <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
                   <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 10: Market Efficiency Ratio</strong><br />at ATLAS Academy by Interakktive</p>
                   <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; Path-Displacement Tactician &mdash;</p>

@@ -1603,7 +1603,7 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
           <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 10 &middot; Lesson 7</p></motion.div>
           <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">Market Pressure<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Regime</span></motion.h1>
-          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">A bipolar oscillator with a 4-state classifier. RELEASE, SUPPRESSED, TRANSITION, and an off-axis TRAP state. Every state change requires 3 committed bars \u2014 no flicker, no compromise.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">A bipolar oscillator with a 4-state classifier. RELEASE, SUPPRESSED, TRANSITION, and an off-axis TRAP state. Every state change requires 3 committed bars — no flicker, no compromise.</motion.p>
           <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5"><span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span><div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" /></motion.div>
         </motion.div>
       </section>
@@ -1615,12 +1615,12 @@ export default function MPRDeepDiveLesson() {
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">The Other Oscillator</p>
             <p className="text-gray-400 leading-relaxed mb-4">MPG taught you that oscillators can measure participation rather than momentum. <strong className="text-amber-400">MPR is a different oscillator entirely</strong>, measuring something orthogonal: <strong className="text-white">pressure regime</strong>. Where MPG asks &ldquo;is anyone engaged?&rdquo;, MPR asks &ldquo;is the market committed to releasing pressure, containing it, absorbing it, or transitioning between those?&rdquo; Same sub-pane architecture, entirely different question.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">The architectural innovation that separates MPR from every other oscillator you&apos;ve seen is the <strong className="text-white">4-state classifier with a TRAP state sitting off-axis</strong>. Most classifiers are ordinal \u2014 states arranged along a single line (low → medium → high, or bearish → neutral → bullish). MPR&apos;s TRAP state isn&apos;t on the line. It can fire at any pressure value because it&apos;s measuring something the pressure score doesn&apos;t capture: absorption. Positive pressure + absorption = a very different market than positive pressure alone, and MPR is the indicator that flags the distinction.</p>
-            <p className="text-gray-400 leading-relaxed">The other innovation is the <strong className="text-white">Persistence Contract</strong>: state changes require 3 consecutive bars of the new candidate before they commit. This is deliberately slower than bar-by-bar classification \u2014 and that slowness is the feature, not a bug. Every state reading MPR gives you is a <em>committed</em> reading. If you want flicker-free regime analysis, this is the mechanism that provides it.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">The architectural innovation that separates MPR from every other oscillator you&apos;ve seen is the <strong className="text-white">4-state classifier with a TRAP state sitting off-axis</strong>. Most classifiers are ordinal — states arranged along a single line (low → medium → high, or bearish → neutral → bullish). MPR&apos;s TRAP state isn&apos;t on the line. It can fire at any pressure value because it&apos;s measuring something the pressure score doesn&apos;t capture: absorption. Positive pressure + absorption = a very different market than positive pressure alone, and MPR is the indicator that flags the distinction.</p>
+            <p className="text-gray-400 leading-relaxed">The other innovation is the <strong className="text-white">Persistence Contract</strong>: state changes require 3 consecutive bars of the new candidate before they commit. This is deliberately slower than bar-by-bar classification — and that slowness is the feature, not a bug. Every state reading MPR gives you is a <em>committed</em> reading. If you want flicker-free regime analysis, this is the mechanism that provides it.</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#128270; THE MPR AXIOM</p>
-            <p className="text-sm text-gray-400 leading-relaxed">Pressure can be released, suppressed, transitioning, or absorbed \u2014 and absorption is not a pressure value, it is a separate dimension. MPR measures both simultaneously. Use the full classification, not just the score.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Pressure can be released, suppressed, transitioning, or absorbed — and absorption is not a pressure value, it is a separate dimension. MPR measures both simultaneously. Use the full classification, not just the score.</p>
           </div>
         </motion.div>
       </section>
@@ -1634,7 +1634,7 @@ export default function MPRDeepDiveLesson() {
           <FourStatesQuadrantAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why TRAP is Off-Axis</p>
-            <p className="text-sm text-gray-400">The pressure score measures <em>direction and commitment</em>. The stress score measures <em>effort vs result</em>. These are orthogonal dimensions. A market can have strongly positive pressure (price pushing up) while simultaneously showing heavy absorption (effort not producing result) \u2014 those are two different phenomena happening at once. Putting TRAP on the pressure spectrum would collapse this information; keeping it off-axis preserves both readings.</p>
+            <p className="text-sm text-gray-400">The pressure score measures <em>direction and commitment</em>. The stress score measures <em>effort vs result</em>. These are orthogonal dimensions. A market can have strongly positive pressure (price pushing up) while simultaneously showing heavy absorption (effort not producing result) — those are two different phenomena happening at once. Putting TRAP on the pressure spectrum would collapse this information; keeping it off-axis preserves both readings.</p>
           </div>
         </motion.div>
       </section>
@@ -1644,7 +1644,7 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; Compression Score</p>
           <h2 className="text-2xl font-extrabold mb-4">The Pinning Proxy</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The first computation. Compression = <code className="text-white">1 - (candleRange / ATR)</code>, normalized to 0-1. When candle range is tight relative to ATR (typical of a pinned market), compression is high. When candles are expanding (breakout conditions), compression is low. Compression is the <em>negative contribution</em> to pressure \u2014 high compression pulls pressure toward the suppressed side.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The first computation. Compression = <code className="text-white">1 - (candleRange / ATR)</code>, normalized to 0-1. When candle range is tight relative to ATR (typical of a pinned market), compression is high. When candles are expanding (breakout conditions), compression is low. Compression is the <em>negative contribution</em> to pressure — high compression pulls pressure toward the suppressed side.</p>
           <CompressionScoreAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why Inverted?</p>
@@ -1658,7 +1658,7 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; Follow-Through Score</p>
           <h2 className="text-2xl font-extrabold mb-4">Path Efficiency, Release Proxy</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Same math as MPG and MAZ efficiency: <code className="text-white">|close - close[20]| / sum(|close - close[1]|, 20)</code>. Bounded 0-1. High = price moving directly (good follow-through, release conditions). Low = price wandering (no follow-through, compression conditions). This is the <em>positive contribution</em> to pressure \u2014 high follow-through pushes pressure toward the release side.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Same math as MPG and MAZ efficiency: <code className="text-white">|close - close[20]| / sum(|close - close[1]|, 20)</code>. Bounded 0-1. High = price moving directly (good follow-through, release conditions). Low = price wandering (no follow-through, compression conditions). This is the <em>positive contribution</em> to pressure — high follow-through pushes pressure toward the release side.</p>
           <FollowThroughScoreAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why 20 Bars</p>
@@ -1672,11 +1672,11 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Stress Score</p>
           <h2 className="text-2xl font-extrabold mb-4">The Trap Detector</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Stress = <code className="text-white">(effort - result) \u00d7 100</code>, clamped to -100 to +100. Effort = volume ratio (or range ratio when volume is unreliable \u2014 the Volume Fallback Doctrine in action). Result = price movement relative to ATR. When effort is high but result is low, stress spikes positive. When stress &ge; 30 AND follow-through &lt; 0.30, MPR classifies the state as TRAP.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Stress = <code className="text-white">(effort - result) × 100</code>, clamped to -100 to +100. Effort = volume ratio (or range ratio when volume is unreliable — the Volume Fallback Doctrine in action). Result = price movement relative to ATR. When effort is high but result is low, stress spikes positive. When stress &ge; 30 AND follow-through &lt; 0.30, MPR classifies the state as TRAP.</p>
           <StressScoreAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why Both Conditions Are Required</p>
-            <p className="text-sm text-gray-400">Stress alone isn&apos;t enough. A single bar of high effort + low result could be noise. Combining it with low follow-through (a sustained condition) filters out noise and catches specifically the pattern where <em>effort is being absorbed over time</em>. The AND gate is what gives TRAP its specificity \u2014 it doesn&apos;t trigger on single-bar anomalies.</p>
+            <p className="text-sm text-gray-400">Stress alone isn&apos;t enough. A single bar of high effort + low result could be noise. Combining it with low follow-through (a sustained condition) filters out noise and catches specifically the pattern where <em>effort is being absorbed over time</em>. The AND gate is what gives TRAP its specificity — it doesn&apos;t trigger on single-bar anomalies.</p>
           </div>
         </motion.div>
       </section>
@@ -1686,11 +1686,11 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Composite Pressure</p>
           <h2 className="text-2xl font-extrabold mb-4">Follow Pulls Up, Compression Pulls Down</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The pressure score is an <strong className="text-white">explicit tug-of-war</strong> between two forces. Follow-through \u00d7 100 pushes pressure toward positive (release). Compression \u00d7 100 pulls pressure toward negative (suppression). The signed composite is clamped to -100 to +100. This is why pressure is bipolar \u2014 it&apos;s measuring net directional commitment, not magnitude.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The pressure score is an <strong className="text-white">explicit tug-of-war</strong> between two forces. Follow-through × 100 pushes pressure toward positive (release). Compression × 100 pulls pressure toward negative (suppression). The signed composite is clamped to -100 to +100. This is why pressure is bipolar — it&apos;s measuring net directional commitment, not magnitude.</p>
           <PressureFormulaAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Symmetry Choice</p>
-            <p className="text-sm text-gray-400">Both components are scaled to 100 before subtraction, giving them equal weight. This is a deliberate design choice \u2014 neither force dominates structurally. The asymmetries come from the market itself (real behavior favors one or the other at any given moment), not from the indicator&apos;s weighting. This keeps MPR neutral by construction.</p>
+            <p className="text-sm text-gray-400">Both components are scaled to 100 before subtraction, giving them equal weight. This is a deliberate design choice — neither force dominates structurally. The asymmetries come from the market itself (real behavior favors one or the other at any given moment), not from the indicator&apos;s weighting. This keeps MPR neutral by construction.</p>
           </div>
         </motion.div>
       </section>
@@ -1700,11 +1700,11 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Stability Filter</p>
           <h2 className="text-2xl font-extrabold mb-4">How Often Does Pressure Flip?</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Stability = <code className="text-white">1 - flipRate</code> where flipRate is the rolling average of sign changes over 20 bars. When pressure keeps flipping between positive and negative, stability is low and the tool is telling you: &ldquo;the pressure signal itself is unreliable right now.&rdquo; When stability drops below 0.5 (default threshold), the classifier <strong className="text-white">forces TRANSITION</strong> \u2014 refusing to commit to RELEASE or SUPPRESSED even if the current pressure value would qualify.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Stability = <code className="text-white">1 - flipRate</code> where flipRate is the rolling average of sign changes over 20 bars. When pressure keeps flipping between positive and negative, stability is low and the tool is telling you: &ldquo;the pressure signal itself is unreliable right now.&rdquo; When stability drops below 0.5 (default threshold), the classifier <strong className="text-white">forces TRANSITION</strong> — refusing to commit to RELEASE or SUPPRESSED even if the current pressure value would qualify.</p>
           <StabilityFilterAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Override Is Philosophically Important</p>
-            <p className="text-sm text-gray-400">A pressure score of +8 normally means RELEASE. But if pressure has been flipping between +12, -9, +15, -7 over the last 20 bars, that +8 is unreliable \u2014 the underlying signal is too noisy to commit to. The stability override forces TRANSITION precisely to stop you from trusting an unreliable reading. This is another manifestation of the Diagnostic Inversion principle: the tool refuses to give you a conclusion it can&apos;t defend.</p>
+            <p className="text-sm text-gray-400">A pressure score of +8 normally means RELEASE. But if pressure has been flipping between +12, -9, +15, -7 over the last 20 bars, that +8 is unreliable — the underlying signal is too noisy to commit to. The stability override forces TRANSITION precisely to stop you from trusting an unreliable reading. This is another manifestation of the Diagnostic Inversion principle: the tool refuses to give you a conclusion it can&apos;t defend.</p>
           </div>
         </motion.div>
       </section>
@@ -1714,18 +1714,18 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; The Persistence Contract &#11088;</p>
           <h2 className="text-2xl font-extrabold mb-4">Commitment Over Speed</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Here&apos;s the defining design philosophy of MPR \u2014 and it runs directly counter to how most retail indicators are built. Nearly every modern oscillator is optimized for <strong className="text-white">low lag</strong>: detect the state change as quickly as possible, on as few bars as possible, ideally on the bar it happens. MPR optimizes for the opposite quality: <strong className="text-white">committed evidence</strong>. A state change is only reported when the candidate has been present for <code className="text-white">persistBars</code> consecutive bars (default 3). Anything shorter is treated as flicker and discarded.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Here&apos;s the defining design philosophy of MPR — and it runs directly counter to how most retail indicators are built. Nearly every modern oscillator is optimized for <strong className="text-white">low lag</strong>: detect the state change as quickly as possible, on as few bars as possible, ideally on the bar it happens. MPR optimizes for the opposite quality: <strong className="text-white">committed evidence</strong>. A state change is only reported when the candidate has been present for <code className="text-white">persistBars</code> consecutive bars (default 3). Anything shorter is treated as flicker and discarded.</p>
           <PersistenceContractAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#127960; The Persistence Doctrine</p>
-            <p className="text-sm text-gray-400 leading-relaxed">Retail indicators treat low lag as an unqualified virtue. But speed has a hidden cost: <strong className="text-white">flicker</strong>. Every single-bar fluctuation triggers a state change, the state change fires a signal, the signal generates an emotional trading decision. Many of those state changes are noise \u2014 they reverse on the next bar, but you&apos;ve already acted. MPR chose the other side of the tradeoff explicitly. A state change is reported only when the market has committed to it for at least 3 consecutive bars. The cost is 2-3 bars of lag on regime transitions. The benefit is that every state reading is a <em>committed</em> reading: you can trust it, size your positions around it, and stop second-guessing every wiggle.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Retail indicators treat low lag as an unqualified virtue. But speed has a hidden cost: <strong className="text-white">flicker</strong>. Every single-bar fluctuation triggers a state change, the state change fires a signal, the signal generates an emotional trading decision. Many of those state changes are noise — they reverse on the next bar, but you&apos;ve already acted. MPR chose the other side of the tradeoff explicitly. A state change is reported only when the market has committed to it for at least 3 consecutive bars. The cost is 2-3 bars of lag on regime transitions. The benefit is that every state reading is a <em>committed</em> reading: you can trust it, size your positions around it, and stop second-guessing every wiggle.</p>
           </div>
           <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
             <p className="text-xs font-bold text-white mb-2">Three operational implications:</p>
             <ul className="text-sm text-gray-400 space-y-2 leading-relaxed">
-              <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Don&apos;t reduce persistBars for &ldquo;speed.&rdquo;</strong> Setting it to 1 doesn&apos;t make MPR faster \u2014 it turns it into a different tool entirely, a noisy single-bar classifier. If you need faster, you need a different class of tool. The default of 3 encodes the entire design philosophy. Respect it.</li>
+              <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Don&apos;t reduce persistBars for &ldquo;speed.&rdquo;</strong> Setting it to 1 doesn&apos;t make MPR faster — it turns it into a different tool entirely, a noisy single-bar classifier. If you need faster, you need a different class of tool. The default of 3 encodes the entire design philosophy. Respect it.</li>
               <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Expect 2-3 bars of lag on transitions.</strong> When the market genuinely changes regime, MPR will report it 2-3 bars later than a bar-by-bar classifier would. This is deliberate. Those 2-3 bars are the cost of the reliability guarantee. Include them in your planning.</li>
-              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Trust the state when it fires.</strong> The Persistence Contract means that when MPR reports a new state, the market has actually committed to it. Unlike with low-lag tools, you don&apos;t need to second-guess every state change \u2014 the second-guessing has already been done for you by the persistence logic. Take the state at face value and trade accordingly.</li>
+              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Trust the state when it fires.</strong> The Persistence Contract means that when MPR reports a new state, the market has actually committed to it. Unlike with low-lag tools, you don&apos;t need to second-guess every state change — the second-guessing has already been done for you by the persistence logic. Take the state at face value and trade accordingly.</li>
             </ul>
           </div>
         </motion.div>
@@ -1734,13 +1734,13 @@ export default function MPRDeepDiveLesson() {
       {/* === S08 === */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; TRAP \u2014 The Off-Axis State</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; TRAP — The Off-Axis State</p>
           <h2 className="text-2xl font-extrabold mb-4">Why Positive Pressure Can Be a Lie</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The TRAP state is MPR&apos;s most valuable and most misunderstood output. It encodes a specific market pathology: <strong className="text-white">effort being applied without proportional result</strong>. The pressure score can be strongly positive (indicating directional release), but if TRAP conditions are simultaneously active (stress \u2265 30 AND follow &lt; 0.3), the state becomes magenta TRAP \u2014 overriding the pressure reading.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The TRAP state is MPR&apos;s most valuable and most misunderstood output. It encodes a specific market pathology: <strong className="text-white">effort being applied without proportional result</strong>. The pressure score can be strongly positive (indicating directional release), but if TRAP conditions are simultaneously active (stress ≥ 30 AND follow &lt; 0.3), the state becomes magenta TRAP — overriding the pressure reading.</p>
           <TrapOffAxisAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Classifier Check Order Matters</p>
-            <p className="text-sm text-gray-400">Source logic: <code className="text-white">if isTrapCondition {'{'} rawState := STATE_TRAP {'}'}</code> runs BEFORE the pressure threshold checks. That order is deliberate. It means trap detection has priority \u2014 even a +42 pressure reading gets classified as TRAP if absorption is detected. Magenta overrides teal. Because if effort is being absorbed, the &ldquo;positive pressure&rdquo; isn&apos;t real pressure; it&apos;s just visible pressure that&apos;s about to collapse.</p>
+            <p className="text-sm text-gray-400">Source logic: <code className="text-white">if isTrapCondition {'{'} rawState := STATE_TRAP {'}'}</code> runs BEFORE the pressure threshold checks. That order is deliberate. It means trap detection has priority — even a +42 pressure reading gets classified as TRAP if absorption is detected. Magenta overrides teal. Because if effort is being absorbed, the &ldquo;positive pressure&rdquo; isn&apos;t real pressure; it&apos;s just visible pressure that&apos;s about to collapse.</p>
           </div>
         </motion.div>
       </section>
@@ -1750,11 +1750,11 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; RELEASE vs SUPPRESSED</p>
           <h2 className="text-2xl font-extrabold mb-4">The Mirror States</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">RELEASE and SUPPRESSED are perfect opposites. Both are COMMITTED states on the pressure spectrum. Both persist for many bars once established. Both require the Persistence Contract to activate. RELEASE needs pressure \u2265 +5 for 3 bars; SUPPRESSED needs pressure \u2264 -5 for 3 bars. Reading them is mirrored in the opposite direction.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">RELEASE and SUPPRESSED are perfect opposites. Both are COMMITTED states on the pressure spectrum. Both persist for many bars once established. Both require the Persistence Contract to activate. RELEASE needs pressure ≥ +5 for 3 bars; SUPPRESSED needs pressure ≤ -5 for 3 bars. Reading them is mirrored in the opposite direction.</p>
           <ReleaseVsSuppressedAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Deadband Between Them</p>
-            <p className="text-sm text-gray-400">The ±5 thresholds create a <em>deadband</em> between them where the state is TRANSITION. Without that deadband, pressure hovering near zero would constantly flip between RELEASE and SUPPRESSED. The deadband is how MPR keeps itself noise-free at the neutral midpoint \u2014 any pressure reading between -5 and +5 is classified as TRANSITION regardless of sign. This is hysteresis applied to regime detection.</p>
+            <p className="text-sm text-gray-400">The ±5 thresholds create a <em>deadband</em> between them where the state is TRANSITION. Without that deadband, pressure hovering near zero would constantly flip between RELEASE and SUPPRESSED. The deadband is how MPR keeps itself noise-free at the neutral midpoint — any pressure reading between -5 and +5 is classified as TRANSITION regardless of sign. This is hysteresis applied to regime detection.</p>
           </div>
         </motion.div>
       </section>
@@ -1768,7 +1768,7 @@ export default function MPRDeepDiveLesson() {
           <StateTransitionsAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Trajectory Informs Context</p>
-            <p className="text-sm text-gray-400">A current state of RELEASE means different things depending on where you came from. RELEASE <em>from SUPPRESSED</em> (via TRANSITION) is an emerging breakout \u2014 early stage, lots of runway. RELEASE <em>after TRAP</em> is a revival \u2014 can resolve either way, watch for stability. RELEASE <em>from another RELEASE after brief TRANSITION</em> is a trend continuation \u2014 high conviction. The state alone is only half the picture; the trajectory matters.</p>
+            <p className="text-sm text-gray-400">A current state of RELEASE means different things depending on where you came from. RELEASE <em>from SUPPRESSED</em> (via TRANSITION) is an emerging breakout — early stage, lots of runway. RELEASE <em>after TRAP</em> is a revival — can resolve either way, watch for stability. RELEASE <em>from another RELEASE after brief TRANSITION</em> is a trend continuation — high conviction. The state alone is only half the picture; the trajectory matters.</p>
           </div>
         </motion.div>
       </section>
@@ -1777,8 +1777,8 @@ export default function MPRDeepDiveLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; The Oscillator Stack</p>
-          <h2 className="text-2xl font-extrabold mb-4">MPR \u00d7 MSI \u00d7 MPG</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">For the first time in the ATLAS suite, you can stack <strong className="text-white">three sub-pane oscillators</strong> on the same chart. MPG tells you <em>if anyone is engaged</em>. MSI tells you <em>what regime</em> the market is in. MPR tells you <em>what pressure state</em> that regime is expressing. These three together form a complete diagnostic layer for the oscillator family \u2014 and when they agree, the confluence is among the strongest in the suite.</p>
+          <h2 className="text-2xl font-extrabold mb-4">MPR × MSI × MPG</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">For the first time in the ATLAS suite, you can stack <strong className="text-white">three sub-pane oscillators</strong> on the same chart. MPG tells you <em>if anyone is engaged</em>. MSI tells you <em>what regime</em> the market is in. MPR tells you <em>what pressure state</em> that regime is expressing. These three together form a complete diagnostic layer for the oscillator family — and when they agree, the confluence is among the strongest in the suite.</p>
           <MPRConfluenceAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Pane Economy</p>
@@ -1791,12 +1791,12 @@ export default function MPRDeepDiveLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; Threshold Symmetry</p>
-          <h2 className="text-2xl font-extrabold mb-4">\u00b15 By Design</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The RELEASE and SUPPRESSED thresholds are symmetric at +5 and -5 by default. This is not arbitrary. Symmetric thresholds mean MPR has no directional bias by construction \u2014 it treats upward pressure and downward pressure exactly the same. If you observe that your MPR seems to trigger RELEASE more often than SUPPRESSED, that&apos;s a property of the market you&apos;re watching, not a property of the indicator.</p>
+          <h2 className="text-2xl font-extrabold mb-4">±5 By Design</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The RELEASE and SUPPRESSED thresholds are symmetric at +5 and -5 by default. This is not arbitrary. Symmetric thresholds mean MPR has no directional bias by construction — it treats upward pressure and downward pressure exactly the same. If you observe that your MPR seems to trigger RELEASE more often than SUPPRESSED, that&apos;s a property of the market you&apos;re watching, not a property of the indicator.</p>
           <ThresholdSymmetryAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Tuning The Thresholds</p>
-            <p className="text-sm text-gray-400">You can widen the thresholds to \u00b110 or \u00b115 for stricter regime qualification (fewer state changes, each one more significant). You can narrow to \u00b12 or \u00b13 for more sensitive detection (more state changes, each one less firm). But <strong className="text-white">always keep them symmetric</strong> \u2014 asymmetric thresholds (e.g., +5 / -10) introduce directional bias that biases every subsequent state reading. The symmetry is the guarantee of neutrality.</p>
+            <p className="text-sm text-gray-400">You can widen the thresholds to ±10 or ±15 for stricter regime qualification (fewer state changes, each one more significant). You can narrow to ±2 or ±3 for more sensitive detection (more state changes, each one less firm). But <strong className="text-white">always keep them symmetric</strong> — asymmetric thresholds (e.g., +5 / -10) introduce directional bias that biases every subsequent state reading. The symmetry is the guarantee of neutrality.</p>
           </div>
         </motion.div>
       </section>
@@ -1834,31 +1834,31 @@ export default function MPRDeepDiveLesson() {
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Four States</p>
-                <p className="text-sm text-gray-300">RELEASE (teal, +1) \u00b7 SUPPRESSED (grey, -1) \u00b7 TRANSITION (amber, 0) \u00b7 TRAP (magenta, +2 off-axis).</p>
+                <p className="text-sm text-gray-300">RELEASE (teal, +1) · SUPPRESSED (grey, -1) · TRANSITION (amber, 0) · TRAP (magenta, +2 off-axis).</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Core Formula</p>
-                <p className="text-sm text-gray-300">pressure = clamp100(followScore \u00d7 100 - compression \u00d7 100). Positive = release; negative = suppression.</p>
+                <p className="text-sm text-gray-300">pressure = clamp100(followScore × 100 - compression × 100). Positive = release; negative = suppression.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Trap Conditions</p>
-                <p className="text-sm text-gray-300">stress \u2265 30 AND follow &lt; 0.3. Trap is checked BEFORE pressure thresholds \u2014 it overrides the pressure reading.</p>
+                <p className="text-sm text-gray-300">stress ≥ 30 AND follow &lt; 0.3. Trap is checked BEFORE pressure thresholds — it overrides the pressure reading.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
-                <p className="text-xs font-bold text-amber-400 mb-1">Persistence Contract (\u2605)</p>
+                <p className="text-xs font-bold text-amber-400 mb-1">Persistence Contract (★)</p>
                 <p className="text-sm text-gray-300">persistBars = 3 default. New state must appear for 3 consecutive bars before committing. Anti-flicker mechanism.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Stability Override</p>
-                <p className="text-sm text-gray-300">When stability &lt; 0.5 (flip rate &gt; 0.5), force TRANSITION \u2014 except when trap conditions are active.</p>
+                <p className="text-sm text-gray-300">When stability &lt; 0.5 (flip rate &gt; 0.5), force TRANSITION — except when trap conditions are active.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Thresholds (Locked Symmetric)</p>
-                <p className="text-sm text-gray-300">\u00b15 for RELEASE / SUPPRESSED. 30 for TRAP stress. 0.5 for stability. All tunable; keep pressure thresholds symmetric.</p>
+                <p className="text-sm text-gray-300">±5 for RELEASE / SUPPRESSED. 30 for TRAP stress. 0.5 for stability. All tunable; keep pressure thresholds symmetric.</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-amber-400 mb-1">Data Window Exports</p>
-                <p className="text-sm text-gray-300">Compression \u00b7 Follow-Through \u00b7 Stress \u00b7 Stability \u00b7 Pressure \u00b7 State \u00b7 Per-state booleans (isRelease, isSuppressed, isTransition, isTrap).</p>
+                <p className="text-sm text-gray-300">Compression · Follow-Through · Stress · Stability · Pressure · State · Per-state booleans (isRelease, isSuppressed, isTransition, isTrap).</p>
               </div>
             </div>
           </div>
@@ -1870,7 +1870,7 @@ export default function MPRDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-4">Reading MPR Like a Committed State Classifier</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read MPR as the 4-state classifier it actually is \u2014 or whether you&apos;re still pattern-matching it as a momentum oscillator.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read MPR as the 4-state classifier it actually is — or whether you&apos;re still pattern-matching it as a momentum oscillator.</p>
           <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
@@ -1916,7 +1916,7 @@ export default function MPRDeepDiveLesson() {
               <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
                 <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
                 <div className="relative z-10 text-center">
-                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">\u25A3</div>
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">▣</div>
                   <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
                   <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 10: Market Pressure Regime</strong><br />at ATLAS Academy by Interakktive</p>
                   <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; Pressure Regime Classifier &mdash;</p>

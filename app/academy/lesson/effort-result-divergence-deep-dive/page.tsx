@@ -1569,7 +1569,7 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
           <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 10 &middot; Lesson 9</p></motion.div>
           <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">Effort-Result<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Divergence</span></motion.h1>
-          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">The direct oscillator. Wyckoff\u2019s oldest question \u2014 did effort produce result? \u2014 translated into a bipolar score with a statistical overlay that fires only on the rare bars that actually matter.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">The direct oscillator. Wyckoff’s oldest question — did effort produce result? — translated into a bipolar score with a statistical overlay that fires only on the rare bars that actually matter.</motion.p>
           <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5"><span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span><div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" /></motion.div>
         </motion.div>
       </section>
@@ -1581,8 +1581,8 @@ export default function ERDDeepDiveLesson() {
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">The Direct Oscillator</p>
             <p className="text-gray-400 leading-relaxed mb-4">Of all the sub-pane oscillators in the ATLAS suite, ERD is the most <strong className="text-white">conceptually primitive</strong>. It asks the question Wyckoff asked a century ago: <em>&ldquo;did the effort applied this bar produce proportional result?&rdquo;</em> It reduces that question to its simplest possible expression: volume divided by average, minus price move divided by ATR. No regime inference. No state classification. No persistence contract. Just a signed score every bar, updated live.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">What makes it <em>not</em> primitive is the layer on top: a <strong className="text-amber-400">z-score statistical overlay</strong> that marks only the bars where the effort/result relationship is genuinely unusual for the instrument\u2019s own recent history. The histogram is noisy by design \u2014 every bar gets a color. The markers are signal, filtered to roughly the 5% of bars that statistically matter. These two readings operating at different timescales is the indicator\u2019s entire personality.</p>
-            <p className="text-gray-400 leading-relaxed">Where MPR asks &ldquo;what regime are we in?&rdquo; and VSI asks &ldquo;where is volatility going?&rdquo;, ERD asks &ldquo;is this specific bar behaving ordinarily or strangely?&rdquo; That specific-bar question is the missing third leg of the oscillator family \u2014 and ERD is the only tool that answers it.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">What makes it <em>not</em> primitive is the layer on top: a <strong className="text-amber-400">z-score statistical overlay</strong> that marks only the bars where the effort/result relationship is genuinely unusual for the instrument’s own recent history. The histogram is noisy by design — every bar gets a color. The markers are signal, filtered to roughly the 5% of bars that statistically matter. These two readings operating at different timescales is the indicator’s entire personality.</p>
+            <p className="text-gray-400 leading-relaxed">Where MPR asks &ldquo;what regime are we in?&rdquo; and VSI asks &ldquo;where is volatility going?&rdquo;, ERD asks &ldquo;is this specific bar behaving ordinarily or strangely?&rdquo; That specific-bar question is the missing third leg of the oscillator family — and ERD is the only tool that answers it.</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#128270; THE ERD AXIOM</p>
@@ -1596,11 +1596,11 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; Wyckoff&apos;s Question</p>
           <h2 className="text-2xl font-extrabold mb-4">Did Effort Produce Result?</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Wyckoff\u2019s framework, stated in modern terms, proposes a 2x2 matrix: effort can be high or low, and result can be high or low. The four combinations have specific meanings. <strong className="text-white">High effort + low result = absorption</strong> (opposing side is soaking up the aggressor). <strong className="text-white">Low effort + high result = vacuum</strong> (thin air, price ran unopposed). High effort + high result = clean participation. Low effort + low result = quiet. ERD lives in this matrix.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Wyckoff’s framework, stated in modern terms, proposes a 2x2 matrix: effort can be high or low, and result can be high or low. The four combinations have specific meanings. <strong className="text-white">High effort + low result = absorption</strong> (opposing side is soaking up the aggressor). <strong className="text-white">Low effort + high result = vacuum</strong> (thin air, price ran unopposed). High effort + high result = clean participation. Low effort + low result = quiet. ERD lives in this matrix.</p>
           <WyckoffMatrixAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why This Matrix Is The Foundation</p>
-            <p className="text-sm text-gray-400">The quadrants aren\u2019t an arbitrary categorization \u2014 they correspond to real, distinguishable market behaviors. Absorption patterns near support are reversal precursors. Vacuum moves in trends are continuation setups. Clean participation is baseline trending. Quiet is noise. A single signed number (ERD) collapses this 2D matrix onto its most informative diagonal: vacuum (positive) vs absorption (negative), with the low-effort/low-result quiet bars clustering near zero.</p>
+            <p className="text-sm text-gray-400">The quadrants aren’t an arbitrary categorization — they correspond to real, distinguishable market behaviors. Absorption patterns near support are reversal precursors. Vacuum moves in trends are continuation setups. Clean participation is baseline trending. Quiet is noise. A single signed number (ERD) collapses this 2D matrix onto its most informative diagonal: vacuum (positive) vs absorption (negative), with the low-effort/low-result quiet bars clustering near zero.</p>
           </div>
         </motion.div>
       </section>
@@ -1614,7 +1614,7 @@ export default function ERDDeepDiveLesson() {
           <EffortComponentAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why Divide by the Rolling Average</p>
-            <p className="text-sm text-gray-400">Raw volume is scale-dependent and useless for comparison: AAPL has different absolute volume than BNB which differs from EURUSD. Dividing by SMA(volume, 20) gives you a ratio that is <em>self-referential to each instrument</em>. A reading of 2.5x means &ldquo;2.5 times this instrument\u2019s normal&rdquo; regardless of what absolute volume means on that ticker. This is the same design philosophy as VSI\u2019s percent-based output.</p>
+            <p className="text-sm text-gray-400">Raw volume is scale-dependent and useless for comparison: AAPL has different absolute volume than BNB which differs from EURUSD. Dividing by SMA(volume, 20) gives you a ratio that is <em>self-referential to each instrument</em>. A reading of 2.5x means &ldquo;2.5 times this instrument’s normal&rdquo; regardless of what absolute volume means on that ticker. This is the same design philosophy as VSI’s percent-based output.</p>
           </div>
         </motion.div>
       </section>
@@ -1624,11 +1624,11 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; Result Component</p>
           <h2 className="text-2xl font-extrabold mb-4">Price Move Relative to ATR</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The result side: <code className="text-white">resultRatio = |close - close[1]| / ATR(14)</code>, mapped to 0-100 via <code className="text-white">resultCap</code> (default 1.0). A bar that moves a full ATR in one bar = 100 result. A bar that moves half an ATR = 50. Same self-referential normalization as effort \u2014 each instrument\u2019s ATR is the comparison baseline, making result comparable across assets.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The result side: <code className="text-white">resultRatio = |close - close[1]| / ATR(14)</code>, mapped to 0-100 via <code className="text-white">resultCap</code> (default 1.0). A bar that moves a full ATR in one bar = 100 result. A bar that moves half an ATR = 50. Same self-referential normalization as effort — each instrument’s ATR is the comparison baseline, making result comparable across assets.</p>
           <ResultComponentAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why Absolute Value</p>
-            <p className="text-sm text-gray-400">Notice the formula uses <code className="text-white">|close - close[1]|</code> \u2014 absolute value. Direction is deliberately discarded in the result calculation. ERD measures the MAGNITUDE of the move, not its sign. This is why ERD is not a directional signal: a 2% up-move and a 2% down-move produce identical result100 values. Direction is the job of other oscillators; ERD\u2019s job is efficiency.</p>
+            <p className="text-sm text-gray-400">Notice the formula uses <code className="text-white">|close - close[1]|</code> — absolute value. Direction is deliberately discarded in the result calculation. ERD measures the MAGNITUDE of the move, not its sign. This is why ERD is not a directional signal: a 2% up-move and a 2% down-move produce identical result100 values. Direction is the job of other oscillators; ERD’s job is efficiency.</p>
           </div>
         </motion.div>
       </section>
@@ -1642,7 +1642,7 @@ export default function ERDDeepDiveLesson() {
           <BipolarERDAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Subtraction Not Division</p>
-            <p className="text-sm text-gray-400">An alternative formulation would be <code className="text-white">result / effort</code> as a ratio. The ATLAS choice to use subtraction is deliberate: ratios behave badly near zero (tiny effort produces huge ratios; tiny result produces tiny ratios). Subtraction stays well-bounded regardless. And the subtraction form is directly interpretable on a symmetric bipolar scale \u2014 no need to take log ratios or apply transformations.</p>
+            <p className="text-sm text-gray-400">An alternative formulation would be <code className="text-white">result / effort</code> as a ratio. The ATLAS choice to use subtraction is deliberate: ratios behave badly near zero (tiny effort produces huge ratios; tiny result produces tiny ratios). Subtraction stays well-bounded regardless. And the subtraction form is directly interpretable on a symmetric bipolar scale — no need to take log ratios or apply transformations.</p>
           </div>
         </motion.div>
       </section>
@@ -1652,7 +1652,7 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Reading the Sign</p>
           <h2 className="text-2xl font-extrabold mb-4">Vacuum vs Absorption in Practice</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Concrete examples of each sign. <strong className="text-white">VACUUM (+ERD)</strong>: price breaking out on steadily declining volume. The market is moving but few participants are engaged. These moves can be fragile (no sponsorship) or meaningful (offers just don\u2019t exist). Context decides. <strong className="text-white">ABSORPTION (-ERD)</strong>: price oscillating in a tight range while volume spikes. Aggressors are trying to move price but someone is taking the other side. Often precedes reversals when the absorption completes.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Concrete examples of each sign. <strong className="text-white">VACUUM (+ERD)</strong>: price breaking out on steadily declining volume. The market is moving but few participants are engaged. These moves can be fragile (no sponsorship) or meaningful (offers just don’t exist). Context decides. <strong className="text-white">ABSORPTION (-ERD)</strong>: price oscillating in a tight range while volume spikes. Aggressors are trying to move price but someone is taking the other side. Often precedes reversals when the absorption completes.</p>
           <SignConventionAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Neither Sign Is Automatically Bullish or Bearish</p>
@@ -1666,11 +1666,11 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Statistical Layer</p>
           <h2 className="text-2xl font-extrabold mb-4">The Z-Score Overlay</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">On top of the raw ERD output sits a z-score calculation: <code className="text-white">zScore = (erd - SMA(erd, 100)) / stdev(erd, 100)</code>. This tells you how many standard deviations the current bar is from the 100-bar average \u2014 <strong className="text-white">for this specific instrument</strong>. A z-score of +1 is a mild excursion. +2 is in the 2.5% tail. +3 is the 0.15% tail. The ±2 threshold (default) is where event markers fire.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">On top of the raw ERD output sits a z-score calculation: <code className="text-white">zScore = (erd - SMA(erd, 100)) / stdev(erd, 100)</code>. This tells you how many standard deviations the current bar is from the 100-bar average — <strong className="text-white">for this specific instrument</strong>. A z-score of +1 is a mild excursion. +2 is in the 2.5% tail. +3 is the 0.15% tail. The ±2 threshold (default) is where event markers fire.</p>
           <ZScoreStatAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why 100 Bars</p>
-            <p className="text-sm text-gray-400">The lookback of 100 bars is calibrated to span about a week of 1H data, or roughly 5 months of daily data. It\u2019s long enough to build a statistically meaningful distribution but short enough that changing market regimes don\u2019t permanently skew the baseline. You can tune it \u2014 shorter (50) for faster adaptation to regime shifts, longer (200) for more statistical stability.</p>
+            <p className="text-sm text-gray-400">The lookback of 100 bars is calibrated to span about a week of 1H data, or roughly 5 months of daily data. It’s long enough to build a statistically meaningful distribution but short enough that changing market regimes don’t permanently skew the baseline. You can tune it — shorter (50) for faster adaptation to regime shifts, longer (200) for more statistical stability.</p>
           </div>
         </motion.div>
       </section>
@@ -1680,11 +1680,11 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Event Markers</p>
           <h2 className="text-2xl font-extrabold mb-4">Circles Are The Signal</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The histogram shows every bar\u2019s raw ERD value. The event markers (plotted as circles) fire only when the z-score crosses ±2. Statistically, this is about 5% of bars. Functionally, these are the moments ERD is actively telling you &ldquo;something unusual is happening here.&rdquo; Teal circles = vacuum event. Magenta circles = absorption event. Everything else is background context.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The histogram shows every bar’s raw ERD value. The event markers (plotted as circles) fire only when the z-score crosses ±2. Statistically, this is about 5% of bars. Functionally, these are the moments ERD is actively telling you &ldquo;something unusual is happening here.&rdquo; Teal circles = vacuum event. Magenta circles = absorption event. Everything else is background context.</p>
           <EventMarkersAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The 5% Filter Is The Point</p>
-            <p className="text-sm text-gray-400">Most oscillators scream at you constantly \u2014 every bar has a signal. ERD deliberately filters to the statistically unusual. If you look at a chart and see no markers, that means the market has been behaving ordinarily for the last 100 bars. If you see a cluster of markers, something is fundamentally different about the current regime. The absence of markers is itself information.</p>
+            <p className="text-sm text-gray-400">Most oscillators scream at you constantly — every bar has a signal. ERD deliberately filters to the statistically unusual. If you look at a chart and see no markers, that means the market has been behaving ordinarily for the last 100 bars. If you see a cluster of markers, something is fundamentally different about the current regime. The absence of markers is itself information.</p>
           </div>
         </motion.div>
       </section>
@@ -1694,18 +1694,18 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; The Dual-Timescale Doctrine &#11088;</p>
           <h2 className="text-2xl font-extrabold mb-4">Context Matters More Than Magnitude</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">This is the conceptual breakthrough ERD introduces to the ATLAS suite. Every indicator you\u2019ve seen so far operates on a <strong className="text-white">single timescale</strong>. A 20 EMA is one smoothing window. A 14 RSI is one lookback. MPR\u2019s persistence contract is 3 bars. All single-timescale. ERD explicitly combines <strong className="text-white">two different timescales at once</strong>: the histogram color is the instantaneous bar-by-bar reading; the event markers are the rolling 100-bar statistical overlay.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">This is the conceptual breakthrough ERD introduces to the ATLAS suite. Every indicator you’ve seen so far operates on a <strong className="text-white">single timescale</strong>. A 20 EMA is one smoothing window. A 14 RSI is one lookback. MPR’s persistence contract is 3 bars. All single-timescale. ERD explicitly combines <strong className="text-white">two different timescales at once</strong>: the histogram color is the instantaneous bar-by-bar reading; the event markers are the rolling 100-bar statistical overlay.</p>
           <DualTimescaleAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#127960; The Dual-Timescale Doctrine</p>
-            <p className="text-sm text-gray-400 leading-relaxed">The defining insight: <strong className="text-white">the same raw ERD value carries entirely different information depending on the instrument\u2019s own recent history</strong>. A reading of +30 on an instrument whose 100-bar mean is +40 is actually <em>below normal</em> for that instrument \u2014 z-score around -1.2, no marker fires, this is subpar for this name. That same +30 on an instrument whose 100-bar mean is -20 is a statistically striking departure \u2014 z-score around +2.6, vacuum marker fires, this is remarkable. The histogram gives you The Moment. The z-score gives you The Context. Both are reading the same number. They disagree because they\u2019re answering different questions.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The defining insight: <strong className="text-white">the same raw ERD value carries entirely different information depending on the instrument’s own recent history</strong>. A reading of +30 on an instrument whose 100-bar mean is +40 is actually <em>below normal</em> for that instrument — z-score around -1.2, no marker fires, this is subpar for this name. That same +30 on an instrument whose 100-bar mean is -20 is a statistically striking departure — z-score around +2.6, vacuum marker fires, this is remarkable. The histogram gives you The Moment. The z-score gives you The Context. Both are reading the same number. They disagree because they’re answering different questions.</p>
           </div>
           <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
             <p className="text-xs font-bold text-white mb-2">Three portable applications:</p>
             <ul className="text-sm text-gray-400 space-y-2 leading-relaxed">
-              <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Volume analysis becomes context-aware.</strong> Absolute volume values are uninformative \u2014 500K shares is nothing on AAPL and an earthquake on a microcap. Volume z-scores are everything. ERD encodes this for you automatically via the ±2\u03C3 event filter. You never again need to ask &ldquo;is this volume unusual?&rdquo; \u2014 the marker answers it.</li>
-              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Risk management scales with statistical rarity.</strong> When z-score spikes to ±2+, you\u2019re by definition in the tails of the distribution. The safest response: reduce position size until the anomaly is explained. Unusual readings mean your normal strategy\u2019s assumptions might not hold. Dampen conviction when the chart is behaving in statistically unusual ways.</li>
-              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Alpha hunting focuses on the 5%.</strong> By mathematical definition, |z| ≥ 2 bars are approximately 5% of all bars. These 5% are where the informational asymmetry lives \u2014 where price discovery is happening, where something non-random is unfolding. Skip the other 95%. ERD is the indicator that pre-filters for you.</li>
+              <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Volume analysis becomes context-aware.</strong> Absolute volume values are uninformative — 500K shares is nothing on AAPL and an earthquake on a microcap. Volume z-scores are everything. ERD encodes this for you automatically via the ±2σ event filter. You never again need to ask &ldquo;is this volume unusual?&rdquo; — the marker answers it.</li>
+              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Risk management scales with statistical rarity.</strong> When z-score spikes to ±2+, you’re by definition in the tails of the distribution. The safest response: reduce position size until the anomaly is explained. Unusual readings mean your normal strategy’s assumptions might not hold. Dampen conviction when the chart is behaving in statistically unusual ways.</li>
+              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Alpha hunting focuses on the 5%.</strong> By mathematical definition, |z| ≥ 2 bars are approximately 5% of all bars. These 5% are where the informational asymmetry lives — where price discovery is happening, where something non-random is unfolding. Skip the other 95%. ERD is the indicator that pre-filters for you.</li>
             </ul>
           </div>
         </motion.div>
@@ -1716,7 +1716,7 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Reading Patterns</p>
           <h2 className="text-2xl font-extrabold mb-4">Vacuum Breakouts and Absorption Stalls</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Two archetypal patterns worth recognizing. <strong className="text-white">Vacuum breakout</strong>: price grinds upward while volume tapers off \u2014 ERD climbs steadily positive, eventually a vacuum marker fires. The market is moving without sponsorship. These can be very clean trades (no one defending the level) or very fragile (no one confirming the move). Context and regime decide. <strong className="text-white">Absorption stall</strong>: price chops sideways while volume is heavy \u2014 ERD plunges negative, absorption marker fires. The aggressors are being denied. Often a reversal precursor when it happens at an obvious level.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Two archetypal patterns worth recognizing. <strong className="text-white">Vacuum breakout</strong>: price grinds upward while volume tapers off — ERD climbs steadily positive, eventually a vacuum marker fires. The market is moving without sponsorship. These can be very clean trades (no one defending the level) or very fragile (no one confirming the move). Context and regime decide. <strong className="text-white">Absorption stall</strong>: price chops sideways while volume is heavy — ERD plunges negative, absorption marker fires. The aggressors are being denied. Often a reversal precursor when it happens at an obvious level.</p>
           <ReadingPatternsAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Pattern Recognition Scales With Experience</p>
@@ -1730,11 +1730,11 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; ERD vs MPR</p>
           <h2 className="text-2xl font-extrabold mb-4">Both Measure Effort. Very Differently.</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Both oscillators incorporate effort as a core input, but they use it in fundamentally different ways. <strong className="text-white">ERD is direct and instantaneous</strong> \u2014 it reports the current bar\u2019s effort-result relationship every bar, with no state inference. <strong className="text-white">MPR is committed and regime-based</strong> \u2014 it uses the same effort-minus-result quantity (as its stress score) but embeds it inside a broader 4-state classifier with persistence filtering. When they agree, you\u2019re seeing the same phenomenon confirmed at two timescales. When they disagree, ERD is showing you a moment that hasn\u2019t sustained long enough to become a regime.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Both oscillators incorporate effort as a core input, but they use it in fundamentally different ways. <strong className="text-white">ERD is direct and instantaneous</strong> — it reports the current bar’s effort-result relationship every bar, with no state inference. <strong className="text-white">MPR is committed and regime-based</strong> — it uses the same effort-minus-result quantity (as its stress score) but embeds it inside a broader 4-state classifier with persistence filtering. When they agree, you’re seeing the same phenomenon confirmed at two timescales. When they disagree, ERD is showing you a moment that hasn’t sustained long enough to become a regime.</p>
           <ERDvsMPRAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; When to Prefer Which</p>
-            <p className="text-sm text-gray-400">Use <strong className="text-white">ERD</strong> when you want per-bar granularity and statistical event detection \u2014 especially for precise entry timing and divergence-hunting. Use <strong className="text-white">MPR</strong> when you want committed regime readings that you can plan around over multiple bars. They\u2019re complementary, not redundant. The sweet spot is using MPR for regime and ERD for entry precision within that regime.</p>
+            <p className="text-sm text-gray-400">Use <strong className="text-white">ERD</strong> when you want per-bar granularity and statistical event detection — especially for precise entry timing and divergence-hunting. Use <strong className="text-white">MPR</strong> when you want committed regime readings that you can plan around over multiple bars. They’re complementary, not redundant. The sweet spot is using MPR for regime and ERD for entry precision within that regime.</p>
           </div>
         </motion.div>
       </section>
@@ -1743,12 +1743,12 @@ export default function ERDDeepDiveLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; The Full Oscillator Picture</p>
-          <h2 className="text-2xl font-extrabold mb-4">ERD \u00d7 MPR \u00d7 VSI</h2>
+          <h2 className="text-2xl font-extrabold mb-4">ERD × MPR × VSI</h2>
           <p className="text-gray-400 leading-relaxed mb-6">All three sub-pane oscillators stacked give you the complete diagnostic layer. <strong className="text-white">ERD</strong> = per-bar effort-result efficiency. <strong className="text-white">MPR</strong> = committed directional pressure regime. <strong className="text-white">VSI</strong> = volatility trajectory. They measure orthogonal properties, so their agreement or disagreement carries specific meaning. Full confluence (all pointing the same way) is rare; nuanced agreement (two out of three) is common; divergence among them (three different readings) is where deep-read opportunities live.</p>
           <ConfluenceStackAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Reading Confluence Like a Tape Reader</p>
-            <p className="text-sm text-gray-400">Strongest breakout environment: ERD marker fires (vacuum) + MPR in RELEASE + VSI in EXPANSION + price crossing a level. All three tools, different timescales, all aligned. Strongest reversal signature: ERD marker fires (absorption) + MPR in TRAP + VSI in TRANSITION + price rejecting a level. Again, all three tools providing independent confirmation via different mechanisms. This is the power of orthogonal oscillators: they can\u2019t all be wrong simultaneously because they\u2019re measuring different things.</p>
+            <p className="text-sm text-gray-400">Strongest breakout environment: ERD marker fires (vacuum) + MPR in RELEASE + VSI in EXPANSION + price crossing a level. All three tools, different timescales, all aligned. Strongest reversal signature: ERD marker fires (absorption) + MPR in TRAP + VSI in TRANSITION + price rejecting a level. Again, all three tools providing independent confirmation via different mechanisms. This is the power of orthogonal oscillators: they can’t all be wrong simultaneously because they’re measuring different things.</p>
           </div>
         </motion.div>
       </section>
@@ -1762,7 +1762,7 @@ export default function ERDDeepDiveLesson() {
           <CapParameterAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Cap Balance Rule</p>
-            <p className="text-sm text-gray-400">The goal is to see ERD occasionally reach ±60 but rarely ±100. If your histogram is pinned at ±100 most of the time, caps are too tight. If it barely exceeds ±20, caps are too loose. For FX majors: <code className="text-white">effortCap ≈ 2.0, resultCap ≈ 0.7</code>. For high-vol small caps: <code className="text-white">effortCap ≈ 5.0, resultCap ≈ 1.5</code>. For standard equities/crypto: defaults work. Critically: DON\u2019T set effort and result caps asymmetrically relative to each instrument\u2019s behavior \u2014 you\u2019ll introduce bias in the resulting ERD sign distribution.</p>
+            <p className="text-sm text-gray-400">The goal is to see ERD occasionally reach ±60 but rarely ±100. If your histogram is pinned at ±100 most of the time, caps are too tight. If it barely exceeds ±20, caps are too loose. For FX majors: <code className="text-white">effortCap ≈ 2.0, resultCap ≈ 0.7</code>. For high-vol small caps: <code className="text-white">effortCap ≈ 5.0, resultCap ≈ 1.5</code>. For standard equities/crypto: defaults work. Critically: DON’T set effort and result caps asymmetrically relative to each instrument’s behavior — you’ll introduce bias in the resulting ERD sign distribution.</p>
           </div>
         </motion.div>
       </section>
@@ -1772,7 +1772,7 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Common Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-4">Four Ways Traders Misuse ERD</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Each mistake stems from treating ERD as something it isn\u2019t \u2014 a direction signal, a trading trigger, a cross-instrument comparable, or a one-size-fits-all tool.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Each mistake stems from treating ERD as something it isn’t — a direction signal, a trading trigger, a cross-instrument comparable, or a one-size-fits-all tool.</p>
           <div className="space-y-3">
             {mistakes.map((m, i) => (
               <div key={i} className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
@@ -1800,18 +1800,18 @@ export default function ERDDeepDiveLesson() {
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Core Formula</p>
-                <p className="text-sm text-gray-300">erd = result100 - effort100. Effort = volume / SMA(volume, 20). Result = |close - close[1]| / ATR(14). Both mapped to 0\u2013100 via caps.</p>
+                <p className="text-sm text-gray-300">erd = result100 - effort100. Effort = volume / SMA(volume, 20). Result = |close - close[1]| / ATR(14). Both mapped to 0–100 via caps.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Sign Convention</p>
-                <p className="text-sm text-gray-300">+ERD (teal) = result exceeded effort = VACUUM. \u2212ERD (magenta) = effort exceeded result = ABSORPTION. Sign is about efficiency, not direction.</p>
+                <p className="text-sm text-gray-300">+ERD (teal) = result exceeded effort = VACUUM. −ERD (magenta) = effort exceeded result = ABSORPTION. Sign is about efficiency, not direction.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Statistical Layer</p>
-                <p className="text-sm text-gray-300">zScore over 100 bars. Markers fire when |z| \u2265 2.0. Approximately 5% of bars.</p>
+                <p className="text-sm text-gray-300">zScore over 100 bars. Markers fire when |z| ≥ 2.0. Approximately 5% of bars.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
-                <p className="text-xs font-bold text-amber-400 mb-1">Dual-Timescale Doctrine (\u2605)</p>
+                <p className="text-xs font-bold text-amber-400 mb-1">Dual-Timescale Doctrine (★)</p>
                 <p className="text-sm text-gray-300">Histogram = The Moment. Markers = The Context. Same value means different things depending on instrument history.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
@@ -1820,7 +1820,7 @@ export default function ERDDeepDiveLesson() {
               </div>
               <div>
                 <p className="text-xs font-bold text-amber-400 mb-1">Data Window Exports</p>
-                <p className="text-sm text-gray-300">Effort (0\u2013100) \u00b7 Result (0\u2013100) \u00b7 ERD score \u00b7 Z-score \u00b7 Absorption event \u00b7 Vacuum event.</p>
+                <p className="text-sm text-gray-300">Effort (0–100) · Result (0–100) · ERD score · Z-score · Absorption event · Vacuum event.</p>
               </div>
             </div>
           </div>
@@ -1832,7 +1832,7 @@ export default function ERDDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-4">Reading ERD With Both Timescales</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read ERD through both lenses simultaneously \u2014 the raw histogram and the statistical marker context \u2014 or whether you\u2019re still treating it as a single-timescale tool.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read ERD through both lenses simultaneously — the raw histogram and the statistical marker context — or whether you’re still treating it as a single-timescale tool.</p>
           <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
@@ -1878,7 +1878,7 @@ export default function ERDDeepDiveLesson() {
               <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
                 <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
                 <div className="relative z-10 text-center">
-                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">\u00B1</div>
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">±</div>
                   <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
                   <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 10: Effort-Result Divergence</strong><br />at ATLAS Academy by Interakktive</p>
                   <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; Dual-Timescale Diagnostician &mdash;</p>

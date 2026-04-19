@@ -1779,7 +1779,7 @@ export default function DashboardReadingLesson() {
         <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
           <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 10 &middot; Lesson 11</p></motion.div>
           <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">Reading an ATLAS<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Dashboard</span></motion.h1>
-          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">The synthesis lesson. You\u2019ve learned each indicator. Now learn to read all of them at once \u2014 as a disciplined cascade, not a chorus.</motion.p>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">The synthesis lesson. You’ve learned each indicator. Now learn to read all of them at once — as a disciplined cascade, not a chorus.</motion.p>
           <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5"><span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span><div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" /></motion.div>
         </motion.div>
       </section>
@@ -1790,7 +1790,7 @@ export default function DashboardReadingLesson() {
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">The Dashboard Is a Pipeline, Not a Panel.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">Across ten lessons, you\u2019ve met each ATLAS indicator individually. You know what MSI measures. You know what MPR detects. You know how MER constructs its geometric efficiency score. Individually, you can explain them. Together, they still present a problem: <strong className="text-white">how do you actually READ them all at once, in real time, without getting confused?</strong></p>
+            <p className="text-gray-400 leading-relaxed mb-4">Across ten lessons, you’ve met each ATLAS indicator individually. You know what MSI measures. You know what MPR detects. You know how MER constructs its geometric efficiency score. Individually, you can explain them. Together, they still present a problem: <strong className="text-white">how do you actually READ them all at once, in real time, without getting confused?</strong></p>
             <p className="text-gray-400 leading-relaxed mb-4">Most retail traders solve this problem by eyeballing the chart and letting whichever indicator catches their attention first drive the decision. This produces inconsistent reads, confirmation bias, and trade selections that look different bar-by-bar for the same market conditions. The professional solution is disciplined: there is a <strong className="text-amber-400">specific order</strong> in which the dashboard is read, and that order encodes the causal structure of how markets work.</p>
             <p className="text-gray-400 leading-relaxed">This lesson teaches the reading discipline: the six-layer cascade, the precedence rules when layers disagree, the live-read scenarios that train pattern recognition, and the Read-Aloud technique that catches incomplete reads before they become bad trades. Master the cascade and a six-indicator dashboard becomes more coherent than a single MA cross. Fail to master it and six indicators is noise.</p>
           </div>
@@ -1806,11 +1806,11 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; The Cascade</p>
           <h2 className="text-2xl font-extrabold mb-4">Six Layers, One Direction</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The Diagnostic Cascade orders the ATLAS indicators by the causal question each one answers. <strong className="text-white">Context</strong> (Sessions+) \u2014 when? <strong className="text-white">Regime</strong> (MSI) \u2014 what kind of market? <strong className="text-white">Direction</strong> (MPR) \u2014 which way is pressure flowing? <strong className="text-white">Efficiency</strong> (MER) \u2014 is the path actually going anywhere? <strong className="text-white">Structure</strong> (MAE + MAZ) \u2014 where in the chart is this happening? <strong className="text-white">Event</strong> (ERD) \u2014 is this specific bar statistically notable? Each question depends on the answer to the prior one. Reading out of order is a category error.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The Diagnostic Cascade orders the ATLAS indicators by the causal question each one answers. <strong className="text-white">Context</strong> (Sessions+) — when? <strong className="text-white">Regime</strong> (MSI) — what kind of market? <strong className="text-white">Direction</strong> (MPR) — which way is pressure flowing? <strong className="text-white">Efficiency</strong> (MER) — is the path actually going anywhere? <strong className="text-white">Structure</strong> (MAE + MAZ) — where in the chart is this happening? <strong className="text-white">Event</strong> (ERD) — is this specific bar statistically notable? Each question depends on the answer to the prior one. Reading out of order is a category error.</p>
           <CascadePipelineAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Causal Order Isn&apos;t Arbitrary</p>
-            <p className="text-sm text-gray-400">Context is first because it determines whether a setup is worth trading at all \u2014 no license, no trade, regardless of what\u2019s downstream. Regime is second because it conditions how every subsequent signal should be interpreted. Direction is third because pressure without context is noise. Efficiency is fourth because pressure without efficient travel doesn\u2019t produce P&L. Structure is fifth because you need to know WHERE the cascade-resolved setup is happening. Event is last because it\u2019s the mechanical trigger \u2014 the specific bar when everything upstream has already confirmed. Each layer needs its predecessors. Skip one and the read is broken.</p>
+            <p className="text-sm text-gray-400">Context is first because it determines whether a setup is worth trading at all — no license, no trade, regardless of what’s downstream. Regime is second because it conditions how every subsequent signal should be interpreted. Direction is third because pressure without context is noise. Efficiency is fourth because pressure without efficient travel doesn’t produce P&L. Structure is fifth because you need to know WHERE the cascade-resolved setup is happening. Event is last because it’s the mechanical trigger — the specific bar when everything upstream has already confirmed. Each layer needs its predecessors. Skip one and the read is broken.</p>
           </div>
         </motion.div>
       </section>
@@ -1819,12 +1819,12 @@ export default function DashboardReadingLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; Layer 1: Context</p>
-          <h2 className="text-2xl font-extrabold mb-4">Sessions+ \u2014 Setting the Window</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The first question every read must answer: <strong className="text-white">is now even a setup-worthy time?</strong> Sessions+ tells you which of the four major session windows is currently active. The LDN-NY overlap (8am\u201312pm ET) is the highest-efficiency window across most asset classes. Asia overnight is typically range-biased with lower follow-through. NY close drift is susceptible to positioning fades. If the session doesn\u2019t support follow-through, the most beautiful signal on MPR/MER/ERD is still a coin flip.</p>
+          <h2 className="text-2xl font-extrabold mb-4">Sessions+ — Setting the Window</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The first question every read must answer: <strong className="text-white">is now even a setup-worthy time?</strong> Sessions+ tells you which of the four major session windows is currently active. The LDN-NY overlap (8am–12pm ET) is the highest-efficiency window across most asset classes. Asia overnight is typically range-biased with lower follow-through. NY close drift is susceptible to positioning fades. If the session doesn’t support follow-through, the most beautiful signal on MPR/MER/ERD is still a coin flip.</p>
           <ContextReaderAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The &ldquo;No License&rdquo; Rule</p>
-            <p className="text-sm text-gray-400">Session context is a prerequisite, not a suggestion. An A+ setup during Asia lunch is still a B- trade because the session doesn\u2019t sponsor the move. An even mediocre setup at LDN open is still A- because the session machinery is actively pushing price. Many traders overlook this because they can\u2019t see the session effect on the chart directly \u2014 it\u2019s in the footprint of flows, not the candles. Sessions+ surfaces it explicitly: no license, no trade, regardless of what downstream layers say.</p>
+            <p className="text-sm text-gray-400">Session context is a prerequisite, not a suggestion. An A+ setup during Asia lunch is still a B- trade because the session doesn’t sponsor the move. An even mediocre setup at LDN open is still A- because the session machinery is actively pushing price. Many traders overlook this because they can’t see the session effect on the chart directly — it’s in the footprint of flows, not the candles. Sessions+ surfaces it explicitly: no license, no trade, regardless of what downstream layers say.</p>
           </div>
         </motion.div>
       </section>
@@ -1833,12 +1833,12 @@ export default function DashboardReadingLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; Layer 2: Regime</p>
-          <h2 className="text-2xl font-extrabold mb-4">MSI \u2014 What Market Are We In?</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">With the session window established, the next question: <strong className="text-white">what kind of market behavior dominates right now?</strong> MSI classifies into five regimes: Compression (range-bound, pressure building), Expansion (clean trend), Exhaustion (stretched, reversion-prone), Redistribution (smart money rotating), Dislocation (panic / illiquid). This is the CRITICAL layer because it sets the interpretation frame for everything downstream \u2014 the same MPR or ERD reading means completely different things in different regimes.</p>
+          <h2 className="text-2xl font-extrabold mb-4">MSI — What Market Are We In?</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">With the session window established, the next question: <strong className="text-white">what kind of market behavior dominates right now?</strong> MSI classifies into five regimes: Compression (range-bound, pressure building), Expansion (clean trend), Exhaustion (stretched, reversion-prone), Redistribution (smart money rotating), Dislocation (panic / illiquid). This is the CRITICAL layer because it sets the interpretation frame for everything downstream — the same MPR or ERD reading means completely different things in different regimes.</p>
           <RegimeReaderAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Regime Licenses Behavior</p>
-            <p className="text-sm text-gray-400">Think of MSI as granting specific permissions. Expansion licenses trend-following. Compression licenses pre-positioning but not trend entries. Exhaustion licenses mean-reversion and trimming trend exposure. Redistribution is a warning \u2014 accept weaker signals, watch for the new regime to emerge. Dislocation licenses almost nothing but risk management. The regime tells you which PLAYBOOK to run, not just which indicator to favor. This is the single biggest leap in sophistication once you internalize it.</p>
+            <p className="text-sm text-gray-400">Think of MSI as granting specific permissions. Expansion licenses trend-following. Compression licenses pre-positioning but not trend entries. Exhaustion licenses mean-reversion and trimming trend exposure. Redistribution is a warning — accept weaker signals, watch for the new regime to emerge. Dislocation licenses almost nothing but risk management. The regime tells you which PLAYBOOK to run, not just which indicator to favor. This is the single biggest leap in sophistication once you internalize it.</p>
           </div>
         </motion.div>
       </section>
@@ -1847,12 +1847,12 @@ export default function DashboardReadingLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Layer 3: Direction</p>
-          <h2 className="text-2xl font-extrabold mb-4">MPR \u2014 Which Way Is Pressure Flowing?</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">With session and regime set, now you can ask about direction. MPR classifies pressure into Bullish Release, Bearish Release, Bull Trap, Bear Trap via its 4-state classifier and persistence contract. The key insight: <strong className="text-amber-400">MPR\u2019s reading only carries its usual meaning when the MSI regime supports it.</strong> Bullish Release in Expansion = trend conviction. Bullish Release in Exhaustion = terminal thrust. Same MPR state, opposite interpretations, because the regime above it conditioned how it reads.</p>
+          <h2 className="text-2xl font-extrabold mb-4">MPR — Which Way Is Pressure Flowing?</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">With session and regime set, now you can ask about direction. MPR classifies pressure into Bullish Release, Bearish Release, Bull Trap, Bear Trap via its 4-state classifier and persistence contract. The key insight: <strong className="text-amber-400">MPR’s reading only carries its usual meaning when the MSI regime supports it.</strong> Bullish Release in Expansion = trend conviction. Bullish Release in Exhaustion = terminal thrust. Same MPR state, opposite interpretations, because the regime above it conditioned how it reads.</p>
           <DirectionReaderAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; MPR Is NOT the Truth Layer</p>
-            <p className="text-sm text-gray-400">A common mistake: reading MPR first and letting it define the thesis. This treats MPR as the source of truth and makes every downstream layer a confirmation-hunting exercise. The cascade says MPR is the DIRECTION layer, conditioned by the upstream regime. It tells you where pressure is pointing; it does NOT tell you whether to follow that pressure. Regime decides whether to follow; MPR just points. Respect the distinction and you\u2019ll avoid most of the classic dashboard-reading pitfalls.</p>
+            <p className="text-sm text-gray-400">A common mistake: reading MPR first and letting it define the thesis. This treats MPR as the source of truth and makes every downstream layer a confirmation-hunting exercise. The cascade says MPR is the DIRECTION layer, conditioned by the upstream regime. It tells you where pressure is pointing; it does NOT tell you whether to follow that pressure. Regime decides whether to follow; MPR just points. Respect the distinction and you’ll avoid most of the classic dashboard-reading pitfalls.</p>
           </div>
         </motion.div>
       </section>
@@ -1861,12 +1861,12 @@ export default function DashboardReadingLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Layer 4: Efficiency</p>
-          <h2 className="text-2xl font-extrabold mb-4">MER \u2014 Is the Path Actually Going Anywhere?</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">After direction comes efficiency. MPR can point powerfully one way, but if MER is low, that pressure is producing zigzag chop, not net travel. <strong className="text-white">MER is the gate layer</strong> \u2014 the final upstream filter before the structural and event layers. High MER (\u2265 70) licenses trend-follow. Low MER (&lt; 30) vetoes trend but LICENSES mean-reversion (symmetric filter). Mid MER (30\u201370) is pre-trend state \u2014 stage entries, don\u2019t commit full size.</p>
+          <h2 className="text-2xl font-extrabold mb-4">MER — Is the Path Actually Going Anywhere?</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">After direction comes efficiency. MPR can point powerfully one way, but if MER is low, that pressure is producing zigzag chop, not net travel. <strong className="text-white">MER is the gate layer</strong> — the final upstream filter before the structural and event layers. High MER (≥ 70) licenses trend-follow. Low MER (&lt; 30) vetoes trend but LICENSES mean-reversion (symmetric filter). Mid MER (30–70) is pre-trend state — stage entries, don’t commit full size.</p>
           <EfficiencyReaderAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; MER Is the Tiebreaker</p>
-            <p className="text-sm text-gray-400">When MSI and MPR conflict (common during regime transitions), MER is the cleanest tiebreaker because it measures geometry directly rather than inferring from secondary signals. If MPR says release but MER says chop, the cascade says: pressure exists but is not converting to travel \u2014 whipsaw conditions. If MPR neutral but MER trending, the cascade says: travel is happening in a direction pressure hasn\u2019t registered yet \u2014 often the earliest signal of regime change. Whichever way the conflict runs, MER arbitrates.</p>
+            <p className="text-sm text-gray-400">When MSI and MPR conflict (common during regime transitions), MER is the cleanest tiebreaker because it measures geometry directly rather than inferring from secondary signals. If MPR says release but MER says chop, the cascade says: pressure exists but is not converting to travel — whipsaw conditions. If MPR neutral but MER trending, the cascade says: travel is happening in a direction pressure hasn’t registered yet — often the earliest signal of regime change. Whichever way the conflict runs, MER arbitrates.</p>
           </div>
         </motion.div>
       </section>
@@ -1875,12 +1875,12 @@ export default function DashboardReadingLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Layer 5: Structure</p>
-          <h2 className="text-2xl font-extrabold mb-4">MAE + MAZ \u2014 Where Are We?</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">With the first four layers confirming a coherent thesis, the structural question becomes actionable: <strong className="text-white">where, specifically, on the chart is this happening?</strong> MAE (Market Acceptance Envelope) gives you the dynamic bounds \u2014 upper and lower edges of accepted price action. MAZ (Market Acceptance Zones) gives you horizontal support/resistance levels built from prior acceptance. Structure tells you whether a cascade-licensed setup is happening at a breakout level (MAE touch), a range edge (MAZ), or in the middle of nowhere (low-probability).</p>
+          <h2 className="text-2xl font-extrabold mb-4">MAE + MAZ — Where Are We?</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">With the first four layers confirming a coherent thesis, the structural question becomes actionable: <strong className="text-white">where, specifically, on the chart is this happening?</strong> MAE (Market Acceptance Envelope) gives you the dynamic bounds — upper and lower edges of accepted price action. MAZ (Market Acceptance Zones) gives you horizontal support/resistance levels built from prior acceptance. Structure tells you whether a cascade-licensed setup is happening at a breakout level (MAE touch), a range edge (MAZ), or in the middle of nowhere (low-probability).</p>
           <StructureReaderAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Structure Is Placement, Not Permission</p>
-            <p className="text-sm text-gray-400">MAE/MAZ don\u2019t authorize trades on their own \u2014 they tell you whether your cascade-licensed thesis has a high-quality LOCATION for entry. A trend-continuation thesis near the upper MAE band is different from the same thesis in open air; a mean-rev thesis at a hard MAZ level is different from the same thesis mid-range. Structure is the precision layer that takes a &ldquo;GO&rdquo; verdict from upstream and turns it into a specific price level to act on.</p>
+            <p className="text-sm text-gray-400">MAE/MAZ don’t authorize trades on their own — they tell you whether your cascade-licensed thesis has a high-quality LOCATION for entry. A trend-continuation thesis near the upper MAE band is different from the same thesis in open air; a mean-rev thesis at a hard MAZ level is different from the same thesis mid-range. Structure is the precision layer that takes a &ldquo;GO&rdquo; verdict from upstream and turns it into a specific price level to act on.</p>
           </div>
         </motion.div>
       </section>
@@ -1889,12 +1889,12 @@ export default function DashboardReadingLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Layer 6: Event</p>
-          <h2 className="text-2xl font-extrabold mb-4">ERD \u2014 Pull the Trigger</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The final layer: the specific bar on which your cascade-licensed, structure-located thesis gets mechanically triggered. ERD\u2019s event markers fire on roughly 5% of bars \u2014 the bars where effort-vs-result is statistically unusual for the instrument\u2019s own history. When that 5% event coincides with an already-fully-cascaded setup, you have the entry bar. When an ERD event fires without upstream confluence, it\u2019s ambient noise \u2014 ignore.</p>
+          <h2 className="text-2xl font-extrabold mb-4">ERD — Pull the Trigger</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The final layer: the specific bar on which your cascade-licensed, structure-located thesis gets mechanically triggered. ERD’s event markers fire on roughly 5% of bars — the bars where effort-vs-result is statistically unusual for the instrument’s own history. When that 5% event coincides with an already-fully-cascaded setup, you have the entry bar. When an ERD event fires without upstream confluence, it’s ambient noise — ignore.</p>
           <EventReaderAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The 5% That Matters</p>
-            <p className="text-sm text-gray-400">ERD deliberately filters to statistically unusual bars. Without the cascade, these markers fire frequently enough to be confusing. With the cascade, they become exquisitely precise \u2014 they\u2019re the specific bar when the upstream five layers have already resolved the question of whether to trade, and ERD is simply saying &ldquo;this is the bar.&rdquo; It\u2019s the difference between noise (ERD alone) and signal (ERD at the end of a resolved cascade).</p>
+            <p className="text-sm text-gray-400">ERD deliberately filters to statistically unusual bars. Without the cascade, these markers fire frequently enough to be confusing. With the cascade, they become exquisitely precise — they’re the specific bar when the upstream five layers have already resolved the question of whether to trade, and ERD is simply saying &ldquo;this is the bar.&rdquo; It’s the difference between noise (ERD alone) and signal (ERD at the end of a resolved cascade).</p>
           </div>
         </motion.div>
       </section>
@@ -1904,18 +1904,18 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; The Diagnostic Cascade Doctrine &#11088;</p>
           <h2 className="text-2xl font-extrabold mb-4">Earlier Layers Condition Later Layers</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">This is the synthesizing insight of Level 10 \u2014 the concept that makes the dashboard work as a coherent tool rather than a parade of disconnected indicators. <strong className="text-white">Every ATLAS indicator answers a different question, and the questions have a causal order.</strong> You cannot correctly interpret MPR without knowing which MSI regime conditioned it. You cannot correctly interpret an ERD event without knowing whether MER is licensing it. The dashboard isn\u2019t six independent signals; it\u2019s a six-stage filter chain where the upstream stages condition the meaning of the downstream stages.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">This is the synthesizing insight of Level 10 — the concept that makes the dashboard work as a coherent tool rather than a parade of disconnected indicators. <strong className="text-white">Every ATLAS indicator answers a different question, and the questions have a causal order.</strong> You cannot correctly interpret MPR without knowing which MSI regime conditioned it. You cannot correctly interpret an ERD event without knowing whether MER is licensing it. The dashboard isn’t six independent signals; it’s a six-stage filter chain where the upstream stages condition the meaning of the downstream stages.</p>
           <CascadeDoctrineAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#127960; The Diagnostic Cascade Doctrine</p>
-            <p className="text-sm text-gray-400 leading-relaxed">The dashboard reads as a disciplined pipeline: Context \u2192 Regime \u2192 Direction \u2192 Efficiency \u2192 Structure \u2192 Event. Each layer <strong className="text-white">conditions</strong> how the next is interpreted. Same-value readings in later layers carry fundamentally different meanings depending on the upstream state. The doctrine asserts that reading the dashboard correctly is not about which indicators you favor, how many confirm, or which lights up brightest \u2014 it\u2019s about honoring the causal order of the questions each layer asks and interpreting each layer IN THE CONTEXT of everything upstream. Mastery of this doctrine is what separates dashboard-using traders from dashboard-reading traders.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The dashboard reads as a disciplined pipeline: Context → Regime → Direction → Efficiency → Structure → Event. Each layer <strong className="text-white">conditions</strong> how the next is interpreted. Same-value readings in later layers carry fundamentally different meanings depending on the upstream state. The doctrine asserts that reading the dashboard correctly is not about which indicators you favor, how many confirm, or which lights up brightest — it’s about honoring the causal order of the questions each layer asks and interpreting each layer IN THE CONTEXT of everything upstream. Mastery of this doctrine is what separates dashboard-using traders from dashboard-reading traders.</p>
           </div>
           <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
             <p className="text-xs font-bold text-white mb-2">Three portable applications:</p>
             <ul className="text-sm text-gray-400 space-y-2 leading-relaxed">
               <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Reading order eliminates confirmation bias.</strong> When you scan the dashboard in a fixed top-down order every time, you stop cherry-picking the indicator that happens to agree with your pre-existing bias. The cascade forces you to consider upstream layers FIRST, which means the regime informs the direction read rather than the direction read confirming a pre-formed opinion.</li>
-              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Cascade resolution replaces voting.</strong> When layers disagree, the cascade specifies which wins based on upstream/downstream precedence. This is mechanical and objective, not taste-based. MER wins over MPR when they conflict on trend-follow setups (geometry beats pressure). MSI wins over MPR when regimes and directions disagree (context beats signal). Context wins over everything when the session is wrong. No vote, no hand-wave \u2014 the doctrine specifies who wins.</li>
-              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">The cascade resolution moment IS the entry moment.</strong> In many setups, the precise bar when the final downstream layer confirms what upstream was already suggesting is optimally 1-3 bars ahead of traditional pattern-based entries. Professionals trained on the cascade learn to fire on the resolution moment rather than waiting for price confirmation \u2014 because the cascade has already confirmed.</li>
+              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Cascade resolution replaces voting.</strong> When layers disagree, the cascade specifies which wins based on upstream/downstream precedence. This is mechanical and objective, not taste-based. MER wins over MPR when they conflict on trend-follow setups (geometry beats pressure). MSI wins over MPR when regimes and directions disagree (context beats signal). Context wins over everything when the session is wrong. No vote, no hand-wave — the doctrine specifies who wins.</li>
+              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">The cascade resolution moment IS the entry moment.</strong> In many setups, the precise bar when the final downstream layer confirms what upstream was already suggesting is optimally 1-3 bars ahead of traditional pattern-based entries. Professionals trained on the cascade learn to fire on the resolution moment rather than waiting for price confirmation — because the cascade has already confirmed.</li>
             </ul>
           </div>
         </motion.div>
@@ -1926,11 +1926,11 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Live Read #1</p>
           <h2 className="text-2xl font-extrabold mb-4">Clean Trend Setup (Six-for-Six)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The rarest and cleanest setup: every cascade layer confirms the same thesis. LDN session (prime window) + Expansion regime (trend licensed) + Bullish Release (upward conviction) + MER 76 (clean efficiency) + Upper MAE touch (structural breakout level) + Vacuum ERD marker (statistical confirmation). Watch the animation for the cascading reveal \u2014 this is what professionals are scanning for. Maybe 5-10% of bars on any given instrument.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The rarest and cleanest setup: every cascade layer confirms the same thesis. LDN session (prime window) + Expansion regime (trend licensed) + Bullish Release (upward conviction) + MER 76 (clean efficiency) + Upper MAE touch (structural breakout level) + Vacuum ERD marker (statistical confirmation). Watch the animation for the cascading reveal — this is what professionals are scanning for. Maybe 5-10% of bars on any given instrument.</p>
           <LiveReadTrendAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Recognize the Feel</p>
-            <p className="text-sm text-gray-400">When six-for-six fires, there\u2019s a specific feel to the dashboard: everything is glowing in the same semantic family. No yellow caution boxes, no grey neutrals, no red conflicts. Your Read-Aloud sentence comes out smoothly because every clause agrees with the previous one. This feel is what you\u2019re training the pattern recognition for. When it\u2019s present, size appropriately. When it\u2019s NOT present, resist the urge to force trades \u2014 wait for the next six-for-six setup rather than settling for four-for-six and hoping.</p>
+            <p className="text-sm text-gray-400">When six-for-six fires, there’s a specific feel to the dashboard: everything is glowing in the same semantic family. No yellow caution boxes, no grey neutrals, no red conflicts. Your Read-Aloud sentence comes out smoothly because every clause agrees with the previous one. This feel is what you’re training the pattern recognition for. When it’s present, size appropriately. When it’s NOT present, resist the urge to force trades — wait for the next six-for-six setup rather than settling for four-for-six and hoping.</p>
           </div>
         </motion.div>
       </section>
@@ -1940,11 +1940,11 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; Live Read #2</p>
           <h2 className="text-2xl font-extrabold mb-4">Chop/Range Setup (Mean-Rev Licensed)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">A different kind of perfect setup: the dashboard cleanly licensing mean-reversion. Asia session + Compression regime + Neutral MPR + MER 18 (trend VETOED, mean-rev LICENSED) + Price at MAZ low (the specific level to fade from) + Absorption ERD marker (buyers are defending this level actively). Notice how this setup has LOW MER and several yellow caution boxes \u2014 but the caution boxes are exactly what makes it a mean-rev setup rather than a trend setup.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">A different kind of perfect setup: the dashboard cleanly licensing mean-reversion. Asia session + Compression regime + Neutral MPR + MER 18 (trend VETOED, mean-rev LICENSED) + Price at MAZ low (the specific level to fade from) + Absorption ERD marker (buyers are defending this level actively). Notice how this setup has LOW MER and several yellow caution boxes — but the caution boxes are exactly what makes it a mean-rev setup rather than a trend setup.</p>
           <LiveReadChopAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Low MER Doesn&apos;t Mean &ldquo;Don&apos;t Trade&rdquo;</p>
-            <p className="text-sm text-gray-400">The single most common dashboard mistake is treating MER &lt; 30 as a global veto. It\u2019s not \u2014 it\u2019s the symmetric filter from 10.10. Low MER vetoes TREND but LICENSES MEAN-REV. The cascade correctly distinguishes: when everything upstream is consistent with range behavior and MER confirms the range, you have a licensed mean-rev setup. When everything upstream suggests trend and MER is low, you have a failed trend attempt (stand aside). The difference is whether the upstream and MER agree.</p>
+            <p className="text-sm text-gray-400">The single most common dashboard mistake is treating MER &lt; 30 as a global veto. It’s not — it’s the symmetric filter from 10.10. Low MER vetoes TREND but LICENSES MEAN-REV. The cascade correctly distinguishes: when everything upstream is consistent with range behavior and MER confirms the range, you have a licensed mean-rev setup. When everything upstream suggests trend and MER is low, you have a failed trend attempt (stand aside). The difference is whether the upstream and MER agree.</p>
           </div>
         </motion.div>
       </section>
@@ -1954,11 +1954,11 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; Live Read #3</p>
           <h2 className="text-2xl font-extrabold mb-4">Transition / Trap Setup (Fade the Bait)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The setup you need to recognize to protect capital. Surface-level MPR reads bullish, and non-cascade traders take that at face value. The cascade reveals: NY late session (fade risk rising) + Exhaustion regime (stretched) + MPR surface-bull (the bait) + MER 42 and FALLING (efficiency collapsing) + Price above upper MAE (over-extended) + Absorption ERD marker (hidden sellers). The upstream layers are saying trap; MPR is saying bull. The cascade resolves: fade, don\u2019t follow.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The setup you need to recognize to protect capital. Surface-level MPR reads bullish, and non-cascade traders take that at face value. The cascade reveals: NY late session (fade risk rising) + Exhaustion regime (stretched) + MPR surface-bull (the bait) + MER 42 and FALLING (efficiency collapsing) + Price above upper MAE (over-extended) + Absorption ERD marker (hidden sellers). The upstream layers are saying trap; MPR is saying bull. The cascade resolves: fade, don’t follow.</p>
           <LiveReadTransitionAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; MPR Is the Bait Layer in Traps</p>
-            <p className="text-sm text-gray-400">Trap patterns have a specific signature: one layer \u2014 usually MPR \u2014 looks clearly favorable while the upstream and several downstream layers all disagree. Without the cascade, the MPR signal is compelling and easy to take. With the cascade, the MPR signal is obviously isolated \u2014 which is the EXACT thing that makes it a trap. Hidden sellers (or buyers, in a bear trap) are creating the MPR reading specifically to lure retail into the wrong direction. Trained cascade readers learn to flip these setups into fade trades.</p>
+            <p className="text-sm text-gray-400">Trap patterns have a specific signature: one layer — usually MPR — looks clearly favorable while the upstream and several downstream layers all disagree. Without the cascade, the MPR signal is compelling and easy to take. With the cascade, the MPR signal is obviously isolated — which is the EXACT thing that makes it a trap. Hidden sellers (or buyers, in a bear trap) are creating the MPR reading specifically to lure retail into the wrong direction. Trained cascade readers learn to flip these setups into fade trades.</p>
           </div>
         </motion.div>
       </section>
@@ -1968,11 +1968,11 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; The Read-Aloud Technique</p>
           <h2 className="text-2xl font-extrabold mb-4">If You Can Say It, You&apos;ve Read It</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The simplest professional discipline available: <strong className="text-white">narrate the dashboard state aloud as a complete sentence before acting on it.</strong> &ldquo;London open in expansion, bullish release, clean MER at 76, upper envelope touch with vacuum event \u2014 trend continuation licensed, full size.&rdquo; If you can\u2019t build the sentence, your read has gaps you haven\u2019t noticed. If the sentence comes out halting or contradictory, the setup has conflicts you\u2019re ignoring. The act of verbalizing catches incomplete reads that silent reading always misses.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The simplest professional discipline available: <strong className="text-white">narrate the dashboard state aloud as a complete sentence before acting on it.</strong> &ldquo;London open in expansion, bullish release, clean MER at 76, upper envelope touch with vacuum event — trend continuation licensed, full size.&rdquo; If you can’t build the sentence, your read has gaps you haven’t noticed. If the sentence comes out halting or contradictory, the setup has conflicts you’re ignoring. The act of verbalizing catches incomplete reads that silent reading always misses.</p>
           <ReadAloudAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Sentence Structure</p>
-            <p className="text-sm text-gray-400">The template: <em>&ldquo;[Session], [Regime], [MPR direction], [MER reading], [Structure context], [Event] \u2014 [Thesis], [Action].&rdquo;</em> The final clause is the trade thesis: what you intend to do and why. If the final clause doesn\u2019t flow naturally from the first six, something upstream is incoherent. This sentence structure works because it mirrors the cascade order. Every sentence built this way is automatically in cascade order, automatically catches missing layers, and automatically surfaces conflicts between clauses. It\u2019s the cascade discipline made linguistic.</p>
+            <p className="text-sm text-gray-400">The template: <em>&ldquo;[Session], [Regime], [MPR direction], [MER reading], [Structure context], [Event] — [Thesis], [Action].&rdquo;</em> The final clause is the trade thesis: what you intend to do and why. If the final clause doesn’t flow naturally from the first six, something upstream is incoherent. This sentence structure works because it mirrors the cascade order. Every sentence built this way is automatically in cascade order, automatically catches missing layers, and automatically surfaces conflicts between clauses. It’s the cascade discipline made linguistic.</p>
           </div>
         </motion.div>
       </section>
@@ -1982,11 +1982,11 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Confluence Resolution</p>
           <h2 className="text-2xl font-extrabold mb-4">When Layers Disagree, Who Wins?</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Layers will disagree \u2014 often. The cascade doctrine specifies who wins and why, based on upstream/downstream precedence rather than voting. <strong className="text-white">MER wins over MPR</strong> on trend-follow conflicts \u2014 geometry beats pressure. <strong className="text-white">MSI wins over single-bar ERD</strong> events \u2014 regime beats bar. <strong className="text-white">Context wins over everything</strong> when the session is wrong \u2014 no license, no trade. <strong className="text-white">MER wins over ERD events</strong> if the efficient soil isn\u2019t there \u2014 events need context to be meaningful. The rules are mechanical, not intuitive.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Layers will disagree — often. The cascade doctrine specifies who wins and why, based on upstream/downstream precedence rather than voting. <strong className="text-white">MER wins over MPR</strong> on trend-follow conflicts — geometry beats pressure. <strong className="text-white">MSI wins over single-bar ERD</strong> events — regime beats bar. <strong className="text-white">Context wins over everything</strong> when the session is wrong — no license, no trade. <strong className="text-white">MER wins over ERD events</strong> if the efficient soil isn’t there — events need context to be meaningful. The rules are mechanical, not intuitive.</p>
           <ConfluenceResolutionAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Precedence, Not Taste</p>
-            <p className="text-sm text-gray-400">The power of mechanical resolution rules is that they remove taste from the equation. A trader who resolves conflicts by &ldquo;gut feel&rdquo; will resolve them differently depending on mood, recent P&L, and ego investment in the trade. A trader who applies cascade resolution rules will resolve them identically every time, regardless of internal state. This isn\u2019t about being robotic \u2014 it\u2019s about protecting yourself from your own emotional decision-making when the market is noisy and the signals are conflicting.</p>
+            <p className="text-sm text-gray-400">The power of mechanical resolution rules is that they remove taste from the equation. A trader who resolves conflicts by &ldquo;gut feel&rdquo; will resolve them differently depending on mood, recent P&L, and ego investment in the trade. A trader who applies cascade resolution rules will resolve them identically every time, regardless of internal state. This isn’t about being robotic — it’s about protecting yourself from your own emotional decision-making when the market is noisy and the signals are conflicting.</p>
           </div>
         </motion.div>
       </section>
@@ -1996,11 +1996,11 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; The Complete Dashboard</p>
           <h2 className="text-2xl font-extrabold mb-4">Six Panes, One Read</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Here\u2019s what your complete ATLAS dashboard looks like laid out together: Price with MAE envelope on top, a 3\u00d72 grid of MSI, MPR, MER, MAZ, ERD, and Sessions+ below. Scanning sweep demonstrates the reading order. Six instruments, one scan pattern, one Read-Aloud sentence, one decision. This is the endpoint of Level 10 \u2014 being able to look at this grid and produce a coherent trading thesis in under 30 seconds.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Here’s what your complete ATLAS dashboard looks like laid out together: Price with MAE envelope on top, a 3×2 grid of MSI, MPR, MER, MAZ, ERD, and Sessions+ below. Scanning sweep demonstrates the reading order. Six instruments, one scan pattern, one Read-Aloud sentence, one decision. This is the endpoint of Level 10 — being able to look at this grid and produce a coherent trading thesis in under 30 seconds.</p>
           <FullDashboardGridAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The 30-Second Read</p>
-            <p className="text-sm text-gray-400">A trained cascade reader can scan this complete dashboard and produce a full Read-Aloud sentence in under 30 seconds. That\u2019s the operational standard. If it takes you several minutes of staring, the cascade isn\u2019t internalized yet \u2014 practice on historical charts with the cascade order visible until the scan becomes muscle memory. The 30-second read is what enables you to cover multiple instruments, react to evolving conditions, and maintain discipline under the time pressure of live markets.</p>
+            <p className="text-sm text-gray-400">A trained cascade reader can scan this complete dashboard and produce a full Read-Aloud sentence in under 30 seconds. That’s the operational standard. If it takes you several minutes of staring, the cascade isn’t internalized yet — practice on historical charts with the cascade order visible until the scan becomes muscle memory. The 30-second read is what enables you to cover multiple instruments, react to evolving conditions, and maintain discipline under the time pressure of live markets.</p>
           </div>
         </motion.div>
       </section>
@@ -2010,7 +2010,7 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Common Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-4">Four Ways the Dashboard Gets Misread</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Each mistake stems from abandoning the cascade discipline \u2014 treating the dashboard as a set of parallel signals rather than a pipeline of conditional filters.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Each mistake stems from abandoning the cascade discipline — treating the dashboard as a set of parallel signals rather than a pipeline of conditional filters.</p>
           <div className="space-y-3">
             {mistakes.map((m, i) => (
               <div key={i} className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
@@ -2034,27 +2034,27 @@ export default function DashboardReadingLesson() {
             <div className="space-y-3">
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Reading Order (Always)</p>
-                <p className="text-sm text-gray-300">Context (Sessions+) \u2192 Regime (MSI) \u2192 Direction (MPR) \u2192 Efficiency (MER) \u2192 Structure (MAE + MAZ) \u2192 Event (ERD).</p>
+                <p className="text-sm text-gray-300">Context (Sessions+) → Regime (MSI) → Direction (MPR) → Efficiency (MER) → Structure (MAE + MAZ) → Event (ERD).</p>
               </div>
               <div className="pb-3 border-b border-white/5">
-                <p className="text-xs font-bold text-amber-400 mb-1">Core Doctrine (\u2605)</p>
+                <p className="text-xs font-bold text-amber-400 mb-1">Core Doctrine (★)</p>
                 <p className="text-sm text-gray-300">Earlier layers CONDITION later layers. Same-value readings carry different meanings depending on upstream state.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Resolution Rules</p>
-                <p className="text-sm text-gray-300">MER &gt; MPR on trend conflicts \u2022 MSI &gt; single-bar ERD \u2022 Context &gt; everything (no license = no trade) \u2022 MER &gt; ERD events (events need efficient soil).</p>
+                <p className="text-sm text-gray-300">MER &gt; MPR on trend conflicts • MSI &gt; single-bar ERD • Context &gt; everything (no license = no trade) • MER &gt; ERD events (events need efficient soil).</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Setup Archetypes</p>
-                <p className="text-sm text-gray-300">Six-for-six (clean trend) \u2022 Licensed mean-rev (upstream range + low MER) \u2022 Trap (surface-MPR vs. upstream warnings).</p>
+                <p className="text-sm text-gray-300">Six-for-six (clean trend) • Licensed mean-rev (upstream range + low MER) • Trap (surface-MPR vs. upstream warnings).</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Read-Aloud Template</p>
-                <p className="text-sm text-gray-300">&ldquo;[Session], [Regime], [Direction], [MER], [Structure], [Event] \u2014 [Thesis], [Action].&rdquo;</p>
+                <p className="text-sm text-gray-300">&ldquo;[Session], [Regime], [Direction], [MER], [Structure], [Event] — [Thesis], [Action].&rdquo;</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Operational Standard</p>
-                <p className="text-sm text-gray-300">Complete dashboard read in under 30 seconds. If slower, cascade isn\u2019t yet muscle memory \u2014 practice on historical data.</p>
+                <p className="text-sm text-gray-300">Complete dashboard read in under 30 seconds. If slower, cascade isn’t yet muscle memory — practice on historical data.</p>
               </div>
               <div>
                 <p className="text-xs font-bold text-amber-400 mb-1">Discipline Above All</p>
@@ -2070,7 +2070,7 @@ export default function DashboardReadingLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">17 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-4">Read the Dashboard</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read the dashboard as a disciplined cascade \u2014 honoring upstream precedence, resolving conflicts mechanically, and recognizing archetypal setups \u2014 or whether you\u2019re still voting on indicators.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read the dashboard as a disciplined cascade — honoring upstream precedence, resolving conflicts mechanically, and recognizing archetypal setups — or whether you’re still voting on indicators.</p>
           <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
@@ -2116,7 +2116,7 @@ export default function DashboardReadingLesson() {
               <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
                 <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
                 <div className="relative z-10 text-center">
-                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">\u25A4</div>
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">▤</div>
                   <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
                   <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 10: Reading an ATLAS Dashboard</strong><br />at ATLAS Academy by Interakktive</p>
                   <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; Dashboard Tactician &mdash;</p>

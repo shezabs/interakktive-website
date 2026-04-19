@@ -2138,13 +2138,13 @@ export default function StackingFreeIndicatorsLesson() {
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">Indicators Are Lonely Alone.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">One indicator is a filter. Two indicators on different axes is a sniper scope. Three indicators on orthogonal axes is precision. This is not metaphor \u2014 it\u2019s the literal consequence of combinatorial probability when you stack diagnostic filters that measure different dimensions of market state.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">10.11 taught you how to READ the dashboard as a cascade. This lesson teaches you how to COMBINE the indicators into concrete, named patterns you can recognize and trade. Seven patterns, each built from a 2-3 indicator orthogonal stack, each with a specific market-state signature, each with a clear trade bias. By the end, you\u2019ll have a starter playbook you can actually run \u2014 not just a theoretical understanding of synthesis.</p>
-            <p className="text-gray-400 leading-relaxed">The deeper insight: <strong className="text-amber-400">the edge doesn\u2019t come from having more indicators; it comes from having the RIGHT indicators in the RIGHT combinations.</strong> A single well-chosen pair on orthogonal axes outperforms a panel of twelve redundant oscillators. This lesson gives you the math for why, the patterns for how, and the disciplines for when.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">One indicator is a filter. Two indicators on different axes is a sniper scope. Three indicators on orthogonal axes is precision. This is not metaphor — it’s the literal consequence of combinatorial probability when you stack diagnostic filters that measure different dimensions of market state.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">10.11 taught you how to READ the dashboard as a cascade. This lesson teaches you how to COMBINE the indicators into concrete, named patterns you can recognize and trade. Seven patterns, each built from a 2-3 indicator orthogonal stack, each with a specific market-state signature, each with a clear trade bias. By the end, you’ll have a starter playbook you can actually run — not just a theoretical understanding of synthesis.</p>
+            <p className="text-gray-400 leading-relaxed">The deeper insight: <strong className="text-amber-400">the edge doesn’t come from having more indicators; it comes from having the RIGHT indicators in the RIGHT combinations.</strong> A single well-chosen pair on orthogonal axes outperforms a panel of twelve redundant oscillators. This lesson gives you the math for why, the patterns for how, and the disciplines for when.</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#128270; THE STACKING AXIOM</p>
-            <p className="text-sm text-gray-400 leading-relaxed">The information value of two orthogonal diagnostic indicators is multiplicatively greater than their individual values \u2014 but only when they measure different dimensions of market state. Stacking redundant indicators produces theatrical confirmation, not edge.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The information value of two orthogonal diagnostic indicators is multiplicatively greater than their individual values — but only when they measure different dimensions of market state. Stacking redundant indicators produces theatrical confirmation, not edge.</p>
           </div>
         </motion.div>
       </section>
@@ -2154,11 +2154,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; The Combinatorial Edge &#11088;</p>
           <h2 className="text-2xl font-extrabold mb-4">Where Two Filters Become Rare</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Take a single diagnostic indicator. Suppose it licenses a setup in 25% of all bars. That\u2019s the base rate. The edge per fire is modest because one-in-four bars includes a lot of noise alongside signal. Now add a second indicator, on a different axis, that also licenses in 25% of bars. If they\u2019re approximately independent, their INTERSECTION licenses in only ~6% of bars \u2014 <strong className="text-white">multiplicatively tighter</strong>, not additively. That 6% window is where asymmetric edge lives, because the joint constraint excludes almost all noise states while still describing something common enough to trade.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Take a single diagnostic indicator. Suppose it licenses a setup in 25% of all bars. That’s the base rate. The edge per fire is modest because one-in-four bars includes a lot of noise alongside signal. Now add a second indicator, on a different axis, that also licenses in 25% of bars. If they’re approximately independent, their INTERSECTION licenses in only ~6% of bars — <strong className="text-white">multiplicatively tighter</strong>, not additively. That 6% window is where asymmetric edge lives, because the joint constraint excludes almost all noise states while still describing something common enough to trade.</p>
           <CombinatorialEdgeAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#127960; The Combinatorial Edge</p>
-            <p className="text-sm text-gray-400 leading-relaxed">When two approximately-independent diagnostic indicators both license a setup, the joint license window is P(A\u2229B) \u2248 P(A) \u00d7 P(B) \u2014 rare and high-conviction. Professional traders stack indicators not for reassurance but for mathematical tightening. Corollary: stacking breaks when the indicators aren\u2019t independent. Two momentum oscillators aren\u2019t independent \u2014 they mostly agree. Their intersection is barely smaller than either alone. Edge comes from ORTHOGONAL stacking, not indicator count.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">When two approximately-independent diagnostic indicators both license a setup, the joint license window is P(A∩B) ≈ P(A) × P(B) — rare and high-conviction. Professional traders stack indicators not for reassurance but for mathematical tightening. Corollary: stacking breaks when the indicators aren’t independent. Two momentum oscillators aren’t independent — they mostly agree. Their intersection is barely smaller than either alone. Edge comes from ORTHOGONAL stacking, not indicator count.</p>
           </div>
           <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
             <p className="text-xs font-bold text-white mb-2">Three portable applications:</p>
@@ -2176,7 +2176,7 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; Orthogonal vs Redundant</p>
           <h2 className="text-2xl font-extrabold mb-4">Different Questions, Not Same Question Twice</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The single most important distinction in indicator stacking: indicators on DIFFERENT axes multiply each other\u2019s filtering power; indicators on the SAME axis barely add anything. MSI (what kind of market?) and MER (is the path travelable?) are orthogonal \u2014 different questions, different dimensions. Stacking them produces real combinatorial tightening. RSI + Stochastic + CCI all answer the same question (is momentum extended?) \u2014 stacking them produces mostly the same license window as any one alone.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The single most important distinction in indicator stacking: indicators on DIFFERENT axes multiply each other’s filtering power; indicators on the SAME axis barely add anything. MSI (what kind of market?) and MER (is the path travelable?) are orthogonal — different questions, different dimensions. Stacking them produces real combinatorial tightening. RSI + Stochastic + CCI all answer the same question (is momentum extended?) — stacking them produces mostly the same license window as any one alone.</p>
           <OrthogonalStackingAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Dimensions Checklist</p>
@@ -2190,11 +2190,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; The 2-3 Sweet Spot</p>
           <h2 className="text-2xl font-extrabold mb-4">Why Four Indicators Is Usually Too Many</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Each orthogonal indicator you add MULTIPLIES the rarity of the license window. 1\u21922: 25%\u21926%. 2\u21923: 6%\u21921.5%. 3\u21924: 1.5%\u21920.4%. 4\u21925: 0.08%. Edge per fire keeps growing \u2014 but FREQUENCY of fires collapses exponentially. By the fourth indicator, you\u2019re so rarely seeing the setup that you miss trading opportunities. The sweet spot is 2-3 indicators.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Each orthogonal indicator you add MULTIPLIES the rarity of the license window. 1→2: 25%→6%. 2→3: 6%→1.5%. 3→4: 1.5%→0.4%. 4→5: 0.08%. Edge per fire keeps growing — but FREQUENCY of fires collapses exponentially. By the fourth indicator, you’re so rarely seeing the setup that you miss trading opportunities. The sweet spot is 2-3 indicators.</p>
           <SweetSpotAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Frequency-Edge Tradeoff</p>
-            <p className="text-sm text-gray-400">2 orthogonal indicators (6% window, moderate edge, frequent opportunities) is often optimal for active traders. 3 indicators (1.5%, higher edge, rarer opportunities) suits patient A+ traders. Beyond 3, you\u2019re over-fitting. Design stacks around 2-3 unless a specific pattern demands more.</p>
+            <p className="text-sm text-gray-400">2 orthogonal indicators (6% window, moderate edge, frequent opportunities) is often optimal for active traders. 3 indicators (1.5%, higher edge, rarer opportunities) suits patient A+ traders. Beyond 3, you’re over-fitting. Design stacks around 2-3 unless a specific pattern demands more.</p>
           </div>
         </motion.div>
       </section>
@@ -2204,11 +2204,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; The Pattern Library</p>
           <h2 className="text-2xl font-extrabold mb-4">Seven Named Patterns</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">With the theory locked in, here\u2019s the playbook. Seven named patterns, each built from a 2-3 indicator orthogonal stack, each with a specific market-state signature, each with a clear trade bias. This is a STARTER library, not exhaustive. Master these and you have the structural scaffolding for every major trading style.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">With the theory locked in, here’s the playbook. Seven named patterns, each built from a 2-3 indicator orthogonal stack, each with a specific market-state signature, each with a clear trade bias. This is a STARTER library, not exhaustive. Master these and you have the structural scaffolding for every major trading style.</p>
           <PatternLibraryAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; How to Read These Patterns</p>
-            <p className="text-sm text-gray-400">Each pattern has: (a) INDICATOR STACK \u2014 which orthogonal axes; (b) TRIGGER CONDITIONS \u2014 specific readings that together form the setup; (c) BIAS \u2014 direction to trade; (d) FAILURE MODE \u2014 what invalidates and forces exit. Don\u2019t just memorize \u2014 understand which dimensions they cover and why that combination produces edge. Patterns are mnemonics for combinatorial setups.</p>
+            <p className="text-sm text-gray-400">Each pattern has: (a) INDICATOR STACK — which orthogonal axes; (b) TRIGGER CONDITIONS — specific readings that together form the setup; (c) BIAS — direction to trade; (d) FAILURE MODE — what invalidates and forces exit. Don’t just memorize — understand which dimensions they cover and why that combination produces edge. Patterns are mnemonics for combinatorial setups.</p>
           </div>
         </motion.div>
       </section>
@@ -2222,7 +2222,7 @@ export default function StackingFreeIndicatorsLesson() {
           <Pattern1BreakoutLaunchAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Launch vs Fake Breakout</p>
-            <p className="text-sm text-gray-400">Fake breakouts differ from launches by exactly these three conditions. Fakes happen when one or two are present but not all three \u2014 wrong session (Asia lunch), grey MER (geometry unconfirmed), or still Compression regime. The stack catches the difference mechanically; on price alone they look identical.</p>
+            <p className="text-sm text-gray-400">Fake breakouts differ from launches by exactly these three conditions. Fakes happen when one or two are present but not all three — wrong session (Asia lunch), grey MER (geometry unconfirmed), or still Compression regime. The stack catches the difference mechanically; on price alone they look identical.</p>
           </div>
         </motion.div>
       </section>
@@ -2236,7 +2236,7 @@ export default function StackingFreeIndicatorsLesson() {
           <Pattern2CompressionCoilAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Trade the Setup, Not the Direction</p>
-            <p className="text-sm text-gray-400">Unusual among patterns because it doesn\u2019t specify direction \u2014 it specifies a STATE. The trade is "be positioned for the break" rather than buy/sell. Small directional entry based on MPR bias, scale up when MER confirms. Rewards patience: most of the time you\u2019re pre-positioned small, occasionally the break fires and you scale into the trend.</p>
+            <p className="text-sm text-gray-400">Unusual among patterns because it doesn’t specify direction — it specifies a STATE. The trade is "be positioned for the break" rather than buy/sell. Small directional entry based on MPR bias, scale up when MER confirms. Rewards patience: most of the time you’re pre-positioned small, occasionally the break fires and you scale into the trend.</p>
           </div>
         </motion.div>
       </section>
@@ -2246,11 +2246,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Pattern #3</p>
           <h2 className="text-2xl font-extrabold mb-4">The Clean Fade</h2>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> MSI (Exhaustion) + MER (falling from high) + MAE (upper band extension). <strong className="text-white">Bias:</strong> fade the extension, short. <strong className="text-white">Logic:</strong> trend exhausted + efficiency deteriorating + price extended beyond envelope = three orthogonal signals of terminal move. Catches reversals early \u2014 professionals fade INTO exhaustion rather than waiting for price confirmation.</p>
+          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> MSI (Exhaustion) + MER (falling from high) + MAE (upper band extension). <strong className="text-white">Bias:</strong> fade the extension, short. <strong className="text-white">Logic:</strong> trend exhausted + efficiency deteriorating + price extended beyond envelope = three orthogonal signals of terminal move. Catches reversals early — professionals fade INTO exhaustion rather than waiting for price confirmation.</p>
           <Pattern3CleanFadeAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Fade Regime, Not Price</p>
-            <p className="text-sm text-gray-400">Amateur: short because price looks high. Professional: short because REGIME exhausted + EFFICIENCY failed + STRUCTURE stretched \u2014 three orthogonal confirmations. Without these, price being "high" is indistinguishable from the middle of a strong trend with further to run. The pattern catches the difference mechanically.</p>
+            <p className="text-sm text-gray-400">Amateur: short because price looks high. Professional: short because REGIME exhausted + EFFICIENCY failed + STRUCTURE stretched — three orthogonal confirmations. Without these, price being "high" is indistinguishable from the middle of a strong trend with further to run. The pattern catches the difference mechanically.</p>
           </div>
         </motion.div>
       </section>
@@ -2260,11 +2260,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Pattern #4</p>
           <h2 className="text-2xl font-extrabold mb-4">The Absorption Reversal</h2>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> ERD (absorption marker) + MAZ (price at strong zone) + MER (low, mean-rev licensed). <strong className="text-white">Bias:</strong> mean-revert from the level. <strong className="text-white">Logic:</strong> absorption event (hidden defenders) at a structural acceptance level with low efficiency (mean-rev environment) = cleanest reversal signal in the suite. Three axes: event + structure + efficiency. Rare but exceptionally precise \u2014 "the level held" trade, mechanized.</p>
+          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> ERD (absorption marker) + MAZ (price at strong zone) + MER (low, mean-rev licensed). <strong className="text-white">Bias:</strong> mean-revert from the level. <strong className="text-white">Logic:</strong> absorption event (hidden defenders) at a structural acceptance level with low efficiency (mean-rev environment) = cleanest reversal signal in the suite. Three axes: event + structure + efficiency. Rare but exceptionally precise — "the level held" trade, mechanized.</p>
           <Pattern4AbsorptionReversalAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Absorption = Hidden Commitment</p>
-            <p className="text-sm text-gray-400">An ERD absorption marker at a MAZ level tells you someone with capital is actively defending, even though price alone doesn\u2019t show who. When MER confirms mean-rev environment, you have the cleanest reversal setup possible. Missing any one and the "level" can just as easily give way.</p>
+            <p className="text-sm text-gray-400">An ERD absorption marker at a MAZ level tells you someone with capital is actively defending, even though price alone doesn’t show who. When MER confirms mean-rev environment, you have the cleanest reversal setup possible. Missing any one and the "level" can just as easily give way.</p>
           </div>
         </motion.div>
       </section>
@@ -2274,7 +2274,7 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Pattern #5</p>
           <h2 className="text-2xl font-extrabold mb-4">The Session Handoff Trade</h2>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> Sessions+ (seam between sessions) + VSI (expansion) + MPR (release). <strong className="text-white">Bias:</strong> trend in direction of pressure. <strong className="text-white">Logic:</strong> session seams (LDN open, LDN-NY overlap start, NY open) are the highest-information moments \u2014 new participants with different positioning arrive. Seam + VSI expansion + MPR release = clean directional travel on fresh liquidity.</p>
+          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> Sessions+ (seam between sessions) + VSI (expansion) + MPR (release). <strong className="text-white">Bias:</strong> trend in direction of pressure. <strong className="text-white">Logic:</strong> session seams (LDN open, LDN-NY overlap start, NY open) are the highest-information moments — new participants with different positioning arrive. Seam + VSI expansion + MPR release = clean directional travel on fresh liquidity.</p>
           <Pattern5SessionHandoffAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Liquidity Handoff Principle Applied</p>
@@ -2302,11 +2302,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; Pattern #7</p>
           <h2 className="text-2xl font-extrabold mb-4">The Trap Fade</h2>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> MPR (trap state) + MSI (Exhaustion warning) + ERD (vacuum or absorption at fake extreme). <strong className="text-white">Bias:</strong> fade the false breakout. <strong className="text-white">Logic:</strong> MPR\u2019s trap state fires when pressure appears to release but is actually absorbed. MSI already warning (Exhaustion) + ERD at fake extreme (hidden distribution) = mechanically clean short on the trap.</p>
+          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Stack:</strong> MPR (trap state) + MSI (Exhaustion warning) + ERD (vacuum or absorption at fake extreme). <strong className="text-white">Bias:</strong> fade the false breakout. <strong className="text-white">Logic:</strong> MPR’s trap state fires when pressure appears to release but is actually absorbed. MSI already warning (Exhaustion) + ERD at fake extreme (hidden distribution) = mechanically clean short on the trap.</p>
           <Pattern7TrapFadeAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Highest-R:R Pattern in the Playbook</p>
-            <p className="text-sm text-gray-400">Trap fades typically offer excellent R:R \u2014 stop very tight (just above the fake high), target extends back into prior range. Requires full 3-indicator confluence. Amateurs fade every new high; professionals wait for MPR trap state + MSI warning + ERD confirmation. When it fires, arguably the cleanest reversal in the suite. When it doesn\u2019t, resist shorting tops on visual intuition.</p>
+            <p className="text-sm text-gray-400">Trap fades typically offer excellent R:R — stop very tight (just above the fake high), target extends back into prior range. Requires full 3-indicator confluence. Amateurs fade every new high; professionals wait for MPR trap state + MSI warning + ERD confirmation. When it fires, arguably the cleanest reversal in the suite. When it doesn’t, resist shorting tops on visual intuition.</p>
           </div>
         </motion.div>
       </section>
@@ -2316,11 +2316,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; Selecting Patterns</p>
           <h2 className="text-2xl font-extrabold mb-4">Pick Your Starter Playbook</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Seven patterns is the library. You don\u2019t trade all seven. Pattern mastery is muscle memory \u2014 the brain builds strong recognition on 2-3 patterns before it can build shallow recognition on seven. Trend traders: #1 Launch, #5 Handoff, #6 Surge. Mean-rev traders: #3 Fade, #4 Absorption, #7 Trap. Breakout hunters: #1 Launch, #2 Coil, #5 Handoff. Pick your lane, master it, then expand.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Seven patterns is the library. You don’t trade all seven. Pattern mastery is muscle memory — the brain builds strong recognition on 2-3 patterns before it can build shallow recognition on seven. Trend traders: #1 Launch, #5 Handoff, #6 Surge. Mean-rev traders: #3 Fade, #4 Absorption, #7 Trap. Breakout hunters: #1 Launch, #2 Coil, #5 Handoff. Pick your lane, master it, then expand.</p>
           <PatternSelectionAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Narrow Then Wide</p>
-            <p className="text-sm text-gray-400">The mistake is wanting to trade "whatever fires," scattering attention across seven patterns you haven\u2019t internalized. The discipline: pick three, trade them exclusively 30-90 days, reach the point where you recognize them in under 5 seconds without consciously checking conditions, THEN add a fourth. Master chess players apply the same approach \u2014 deep knowledge of a narrow repertoire beats shallow knowledge of everything.</p>
+            <p className="text-sm text-gray-400">The mistake is wanting to trade "whatever fires," scattering attention across seven patterns you haven’t internalized. The discipline: pick three, trade them exclusively 30-90 days, reach the point where you recognize them in under 5 seconds without consciously checking conditions, THEN add a fourth. Master chess players apply the same approach — deep knowledge of a narrow repertoire beats shallow knowledge of everything.</p>
           </div>
         </motion.div>
       </section>
@@ -2330,11 +2330,11 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Combining Patterns</p>
           <h2 className="text-2xl font-extrabold mb-4">When Multiple Patterns Fire at Once</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Sometimes two patterns activate simultaneously. If they agree (both bullish or both bearish), you have stronger-than-single conviction \u2014 size up slightly. If they disagree (one bullish + one bearish), you\u2019re in a CONFLICT ZONE, and the disciplined move is to stand aside until one clearly resolves. The overlap between conflicting patterns is the lowest-edge moment of the session because the market itself signals ambiguity.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Sometimes two patterns activate simultaneously. If they agree (both bullish or both bearish), you have stronger-than-single conviction — size up slightly. If they disagree (one bullish + one bearish), you’re in a CONFLICT ZONE, and the disciplined move is to stand aside until one clearly resolves. The overlap between conflicting patterns is the lowest-edge moment of the session because the market itself signals ambiguity.</p>
           <CombiningPatternsAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Conflict Is Information, Not a Trade</p>
-            <p className="text-sm text-gray-400">When two patterns with opposing biases activate, the market is telling you it\u2019s in transition. The professional response is to recognize and wait. Trying to pick which pattern "wins" in real time is guesswork. The edge comes from acting on clear setups, and conflict zones are definitionally unclear. Amateurs see "two signals \u2014 must be extra important." Professionals see "two signals \u2014 must wait for resolution."</p>
+            <p className="text-sm text-gray-400">When two patterns with opposing biases activate, the market is telling you it’s in transition. The professional response is to recognize and wait. Trying to pick which pattern "wins" in real time is guesswork. The edge comes from acting on clear setups, and conflict zones are definitionally unclear. Amateurs see "two signals \u2014 must be extra important." Professionals see "two signals \u2014 must wait for resolution."</p>
           </div>
         </motion.div>
       </section>
@@ -2367,17 +2367,17 @@ export default function StackingFreeIndicatorsLesson() {
           <h2 className="text-2xl font-extrabold mb-4">The Playbook in One Page</h2>
           <div className="p-5 rounded-2xl glass-card">
             <div className="space-y-3">
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Core Doctrine (\u2605)</p><p className="text-sm text-gray-300">P(A\u2229B) \u2248 P(A) \u00d7 P(B) \u2014 multiplicative tightening when stacking is orthogonal. Count axes, not indicators.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Core Doctrine (★)</p><p className="text-sm text-gray-300">P(A∩B) ≈ P(A) × P(B) — multiplicative tightening when stacking is orthogonal. Count axes, not indicators.</p></div>
               <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Sweet Spot</p><p className="text-sm text-gray-300">2-3 orthogonal indicators. Beyond 3, frequency dies faster than edge grows.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#1 Breakout Launch</p><p className="text-sm text-gray-300">Sessions+ overlap + MSI Expansion + MER &gt; 70 \u2192 trend entry, full size.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#2 Compression Coil</p><p className="text-sm text-gray-300">MSI Compression + MER grey + MPR building \u2192 pre-position for break, scale on confirmation.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#3 Clean Fade</p><p className="text-sm text-gray-300">MSI Exhaustion + MER falling + MAE upper extension \u2192 short the top.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#4 Absorption Reversal</p><p className="text-sm text-gray-300">ERD absorption + MAZ strong zone + MER low \u2192 mean-rev from level.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#5 Session Handoff</p><p className="text-sm text-gray-300">Sessions+ seam + VSI expansion + MPR release \u2192 trade direction of pressure.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#6 Participation Surge</p><p className="text-sm text-gray-300">MPG STRONG + MSI Expansion + MER &gt; 60 \u2192 institutional trend entry.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#7 Trap Fade</p><p className="text-sm text-gray-300">MPR trap + MSI Exhaustion + ERD at fake extreme \u2192 fade false breakout, tight stop.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#1 Breakout Launch</p><p className="text-sm text-gray-300">Sessions+ overlap + MSI Expansion + MER &gt; 70 → trend entry, full size.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#2 Compression Coil</p><p className="text-sm text-gray-300">MSI Compression + MER grey + MPR building → pre-position for break, scale on confirmation.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#3 Clean Fade</p><p className="text-sm text-gray-300">MSI Exhaustion + MER falling + MAE upper extension → short the top.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#4 Absorption Reversal</p><p className="text-sm text-gray-300">ERD absorption + MAZ strong zone + MER low → mean-rev from level.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#5 Session Handoff</p><p className="text-sm text-gray-300">Sessions+ seam + VSI expansion + MPR release → trade direction of pressure.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#6 Participation Surge</p><p className="text-sm text-gray-300">MPG STRONG + MSI Expansion + MER &gt; 60 → institutional trend entry.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">#7 Trap Fade</p><p className="text-sm text-gray-300">MPR trap + MSI Exhaustion + ERD at fake extreme → fade false breakout, tight stop.</p></div>
               <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Starter Set</p><p className="text-sm text-gray-300">Pick 2-3 patterns aligned to your style. Master before expanding.</p></div>
-              <div><p className="text-xs font-bold text-amber-400 mb-1">Conflict Rule</p><p className="text-sm text-gray-300">Opposing patterns firing together \u2192 stand aside until one resolves.</p></div>
+              <div><p className="text-xs font-bold text-amber-400 mb-1">Conflict Rule</p><p className="text-sm text-gray-300">Opposing patterns firing together → stand aside until one resolves.</p></div>
             </div>
           </div>
         </motion.div>
@@ -2388,7 +2388,7 @@ export default function StackingFreeIndicatorsLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">16 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-4">Stack Correctly</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you understand orthogonality, the sweet spot, pattern selection, and conflict resolution \u2014 or whether you\u2019re still counting indicators instead of axes.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you understand orthogonality, the sweet spot, pattern selection, and conflict resolution — or whether you’re still counting indicators instead of axes.</p>
           <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
@@ -2434,7 +2434,7 @@ export default function StackingFreeIndicatorsLesson() {
               <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
                 <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
                 <div className="relative z-10 text-center">
-                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">\u267B</div>
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">♻</div>
                   <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
                   <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 10: Stacking Free Indicators</strong><br />at ATLAS Academy by Interakktive</p>
                   <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; Combinatorial Strategist &mdash;</p>

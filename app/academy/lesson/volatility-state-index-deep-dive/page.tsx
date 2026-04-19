@@ -1453,8 +1453,8 @@ export default function VSIDeepDiveLesson() {
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">The Derivative Oscillator</p>
             <p className="text-gray-400 leading-relaxed mb-4">Every oscillator you&apos;ve met so far in the ATLAS suite measures something <em>about</em> the market. MAE measures where price is relative to an envelope. MSI classifies the current regime. MAZ shows acceptance zones. MPG measures participation. MPR measures pressure. All of them measure a <strong className="text-white">first-order property</strong> of the market.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">VSI breaks this pattern. It&apos;s an <strong className="text-amber-400">oscillator of an oscillator</strong> \u2014 it measures the <strong className="text-white">rate of change of ATR</strong>, not ATR itself. This makes it epistemically different from everything that came before it: it&apos;s a second-order signal, a derivative, a measurement of a measurement.</p>
-            <p className="text-gray-400 leading-relaxed">Why does this matter? Because traders systematically conflate <em>volatility</em> with <em>volatility change</em>. A market with ATR = 200 that&apos;s been steady for 50 bars is profoundly different from one where ATR is 200 after climbing from 50 twenty bars ago. The raw value is identical. The regime is opposite. VSI is the instrument that makes this distinction visible \u2014 and it&apos;s the only ATLAS oscillator that operates on this level of abstraction.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">VSI breaks this pattern. It&apos;s an <strong className="text-amber-400">oscillator of an oscillator</strong> — it measures the <strong className="text-white">rate of change of ATR</strong>, not ATR itself. This makes it epistemically different from everything that came before it: it&apos;s a second-order signal, a derivative, a measurement of a measurement.</p>
+            <p className="text-gray-400 leading-relaxed">Why does this matter? Because traders systematically conflate <em>volatility</em> with <em>volatility change</em>. A market with ATR = 200 that&apos;s been steady for 50 bars is profoundly different from one where ATR is 200 after climbing from 50 twenty bars ago. The raw value is identical. The regime is opposite. VSI is the instrument that makes this distinction visible — and it&apos;s the only ATLAS oscillator that operates on this level of abstraction.</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#128270; THE VSI AXIOM</p>
@@ -1482,7 +1482,7 @@ export default function VSIDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; Base Volatility</p>
           <h2 className="text-2xl font-extrabold mb-4">Raw ATR Is Just the Starting Point</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">VSI starts with <code className="text-white">ta.atr(14)</code> \u2014 the standard Average True Range. ATR measures volatility magnitude as a rolling average of true range over 14 bars. But raw ATR is too noisy for a momentum calculation: single-bar spikes, news events, and wick patterns create jagged fluctuations that would swamp any rate-of-change derivation. That&apos;s why VSI applies smoothing BEFORE computing momentum.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">VSI starts with <code className="text-white">ta.atr(14)</code> — the standard Average True Range. ATR measures volatility magnitude as a rolling average of true range over 14 bars. But raw ATR is too noisy for a momentum calculation: single-bar spikes, news events, and wick patterns create jagged fluctuations that would swamp any rate-of-change derivation. That&apos;s why VSI applies smoothing BEFORE computing momentum.</p>
           <BaseATRAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why ATR and Not Standard Deviation</p>
@@ -1510,11 +1510,11 @@ export default function VSIDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Volatility Momentum</p>
           <h2 className="text-2xl font-extrabold mb-4">The Core Calculation</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The defining calculation of VSI: <code className="text-white">volMomPct = (volSm - volSm[10]) / volSm[10] \u00d7 100</code>. This is a standard rate-of-change formula applied to the smoothed ATR series. A reading of +28% means smoothed ATR is 28% higher than it was 10 bars ago. A reading of -15% means smoothed ATR is 15% lower. Zero means no change.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The defining calculation of VSI: <code className="text-white">volMomPct = (volSm - volSm[10]) / volSm[10] × 100</code>. This is a standard rate-of-change formula applied to the smoothed ATR series. A reading of +28% means smoothed ATR is 28% higher than it was 10 bars ago. A reading of -15% means smoothed ATR is 15% lower. Zero means no change.</p>
           <VolMomentumAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Why Percent and Not Absolute Units</p>
-            <p className="text-sm text-gray-400">If VSI output absolute ATR change (e.g., &ldquo;+30 points&rdquo;), the value would be meaningless across assets \u2014 +30 on BTC is different from +30 on SPY. Percent-based output normalizes across any instrument: +28% means the same thing on BTC, EURUSD, gold, or SPY. This is the reason thresholds are also in percent (±5%), making the entire indicator asset-agnostic by construction.</p>
+            <p className="text-sm text-gray-400">If VSI output absolute ATR change (e.g., &ldquo;+30 points&rdquo;), the value would be meaningless across assets — +30 on BTC is different from +30 on SPY. Percent-based output normalizes across any instrument: +28% means the same thing on BTC, EURUSD, gold, or SPY. This is the reason thresholds are also in percent (±5%), making the entire indicator asset-agnostic by construction.</p>
           </div>
         </motion.div>
       </section>
@@ -1524,18 +1524,18 @@ export default function VSIDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; The Second-Derivative Principle &#11088;</p>
           <h2 className="text-2xl font-extrabold mb-4">Measuring a Measurement</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">This is the conceptual breakthrough that makes VSI unique in the ATLAS suite. Every other indicator you&apos;ve encountered measures a <strong className="text-white">first-order property</strong> of the market directly. Price location, regime classification, acceptance zones, participation, pressure \u2014 all are direct measurements of something the market is doing. VSI is different. It measures the <strong className="text-white">rate of change</strong> of another measurement. ATR is the underlying signal. VSI is the derivative of that signal.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">This is the conceptual breakthrough that makes VSI unique in the ATLAS suite. Every other indicator you&apos;ve encountered measures a <strong className="text-white">first-order property</strong> of the market directly. Price location, regime classification, acceptance zones, participation, pressure — all are direct measurements of something the market is doing. VSI is different. It measures the <strong className="text-white">rate of change</strong> of another measurement. ATR is the underlying signal. VSI is the derivative of that signal.</p>
           <SecondDerivativeAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#127960; The Second-Derivative Doctrine</p>
-            <p className="text-sm text-gray-400 leading-relaxed">Traders systematically confuse volatility with volatility change. &ldquo;High ATR = volatile market&rdquo; is true but incomplete. The trader who only checks ATR is reading a <strong className="text-white">snapshot</strong>; the trader who checks VSI is reading a <strong className="text-white">trajectory</strong>. For stop placement, position sizing, breakout anticipation, and compression detection, the trajectory matters more than the snapshot. Two markets with identical ATR can require opposite operational responses \u2014 one with decaying vol calls for tight stops and expanded position size (compression is building); one with expanding vol calls for wide stops and reduced size (volatility is running). The Second-Derivative Principle is the recognition that <em>what ATR does</em> matters more than <em>what ATR is</em>, and VSI is the instrument that makes this actionable.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Traders systematically confuse volatility with volatility change. &ldquo;High ATR = volatile market&rdquo; is true but incomplete. The trader who only checks ATR is reading a <strong className="text-white">snapshot</strong>; the trader who checks VSI is reading a <strong className="text-white">trajectory</strong>. For stop placement, position sizing, breakout anticipation, and compression detection, the trajectory matters more than the snapshot. Two markets with identical ATR can require opposite operational responses — one with decaying vol calls for tight stops and expanded position size (compression is building); one with expanding vol calls for wide stops and reduced size (volatility is running). The Second-Derivative Principle is the recognition that <em>what ATR does</em> matters more than <em>what ATR is</em>, and VSI is the instrument that makes this actionable.</p>
           </div>
           <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
             <p className="text-xs font-bold text-white mb-2">Three operational implications:</p>
             <ul className="text-sm text-gray-400 space-y-2 leading-relaxed">
               <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Stop placement becomes regime-aware.</strong> Instead of mechanically using &ldquo;2x ATR&rdquo; as your stop distance, scale it by VSI: 1.5x in DECAY (tight, because vol is contracting and noise is limited), 2.0x in TRANSITION (baseline), 3.0x in EXPANSION (because vol is running and normal noise will now be larger). This is a direct application of the second-derivative insight.</li>
               <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Breakout anticipation gains a leading edge.</strong> Markets that are compressing (sustained DECAY) are building energy for the next expansion. Watching VSI cross from DECAY through TRANSITION into EXPANSION is often a leading signal of the directional move that volatility expansion is setting up. The move itself comes from MPR or price; the <em>environment preparing</em> for the move comes from VSI.</li>
-              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Position sizing respects the trajectory, not just the level.</strong> Classical position sizing uses fixed-fractional risk and ATR-based stops. The Second-Derivative refinement: scale position size inversely to VSI. When vol is expanding, reduce position size even if your risk-per-trade percentage is the same \u2014 because the distribution of outcomes has fatter tails. This isn&apos;t captured by ATR alone; it requires VSI.</li>
+              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Position sizing respects the trajectory, not just the level.</strong> Classical position sizing uses fixed-fractional risk and ATR-based stops. The Second-Derivative refinement: scale position size inversely to VSI. When vol is expanding, reduce position size even if your risk-per-trade percentage is the same — because the distribution of outcomes has fatter tails. This isn&apos;t captured by ATR alone; it requires VSI.</li>
             </ul>
           </div>
         </motion.div>
@@ -1545,7 +1545,7 @@ export default function VSIDeepDiveLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Threshold Symmetry</p>
-          <h2 className="text-2xl font-extrabold mb-4">\u00b15% By Design</h2>
+          <h2 className="text-2xl font-extrabold mb-4">±5% By Design</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The EXPANSION and DECAY thresholds are symmetric at +5% and -5% by default. Same philosophy as MPR: symmetry is a constructional guarantee of no directional bias. VSI treats volatility expansion and volatility decay with perfect equivalence. If you observe more EXPANSION than DECAY on your chart, that&apos;s a property of the market, not of the indicator.</p>
           <ThresholdSymmetryAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
@@ -1564,7 +1564,7 @@ export default function VSIDeepDiveLesson() {
           <StabilityFilterAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; No Off-Axis Exemption Needed</p>
-            <p className="text-sm text-gray-400">Unlike MPR (where trap conditions are exempted from the stability override), VSI has no off-axis state, so the override applies uniformly. Every unstable reading becomes TRANSITION. This is a cleaner design made possible by the simpler state space \u2014 one more reason the 3-state model is appropriate for VSI.</p>
+            <p className="text-sm text-gray-400">Unlike MPR (where trap conditions are exempted from the stability override), VSI has no off-axis state, so the override applies uniformly. Every unstable reading becomes TRANSITION. This is a cleaner design made possible by the simpler state space — one more reason the 3-state model is appropriate for VSI.</p>
           </div>
         </motion.div>
       </section>
@@ -1592,7 +1592,7 @@ export default function VSIDeepDiveLesson() {
           <VolatilityCycleAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Cycle Is Universal</p>
-            <p className="text-sm text-gray-400">This volatility cycling exists in every market at every timeframe \u2014 crypto, equities, FX, commodities, 1-minute to daily. The frequency and amplitude differ, but the pattern is the same. This universality is why VSI works as a single tool across the asset universe with just threshold tuning \u2014 the underlying cycle structure is invariant.</p>
+            <p className="text-sm text-gray-400">This volatility cycling exists in every market at every timeframe — crypto, equities, FX, commodities, 1-minute to daily. The frequency and amplitude differ, but the pattern is the same. This universality is why VSI works as a single tool across the asset universe with just threshold tuning — the underlying cycle structure is invariant.</p>
           </div>
         </motion.div>
       </section>
@@ -1602,11 +1602,11 @@ export default function VSIDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; Application</p>
           <h2 className="text-2xl font-extrabold mb-4">Stop Placement Adjustment</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The most concrete application of VSI. Instead of a fixed ATR multiplier for stops (e.g., always 2x ATR), scale by state: <strong className="text-white">1.5x in DECAY</strong> (tighter, vol contracting), <strong className="text-white">2.0x in TRANSITION</strong> (baseline), <strong className="text-white">3.0x in EXPANSION</strong> (wider, vol running). This single adjustment turns your stop distance from a static number into a regime-aware envelope \u2014 a direct operationalization of the Second-Derivative Principle.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The most concrete application of VSI. Instead of a fixed ATR multiplier for stops (e.g., always 2x ATR), scale by state: <strong className="text-white">1.5x in DECAY</strong> (tighter, vol contracting), <strong className="text-white">2.0x in TRANSITION</strong> (baseline), <strong className="text-white">3.0x in EXPANSION</strong> (wider, vol running). This single adjustment turns your stop distance from a static number into a regime-aware envelope — a direct operationalization of the Second-Derivative Principle.</p>
           <StopPlacementAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Symmetric Scaling Rule</p>
-            <p className="text-sm text-gray-400">Whatever multiplier you use for your baseline stop (TRANSITION state), reduce it by ~25% in DECAY and increase it by ~50% in EXPANSION. These ratios are empirically robust across assets and timeframes. The point isn&apos;t the exact numbers \u2014 the point is that stop distance should scale with VSI, not stay fixed. A static 2x ATR stop will be systematically too tight in expansion and too loose in decay.</p>
+            <p className="text-sm text-gray-400">Whatever multiplier you use for your baseline stop (TRANSITION state), reduce it by ~25% in DECAY and increase it by ~50% in EXPANSION. These ratios are empirically robust across assets and timeframes. The point isn&apos;t the exact numbers — the point is that stop distance should scale with VSI, not stay fixed. A static 2x ATR stop will be systematically too tight in expansion and too loose in decay.</p>
           </div>
         </motion.div>
       </section>
@@ -1615,7 +1615,7 @@ export default function VSIDeepDiveLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; The Oscillator Stack</p>
-          <h2 className="text-2xl font-extrabold mb-4">VSI \u00d7 MPR \u00d7 MSI Together</h2>
+          <h2 className="text-2xl font-extrabold mb-4">VSI × MPR × MSI Together</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The full oscillator confluence stack. MSI tells you the <strong className="text-white">current market regime</strong>. MPR tells you the <strong className="text-white">directional pressure state</strong>. VSI tells you the <strong className="text-white">volatility trajectory</strong>. These three measure orthogonal properties, so their agreement or disagreement is the read. Full confluence (all three pointing the same way) is rare and powerful. Divergences (one says expansion while another says transition) are where the nuance lives.</p>
           <ConfluenceStackAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
@@ -1630,11 +1630,11 @@ export default function VSIDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; Asset Class Calibration</p>
           <h2 className="text-2xl font-extrabold mb-4">Default Thresholds Aren&apos;t Universal</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The ±5% defaults are calibrated for medium-to-high-volatility assets (crypto, equities, commodities). On FX majors like EURUSD, the percent-change cadence of ATR is tighter \u2014 5% moves over 10 bars are rare. Left at defaults, VSI on EURUSD 1H will sit in TRANSITION most of the time, making the tool effectively mute. The fix: tune thresholds to ±3% for FX majors, keeping them symmetric.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The ±5% defaults are calibrated for medium-to-high-volatility assets (crypto, equities, commodities). On FX majors like EURUSD, the percent-change cadence of ATR is tighter — 5% moves over 10 bars are rare. Left at defaults, VSI on EURUSD 1H will sit in TRANSITION most of the time, making the tool effectively mute. The fix: tune thresholds to ±3% for FX majors, keeping them symmetric.</p>
           <ForexCaveatAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Tuning Rule</p>
-            <p className="text-sm text-gray-400">The target is to see VSI spend roughly 40-50% of time in TRANSITION and the remainder split between EXPANSION and DECAY. If yours is in TRANSITION 90% of the time, tighten thresholds. If yours is in EXPANSION/DECAY 90% of the time (rare, but happens on very high-vol assets at short timeframes), widen them. ALWAYS keep them symmetric \u2014 asymmetric thresholds silently bias your regime classification.</p>
+            <p className="text-sm text-gray-400">The target is to see VSI spend roughly 40-50% of time in TRANSITION and the remainder split between EXPANSION and DECAY. If yours is in TRANSITION 90% of the time, tighten thresholds. If yours is in EXPANSION/DECAY 90% of the time (rare, but happens on very high-vol assets at short timeframes), widen them. ALWAYS keep them symmetric — asymmetric thresholds silently bias your regime classification.</p>
           </div>
         </motion.div>
       </section>
@@ -1644,7 +1644,7 @@ export default function VSIDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Common Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-4">Four Ways Traders Misuse VSI</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Each traces back to the same root: reading VSI as something it isn&apos;t \u2014 typically as a direction tool or a momentum proxy \u2014 instead of reading it as what it is: a volatility-change oscillator.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Each traces back to the same root: reading VSI as something it isn&apos;t — typically as a direction tool or a momentum proxy — instead of reading it as what it is: a volatility-change oscillator.</p>
           <div className="space-y-3">
             {mistakes.map((m, i) => (
               <div key={i} className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
@@ -1672,27 +1672,27 @@ export default function VSIDeepDiveLesson() {
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Three States</p>
-                <p className="text-sm text-gray-300">EXPANSION (teal, +1) vol rising \u00b7 DECAY (grey, -1) vol falling \u00b7 TRANSITION (amber, 0) stable or unstable.</p>
+                <p className="text-sm text-gray-300">EXPANSION (teal, +1) vol rising · DECAY (grey, -1) vol falling · TRANSITION (amber, 0) stable or unstable.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Core Formula</p>
-                <p className="text-sm text-gray-300">volMomPct = (volSm - volSm[10]) / volSm[10] \u00d7 100 &nbsp;where volSm = EMA(ATR, 10).</p>
+                <p className="text-sm text-gray-300">volMomPct = (volSm - volSm[10]) / volSm[10] × 100 &nbsp;where volSm = EMA(ATR, 10).</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Thresholds (symmetric, tunable)</p>
-                <p className="text-sm text-gray-300">\u00b15% default. FX majors: ±3%. Always keep symmetric.</p>
+                <p className="text-sm text-gray-300">±5% default. FX majors: ±3%. Always keep symmetric.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Persistence Contract</p>
-                <p className="text-sm text-gray-300">persistBars = 3 default. Shared with MPR \u2014 same anti-flicker guarantee.</p>
+                <p className="text-sm text-gray-300">persistBars = 3 default. Shared with MPR — same anti-flicker guarantee.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Stability Override</p>
                 <p className="text-sm text-gray-300">When stability &lt; 0.5, force TRANSITION. No off-axis exemption needed.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
-                <p className="text-xs font-bold text-amber-400 mb-1">Second-Derivative Principle (\u2605)</p>
-                <p className="text-sm text-gray-300">VSI measures a measurement. ATR tells you where you are, VSI tells you where you\u2019re going. Different information.</p>
+                <p className="text-xs font-bold text-amber-400 mb-1">Second-Derivative Principle (★)</p>
+                <p className="text-sm text-gray-300">VSI measures a measurement. ATR tells you where you are, VSI tells you where you’re going. Different information.</p>
               </div>
               <div className="pb-3 border-b border-white/5">
                 <p className="text-xs font-bold text-amber-400 mb-1">Primary Application</p>
@@ -1700,7 +1700,7 @@ export default function VSIDeepDiveLesson() {
               </div>
               <div>
                 <p className="text-xs font-bold text-amber-400 mb-1">Data Window Exports</p>
-                <p className="text-sm text-gray-300">ATR raw/smoothed \u00b7 Momentum % \u00b7 Stability \u00b7 State \u00b7 Per-state booleans.</p>
+                <p className="text-sm text-gray-300">ATR raw/smoothed · Momentum % · Stability · State · Per-state booleans.</p>
               </div>
             </div>
           </div>
@@ -1712,7 +1712,7 @@ export default function VSIDeepDiveLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-4">Reading VSI as a Volatility Derivative</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read VSI for what it is \u2014 a second-order signal measuring volatility change \u2014 or whether you&apos;re still pattern-matching it to first-order oscillators.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you read VSI for what it is — a second-order signal measuring volatility change — or whether you&apos;re still pattern-matching it to first-order oscillators.</p>
           <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
@@ -1758,7 +1758,7 @@ export default function VSIDeepDiveLesson() {
               <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
                 <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
                 <div className="relative z-10 text-center">
-                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">\u2207</div>
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">∇</div>
                   <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
                   <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 10: Volatility State Index</strong><br />at ATLAS Academy by Interakktive</p>
                   <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; Volatility Derivative Analyst &mdash;</p>

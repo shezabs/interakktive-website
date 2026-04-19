@@ -1765,12 +1765,12 @@ export default function CapstoneLesson() {
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">Everything Comes Together Here.</p>
             <p className="text-gray-400 leading-relaxed mb-4">Thirteen lessons. Thirteen Groundbreaking Concepts. Six indicators, seven playbook patterns, one cascade reading discipline, one alert compression architecture. Individually, each doctrine works. The question this capstone answers is: <strong className="text-white">how do they all operate together, in a single trading day, as a coherent system?</strong></p>
-            <p className="text-gray-400 leading-relaxed mb-4">This lesson is not a new concept. It\u2019s a synthesis \u2014 a walkthrough of one complete trading day from 7:00 AM prep to 5:00 PM debrief, applying every prior doctrine in sequence. Pre-market setup using the Diagnostic Cascade. Open scan using the Context \u2192 Regime \u2192 Direction order. Pattern detection via the Combinatorial Edge. Alerts via the Compression Doctrine. Hygiene review via classification of every fire. And the Operational Loop that ties it all together: every session\u2019s data tunes the next session\u2019s parameters.</p>
-            <p className="text-gray-400 leading-relaxed">By the end of this lesson, you will have virtually run a trading session with the complete ATLAS framework operational. The emotional endpoint is: <em className="text-amber-400">\u201cI can do this.\u201d</em> Because you\u2019ve just watched yourself do it.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">This lesson is not a new concept. It’s a synthesis — a walkthrough of one complete trading day from 7:00 AM prep to 5:00 PM debrief, applying every prior doctrine in sequence. Pre-market setup using the Diagnostic Cascade. Open scan using the Context → Regime → Direction order. Pattern detection via the Combinatorial Edge. Alerts via the Compression Doctrine. Hygiene review via classification of every fire. And the Operational Loop that ties it all together: every session’s data tunes the next session’s parameters.</p>
+            <p className="text-gray-400 leading-relaxed">By the end of this lesson, you will have virtually run a trading session with the complete ATLAS framework operational. The emotional endpoint is: <em className="text-amber-400">“I can do this.”</em> Because you’ve just watched yourself do it.</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#127942; THE CAPSTONE AXIOM</p>
-            <p className="text-sm text-gray-400 leading-relaxed">A trading framework is not a collection of tools \u2014 it\u2019s an operational loop that compounds edge over time through disciplined hygiene. The scaffolding is stable; the tuning is continuous. Master this distinction and your career moves from episodic wins to systematic progression.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">A trading framework is not a collection of tools — it’s an operational loop that compounds edge over time through disciplined hygiene. The scaffolding is stable; the tuning is continuous. Master this distinction and your career moves from episodic wins to systematic progression.</p>
           </div>
         </motion.div>
       </section>
@@ -1780,18 +1780,18 @@ export default function CapstoneLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; The Operational Loop &#11088;</p>
           <h2 className="text-2xl font-extrabold mb-4">Trading as a Closed Feedback System</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">A trading career isn\u2019t a series of independent trades with independent outcomes \u2014 it\u2019s a <strong className="text-white">closed feedback system</strong> where each session\u2019s alert log becomes next session\u2019s filter adjustment, each pattern\u2019s P&L becomes next week\u2019s priority rerank, each post-session review becomes next month\u2019s playbook refinement. The scaffolding (dashboard + patterns + alerts + hygiene) stays stable. The tuning (which patterns to trade, thresholds, priorities) is continuous. This is what compounding edge looks like in practice.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">A trading career isn’t a series of independent trades with independent outcomes — it’s a <strong className="text-white">closed feedback system</strong> where each session’s alert log becomes next session’s filter adjustment, each pattern’s P&L becomes next week’s priority rerank, each post-session review becomes next month’s playbook refinement. The scaffolding (dashboard + patterns + alerts + hygiene) stays stable. The tuning (which patterns to trade, thresholds, priorities) is continuous. This is what compounding edge looks like in practice.</p>
           <OperationalLoopAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#127960; The Operational Loop</p>
-            <p className="text-sm text-gray-400 leading-relaxed">Trading is a closed feedback system with four stages: Session \u2192 Alert Log \u2192 Calibration \u2192 Playbook \u2192 back to Session. Most retail traders never experience compounding edge because they treat trades as isolated events with isolated outcomes \u2014 the loop is broken at the "Alert Log" step (no hygiene) or the "Calibration" step (no parameter tuning) or the "Playbook" step (no P&L attribution). Professionals experience compounding edge because every event feeds back into the system\u2019s configuration. Master the loop and your edge compounds; break the loop and you stagnate regardless of skill.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Trading is a closed feedback system with four stages: Session → Alert Log → Calibration → Playbook → back to Session. Most retail traders never experience compounding edge because they treat trades as isolated events with isolated outcomes — the loop is broken at the "Alert Log" step (no hygiene) or the "Calibration" step (no parameter tuning) or the "Playbook" step (no P&L attribution). Professionals experience compounding edge because every event feeds back into the system’s configuration. Master the loop and your edge compounds; break the loop and you stagnate regardless of skill.</p>
           </div>
           <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
             <p className="text-xs font-bold text-white mb-2">Three portable applications:</p>
             <ul className="text-sm text-gray-400 space-y-2 leading-relaxed">
-              <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Weekly calibration cycle.</strong> Alert hygiene review \u2192 filter tightening \u2192 noise rate trending down over months. The system converges on your personal edge-profile through systematic parameter adjustment.</li>
-              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Pattern P&L attribution.</strong> Track which of the 7 patterns produces your actual P&L. After 3 months you\u2019ll find 2-3 patterns that account for 70%+ of your returns. Double down on those; consider pruning the rest. Your real edge reveals itself through attribution data.</li>
-              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Scaffolding vs tuning distinction.</strong> The ATLAS framework (indicators, cascade, patterns, alerts) is scaffolding \u2014 fixed, not tweaked. What you tune is the parameters (pattern mix, thresholds, session windows, rankings). Amateurs tweak scaffolding constantly; professionals tune parameters within stable scaffolding.</li>
+              <li><strong className="text-amber-400">1.</strong> <strong className="text-white">Weekly calibration cycle.</strong> Alert hygiene review → filter tightening → noise rate trending down over months. The system converges on your personal edge-profile through systematic parameter adjustment.</li>
+              <li><strong className="text-amber-400">2.</strong> <strong className="text-white">Pattern P&L attribution.</strong> Track which of the 7 patterns produces your actual P&L. After 3 months you’ll find 2-3 patterns that account for 70%+ of your returns. Double down on those; consider pruning the rest. Your real edge reveals itself through attribution data.</li>
+              <li><strong className="text-amber-400">3.</strong> <strong className="text-white">Scaffolding vs tuning distinction.</strong> The ATLAS framework (indicators, cascade, patterns, alerts) is scaffolding — fixed, not tweaked. What you tune is the parameters (pattern mix, thresholds, session windows, rankings). Amateurs tweak scaffolding constantly; professionals tune parameters within stable scaffolding.</li>
             </ul>
           </div>
         </motion.div>
@@ -1800,13 +1800,13 @@ export default function CapstoneLesson() {
       {/* === S02 === */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; The Day\u2019s Structure</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; The Day’s Structure</p>
           <h2 className="text-2xl font-extrabold mb-4">Six Phases, 10.5 Hours</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The trading day breaks into six distinct phases, each with its own cognitive mode and its own specific job. Giving each hour a named phase is the discipline \u2014 it prevents the default retail pattern of "watch chart all day, trade whenever something looks good." Instead: prep prepares, open scans, active monitors, mid-review decides, close exits, debrief learns. Structure IS the discipline.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The trading day breaks into six distinct phases, each with its own cognitive mode and its own specific job. Giving each hour a named phase is the discipline — it prevents the default retail pattern of "watch chart all day, trade whenever something looks good." Instead: prep prepares, open scans, active monitors, mid-review decides, close exits, debrief learns. Structure IS the discipline.</p>
           <DayStructureAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Each Phase Has One Job</p>
-            <p className="text-sm text-gray-400">The six phases in operational order: (1) <strong className="text-white">Pre-Market Prep</strong> \u2014 load tools, read news, set up alerts, pre-map levels. (2) <strong className="text-white">Session Open Scan</strong> \u2014 cascade through the dashboard top-down to identify armed patterns. (3) <strong className="text-white">Active Monitoring</strong> \u2014 respond to alert fires, execute trades, manage positions. (4) <strong className="text-white">Mid-Session Review</strong> \u2014 30-minute check-in to decide sizing for the closing session. (5) <strong className="text-white">Closing Session</strong> \u2014 tighten stops, no new entries in last 30 minutes, prepare exits. (6) <strong className="text-white">Post-Session Debrief</strong> \u2014 classify fires, attribute P&L, adjust filters. Skip any phase and you break the loop.</p>
+            <p className="text-sm text-gray-400">The six phases in operational order: (1) <strong className="text-white">Pre-Market Prep</strong> — load tools, read news, set up alerts, pre-map levels. (2) <strong className="text-white">Session Open Scan</strong> — cascade through the dashboard top-down to identify armed patterns. (3) <strong className="text-white">Active Monitoring</strong> — respond to alert fires, execute trades, manage positions. (4) <strong className="text-white">Mid-Session Review</strong> — 30-minute check-in to decide sizing for the closing session. (5) <strong className="text-white">Closing Session</strong> — tighten stops, no new entries in last 30 minutes, prepare exits. (6) <strong className="text-white">Post-Session Debrief</strong> — classify fires, attribute P&L, adjust filters. Skip any phase and you break the loop.</p>
           </div>
         </motion.div>
       </section>
@@ -1815,12 +1815,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; Phase 1: Prep</p>
-          <h2 className="text-2xl font-extrabold mb-4">Pre-Market Prep (6:30 \u2013 9:30 AM)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Three hours before the bell. The job: load tools, ingest overnight context, set up the alert architecture, pre-map key levels. Skipping prep is the single most costly retail mistake \u2014 you start the session cold, miss context, and end up reactive rather than prepared. Five specific tasks, in order, every session. No shortcuts, no "I\u2019ll just wing it today." Prep is non-negotiable.</p>
+          <h2 className="text-2xl font-extrabold mb-4">Pre-Market Prep (6:30 – 9:30 AM)</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Three hours before the bell. The job: load tools, ingest overnight context, set up the alert architecture, pre-map key levels. Skipping prep is the single most costly retail mistake — you start the session cold, miss context, and end up reactive rather than prepared. Five specific tasks, in order, every session. No shortcuts, no "I\u2019ll just wing it today." Prep is non-negotiable.</p>
           <PreMarketPrepAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Pre-Mapped Levels Beat Real-Time Level-Finding</p>
-            <p className="text-sm text-gray-400">The fifth prep task \u2014 pre-mapping MAZ zones and upper/lower MAE bands before the session \u2014 is the highest-leverage 15 minutes of your day. Levels noted during prep are processed calmly with full cognitive bandwidth. Levels spotted during live trading are processed under time pressure with partial attention. Pre-mapped levels let you execute mechanically on touch rather than deliberate in real-time. Write them down. Keep the list visible. Cross them off as they trigger or invalidate.</p>
+            <p className="text-sm text-gray-400">The fifth prep task — pre-mapping MAZ zones and upper/lower MAE bands before the session — is the highest-leverage 15 minutes of your day. Levels noted during prep are processed calmly with full cognitive bandwidth. Levels spotted during live trading are processed under time pressure with partial attention. Pre-mapped levels let you execute mechanically on touch rather than deliberate in real-time. Write them down. Keep the list visible. Cross them off as they trigger or invalidate.</p>
           </div>
         </motion.div>
       </section>
@@ -1829,12 +1829,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Phase 2: Open</p>
-          <h2 className="text-2xl font-extrabold mb-4">Session Open Scan (9:30 \u2013 10:15 AM)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">First 45 minutes. The job: scan the dashboard top-down via the Diagnostic Cascade (10.11) to identify which patterns are armed. This is NOT the time to force entries \u2014 it\u2019s the time to establish the session\u2019s regime and sit patiently while the cascade resolves. Most retail traders torch edge here by chasing the opening range. Professionals watch, read, and wait.</p>
+          <h2 className="text-2xl font-extrabold mb-4">Session Open Scan (9:30 – 10:15 AM)</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">First 45 minutes. The job: scan the dashboard top-down via the Diagnostic Cascade (10.11) to identify which patterns are armed. This is NOT the time to force entries — it’s the time to establish the session’s regime and sit patiently while the cascade resolves. Most retail traders torch edge here by chasing the opening range. Professionals watch, read, and wait.</p>
           <SessionOpenScanAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The First Honest Trade Rarely Comes Before 9:45</p>
-            <p className="text-sm text-gray-400">The first 15 minutes of the NY session are typically auction noise \u2014 overnight orders clearing, opening range forming, MSI regime not yet stable. Reading the cascade during this window usually returns "transitional / wait." The first setup that actually meets full cascade confirmation usually fires between 9:45 and 10:30. Don\u2019t chase the open. Let the first setup earn its entry by surviving the full cascade check. The discipline of waiting is the edge.</p>
+            <p className="text-sm text-gray-400">The first 15 minutes of the NY session are typically auction noise — overnight orders clearing, opening range forming, MSI regime not yet stable. Reading the cascade during this window usually returns "transitional / wait." The first setup that actually meets full cascade confirmation usually fires between 9:45 and 10:30. Don’t chase the open. Let the first setup earn its entry by surviving the full cascade check. The discipline of waiting is the edge.</p>
           </div>
         </motion.div>
       </section>
@@ -1843,12 +1843,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Phase 3: Monitor</p>
-          <h2 className="text-2xl font-extrabold mb-4">Active Monitoring (10:15 AM \u2013 2:00 PM)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The longest phase \u2014 3 hours 45 minutes of active engagement. Your compressed alert architecture is doing surveillance; your job is to evaluate each fire quickly, decide take/skip, and execute. Not every fire becomes a trade. The 2:1 ratio of fires-to-trades is common and healthy \u2014 it means you\u2019re filtering for context (FOMC, meetings, wrong session) rather than blindly taking every signal. The compressed alert plus the cascade read plus context awareness keeps the session quality high.</p>
+          <h2 className="text-2xl font-extrabold mb-4">Active Monitoring (10:15 AM – 2:00 PM)</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The longest phase — 3 hours 45 minutes of active engagement. Your compressed alert architecture is doing surveillance; your job is to evaluate each fire quickly, decide take/skip, and execute. Not every fire becomes a trade. The 2:1 ratio of fires-to-trades is common and healthy — it means you’re filtering for context (FOMC, meetings, wrong session) rather than blindly taking every signal. The compressed alert plus the cascade read plus context awareness keeps the session quality high.</p>
           <ActiveMonitoringAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Skip Is a Valid Outcome, Not a Failure</p>
-            <p className="text-sm text-gray-400">New traders feel that if an alert fires and they don\u2019t take the trade, they\u2019ve "failed" or "missed it." Wrong framing. Correctly skipping a fire is an edge-preserving action \u2014 it means your context awareness caught something the pattern didn\u2019t: a meeting window, a thin-liquidity period, a news event that invalidates the setup. Track skip-rate alongside trade-rate. A skip rate of 40-50% is normal for disciplined traders and signals you\u2019re not forcing trades just because alerts fired.</p>
+            <p className="text-sm text-gray-400">New traders feel that if an alert fires and they don’t take the trade, they’ve "failed" or "missed it." Wrong framing. Correctly skipping a fire is an edge-preserving action — it means your context awareness caught something the pattern didn’t: a meeting window, a thin-liquidity period, a news event that invalidates the setup. Track skip-rate alongside trade-rate. A skip rate of 40-50% is normal for disciplined traders and signals you’re not forcing trades just because alerts fired.</p>
           </div>
         </motion.div>
       </section>
@@ -1857,12 +1857,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Phase 4: Mid-Session Review</p>
-          <h2 className="text-2xl font-extrabold mb-4">2:00 PM Check-In \u2014 The Critical Decision Point</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Thirty minutes of deliberate review. Four KPIs: trades taken, net P&L, alert fires, noise rate. This is the moment to make the critical decision that most retail traders get wrong: <strong className="text-white">if targets are hit, size DOWN for the closing session</strong>, not up. Protect the day\u2019s gains from give-back while staying available for late-session opportunities. Sizing up after wins is the hot-hand fallacy; sizing down is professional discipline.</p>
+          <h2 className="text-2xl font-extrabold mb-4">2:00 PM Check-In — The Critical Decision Point</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Thirty minutes of deliberate review. Four KPIs: trades taken, net P&L, alert fires, noise rate. This is the moment to make the critical decision that most retail traders get wrong: <strong className="text-white">if targets are hit, size DOWN for the closing session</strong>, not up. Protect the day’s gains from give-back while staying available for late-session opportunities. Sizing up after wins is the hot-hand fallacy; sizing down is professional discipline.</p>
           <MidSessionReviewAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Professional Inversion</p>
-            <p className="text-sm text-gray-400">Retail instinct: size up when winning (chasing hot-hand), size down when losing (panicking). Professional inversion: size DOWN when winning to protect gains, maintain size or PAUSE when losing to preserve capital and prevent revenge-trading. The Mid-Session Review at 2:00 PM exists specifically to trigger this disciplined down-sizing. Protecting a good day\u2019s P&L from give-back is often the highest-expected-value decision you make all day \u2014 more valuable than any specific trade\u2019s outcome.</p>
+            <p className="text-sm text-gray-400">Retail instinct: size up when winning (chasing hot-hand), size down when losing (panicking). Professional inversion: size DOWN when winning to protect gains, maintain size or PAUSE when losing to preserve capital and prevent revenge-trading. The Mid-Session Review at 2:00 PM exists specifically to trigger this disciplined down-sizing. Protecting a good day’s P&L from give-back is often the highest-expected-value decision you make all day — more valuable than any specific trade’s outcome.</p>
           </div>
         </motion.div>
       </section>
@@ -1871,12 +1871,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Phase 5: Close</p>
-          <h2 className="text-2xl font-extrabold mb-4">Closing Session (2:30 \u2013 4:00 PM)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The final 90 minutes. The last scan at 2:30, active position management from 3:00, and the non-negotiable rule: <strong className="text-white">no new entries in the last 30 minutes</strong>. Close-positioning fade risk rises into the bell \u2014 institutional order flow shifts to closing-print positioning, which creates counter-trend moves that ambush late entries. Tighten trailing stops on winners. Close losers manually. Let the bell ring.</p>
+          <h2 className="text-2xl font-extrabold mb-4">Closing Session (2:30 – 4:00 PM)</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The final 90 minutes. The last scan at 2:30, active position management from 3:00, and the non-negotiable rule: <strong className="text-white">no new entries in the last 30 minutes</strong>. Close-positioning fade risk rises into the bell — institutional order flow shifts to closing-print positioning, which creates counter-trend moves that ambush late entries. Tighten trailing stops on winners. Close losers manually. Let the bell ring.</p>
           <ClosingSessionAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Exit Management Beats Entry Selection</p>
-            <p className="text-sm text-gray-400">Once you\u2019re in a trade, your entry decision is sunk cost. What remains is exit management \u2014 where do you stop out, where do you trail, where do you take profit. Most retail traders obsess over entries and wing exits. Professionals do the opposite: enter mechanically on confluence, then apply careful exit discipline. The closing session is the ultimate test \u2014 positions that have worked all day need protection from close-positioning fades. Tight stops, profit-trailing, and no new exposure in the last 30 minutes. Exit management is where career-length P&L lives.</p>
+            <p className="text-sm text-gray-400">Once you’re in a trade, your entry decision is sunk cost. What remains is exit management — where do you stop out, where do you trail, where do you take profit. Most retail traders obsess over entries and wing exits. Professionals do the opposite: enter mechanically on confluence, then apply careful exit discipline. The closing session is the ultimate test — positions that have worked all day need protection from close-positioning fades. Tight stops, profit-trailing, and no new exposure in the last 30 minutes. Exit management is where career-length P&L lives.</p>
           </div>
         </motion.div>
       </section>
@@ -1885,12 +1885,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Phase 6: Debrief</p>
-          <h2 className="text-2xl font-extrabold mb-4">Post-Session Debrief (4:00 \u2013 5:00 PM)</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Sixty minutes that separate compounding traders from stagnating ones. Four steps: (1) export alert log, (2) classify each fire as trade/no-trade/noise, (3) attribute P&L by pattern, (4) note filter adjustments needed. This is not paperwork \u2014 this is the learning stage of the Operational Loop. Skip this and every session\u2019s data evaporates. Do this every day and the system\u2019s parameters converge on your personal edge profile over months.</p>
+          <h2 className="text-2xl font-extrabold mb-4">Post-Session Debrief (4:00 – 5:00 PM)</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Sixty minutes that separate compounding traders from stagnating ones. Four steps: (1) export alert log, (2) classify each fire as trade/no-trade/noise, (3) attribute P&L by pattern, (4) note filter adjustments needed. This is not paperwork — this is the learning stage of the Operational Loop. Skip this and every session’s data evaporates. Do this every day and the system’s parameters converge on your personal edge profile over months.</p>
           <PostSessionDebriefAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Debrief Unconditionally</p>
-            <p className="text-sm text-gray-400">Most retail traders journal losing sessions and skip journaling winning sessions. Result: asymmetric self-knowledge \u2014 they know why they lose but can\u2019t articulate why they win. The Operational Loop treats every session as equal-information. A clean +5.3R session tells you which patterns fired, which you took, which you skipped, how sizing decisions played out. All compounding data. Skipping the debrief on good days throws away the most important data you\u2019ll generate: data from when the system works. Debrief unconditionally. Every session is data.</p>
+            <p className="text-sm text-gray-400">Most retail traders journal losing sessions and skip journaling winning sessions. Result: asymmetric self-knowledge — they know why they lose but can’t articulate why they win. The Operational Loop treats every session as equal-information. A clean +5.3R session tells you which patterns fired, which you took, which you skipped, how sizing decisions played out. All compounding data. Skipping the debrief on good days throws away the most important data you’ll generate: data from when the system works. Debrief unconditionally. Every session is data.</p>
           </div>
         </motion.div>
       </section>
@@ -1899,11 +1899,11 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; The Walkthrough: Morning</p>
-          <h2 className="text-2xl font-extrabold mb-4">7:00 AM \u2013 11:00 AM Narrative</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">A real Monday, SPY-style instrument, NY session focus. You\u2019re at your desk at 7:15 \u2014 dashboard loading, overnight news on the side. By 10:02 the cascade has resolved and Pattern #1 Launch fires cleanly. Entry at 1R position size, stop below the MAE, target mid-session. The animation below cycles through four narrative moments showing exactly how the dashboard state translates into specific actions. Read each scene as if it were your own morning.</p>
+          <h2 className="text-2xl font-extrabold mb-4">7:00 AM – 11:00 AM Narrative</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">A real Monday, SPY-style instrument, NY session focus. You’re at your desk at 7:15 — dashboard loading, overnight news on the side. By 10:02 the cascade has resolved and Pattern #1 Launch fires cleanly. Entry at 1R position size, stop below the MAE, target mid-session. The animation below cycles through four narrative moments showing exactly how the dashboard state translates into specific actions. Read each scene as if it were your own morning.</p>
           <WalkthroughMorningAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Notice What Doesn\u2019t Happen</p>
+            <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Notice What Doesn’t Happen</p>
             <p className="text-sm text-gray-400">Four moments, and three of them are "do nothing" actions: pre-map levels (prep), wait for cascade (open), trail stop (manage). Only one moment is entry (10:02 Launch). This ratio is correct. Most of trading is waiting with discipline; a small fraction is execution. Retail traders try to fill the "waiting" time with discretionary trades, destroying edge. Professionals protect the waiting time with structure (other activities, chart analysis, journal review) and only pull the trigger on cascade-confirmed setups.</p>
           </div>
         </motion.div>
@@ -1913,12 +1913,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; The Walkthrough: Midday</p>
-          <h2 className="text-2xl font-extrabold mb-4">11:00 AM \u2013 2:00 PM Narrative</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Morning Launch trade closed at +2.1R at 11:18. Now through lunch \u2014 the weakest window of the day. An alert fires at 11:52, you read the cascade, MSI has flipped to Compression, you correctly SKIP. At 12:38 an Absorption pattern fires at a MAZ level; you take a reduced-size position (lunch-sized at 0.75R). Managing into 2:00 PM review. Notice how the disciplined skip at 11:52 is as valuable as the actual trades \u2014 edge comes from BOTH.</p>
+          <h2 className="text-2xl font-extrabold mb-4">11:00 AM – 2:00 PM Narrative</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Morning Launch trade closed at +2.1R at 11:18. Now through lunch — the weakest window of the day. An alert fires at 11:52, you read the cascade, MSI has flipped to Compression, you correctly SKIP. At 12:38 an Absorption pattern fires at a MAZ level; you take a reduced-size position (lunch-sized at 0.75R). Managing into 2:00 PM review. Notice how the disciplined skip at 11:52 is as valuable as the actual trades — edge comes from BOTH.</p>
           <WalkthroughMiddayAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Lunch Sizing Is a Distinct Parameter</p>
-            <p className="text-sm text-gray-400">The 12:38 Absorption entry uses 0.75R position size instead of full 1R. This isn\u2019t arbitrary \u2014 lunch-hour trades carry higher noise risk because institutional flow thins out, retail noise dominates, and patterns can invalidate more readily. Size down for time-of-day risk. Professionals have three sizing modes: full size (peak hours, high-confluence), lunch size (11:30-1:00, reduced), and scratch size (closing session, protective). The framework treats sizing as dynamic parameter, not a fixed constant.</p>
+            <p className="text-sm text-gray-400">The 12:38 Absorption entry uses 0.75R position size instead of full 1R. This isn’t arbitrary — lunch-hour trades carry higher noise risk because institutional flow thins out, retail noise dominates, and patterns can invalidate more readily. Size down for time-of-day risk. Professionals have three sizing modes: full size (peak hours, high-confluence), lunch size (11:30-1:00, reduced), and scratch size (closing session, protective). The framework treats sizing as dynamic parameter, not a fixed constant.</p>
           </div>
         </motion.div>
       </section>
@@ -1927,12 +1927,12 @@ export default function CapstoneLesson() {
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; The Walkthrough: Afternoon</p>
-          <h2 className="text-2xl font-extrabold mb-4">2:00 \u2013 5:00 PM Narrative</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Mid-session review at 2:02 shows +3.5R net, 0% noise. Decision: size down for closing session. At 3:18 a classic Trap Fade setup develops \u2014 price pushes through upper MAZ with surface-bull MPR, but 5 of 6 layers warn the move is terminal. ERD absorption fires at the new high at 3:26. You enter short (0.5R, tight stop above). Price drops back to MAZ mid by 3:54, +1.8R on the fade. All positions closed by 4:00. Debrief at 4:30. Day total: 4 trades, 3 wins, 1 small loss, +5.3R net. All 4 patterns fired correctly. This is what a disciplined day looks like.</p>
+          <h2 className="text-2xl font-extrabold mb-4">2:00 – 5:00 PM Narrative</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Mid-session review at 2:02 shows +3.5R net, 0% noise. Decision: size down for closing session. At 3:18 a classic Trap Fade setup develops — price pushes through upper MAZ with surface-bull MPR, but 5 of 6 layers warn the move is terminal. ERD absorption fires at the new high at 3:26. You enter short (0.5R, tight stop above). Price drops back to MAZ mid by 3:54, +1.8R on the fade. All positions closed by 4:00. Debrief at 4:30. Day total: 4 trades, 3 wins, 1 small loss, +5.3R net. All 4 patterns fired correctly. This is what a disciplined day looks like.</p>
           <WalkthroughAfternoonAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Fade Is the Day\u2019s Most Educational Trade</p>
-            <p className="text-sm text-gray-400">The 3:26 Trap Fade short is the trade that demonstrates the full framework operating. Surface-level MPR reads bullish \u2014 non-cascade traders take it long and buy the top. But 5 of 6 upstream layers warn terminal exhaustion. The disciplined cascade read flips the setup into a short. This is the insight of 10.11 made operational. And the Trap Fade pattern (10.12) is designed specifically to catch this inversion. When you see the whole framework fire on one trade, the emotional unlock is: "I couldn\u2019t have read this without the training." That\u2019s Level 10 graduation.</p>
+            <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The Fade Is the Day’s Most Educational Trade</p>
+            <p className="text-sm text-gray-400">The 3:26 Trap Fade short is the trade that demonstrates the full framework operating. Surface-level MPR reads bullish — non-cascade traders take it long and buy the top. But 5 of 6 upstream layers warn terminal exhaustion. The disciplined cascade read flips the setup into a short. This is the insight of 10.11 made operational. And the Trap Fade pattern (10.12) is designed specifically to catch this inversion. When you see the whole framework fire on one trade, the emotional unlock is: "I couldn\u2019t have read this without the training." That’s Level 10 graduation.</p>
           </div>
         </motion.div>
       </section>
@@ -1942,11 +1942,11 @@ export default function CapstoneLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; Weekly Calibration</p>
           <h2 className="text-2xl font-extrabold mb-4">The 8-Week Convergence</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">One session\u2019s data is just data. Eight sessions' data is a trend. Eight weeks of weekly calibration is convergence. The hygiene loop drives noise rate down through surgical filter adjustments \u2014 not blanket tightening, but specific patterns tightened in response to specific noise. The chart below shows a realistic 8-week noise convergence: 48% \u2192 15%, landing cleanly in the target band. This is compounding edge made visible.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">One session’s data is just data. Eight sessions of data is a trend. Eight weeks of weekly calibration is convergence. The hygiene loop drives noise rate down through surgical filter adjustments — not blanket tightening, but specific patterns tightened in response to specific noise. The chart below shows a realistic 8-week noise convergence: 48% → 15%, landing cleanly in the target band. This is compounding edge made visible.</p>
           <WeeklyCalibrationAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Each Week Tightens One Thing</p>
-            <p className="text-sm text-gray-400">The discipline isn\u2019t "make big changes each week" \u2014 it\u2019s "identify ONE pattern contributing disproportionate noise, tighten its threshold slightly, observe next week." One change per week lets you attribute noise reduction to specific adjustments. Five changes per week leaves you unable to tell which one helped. Glacial progress but directionally right; compounds over quarters. This is why professionals are boring-looking on Twitter and rich over decades.</p>
+            <p className="text-sm text-gray-400">The discipline isn’t "make big changes each week" — it’s "identify ONE pattern contributing disproportionate noise, tighten its threshold slightly, observe next week." One change per week lets you attribute noise reduction to specific adjustments. Five changes per week leaves you unable to tell which one helped. Glacial progress but directionally right; compounds over quarters. This is why professionals are boring-looking on Twitter and rich over decades.</p>
           </div>
         </motion.div>
       </section>
@@ -1956,11 +1956,11 @@ export default function CapstoneLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Pattern P&L Attribution</p>
           <h2 className="text-2xl font-extrabold mb-4">Where Your Edge Actually Lives</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">After 3 months of logged trades, attribute P&L back to specific patterns. The result is almost always Pareto: 2-3 patterns account for 70%+ of your returns. This isn\u2019t random \u2014 it\u2019s the loop revealing your personal edge profile. Your specific combination of attention, instrument, session, and execution favors some patterns over others. Trust the data. Double down on the top 3. Consider pruning the bottom 2-3 if they produce consistent negative contribution.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">After 3 months of logged trades, attribute P&L back to specific patterns. The result is almost always Pareto: 2-3 patterns account for 70%+ of your returns. This isn’t random — it’s the loop revealing your personal edge profile. Your specific combination of attention, instrument, session, and execution favors some patterns over others. Trust the data. Double down on the top 3. Consider pruning the bottom 2-3 if they produce consistent negative contribution.</p>
           <PatternPLAttributionAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; The System Knows Your Edge Better Than You Do</p>
-            <p className="text-sm text-gray-400">Many Level 10 graduates come in with a self-identity (\u201cI\u2019m a trend trader\u201d) and discover after 3 months that their actual edge is in a different pattern class. This isn\u2019t failure \u2014 it\u2019s success. The framework\u2019s job is to reveal your real edge profile through data rather than letting self-identity guess. When attribution contradicts identity, trust the attribution. Adjust the playbook. The Loop converges on truth about YOU, given your instrument, your attention, your session. This is how the system earns the right to be called a system.</p>
+            <p className="text-sm text-gray-400">Many Level 10 graduates come in with a self-identity (“I’m a trend trader”) and discover after 3 months that their actual edge is in a different pattern class. This isn’t failure — it’s success. The framework’s job is to reveal your real edge profile through data rather than letting self-identity guess. When attribution contradicts identity, trust the attribution. Adjust the playbook. The Loop converges on truth about YOU, given your instrument, your attention, your session. This is how the system earns the right to be called a system.</p>
           </div>
         </motion.div>
       </section>
@@ -1970,11 +1970,11 @@ export default function CapstoneLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; Scaffolding vs Tuning</p>
           <h2 className="text-2xl font-extrabold mb-4">The Distinction That Makes Compounding Possible</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The most important meta-distinction in this lesson. <strong className="text-sky-400">Scaffolding</strong> = the design decisions that encode doctrinal logic (indicators, cascade order, pattern definitions, alert architecture). You DON\u2019T change scaffolding \u2014 changing it breaks the logic and resets your learning curve. <strong className="text-green-400">Tuning</strong> = the parameters that adjust based on your data (which patterns to trade, thresholds, rankings, session windows, sizing rules). You CONTINUOUSLY adjust tuning based on attribution and calibration data. Amateurs tweak scaffolding constantly; professionals tune parameters within stable scaffolding.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The most important meta-distinction in this lesson. <strong className="text-sky-400">Scaffolding</strong> = the design decisions that encode doctrinal logic (indicators, cascade order, pattern definitions, alert architecture). You DON’T change scaffolding — changing it breaks the logic and resets your learning curve. <strong className="text-green-400">Tuning</strong> = the parameters that adjust based on your data (which patterns to trade, thresholds, rankings, session windows, sizing rules). You CONTINUOUSLY adjust tuning based on attribution and calibration data. Amateurs tweak scaffolding constantly; professionals tune parameters within stable scaffolding.</p>
           <ScaffoldingVsTuningAnim />
           <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#128161; Scaffolding Must Survive 6-12 Months Minimum</p>
-            <p className="text-sm text-gray-400">Commit to the scaffolding decisions for at least 6-12 months before considering any change. This is the minimum duration for P&L attribution to yield reliable signal about which patterns work for you. Changing scaffolding monthly gives you a trail of broken experiments, none long enough to converge. Holding scaffolding stable for a year while continuously tuning parameters produces a trail of learning \u2014 you know exactly what works for YOU, by data, not guess. The patience to hold scaffolding stable is itself an edge.</p>
+            <p className="text-sm text-gray-400">Commit to the scaffolding decisions for at least 6-12 months before considering any change. This is the minimum duration for P&L attribution to yield reliable signal about which patterns work for you. Changing scaffolding monthly gives you a trail of broken experiments, none long enough to converge. Holding scaffolding stable for a year while continuously tuning parameters produces a trail of learning — you know exactly what works for YOU, by data, not guess. The patience to hold scaffolding stable is itself an edge.</p>
           </div>
         </motion.div>
       </section>
@@ -1984,7 +1984,7 @@ export default function CapstoneLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Common Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-4">Four Ways the Capstone Goes Wrong</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Each mistake is a break in the Operational Loop \u2014 skipping debriefs, tweaking scaffolding, sizing wrong at the wrong moment, or ignoring data that contradicts self-perception. Avoiding these four is what separates compounding Level 10 graduates from those who plateau.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Each mistake is a break in the Operational Loop — skipping debriefs, tweaking scaffolding, sizing wrong at the wrong moment, or ignoring data that contradicts self-perception. Avoiding these four is what separates compounding Level 10 graduates from those who plateau.</p>
           <div className="space-y-3">
             {mistakes.map((m, i) => (
               <div key={i} className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
@@ -2006,13 +2006,13 @@ export default function CapstoneLesson() {
           <h2 className="text-2xl font-extrabold mb-4">The Operational Loop in One Page</h2>
           <div className="p-5 rounded-2xl glass-card">
             <div className="space-y-3">
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Core Doctrine (\u2605)</p><p className="text-sm text-gray-300">Trading is a closed feedback system. Scaffolding stable, tuning continuous. Every session\u2019s data tunes the next session\u2019s parameters.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Six Day Phases</p><p className="text-sm text-gray-300">Prep (6:30-9:30) \u2192 Open Scan (9:30-10:15) \u2192 Monitor (10:15-2:00) \u2192 Mid-Review (2:00-2:30) \u2192 Close (2:30-4:00) \u2192 Debrief (4:00-5:00).</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Core Doctrine (★)</p><p className="text-sm text-gray-300">Trading is a closed feedback system. Scaffolding stable, tuning continuous. Every session’s data tunes the next session’s parameters.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Six Day Phases</p><p className="text-sm text-gray-300">Prep (6:30-9:30) → Open Scan (9:30-10:15) → Monitor (10:15-2:00) → Mid-Review (2:00-2:30) → Close (2:30-4:00) → Debrief (4:00-5:00).</p></div>
               <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Sizing Rules</p><p className="text-sm text-gray-300">Peak hours = full. Lunch (11:30-1:00) = 0.75x. Closing session after targets = 0.5x. Size DOWN when winning, maintain or pause when losing.</p></div>
               <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Debrief Discipline</p><p className="text-sm text-gray-300">Unconditional. Classify every fire: trade / no-trade / noise. Attribute P&L by pattern. Note filter adjustments. Every session is data.</p></div>
-              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Weekly Calibration</p><p className="text-sm text-gray-300">Noise target 10-20%. Above 30% \u2192 tighten ONE specific pattern this week. Surgical, not blanket. Trend down over weeks.</p></div>
+              <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">Weekly Calibration</p><p className="text-sm text-gray-300">Noise target 10-20%. Above 30% → tighten ONE specific pattern this week. Surgical, not blanket. Trend down over weeks.</p></div>
               <div className="pb-3 border-b border-white/5"><p className="text-xs font-bold text-amber-400 mb-1">P&L Attribution</p><p className="text-sm text-gray-300">3-month rolling. Expect 2-3 patterns = 70%+ of P&L. Double down on top 3. Consider pruning bottom 2-3. Trust data over identity.</p></div>
-              <div><p className="text-xs font-bold text-amber-400 mb-1">Scaffolding vs Tuning</p><p className="text-sm text-gray-300">Don\u2019t touch scaffolding for 6-12 months minimum. Tune parameters weekly. Amateurs rebuild; professionals refine.</p></div>
+              <div><p className="text-xs font-bold text-amber-400 mb-1">Scaffolding vs Tuning</p><p className="text-sm text-gray-300">Don’t touch scaffolding for 6-12 months minimum. Tune parameters weekly. Amateurs rebuild; professionals refine.</p></div>
             </div>
           </div>
         </motion.div>
@@ -2023,7 +2023,7 @@ export default function CapstoneLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">17 &mdash; Final Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-4">Run the Loop</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you\u2019ve internalized the Operational Loop \u2014 the weekly calibration cycle, P&L attribution interpretation, scaffolding vs tuning, the unconditional debrief discipline, and trusting data over self-identity. Pass this game and you\u2019re thinking like a Level 10 graduate.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing whether you’ve internalized the Operational Loop — the weekly calibration cycle, P&L attribution interpretation, scaffolding vs tuning, the unconditional debrief discipline, and trusting data over self-identity. Pass this game and you’re thinking like a Level 10 graduate.</p>
           <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
@@ -2051,7 +2051,7 @@ export default function CapstoneLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Final Quiz &mdash; Level 10 Graduation</p>
           <h2 className="text-2xl font-extrabold mb-6">8 Questions to Complete Level 10</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">This quiz is the gate to the Level 10 Graduate certificate. Pass with 66%+ and you graduate Level 10 \u2014 ready for the PRO Arsenal in Level 11.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">This quiz is the gate to the Level 10 Graduate certificate. Pass with 66%+ and you graduate Level 10 — ready for the PRO Arsenal in Level 11.</p>
           <div className="space-y-6">
             {quizQuestions.map((q, qi) => (
               <div key={qi} className="p-5 rounded-2xl glass-card">
@@ -2074,13 +2074,13 @@ export default function CapstoneLesson() {
                   <div className="w-[100px] h-[100px] mx-auto mb-6 rounded-full bg-gradient-to-br from-amber-400 via-yellow-500 to-sky-500 flex items-center justify-center shadow-xl shadow-amber-500/40" style={{ boxShadow: '0 0 40px rgba(245,158,11,0.5)' }}>
                     <Crown className="w-12 h-12 text-white" strokeWidth={2.5} />
                   </div>
-                  <p className="text-xs tracking-[0.2em] uppercase text-amber-400 mb-2 font-bold">\u2605 Level 10 Graduation \u2605</p>
+                  <p className="text-xs tracking-[0.2em] uppercase text-amber-400 mb-2 font-bold">★ Level 10 Graduation ★</p>
                   <p className="text-xs tracking-widest uppercase text-gray-500 mb-4">Certificate of Mastery</p>
                   <p className="text-sm text-gray-300 leading-relaxed">Has successfully completed all 14 lessons of<br /><strong className="text-white text-base">Level 10: Free Indicator Arsenal</strong><br />at ATLAS Academy by Interakktive</p>
                   <div className="my-5 px-4">
                     <div className="h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
                   </div>
-                  <p className="bg-gradient-to-r from-amber-400 via-yellow-300 to-sky-400 bg-clip-text text-transparent font-extrabold text-xl mb-2" style={{ WebkitTransform: 'translateZ(0)' }}>\u2014 Free Arsenal Master \u2014</p>
+                  <p className="bg-gradient-to-r from-amber-400 via-yellow-300 to-sky-400 bg-clip-text text-transparent font-extrabold text-xl mb-2" style={{ WebkitTransform: 'translateZ(0)' }}>— Free Arsenal Master —</p>
                   <p className="text-[10px] text-gray-500 italic mb-4">13 Groundbreaking Concepts internalized &middot; Operational Loop active</p>
                   <p className="font-mono text-[10px] text-amber-500/70 tracking-wider uppercase">PRO-CERT-L10.14-{Math.random().toString(36).substring(2, 10).toUpperCase()}</p>
                 </div>
