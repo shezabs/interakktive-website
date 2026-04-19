@@ -132,6 +132,21 @@ const liveLessons = new Set([
   'when-challenges-fail',
   'building-a-prop-business',
   'level-9-capstone',
+  // Level 10 — The Free Indicator Arsenal
+  'atlas-philosophy',
+  'sessions-plus-deep-dive',
+  'market-acceptance-envelope-deep-dive',
+  'market-state-intelligence-deep-dive',
+  'market-acceptance-zones-deep-dive',
+  'market-participation-gradient-deep-dive',
+  'market-pressure-regime-deep-dive',
+  'volatility-state-index-deep-dive',
+  'effort-result-divergence-deep-dive',
+  'market-efficiency-ratio-deep-dive',
+  'reading-an-atlas-dashboard',
+  'stacking-free-indicators',
+  'alert-architecture-free-tier',
+  'free-indicator-playbook-capstone',
 ]);
 
 export default function AcademyPage() {
@@ -299,9 +314,9 @@ export default function AcademyPage() {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           className="text-center py-16 border border-dashed border-white/[0.06] rounded-2xl"
         >
-          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Level 10 Coming Soon</p>
+          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Level 11 Coming Soon</p>
           <p className="text-sm text-gray-600 max-w-md mx-auto">
-            Options · Prop Trading · ATLAS Mastery
+            The PRO Arsenal · Flagship Engine Deep Dives
           </p>
         </motion.div>
       </section>
