@@ -147,6 +147,11 @@ const liveLessons = new Set([
   'stacking-free-indicators',
   'alert-architecture-free-tier',
   'free-indicator-playbook-capstone',
+  // Level 11 — CIPHER PRO Mastery
+  'why-cipher-operator-contract',
+  'cipher-command-center-anatomy',
+  'cipher-inputs-anatomy-part-1',
+  'cipher-inputs-anatomy-part-2',
 ]);
 
 export default function AcademyPage() {
@@ -314,9 +319,9 @@ export default function AcademyPage() {
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           className="text-center py-16 border border-dashed border-white/[0.06] rounded-2xl"
         >
-          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Level 11 Coming Soon</p>
+          <p className="text-xs font-semibold tracking-widest uppercase text-gray-600 mb-2">Level 12 Coming Soon</p>
           <p className="text-sm text-gray-600 max-w-md mx-auto">
-            The PRO Arsenal · Flagship Engine Deep Dives
+            The Next PRO Mastery Level · Another Flagship Indicator
           </p>
         </motion.div>
       </section>
