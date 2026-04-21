@@ -2928,15 +2928,16 @@ const quizQuestions = [
 // + closing tags.
 // ============================================================
 export default function CipherInputsAnatomyPart1() {
-  const [gameActive, setGameActive] = useState(false);
   const [gameRound, setGameRound] = useState(0);
   const [gameSelections, setGameSelections] = useState<(string | null)[]>(new Array(gameRounds.length).fill(null));
-  const [gameComplete, setGameComplete] = useState(false);
-  const [quizActive, setQuizActive] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<(string | null)[]>(new Array(quizQuestions.length).fill(null));
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [certRevealed, setCertRevealed] = useState(false);
   const [certId] = useState(() => `PRO-CERT-L11.3A-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
+  const [scrollY, setScrollY] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => { const h = () => setScrollY(window.scrollY); window.addEventListener('scroll', h); return () => window.removeEventListener('scroll', h); }, []);
 
   // Compute quiz score
   const quizScore = quizAnswers.filter((ans, i) => {
@@ -2948,1372 +2949,685 @@ export default function CipherInputsAnatomyPart1() {
 
   useEffect(() => {
     if (quizPassed && quizSubmitted && !certRevealed) {
-      const timer = setTimeout(() => setCertRevealed(true), 600);
+      const timer = setTimeout(() => { setCertRevealed(true); setShowConfetti(true); setTimeout(() => setShowConfetti(false), 5000); }, 600);
       return () => clearTimeout(timer);
     }
   }, [quizPassed, quizSubmitted, certRevealed]);
 
+  const fadeUp = { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } };
+
   return (
-    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12 0%, #0a0f1a 100%)' }}>
-      {/* ================ HERO ================ */}
-      <section className="relative overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(ellipse at top, rgba(255,179,0,0.15), transparent 60%)' }} />
-        <div className="relative max-w-5xl mx-auto px-6 py-16 md:py-24">
-          <div className="flex items-center gap-3 mb-6">
-            <Link href="/academy" className="text-xs text-white/50 hover:text-white/80 transition">← Academy</Link>
-            <span className="text-white/20">/</span>
-            <span className="text-xs text-white/50">Level 11 · CIPHER PRO Mastery</span>
-            <span className="text-white/20">/</span>
-            <span className="text-xs text-amber-400">Lesson 11.3a</span>
-          </div>
+    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
+      <Confetti active={showConfetti} />
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-900/50"><motion.div className="h-full bg-gradient-to-r from-amber-500 to-accent-500" style={{ width: `${Math.min((scrollY / (typeof document !== 'undefined' ? document.body.scrollHeight - window.innerHeight : 1)) * 100, 100)}%` }} /></div>
+      <nav className="fixed top-1 left-0 right-0 z-40 flex items-center justify-between px-5 py-2.5">
+        <Link href="/academy" className="font-extrabold text-sm tracking-wide bg-gradient-to-r from-amber-400 to-accent-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>ATLAS ACADEMY</Link>
+        <div className="flex items-center gap-2"><Crown className="w-3.5 h-3.5 text-amber-400" /><span className="text-xs font-bold text-amber-400">PRO &middot; LEVEL 11</span></div>
+      </nav>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 mb-6">
-            <Crown className="w-3 h-3 text-amber-400" />
-            <span className="text-[10px] font-bold tracking-widest text-amber-400">PRO · LEVEL 11 · CIPHER</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-            CIPHER Inputs Anatomy
-            <br />
-            <span className="text-amber-400">· Part 1 — The Visual Layer</span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/60 mb-8 max-w-3xl italic">
-            Nine groups. Twenty-six inputs. Every toggle echoes through the system.
-          </p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Sections</div>
-              <div className="text-lg font-bold">16</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Animations</div>
-              <div className="text-lg font-bold">14</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Game rounds</div>
-              <div className="text-lg font-bold">5</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Est. time</div>
-              <div className="text-lg font-bold">45 min</div>
-            </div>
-          </div>
-
-          <div className="mt-8 p-4 rounded-xl bg-white/5 border border-white/10 max-w-3xl">
-            <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">COVERED IN THIS LESSON</div>
-            <div className="flex flex-wrap gap-2">
-              {['PRESET', 'RIBBON', 'RISK ENVELOPE', 'STRUCTURE', 'SPINE', 'IMBALANCE', 'SWEEPS', 'COIL', 'PULSE'].map((g) => (
-                <span key={g} className="text-[11px] font-mono text-white/70 bg-white/5 border border-white/10 rounded px-2 py-1">
-                  {g}
-                </span>
-              ))}
-            </div>
-            <p className="mt-3 text-xs text-white/50 italic">
-              Part 2 covers SIGNAL ENGINE, RISK MAP (TP/SL) and COMMAND CENTER row toggles.
-            </p>
-          </div>
-        </div>
+      {/* === HERO === */}
+      <section className="relative min-h-[85vh] flex flex-col items-center justify-center text-center px-6 pt-20">
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(245,158,11,0.08),transparent_70%)] pointer-events-none" />
+        <div className="absolute top-[-50px] right-[20%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(217,70,239,0.05),transparent_70%)] pointer-events-none" />
+        <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
+          <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 11 &middot; Lesson 3a</p></motion.div>
+          <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">CIPHER Inputs Anatomy<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Part 1 &mdash; The Visual Layer</span></motion.h1>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">Nine input groups. Twenty-six toggles. Every flip echoes through the system &mdash; master the cascade, own the chart.</motion.p>
+          <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5"><span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span><div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" /></motion.div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S00 — Why Settings Matter ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S00 · FOUNDATION</div>
-        <h2 className="text-3xl font-bold mb-6">Why settings matter — the operator tunes the instrument</h2>
-        <div className="space-y-4 text-white/80 leading-relaxed text-lg">
-          <p>
-            In Lesson 11.2 you learned what the Command Center TELLS you. This lesson teaches what you can TELL the Command Center — and more broadly, CIPHER itself. Every setting is a lever. Some levers move one thing. Some levers move four things you never noticed.
-          </p>
-          <p>
-            An instrument without an operator is a pretty light show. An instrument WITH an operator is a decision machine. The difference is whether you know which knobs to turn and when. That is this lesson.
-          </p>
-          <p className="pt-4 border-l-4 border-amber-500/50 pl-5 italic text-white/70">
-            Level 11 ships with 59 total inputs across 12 groups. This lesson covers 26 inputs across the 9 <span className="text-amber-400 font-semibold">visual-layer</span> groups — the things that DRAW on your chart. Part 2 will cover the 33 <span className="text-amber-400 font-semibold">behavioral</span> inputs — the things that change what CIPHER DOES with those drawings.
-          </p>
-        </div>
+      <section className="max-w-2xl mx-auto px-5 py-20">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">The operator tunes the instrument.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">In Lesson 11.2 you learned what the Command Center <strong className="text-white">tells</strong> you. This lesson teaches what you can <strong className="text-white">tell</strong> the Command Center &mdash; and more broadly, CIPHER itself. Every setting is a lever. Some levers move one thing. <strong className="text-amber-400">Some levers move four things you never noticed.</strong></p>
+            <p className="text-gray-400 leading-relaxed mb-4">An instrument without an operator is a pretty light show. An instrument with an operator is a decision machine. The difference is whether you know which knobs to turn and when.</p>
+            <p className="text-gray-400 leading-relaxed">That is this lesson. Not &ldquo;what the defaults do&rdquo; &mdash; anyone can read a tooltip. <strong className="text-white">What happens three steps downstream when you change a default.</strong> The cascade. The ripple. The thing the tooltip never tells you.</p>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-2">&#128270; THE VISUAL-LAYER SCOPE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">CIPHER ships with <strong className="text-white">59 inputs across 12 groups</strong>. This lesson covers the <strong className="text-amber-400">26 inputs across 9 visual-layer groups</strong> &mdash; the things that DRAW on your chart. Part 2 (11.3b) covers the 33 behavioral inputs &mdash; the things that change what CIPHER DOES with those drawings.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S01 — The Silent Cascade (Groundbreaking Concept) ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="text-[10px] font-bold tracking-widest text-amber-400">S01 · GROUNDBREAKING CONCEPT</div>
-          <span className="text-amber-400">★</span>
-        </div>
-        <h2 className="text-3xl font-bold mb-6">The Silent Cascade</h2>
-
-        <div className="p-6 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 mb-8">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-3">CORE DOCTRINE</div>
-          <p className="text-xl text-white/90 leading-relaxed">
-            Every setting in CIPHER is connected to every other setting. One toggle change creates downstream effects you did not ask for and will not see unless you are looking. The operator&apos;s skill is <span className="text-amber-400 font-semibold">knowing the cascade before you flip the switch</span>.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; &#11088; The Silent Cascade</p>
+          <h2 className="text-2xl font-extrabold mb-4">The Groundbreaking Concept</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Every setting in CIPHER is connected to every other setting. One toggle change creates downstream effects you did not ask for and will not see unless you are looking. The operator&apos;s skill is <strong className="text-amber-400">knowing the cascade before you flip the switch</strong>. Consider one click &mdash; the &ldquo;Strong Signals Only&rdquo; checkbox. Four things move at once: <strong className="text-white">(1)</strong> signal count on the chart drops because only 4/4 conviction signals now render. <strong className="text-white">(2)</strong> The Command Center &ldquo;Last Signal&rdquo; row shifts from FRESH to AGING because the most recent qualifying signal is older than it was a second ago. <strong className="text-white">(3)</strong> The Pulse row&apos;s action cell changes from WATCH BREAKOUT to HOLDING because the live-armed signal got filtered out. <strong className="text-white">(4)</strong> The tooltip TP/SL values recalculate because the tooltip anchors to the most recent valid signal. No warning dialog, no confirmation prompt, no notification sound. The cascade is silent because it happens through the data flow, not through the UI. Every single setting in this lesson has its own cascade.</p>
           <SilentCascadeAnim />
-        </div>
-
-        <div className="space-y-4 text-white/80 leading-relaxed">
-          <p>
-            Consider the animation above. The operator clicks a single toggle — &ldquo;Strong Signals Only&rdquo;. One checkbox. Look what happens:
-          </p>
-          <ul className="space-y-3 pl-6 border-l-2 border-amber-500/40">
-            <li className="leading-relaxed">
-              <span className="text-amber-400 font-bold">Ripple 1.</span> Signal count on the chart drops from 8 markers to 3. Five signals that were previously valid now fail the 4-factor conviction test.
-            </li>
-            <li className="leading-relaxed">
-              <span className="text-amber-400 font-bold">Ripple 2.</span> The &ldquo;Last Signal&rdquo; row in the Command Center shifts from FRESH to AGING — because the most recent qualifying signal is now older than it was a second ago.
-            </li>
-            <li className="leading-relaxed">
-              <span className="text-amber-400 font-bold">Ripple 3.</span> The Pulse row&apos;s action cell changes from &ldquo;WATCH BREAKOUT&rdquo; to &ldquo;HOLDING&rdquo;. The last live-armed signal has been filtered out, so the breakout watch no longer applies.
-            </li>
-            <li className="leading-relaxed">
-              <span className="text-amber-400 font-bold">Ripple 4.</span> The tooltip TP/SL values recalculate. The tooltip anchors to the most recent valid signal — and since that signal is now different, the numbers shift.
-            </li>
-          </ul>
-          <p className="pt-4">
-            Four systems. One click. No warning dialog, no confirmation prompt, no notification sound. The cascade is silent because it happens through the data flow, not through the UI. And this is exactly one example — every single setting you will learn in the rest of this lesson has its own cascade.
-          </p>
-          <div className="mt-6 p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE OPERATOR&apos;S RULE</div>
-            <p className="text-white/80 leading-relaxed">
-              Before you change ANY setting, ask: <span className="text-white font-semibold">&ldquo;what ELSE does this change?&rdquo;</span> If you cannot answer in under five seconds, you do not know the cascade well enough to change it yet. Leave it. Read the relevant section. Come back.
-            </p>
+          <div className="mt-4 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S RULE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Before you change ANY setting, ask: <strong className="text-white">&ldquo;what ELSE does this change?&rdquo;</strong> If you cannot answer in under five seconds, you do not know the cascade well enough to change it yet. Leave it. Read the relevant section. Come back.</p>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S02 — Reading a CIPHER input row ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S02 · ANATOMY</div>
-        <h2 className="text-3xl font-bold mb-6">Reading a CIPHER input row</h2>
-        <div className="space-y-4 text-white/80 leading-relaxed text-lg mb-8">
-          <p>
-            Before you touch any setting, you need to read the row. Every input in CIPHER follows the same four-part grammar. Once you see the pattern, every one of the 59 inputs becomes easy to scan.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; Reading a CIPHER Input Row</p>
+          <h2 className="text-2xl font-extrabold mb-4">Four-part grammar, fifty-nine times</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Before you touch any setting, read the row. Every input in CIPHER follows the same four-part grammar. Once you see the pattern, all <strong className="text-white">59 inputs</strong> become easy to scan.</p>
           <PineInputAnatomyAnim />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">1 · LABEL</div>
-            <p className="text-white/80 text-sm leading-relaxed">
-              What the setting is called. Sub-settings under a parent toggle appear slightly indented (visually) because the Pine source prefixes them with two spaces. &ldquo;Intensity&rdquo;, &ldquo;Fair Value Line&rdquo;, &ldquo;ATR Multiplier&rdquo; are all sub-settings.
-            </p>
+          <div className="mt-6 p-5 rounded-2xl glass-card mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-2">1 &middot; LABEL</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">What the setting is called. Sub-settings under a parent toggle appear slightly indented because the Pine source prefixes them with two spaces. &ldquo;Intensity&rdquo;, &ldquo;Fair Value Line&rdquo;, &ldquo;ATR Multiplier&rdquo; are all sub-settings.</p>
+            <p className="text-xs font-bold text-amber-400 mb-2">2 &middot; CONTROL</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">What you actually change. Three types: <strong className="text-white">checkbox</strong> (on/off), <strong className="text-white">dropdown</strong> (one option from a list), or <strong className="text-white">number field</strong> (with min/max constraints).</p>
+            <p className="text-xs font-bold text-amber-400 mb-2">3 &middot; INFO ICON &#9432;</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-4">Tiny circle on the right. Click or hover to reveal the tooltip. This is where the REAL information lives. <strong className="text-white">Read this FIRST, before you change anything.</strong></p>
+            <p className="text-xs font-bold text-amber-400 mb-2">4 &middot; TOOLTIP</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The written reason for the setting. Often includes recommendations (&ldquo;0.5 tight, 1.0 standard, 1.5 wide&rdquo;). Written by someone who already thought through the cascade for you.</p>
           </div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">2 · CONTROL</div>
-            <p className="text-white/80 text-sm leading-relaxed">
-              What you actually change. Three types: <span className="text-white">checkbox</span> (on/off), <span className="text-white">dropdown</span> (one option from a list), or <span className="text-white">number field</span> (with min/max constraints).
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#9888; DO NOT SKIP THE TOOLTIP</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The fastest way to break your CIPHER setup is to change a number because &ldquo;it looks interesting&rdquo; without reading the &#9432; first. The tooltips are short &mdash; all of them fit in 2&ndash;4 sentences. There is zero excuse not to read them.</p>
           </div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">3 · INFO ICON (ⓘ)</div>
-            <p className="text-white/80 text-sm leading-relaxed">
-              Tiny circle on the right. Click or hover to reveal the tooltip. This is where the REAL information lives. Read this FIRST, before you change anything.
-            </p>
-          </div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">4 · TOOLTIP</div>
-            <p className="text-white/80 text-sm leading-relaxed">
-              The written reason for the setting. Often includes recommendations (&ldquo;0.5 tight, 1.0 standard, 1.5 wide&rdquo;). Written by someone who already thought through the cascade for you.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">⚠ DO NOT SKIP THE TOOLTIP</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            The fastest way to break your CIPHER setup is to change a number because &ldquo;it looks interesting&rdquo; without reading the ⓘ first. The tooltips are short — all of them fit in 2–4 sentences. There is zero excuse not to read them.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S03 — PRESET ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S03 · THE OVERRIDE ENGINE</div>
-        <h2 className="text-3xl font-bold mb-2">PRESET — the six training wheels</h2>
-        <p className="text-white/50 italic mb-8">1 input · 7 options · overrides your manual toggles while active</p>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; PRESET</p>
+          <h2 className="text-2xl font-extrabold mb-4">The six training wheels</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The PRESET dropdown is the FIRST thing in CIPHER&apos;s settings panel, and for good reason &mdash; it is a <strong className="text-white">master override</strong>. Select a preset and it silently enforces its own combination of visuals, ignoring whatever you had turned on manually. Set it back to None and your manual toggles come back. Every preset obeys one rule: <strong className="text-amber-400">max 3 visual layers</strong>. More than three visuals and the chart becomes unreadable, so CIPHER refuses to stack them. You are getting a curated combination, not a buffet.</p>
           <PresetSelectorAnim />
-        </div>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The PRESET dropdown is the FIRST thing in CIPHER&apos;s settings panel and for good reason — it is a master override. Select a preset and it silently enforces its own combination of visuals, ignoring whatever you had turned on manually. Set it back to None and your manual toggles come back.
-          </p>
-          <p>
-            Every preset obeys one rule: <span className="text-amber-400 font-semibold">max 3 visual layers</span>. More than three visuals and the chart becomes unreadable, so CIPHER refuses to stack them. You are getting a curated combination, not a buffet.
-          </p>
-        </div>
-
-        <div className="mb-8 overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left p-3 text-amber-400 font-bold">Preset</th>
-                <th className="text-left p-3 text-amber-400 font-bold">Visuals forced ON</th>
-                <th className="text-left p-3 text-amber-400 font-bold">Signal engine</th>
-                <th className="text-left p-3 text-amber-400 font-bold">The mindset</th>
-              </tr>
-            </thead>
-            <tbody className="text-white/80">
-              <tr className="border-b border-white/5">
-                <td className="p-3 font-bold text-white">None</td>
-                <td className="p-3 italic text-white/50">whatever you set</td>
-                <td className="p-3 italic text-white/50">whatever you set</td>
-                <td className="p-3 italic text-white/60">&ldquo;Manual control.&rdquo;</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="p-3 font-bold text-white">Trend Trader</td>
-                <td className="p-3">Cipher Ribbon · Cipher Pulse · Trend candles</td>
-                <td className="p-3">Trend (PX only)</td>
-                <td className="p-3 italic text-white/60">&ldquo;Follow the wave.&rdquo;</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="p-3 font-bold text-white">Scalper</td>
-                <td className="p-3">Structure · Imbalance · Pulse (tight 0.8×)</td>
-                <td className="p-3">All Signals · Composite Bold candles</td>
-                <td className="p-3 italic text-white/60">&ldquo;Scalp from levels. Target gaps.&rdquo;</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="p-3 font-bold text-white">Swing Trader</td>
-                <td className="p-3">Cipher Ribbon · Cipher Spine · Pulse (wide 1.2×)</td>
-                <td className="p-3">Trend · Strong Signals forced ON</td>
-                <td className="p-3 italic text-white/60">&ldquo;Strong signals only.&rdquo;</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="p-3 font-bold text-white">Reversal</td>
-                <td className="p-3">Spine · Imbalance · Risk Envelope</td>
-                <td className="p-3">Reversal (TS only) · Tension candles</td>
-                <td className="p-3 italic text-white/60">&ldquo;Catch the snap.&rdquo;</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="p-3 font-bold text-white">Sniper</td>
-                <td className="p-3">Pulse (widest 1.3×) · Cipher Coil</td>
-                <td className="p-3">All Signals · Strong Signals forced ON</td>
-                <td className="p-3 italic text-white/60">&ldquo;Wait for the squeeze. Strike once.&rdquo;</td>
-              </tr>
-              <tr>
-                <td className="p-3 font-bold text-white">Structure</td>
-                <td className="p-3">Structure · Imbalance · Sweeps</td>
-                <td className="p-3">Visuals Only · no signals</td>
-                <td className="p-3 italic text-white/60">&ldquo;Pure chart reading.&rdquo;</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3 className="text-xl font-bold mb-4 text-white">The Preset Override Matrix</h3>
-        <div className="mb-6">
+          <div className="mt-6 p-5 rounded-2xl glass-card mb-6 space-y-3">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">NONE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Manual control. Whatever visuals you toggle, whatever signal engine you pick. The operator&apos;s home.</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TREND TRADER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Cipher Ribbon &middot; Cipher Pulse &middot; Trend candles. Signal engine: Trend (PX only). &ldquo;Follow the wave.&rdquo;</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SCALPER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Structure &middot; Imbalance &middot; Pulse (tight 0.8&times;). Signal engine: All Signals, Composite Bold candles. &ldquo;Scalp from levels. Target gaps.&rdquo;</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SWING TRADER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Cipher Ribbon &middot; Cipher Spine &middot; Pulse (wide 1.2&times;). Signal engine: Trend with Strong Signals forced ON. &ldquo;Strong signals only.&rdquo;</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">REVERSAL</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Spine &middot; Imbalance &middot; Risk Envelope. Signal engine: Reversal (TS only), Tension candles. &ldquo;Catch the snap.&rdquo;</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SNIPER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Pulse (widest 1.3&times;) &middot; Cipher Coil. Signal engine: All Signals with Strong Signals forced ON. &ldquo;Wait for the squeeze. Strike once.&rdquo;</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STRUCTURE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Structure &middot; Imbalance &middot; Sweeps. Signal engine: Visuals Only, no signals. &ldquo;Pure chart reading.&rdquo;</p>
+            </div>
+          </div>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">The Preset Override Matrix</p>
           <PresetOverrideMatrixAnim />
-        </div>
-
-        <div className="p-5 rounded-lg bg-white/5 border border-white/10 mb-6">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE PRESET GRADUATION CEREMONY</div>
-          <p className="text-white/80 text-sm leading-relaxed mb-3">
-            Presets are training wheels. Use them for the first 2–4 weeks while you learn which visuals you actually read. Then graduate to <span className="text-amber-400 font-semibold">None</span> and set your own three.
-          </p>
-          <p className="text-white/80 text-sm leading-relaxed">
-            You graduate when you can answer &ldquo;which three visuals do I need for this specific market right now?&rdquo; without looking at the preset list. If you can answer that, presets are no longer saving you time — they are limiting you.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">⚠ COMMON MISTAKE</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            You turn on 3 visuals manually, then pick a preset to try, and expect your visuals to be additive. They are not. The preset <span className="text-white">silently suppresses</span> your manual toggles. If you switch back to None you will find your original toggles are still set — they were just being ignored while the preset was active.
-          </p>
-        </div>
+          <div className="mt-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE PRESET GRADUATION CEREMONY</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Presets are training wheels. Use them for the first 2&ndash;4 weeks while you learn which visuals you actually read. Then graduate to <strong className="text-amber-400">None</strong> and set your own three. You graduate when you can answer &ldquo;which three visuals do I need for this specific market right now?&rdquo; without looking at the preset list. If you can answer that, presets are no longer saving you time &mdash; they are limiting you.</p>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#9888; COMMON MISTAKE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">You turn on 3 visuals manually, then pick a preset to try, and expect your visuals to be additive. They are not. The preset <strong className="text-white">silently suppresses</strong> your manual toggles. If you switch back to None you will find your original toggles are still set &mdash; they were just being ignored while the preset was active.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S04 — CIPHER RIBBON ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S04 · ADAPTIVE TREND VISUAL</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER RIBBON</h2>
-        <p className="text-white/50 italic mb-8">4 inputs · three adaptive lines · Divergence and Projection are PRO-only</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The Cipher Ribbon is three proprietary trend lines — <span className="text-white font-semibold">Core</span> (fastest, most responsive), <span className="text-white font-semibold">Flow</span> (midpoint anchor), and <span className="text-white font-semibold">Anchor</span> (slowest, structural reference). Together they adapt to volatility, trend strength, and volume conviction. This is the flagship visual of the whole CIPHER suite.
-          </p>
-        </div>
-
-        {/* Ribbon inputs table */}
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 4 RIBBON INPUTS</div>
-          <div className="space-y-3">
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Cipher Ribbon</div>
-                  <div className="text-xs text-white/50">checkbox · default: OFF</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">master toggle</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                The master on/off for the entire ribbon system. When OFF, none of the sub-settings matter — the ribbon simply does not draw. When ON, the three adaptive lines render with their fill band.
-              </p>
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; CIPHER RIBBON</p>
+          <h2 className="text-2xl font-extrabold mb-4">The flagship adaptive trend visual</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The Cipher Ribbon is three proprietary trend lines &mdash; <strong className="text-white">Core</strong> (fastest, most responsive), <strong className="text-white">Flow</strong> (midpoint anchor), and <strong className="text-white">Anchor</strong> (slowest, structural reference). Together they adapt to volatility, trend strength, and volume conviction. <strong className="text-amber-400">Four inputs, two PRO-exclusive.</strong> This is the flagship visual of the whole CIPHER suite.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CIPHER RIBBON &middot; checkbox &middot; default OFF &middot; master toggle</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The master on/off for the entire ribbon system. When OFF, none of the sub-settings matter &mdash; the ribbon simply does not draw. When ON, the three adaptive lines render with their fill band.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Intensity</div>
-                  <div className="text-xs text-white/50">dropdown · default: Normal · options: Subtle / Normal / Bold</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">visual only</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Controls the opacity of the ribbon fill and line weight. <span className="text-white">Subtle</span> recedes into the chart — good when the ribbon is one of three or more visuals. <span className="text-white">Normal</span> is the baseline. <span className="text-white">Bold</span> is the &ldquo;I want the ribbon to dominate&rdquo; setting — use when the ribbon is your ONLY visual.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">INTENSITY &middot; dropdown &middot; default Normal &middot; Subtle / Normal / Bold</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Controls the opacity of the ribbon fill and line weight. <strong className="text-white">Subtle</strong> recedes into the chart &mdash; good when the ribbon is one of three or more visuals. <strong className="text-white">Normal</strong> is the baseline. <strong className="text-white">Bold</strong> is the &ldquo;I want the ribbon to dominate&rdquo; setting &mdash; use when the ribbon is your ONLY visual.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Ribbon Divergence</div>
-                  <div className="text-xs text-white/50">checkbox · default: ON · PRO EXCLUSIVE</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">★ unique to PRO</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Detects when price makes new highs or lows but the ribbon&apos;s INTERNAL expansion weakens. An amber ◆ diamond marks the first bar of the divergence. The Command Center Ribbon row shifts to <span className="text-amber-400 font-mono">DIVERGING</span>. This is trend deterioration from inside — the engine loses steam before the surface does.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">RIBBON DIVERGENCE &middot; checkbox &middot; default ON &middot; &#9733; PRO EXCLUSIVE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Detects when price makes new highs or lows but the ribbon&apos;s INTERNAL expansion weakens. An amber &#9670; diamond marks the first bar of the divergence. The Command Center Ribbon row shifts to <strong className="text-amber-400">DIVERGING</strong>. This is trend deterioration from inside &mdash; the engine loses steam before the surface does.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Ribbon Projection</div>
-                  <div className="text-xs text-white/50">checkbox · default: ON · PRO EXCLUSIVE</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">★ unique to PRO</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Projects the Cipher Core 6 bars forward using kinematic extrapolation (velocity + acceleration). Dotted line fades with distance. When the projection curves back toward Flow, a potential flip is approaching — the Command Center Ribbon row shifts to <span className="text-amber-400 font-mono">CURVING</span>. <span className="text-white font-semibold">This is NOT a price prediction</span> — it is a projection of where the trend engine itself is heading.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">RIBBON PROJECTION &middot; checkbox &middot; default ON &middot; &#9733; PRO EXCLUSIVE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Projects the Cipher Core 6 bars forward using kinematic extrapolation (velocity + acceleration). Dotted line fades with distance. When the projection curves back toward Flow, a potential flip is approaching &mdash; the Command Center Ribbon row shifts to <strong className="text-amber-400">CURVING</strong>. <strong className="text-white">This is NOT a price prediction</strong> &mdash; it is a projection of where the trend engine itself is heading.</p>
             </div>
           </div>
-        </div>
-
-        {/* Ribbon Divergence animation */}
-        <h3 className="text-xl font-bold mb-4 text-white">Ribbon Divergence visualised</h3>
-        <div className="mb-6">
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Ribbon Divergence visualised</p>
           <RibbonDivergenceAnim />
-        </div>
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Look at the top pane: price is making three rising highs (HH1, HH2, HH3) — a textbook bull trend by surface reading. Now look at the bottom pane: the ribbon&apos;s internal expansion was huge at HH1, weaker at HH2, and collapsed at HH3. The engine is dying while the surface looks alive.
-          </p>
-          <p>
-            The amber ◆ diamond drops at HH3. From that bar forward, the Command Center Ribbon row reads DIVERGING until the condition clears. This is one of the highest-conviction trend-reversal warnings in all of CIPHER.
-          </p>
-        </div>
-
-        {/* Ribbon Projection animation */}
-        <h3 className="text-xl font-bold mb-4 text-white">Ribbon Projection visualised</h3>
-        <div className="mb-6">
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Look at the top pane: price is making three rising highs (HH1, HH2, HH3) &mdash; a textbook bull trend by surface reading. Now look at the bottom pane: the ribbon&apos;s internal expansion was huge at HH1, weaker at HH2, and collapsed at HH3. <strong className="text-white">The engine is dying while the surface looks alive.</strong> The amber &#9670; diamond drops at HH3. From that bar forward, the Command Center Ribbon row reads DIVERGING until the condition clears. One of the highest-conviction trend-reversal warnings in all of CIPHER.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Ribbon Projection visualised</p>
           <RibbonProjectionAnim />
-        </div>
-        <div className="space-y-3 text-white/80 leading-relaxed">
-          <p>
-            The live ribbon is solid. The dotted dots past the NOW line are the projection — 6 bars of extrapolation based on where the engine is CURRENTLY heading. In the first phase (EXPANDING) the projection continues in the same direction. In the second (MATURING) it flattens. In the third (CURVING) it curves back toward the Flow line — and that is the warning sign.
-          </p>
-          <p className="p-4 rounded-lg bg-white/5 border-l-4 border-amber-500/50 italic">
-            CURVING in the Ribbon row of your Command Center does not mean price will reverse. It means the ENGINE is about to flip. Price lags the engine by 2–5 bars on average. You have time to prepare.
-          </p>
-        </div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">The live ribbon is solid. The dotted dots past the NOW line are the projection &mdash; 6 bars of extrapolation based on where the engine is currently heading. In the first phase (EXPANDING) the projection continues in the same direction. In the second (MATURING) it flattens. In the third (CURVING) it curves back toward the Flow line &mdash; and that is the warning sign.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">READ: CURVING IS AN ENGINE WARNING, NOT A PRICE CALL</p>
+            <p className="text-sm text-gray-400 leading-relaxed">CURVING in the Ribbon row of your Command Center does not mean price will reverse. It means the ENGINE is about to flip. Price lags the engine by <strong className="text-white">2&ndash;5 bars</strong> on average. You have time to prepare.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S05 — CIPHER RISK ENVELOPE ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S05 · ADAPTIVE VOLATILITY CLOUD</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER RISK ENVELOPE</h2>
-        <p className="text-white/50 italic mb-8">5 inputs · concentric zones · the FV line is a trap (explained below)</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The Risk Envelope is an adaptive volatility cloud that surrounds price with four concentric zones: SAFE, WATCH, CAUTION, DANGER. The width scales with volatility, and the opacity scales with conviction. All four zones reference the Fair Value line at the centre — the gravitational anchor the whole system rotates around.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; CIPHER RISK ENVELOPE</p>
+          <h2 className="text-2xl font-extrabold mb-4">The adaptive volatility cloud</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The Risk Envelope is an adaptive volatility cloud that surrounds price with four concentric zones: <strong className="text-white">SAFE, WATCH, CAUTION, DANGER</strong>. The width scales with volatility, and the opacity scales with conviction. All four zones reference the Fair Value line at the centre &mdash; the gravitational anchor the whole system rotates around. <strong className="text-amber-400">Five inputs, one trap.</strong></p>
           <RiskEnvelopeZonesAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Zones escalate outward. A trade taken in the SAFE zone has volatility working WITH you — price is near fair value, the ATR is normal, your stop fits inside a half-ATR of breathing room. A trade taken in the DANGER zone has volatility working AGAINST you — price is stretched far from fair value, mean reversion is imminent, your stop needs to be wider.
-          </p>
-          <p>
-            The ✕ markers fire on first-bar escalation INTO a higher zone. Amber ✕ when you cross into CAUTION. Magenta ✕ when you cross into DANGER. <span className="text-white font-semibold">Re-entries do not re-trigger</span> — the zone has to be LEFT before re-escalation counts. This prevents noise from producing dozens of false markers when price oscillates on the zone boundary.
-          </p>
-        </div>
-
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 5 RISK ENVELOPE INPUTS</div>
-          <div className="space-y-3">
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Cipher Risk Envelope</div>
-                  <div className="text-xs text-white/50">checkbox · default: OFF</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">master toggle</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Master on/off. When ON, all four zones draw. When OFF, the entire envelope system is hidden AND the Mean Reversion Score calculation is still active in the Command Center (the calculation uses the underlying EMA; the draw is what the toggle controls).
-              </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Zones escalate outward. A trade taken in SAFE has volatility working WITH you &mdash; price is near fair value, ATR is normal, your stop fits inside a half-ATR of breathing room. A trade taken in DANGER has volatility working AGAINST you &mdash; price is stretched far from fair value, mean reversion is imminent, your stop needs to be wider. The &#10005; markers fire on first-bar escalation INTO a higher zone. Amber &#10005; when you cross into CAUTION. Magenta &#10005; when you cross into DANGER. <strong className="text-white">Re-entries do not re-trigger</strong> &mdash; the zone has to be LEFT before re-escalation counts. This prevents noise from producing dozens of false markers when price oscillates on the zone boundary.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CIPHER RISK ENVELOPE &middot; checkbox &middot; default OFF &middot; master toggle</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Master on/off. When ON, all four zones draw. When OFF, the entire envelope system is hidden AND the Mean Reversion Score in the Command Center stops updating &mdash; the calculation itself only runs when the master is on.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Intensity</div>
-                  <div className="text-xs text-white/50">dropdown · default: Normal · Subtle / Normal / Bold</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">visual only</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Opacity of the fill bands. Subtle recedes, Bold dominates. On charts with 3 visuals, most operators set this to Subtle to let other visuals breathe.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">INTENSITY &middot; dropdown &middot; default Normal &middot; Subtle / Normal / Bold</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Opacity of the fill bands. Subtle recedes, Bold dominates. On charts with 3 visuals, most operators set this to Subtle to let other visuals breathe.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Fair Value Line</div>
-                  <div className="text-xs text-white/50">checkbox · default: ON · DISPLAY TOGGLE</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">⚠ display only</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                A dotted white line at the envelope&apos;s gravitational centre — the EMA(HL2, 20) that all bands anchor to. This is the &ldquo;fair value&rdquo; every other zone is measured from. The Mean Reversion Score in the Command Center measures distance from THIS line in ATR-sigma units. <span className="text-white font-semibold">BUT</span> — and this is the trap — turning this toggle OFF only hides the DRAWN LINE. The calculation underneath still runs as long as Risk Envelope is ON. Confusing display vs calculation is one of the most common Silent Cascade mistakes.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FAIR VALUE LINE &middot; checkbox &middot; default ON &middot; &#9888; DISPLAY TOGGLE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A dotted white line at the envelope&apos;s gravitational centre &mdash; the EMA(HL2, 20) that all bands anchor to. The Mean Reversion Score measures distance from THIS line in ATR-sigma units. <strong className="text-white">BUT</strong> &mdash; and this is the trap &mdash; turning this toggle OFF only hides the DRAWN LINE. The MR calculation still runs as long as Risk Envelope is ON. Confusing display vs calculation is one of the most common Silent Cascade mistakes.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Zone Transition Markers</div>
-                  <div className="text-xs text-white/50">checkbox · default: ON</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">signal events</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Shows the ✕ markers when price escalates into a higher-risk zone. Magenta ✕ on DANGER entry, amber ✕ on CAUTION entry. Only fires on FIRST-BAR of the transition, so the chart stays clean even with choppy price.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ZONE TRANSITION MARKERS &middot; checkbox &middot; default ON</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Shows the &#10005; markers when price escalates into a higher-risk zone. Magenta &#10005; on DANGER entry, amber &#10005; on CAUTION entry. Only fires on FIRST-BAR of the transition, so the chart stays clean even with choppy price.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Adaptive Intensity</div>
-                  <div className="text-xs text-white/50">checkbox · default: OFF</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">dynamic visuals</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                When ON, two dynamic factors kick in: (1) <span className="text-white">Progressive Danger Glow</span> — the deeper price pushes into the DANGER zone, the brighter the fill. (2) <span className="text-white">Band Breathing</span> — fills brighten when ATR is expanding, fade when contracting. Gives the envelope a living, responsive feel. Leave OFF if you prefer static visuals.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ADAPTIVE INTENSITY &middot; checkbox &middot; default OFF</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When ON, two dynamic factors kick in: <strong className="text-white">Progressive Danger Glow</strong> &mdash; the deeper price pushes into the DANGER zone, the brighter the fill. <strong className="text-white">Band Breathing</strong> &mdash; fills brighten when ATR is expanding, fade when contracting. Gives the envelope a living, responsive feel. Leave OFF if you prefer static visuals.</p>
             </div>
           </div>
-        </div>
-
-        <h3 className="text-xl font-bold mb-4 text-white">Fair Value gravity</h3>
-        <div className="mb-6">
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Fair Value gravity</p>
           <FairValueGravityAnim />
-        </div>
-        <div className="mb-6 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Watch the price path in the animation. Every time it stretches far from the Fair Value line, an amber &ldquo;GRAVITY&rdquo; arrow appears pointing it back toward the line. The Mean Reversion Score in the top-right reports the distance in ATR-sigma units. The larger the number, the more stretched — the more mean reversion becomes the dominant probability.
-          </p>
-          <p>
-            This is WHY the Fair Value line matters. It is not a support/resistance level. It is not a moving average you trade off. It is the centre of mass that the rest of the envelope is measured against.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">⚠ THE DISPLAY vs CALCULATION TRAP</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            The Fair Value Line toggle is a DISPLAY toggle. Turning it OFF hides the dotted line but does NOT disable the Mean Reversion Score in the Command Center. The calculation uses the underlying EMA(HL2, 20) regardless. If you want to disable the MR score entirely, turn off the MASTER toggle — the whole Risk Envelope — not the Fair Value sub-toggle.
-          </p>
-        </div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the price path in the animation. Every time it stretches far from the Fair Value line, an amber GRAVITY arrow appears pointing it back toward the line. The Mean Reversion Score in the top-right reports the distance in ATR-sigma units. The larger the number, the more stretched &mdash; the more mean reversion becomes the dominant probability. This is <strong className="text-white">why</strong> the Fair Value line matters. It is not a support/resistance level. It is not a moving average you trade off. <strong className="text-amber-400">It is the centre of mass</strong> that the rest of the envelope is measured against.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#9888; THE DISPLAY vs CALCULATION TRAP</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The Fair Value Line toggle is a DISPLAY toggle. Turning it OFF hides the dotted line but does NOT disable the Mean Reversion Score in the Command Center. The calculation uses the underlying EMA(HL2, 20) regardless. If you want to disable the MR score entirely, <strong className="text-white">turn off the MASTER toggle</strong> &mdash; the whole Risk Envelope &mdash; not the Fair Value sub-toggle.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S06 — CIPHER STRUCTURE ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S06 · INSTITUTIONAL S/R</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER STRUCTURE</h2>
-        <p className="text-white/50 italic mb-8">6 inputs · lifecycle-managed S/R levels · NOT order blocks (those live in PHANTOM)</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            Cipher Structure draws institutional support and resistance levels based on swing-point detection. Each zone has a lifecycle — it is born at a pivot, tested N times, and consumed. Unlike static S/R tools, Structure prunes its own zones so the chart never gets cluttered with stale levels from weeks ago.
-          </p>
-          <p>
-            <span className="text-amber-400 font-semibold">These are NOT order blocks.</span> Order blocks (supply/demand zones with wick engulfment rules) live in PHANTOM PRO. Structure is a different concept — swing-high/swing-low detection with institutional-price-action pruning logic.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; CIPHER STRUCTURE</p>
+          <h2 className="text-2xl font-extrabold mb-4">Lifecycle-managed institutional S/R</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Cipher Structure draws institutional support and resistance levels based on swing-point detection. Each zone has a lifecycle &mdash; it is born at a pivot, tested N times, and consumed. Unlike static S/R tools, Structure prunes its own zones so the chart never gets cluttered with stale levels from weeks ago. <strong className="text-amber-400">These are NOT order blocks.</strong> Order blocks (supply/demand zones with wick engulfment rules) live in PHANTOM PRO. Structure is a different concept &mdash; swing-high/swing-low detection with institutional-price-action pruning logic.</p>
           <StructureLifecycleAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Every zone walks through four stages: BIRTH (pivot detected), ACTIVE (drawn on chart, no tests yet), TESTED ×N (each touch plants an amber ✕), and CONSUMED (removed after N tests or after max age bars — whichever comes first). The right-hand stage panel tracks which phase the current zone is in.
-          </p>
-        </div>
-
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 6 STRUCTURE INPUTS</div>
-          <div className="space-y-3">
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Cipher Structure</div>
-                  <div className="text-xs text-white/50">checkbox · default: OFF</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">master toggle</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Master on/off for the entire zone system. When OFF, no zones render. When ON, all zones respecting the four numeric filters below render with their tests.
-              </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Every zone walks through four stages: <strong className="text-white">BIRTH</strong> (pivot detected), <strong className="text-white">ACTIVE</strong> (drawn on chart, no tests yet), <strong className="text-white">TESTED &times;N</strong> (each touch plants an amber &#10005;), and <strong className="text-white">CONSUMED</strong> (removed after N tests or after max age bars &mdash; whichever comes first). The right-hand stage panel tracks which phase the current zone is in.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CIPHER STRUCTURE &middot; checkbox &middot; default OFF &middot; master toggle</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Master on/off for the entire zone system. When OFF, no zones render. When ON, all zones respecting the four numeric filters below render with their tests.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Intensity</div>
-                  <div className="text-xs text-white/50">dropdown · default: Normal · Subtle / Normal / Bold</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">visual only</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Controls zone band opacity. On a busy chart with 3 visuals, Subtle is almost always the right call for Structure.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">INTENSITY &middot; dropdown &middot; default Normal &middot; Subtle / Normal / Bold</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Controls zone band opacity. On a busy chart with 3 visuals, Subtle is almost always the right call for Structure.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Pivot Detection Length</div>
-                  <div className="text-xs text-white/50">integer · default: 5 · range: 2–20</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">sensitivity</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Bars left/right for swing detection. A pivot requires N bars on either side to be lower (for a swing high) or higher (for a swing low). <span className="text-white">Lower value</span> = more zones, more noise. <span className="text-white">Higher value</span> = fewer zones, only the strongest. 5 is balanced — good for 15m–1H timeframes. Drop to 3 on faster charts, raise to 10+ on slower ones.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">PIVOT DETECTION LENGTH &middot; integer &middot; default 5 &middot; range 2&ndash;20</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Bars left/right for swing detection. A pivot requires N bars on either side to be lower (for a swing high) or higher (for a swing low). <strong className="text-white">Lower</strong> = more zones, more noise. <strong className="text-white">Higher</strong> = fewer zones, only the strongest. 5 is balanced &mdash; good for 15m&ndash;1H timeframes. Drop to 3 on faster charts, raise to 10+ on slower ones.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Max Levels (above + below)</div>
-                  <div className="text-xs text-white/50">integer · default: 8 · range: 4–16</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">clutter cap</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Maximum total S/R levels drawn on the chart at any time. Default is 8, typically split roughly 4 above + 4 below price. When a new stronger zone forms and you are already at the cap, the oldest or weakest zone is pruned to make room.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">MAX LEVELS (ABOVE + BELOW) &middot; integer &middot; default 8 &middot; range 4&ndash;16</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Maximum total S/R levels drawn on the chart at any time. Default is 8, typically split roughly 4 above + 4 below price. When a new stronger zone forms and you are already at the cap, the oldest or weakest zone is pruned to make room.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Remove After N Tests</div>
-                  <div className="text-xs text-white/50">integer · default: 4 · range: 2–6</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">⚠ consumption rule</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                A zone is removed from the chart after this many tests — the philosophy is that a level tested 4 times has had its liquidity consumed and is no longer institutionally meaningful. <span className="text-white">Lower</span> = faster consumption, fewer re-test trades. <span className="text-white">Higher</span> = slower consumption, more willing to re-take zones on repeated tests. This setting is a TRADING STYLE dial as much as a technical one.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">REMOVE AFTER N TESTS &middot; integer &middot; default 4 &middot; range 2&ndash;6</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A zone is removed from the chart after this many tests &mdash; the philosophy is that a level tested 4 times has had its liquidity consumed and is no longer institutionally meaningful. <strong className="text-white">Lower</strong> = faster consumption, fewer re-test trades. <strong className="text-white">Higher</strong> = slower consumption, more willing to re-take zones on repeated tests. This is a trading-style dial as much as a technical one.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Max Zone Age (bars)</div>
-                  <div className="text-xs text-white/50">integer · default: 200 · range: 50–500</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">time-to-live</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Zones older than this are removed regardless of how many times they have been tested. Prevents ancient zones from cluttering the chart long after they have stopped being relevant. On a 15m chart, 200 bars is ~50 hours — roughly two trading days.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">MAX ZONE AGE (BARS) &middot; integer &middot; default 200 &middot; range 50&ndash;500</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Zones older than this are removed regardless of how many times they have been tested. Prevents ancient zones from cluttering the chart long after they have stopped being relevant. On a 15m chart, 200 bars is ~50 hours &mdash; roughly two trading days.</p>
             </div>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">⚙ TUNING PRIMER</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            For scalping (1m–5m): Pivot Length 3, Max Levels 8, Remove After 3. For swing (1H–4H): Pivot Length 8, Max Levels 6, Remove After 4. For position (Daily+): Pivot Length 15, Max Levels 4, Remove After 5–6. The defaults (5 / 8 / 4 / 200) target the 15m chart.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#9881; TUNING PRIMER</p>
+            <p className="text-sm text-gray-400 leading-relaxed">For <strong className="text-white">scalping (1m&ndash;5m):</strong> Pivot Length 3, Max Levels 8, Remove After 3. For <strong className="text-white">swing (1H&ndash;4H):</strong> Pivot Length 8, Max Levels 6, Remove After 4. For <strong className="text-white">position (Daily+):</strong> Pivot Length 15, Max Levels 4, Remove After 5&ndash;6. The defaults (5 / 8 / 4 / 200) target the 15m chart.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S07 — CIPHER SPINE ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S07 · RANGE MIDPOINT</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER SPINE</h2>
-        <p className="text-white/50 italic mb-8">2 inputs · health-adaptive midpoint with breathing bands</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The Spine is an adaptive range-midpoint line wrapped in breathing bands whose width tells you momentum health. When momentum is strong and the trend is healthy, the bands are tight and vivid. When momentum is dying and the trend is about to flip, the bands stretch wide and desaturate — and the Spine itself starts drifting away from price.
-          </p>
-          <p>
-            The gap between the Spine and price is the warning. Healthy trends have their Spine right on top of price; dying trends have the Spine trailing behind or ahead, creating a visible GAP.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; CIPHER SPINE</p>
+          <h2 className="text-2xl font-extrabold mb-4">The breathing midpoint &mdash; a confidence gauge</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The Spine is an adaptive range-midpoint line wrapped in breathing bands whose width tells you momentum health. When momentum is strong and the trend is healthy, the bands are tight and vivid. When momentum is dying and the trend is about to flip, the bands stretch wide and desaturate &mdash; and the Spine itself starts drifting away from price. <strong className="text-amber-400">The gap between the Spine and price is the warning.</strong> Healthy trends have their Spine right on top of price; dying trends have the Spine trailing behind or ahead, creating a visible GAP.</p>
           <SpineBreathingAnim />
-        </div>
-
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 2 SPINE INPUTS</div>
-          <div className="space-y-3">
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Cipher Spine</div>
-                  <div className="text-xs text-white/50">checkbox · default: OFF</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">master toggle</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Master on/off for the Spine midpoint line and its breathing bands. When ON, the Spine renders and its colour adapts: teal when bullish momentum is healthy, magenta when bearish, amber during transitions. Vividness intensifies with momentum strength.
-              </p>
+          <div className="mt-6 p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CIPHER SPINE &middot; checkbox &middot; default OFF &middot; master toggle</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Master on/off for the Spine midpoint line and its breathing bands. When ON, the Spine renders and its colour adapts: teal when bullish momentum is healthy, magenta when bearish, amber during transitions. Vividness intensifies with momentum strength.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Intensity</div>
-                  <div className="text-xs text-white/50">dropdown · default: Normal · Subtle / Normal / Bold</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">visual only</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Controls the opacity of the band fill and the Spine line weight. Spine is naturally bold — often paired well at Subtle to stay in the background while still providing orientation.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">INTENSITY &middot; dropdown &middot; default Normal &middot; Subtle / Normal / Bold</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Controls the opacity of the band fill and the Spine line weight. Spine is naturally bold &mdash; often paired well at Subtle to stay in the background while still providing orientation.</p>
             </div>
           </div>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">WHEN TO READ THE SPINE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The Spine is not a signal line &mdash; you do not trade from its crosses. It is a <strong className="text-white">confidence gauge</strong>. Check it before every entry. If the bands are tight and vivid and the Spine hugs price, you have momentum wind at your back. If the bands are wide and the Spine has drifted away, you are fighting a maturing trend. <strong className="text-amber-400">Size down or skip the trade.</strong></p>
+          </div>
+        </motion.div>
+      </section>
 
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">WHEN TO READ THE SPINE</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            The Spine is not a signal line — you do not trade from its crosses. It is a <span className="text-white font-semibold">confidence gauge</span>. Check it before every entry. If the bands are tight and vivid and the Spine hugs price, you have momentum wind at your back. If the bands are wide and the Spine has drifted away, you are fighting a maturing trend. Size down or skip the trade.
-          </p>
-        </div>
+      {/* ================ SECTION S08 — CIPHER IMBALANCE ================ */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; CIPHER IMBALANCE</p>
+          <h2 className="text-2xl font-extrabold mb-4">Shrinking FVG magnets</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Cipher Imbalance draws Fair Value Gaps &mdash; price-action gaps that act as gravitational magnets pulling future price action back to fill them. Unlike most FVG tools, CIPHER&apos;s implementation has one unique behaviour: <strong className="text-amber-400">the box shrinks in real time as price fills it</strong>. You never see the original full gap once price has started consuming it &mdash; you only see the remaining unfilled magnet. At 100% fill, the box auto-deletes entirely.</p>
+          <ImbalanceShrinkAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation. A bullish gap forms when price spikes up and leaves an untraded zone below. When price returns into the gap, the TOP edge of the box stays pinned to the original high while the BOTTOM edge rises with each bar of fill. The dotted midline at 50% is the equilibrium point &mdash; the price at which exactly half the gap has been consumed. <strong className="text-white">Gaps older than 100 bars auto-expire</strong> regardless of fill &mdash; old imbalance loses institutional relevance.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CIPHER IMBALANCE &middot; checkbox &middot; default ON &middot; master toggle</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Master on/off for the entire FVG system. When ON, bullish and bearish gaps are detected, drawn as shrinking teal or magenta boxes, and surfaced in the Command Center Imbalance row. When OFF, no boxes render and the Imbalance row reads <strong className="text-white">&mdash;</strong> (no imbalance tracked).</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">INTENSITY &middot; dropdown &middot; default Normal &middot; Subtle / Normal / Bold</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Controls the opacity of the gap-box fill and the stroke weight of its edges. <strong className="text-white">Subtle</strong> lets the gaps sit in the background as reference zones &mdash; useful when Structure or Ribbon is the primary visual. <strong className="text-white">Bold</strong> makes gaps the dominant visual element. Normal is the baseline.</p>
+            </div>
+          </div>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Reading the Command Center Imbalance row</p>
+          <div className="p-5 rounded-2xl glass-card mb-6">
+            <p className="text-sm text-gray-400 leading-relaxed mb-3">The Command Center&apos;s Imbalance row summarises the active gap landscape in two cells:</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-white">State cell.</strong> A directional triangle (<strong className="text-amber-400">&#9650;</strong> bullish gap above, <strong className="text-amber-400">&#9660;</strong> bearish gap below, <strong className="text-white">&mdash;</strong> none) followed by the ATR-normalised magnitude of the nearest active gap (e.g. <strong className="text-white">1.2 ATR</strong>). The higher the ATR figure, the more significant the gap as a future magnet.</p>
+            <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Action cell.</strong> Contextual verdict surfaced from the priority cascade &mdash; <strong className="text-white">STACKED BULL</strong> (multiple bullish gaps above price, upward pull dominant), <strong className="text-white">STACKED BEAR</strong> (mirror case downward), <strong className="text-white">BETWEEN LEVELS</strong> (neutral, no clear magnet), and so on. You read the Action cell; CIPHER has already resolved which state wins.</p>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">IMBALANCE IS A MAGNET, NOT A SIGNAL</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Cipher Imbalance does not tell you to enter. It tells you <strong className="text-white">where price wants to go</strong>. A stacked-bear reading with a 1.2 ATR gap below means the downward magnet is strong &mdash; useful as a target for shorts, dangerous to fight with longs. Trade the direction of the stacked side, target the nearest gap, exit when the gap shrinks below 30%.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S09 — CIPHER SWEEPS ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S09 · LIQUIDITY RAIDS</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER SWEEPS</h2>
-        <p className="text-white/50 italic mb-8">1 input · the light version · full SMC treatment lives in PHANTOM</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            A liquidity sweep is when price wicks BEYOND a prior swing high or low — grabbing the stops that were parked above or below — then closes back INSIDE the range. The textbook institutional trap. CIPHER Sweeps detects these events and marks them with a diamond (◆) at the swept level. A 3-bar context window follows: any signal that fires within 3 bars of a sweep gets tagged with &ldquo;Sweep&rdquo; in its tooltip — CIPHER&apos;s highest-probability reversal setup.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; CIPHER SWEEPS</p>
+          <h2 className="text-2xl font-extrabold mb-4">Liquidity raids &mdash; the 3-bar sweep context</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">A liquidity sweep is when price wicks BEYOND a prior swing high or low &mdash; grabbing the stops that were parked above or below &mdash; then closes back INSIDE the range. The textbook institutional trap. CIPHER Sweeps detects these events and marks them with a diamond (&#9670;) at the swept level. A <strong className="text-amber-400">3-bar context window</strong> follows: any signal that fires within 3 bars of a sweep gets tagged with &ldquo;Sweep&rdquo; in its tooltip &mdash; CIPHER&apos;s highest-probability reversal setup. <strong className="text-amber-400">The light version.</strong> Full SMC treatment lives in PHANTOM.</p>
           <SweepDetectionAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            The animation walks a series of candles toward a prior swing high (dashed white line). Most candles stay below. On candle 14 the wick shoots UP past the line — stops above the swing high are hit. But watch the BODY: it closes back below the line. That is the signature of a sweep — wick above, body inside. The amber ◆ drops at the swept level. For the next 3 bars, any CIPHER signal that fires gets the &ldquo;Sweep&rdquo; context tag.
-          </p>
-        </div>
-
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 1 SWEEPS INPUT</div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Cipher Sweeps</div>
-                <div className="text-xs text-white/50">checkbox · default: OFF</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">master toggle (no sub-settings)</div>
-            </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Master on/off for the sweep detection system. There are no sub-settings — detection parameters are internal. When ON, every qualifying sweep gets a ◆ marker and triggers the 3-bar Sweep context window. When OFF, signals still fire but none of them will ever carry the Sweep context tag.
-            </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">The animation walks a series of candles toward a prior swing high (dashed white line). Most candles stay below. On candle 14 the wick shoots UP past the line &mdash; stops above the swing high are hit. But watch the <strong className="text-white">BODY</strong>: it closes back below the line. That is the signature of a sweep &mdash; wick above, body inside. The amber &#9670; drops at the swept level. For the next 3 bars, any CIPHER signal that fires gets the &ldquo;Sweep&rdquo; context tag.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6">
+            <p className="text-xs font-bold text-amber-400 mb-1">CIPHER SWEEPS &middot; checkbox &middot; default OFF &middot; master toggle (no sub-settings)</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Master on/off for the sweep detection system. There are no sub-settings &mdash; detection parameters are internal. When ON, every qualifying sweep gets a &#9670; marker and triggers the 3-bar Sweep context window. When OFF, signals still fire but none of them will ever carry the Sweep context tag.</p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">CIPHER vs PHANTOM — KNOW THE DIFFERENCE</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            CIPHER Sweeps is the LIGHT version — detection + marker + 3-bar context. PHANTOM PRO has the full Smart Money Concepts treatment: equal highs/lows clusters, liquidity pools, sweep quality scoring, and sessional sweep statistics. If you are trading SMC as your primary style, enable PHANTOM Sweeps too — the two work together, not in competition.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">CIPHER vs PHANTOM &mdash; KNOW THE DIFFERENCE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">CIPHER Sweeps is the LIGHT version &mdash; detection + marker + 3-bar context. PHANTOM PRO has the full Smart Money Concepts treatment: equal highs/lows clusters, liquidity pools, sweep quality scoring, and sessional sweep statistics. If you are trading SMC as your primary style, enable PHANTOM Sweeps too &mdash; the two work together, not in competition.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S10 — CIPHER COIL ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S10 · COMPRESSION ZONES</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER COIL</h2>
-        <p className="text-white/50 italic mb-8">1 input · BB/KC squeeze with progression stages · fires direction on release</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The Cipher Coil is a compression-zone visual built on Bollinger Band + Keltner Channel convergence. When price enters a squeeze, an amber box appears with three lines that get progressively thicker and brighter as the squeeze intensifies. There are four stages: <span className="text-white font-semibold">BUILDING</span> (early compression, faint thin lines), <span className="text-white font-semibold">COILING</span> (medium lines, energy building), <span className="text-white font-semibold">BREAKOUT READY</span> (thick bright lines, about to fire), and the release — where a diamond (◆) marks the breakout direction.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; CIPHER COIL</p>
+          <h2 className="text-2xl font-extrabold mb-4">Compression zones with staged release</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The Cipher Coil is a compression-zone visual built on Bollinger Band + Keltner Channel convergence. When price enters a squeeze, an amber box appears with three lines that get progressively thicker and brighter as the squeeze intensifies. Four stages: <strong className="text-white">BUILDING</strong> (early compression, faint thin lines), <strong className="text-white">COILING</strong> (medium lines, energy building), <strong className="text-white">BREAKOUT READY</strong> (thick bright lines, about to fire), and the release &mdash; where a diamond (&#9670;) marks the breakout direction.</p>
           <CoilCompressionAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Watch the bands converge. The outer BB lines and inner KC dashed lines both narrow as compression intensifies. The energy bar at the top-left fills from 20% (BUILDING) to 85% (BREAKOUT READY). Then the release: the bands re-expand, price shoots out, a teal ◆ fires marking an upward break. The colour of the diamond tells you direction — teal ◆ for bullish release, magenta ◆ for bearish.
-          </p>
-        </div>
-
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 1 COIL INPUT</div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Cipher Coil</div>
-                <div className="text-xs text-white/50">checkbox · default: OFF</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">master toggle (no sub-settings)</div>
-            </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Master on/off for the compression-zone visual and the release diamond. There are no sub-settings — compression thresholds are internal and adaptive. When ON, you see the progression stages and the release marker. When OFF, CIPHER still tracks squeeze internally for the Command Center&apos;s Volatility row (which will show BUILDING/COILING/BREAKOUT READY in the action cell), but the visual does not draw on the chart.
-            </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the bands converge. The outer BB lines and inner KC dashed lines both narrow as compression intensifies. The energy bar at the top-left fills from 20% (BUILDING) to 85% (BREAKOUT READY). Then the release: the bands re-expand, price shoots out, a teal &#9670; fires marking an upward break. <strong className="text-white">The colour of the diamond tells you direction</strong> &mdash; teal &#9670; for bullish release, magenta &#9670; for bearish.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6">
+            <p className="text-xs font-bold text-amber-400 mb-1">CIPHER COIL &middot; checkbox &middot; default OFF &middot; master toggle (no sub-settings)</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Master on/off for the compression-zone visual and the release diamond. There are no sub-settings &mdash; compression thresholds are internal and adaptive. When ON, you see the progression stages and the release marker. When OFF, CIPHER still tracks squeeze internally for the Command Center Volatility row (which will show BUILDING/COILING/BREAKOUT READY in the action cell), but the visual does not draw on the chart.</p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE PRE-FIRE SETUP</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            When the Coil reaches BREAKOUT READY, you have typically 3–8 bars before release. Use that time to: (1) check HTF bias in the Command Center — align direction with higher timeframe, (2) mark entry levels above/below the coil bounds, (3) set alerts. When the ◆ fires, you are not scrambling to make a decision — you are executing a decision that was already made.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE PRE-FIRE SETUP</p>
+            <p className="text-sm text-gray-400 leading-relaxed">When the Coil reaches BREAKOUT READY, you have typically <strong className="text-white">3&ndash;8 bars</strong> before release. Use that time to: (1) check HTF bias in the Command Center &mdash; align direction with higher timeframe, (2) mark entry levels above/below the coil bounds, (3) set alerts. When the &#9670; fires, you are not scrambling to make a decision &mdash; you are executing a decision that was already made.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S11 — CIPHER PULSE ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S11 · THE DYNAMIC S/R LINE</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER PULSE</h2>
-        <p className="text-white/50 italic mb-8">4 inputs · the engine that fires signals · two numeric knobs that cascade widely</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The Cipher Pulse is the dynamic support/resistance line that fires the majority of CIPHER&apos;s signals. Teal when bullish, magenta when bearish. Every time price CROSSES the Pulse line, a PX signal fires (Pulse Cross — the &ldquo;Trend&rdquo; engine). The line itself is offset from the Cipher Flow by an ATR multiple. Two numeric knobs — <span className="text-white">Pulse ATR Factor</span> and <span className="text-white">Pulse Smoothing</span> — control that distance and its responsiveness. These two knobs are arguably the most cascading settings in CIPHER.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; CIPHER PULSE</p>
+          <h2 className="text-2xl font-extrabold mb-4">The dynamic S/R line &mdash; the engine that fires signals</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The Cipher Pulse is the dynamic support/resistance line that fires the majority of CIPHER&apos;s signals. Teal when bullish, magenta when bearish. Every time price CROSSES the Pulse line, a PX signal fires (Pulse Cross &mdash; the Trend engine). The line itself is offset from the Cipher Flow by an ATR multiple. Two numeric knobs &mdash; <strong className="text-white">Pulse ATR Factor</strong> and <strong className="text-white">Pulse Smoothing</strong> &mdash; control that distance and its responsiveness. <strong className="text-amber-400">These two knobs are arguably the most cascading settings in CIPHER.</strong></p>
           <PulseATRFactorAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Two panes. Same price path. Same Cipher Flow. Only one thing is different — the Pulse ATR Factor. The left pane uses 0.8× ATR (tight), the right uses 1.3× (wide). Count the signals: the tight pane fires many more. Each of those signals on the left has a tighter stop-loss distance and is more vulnerable to whipsaw. Each signal on the right has a wider stop and survives more noise, but the setup is also rarer.
-          </p>
-          <p>
-            This is the Silent Cascade in one slider. One value changed. A completely different signal distribution. A different stop distance for every trade. A different hit rate. A different expectancy curve.
-          </p>
-        </div>
-
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 4 PULSE INPUTS</div>
-          <div className="space-y-3">
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Cipher Pulse</div>
-                  <div className="text-xs text-white/50">checkbox · default: OFF</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">⚠ display only — does NOT gate signals</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                This toggle controls whether the Pulse LINE draws on the chart. It does <span className="text-white font-semibold">not</span> control whether PX signals fire. Signals still fire even with the line hidden, as long as the SIGNAL ENGINE is set to Trend or All Signals. Turning off this toggle only hides the visual line — it is a cosmetic choice for operators who want fewer lines on-screen but still want the PX signals.
-              </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Two panes. Same price path. Same Cipher Flow. Only one thing is different &mdash; the Pulse ATR Factor. The left pane uses 0.8&times; ATR (tight), the right uses 1.3&times; (wide). Count the signals: the tight pane fires many more. Each signal on the left has a tighter stop-loss distance and is more vulnerable to whipsaw. Each signal on the right has a wider stop and survives more noise, but the setup is also rarer. <strong className="text-amber-400">This is the Silent Cascade in one slider.</strong> One value changed. A completely different signal distribution, stop distance for every trade, hit rate, expectancy curve.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CIPHER PULSE &middot; checkbox &middot; default OFF &middot; &#9888; display only &mdash; does NOT gate signals</p>
+              <p className="text-sm text-gray-400 leading-relaxed">This toggle controls whether the Pulse LINE draws on the chart. It does <strong className="text-white">not</strong> control whether PX signals fire. Signals still fire even with the line hidden, as long as the SIGNAL ENGINE is set to Trend or All Signals. Turning off this toggle only hides the visual line &mdash; cosmetic choice for operators who want fewer lines on-screen but still want the PX signals.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Intensity</div>
-                  <div className="text-xs text-white/50">dropdown · default: Normal · Subtle / Normal / Bold</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">visual only</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Controls Pulse line weight. Subtle keeps it in the background for chart-readers who use it as a reference. Bold makes it a primary visual anchor. If Pulse is your trigger (and it usually is on Trend-Trader setups), Bold is the right choice.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">INTENSITY &middot; dropdown &middot; default Normal &middot; Subtle / Normal / Bold</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Controls Pulse line weight. <strong className="text-white">Subtle</strong> keeps it in the background for chart-readers who use it as a reference. <strong className="text-white">Bold</strong> makes it a primary visual anchor. If Pulse is your trigger (and it usually is on Trend-Trader setups), Bold is the right choice.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Pulse ATR Factor</div>
-                  <div className="text-xs text-white/50">float · default: 1.5 · range: 0.5–3.0 · step: 0.1</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">★ the master dial</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Distance from Cipher Flow in ATR multiples. <span className="text-white">Lower</span> = tighter, more signals, tighter stops, more whipsaw. <span className="text-white">Higher</span> = wider, fewer signals, survives more noise, wider stops. 1.5 is the balanced default. Presets override this: Scalper×0.8 (0.8 tight), Swing×1.2 (1.8 wide), Sniper×1.3 (1.95 widest). This single value controls the entire signal distribution — changing it is not a tweak, it is a trading-style decision.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">PULSE ATR FACTOR &middot; float &middot; default 1.5 &middot; range 0.5&ndash;3.0 &middot; step 0.1 &middot; &#9733; the master dial</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Distance from Cipher Flow in ATR multiples. <strong className="text-white">Lower</strong> = tighter, more signals, tighter stops, more whipsaw. <strong className="text-white">Higher</strong> = wider, fewer signals, survives more noise, wider stops. 1.5 is the balanced default. Presets override this: Scalper&times;0.8, Swing&times;1.2 (1.8 wide), Sniper&times;1.3 (1.95 widest). <strong className="text-amber-400">This single value controls the entire signal distribution</strong> &mdash; changing it is not a tweak, it is a trading-style decision.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">Pulse Smoothing</div>
-                  <div className="text-xs text-white/50">integer · default: 3 · range: 1–10 · step: 1</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">responsiveness</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Smoothing periods applied to the Pulse line movement. <span className="text-white">Higher</span> = smoother line, fewer whipsaw crosses, slightly later signals. <span className="text-white">Lower</span> = rawer line, more immediate signals, more false crosses on noisy bars. 3 is balanced. 5–7 is good for chop-prone instruments. 1–2 is for scalpers willing to accept some noise for maximum speed.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">PULSE SMOOTHING &middot; integer &middot; default 3 &middot; range 1&ndash;10 &middot; step 1</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Smoothing periods applied to the Pulse line movement. <strong className="text-white">Higher</strong> = smoother line, fewer whipsaw crosses, slightly later signals. <strong className="text-white">Lower</strong> = rawer line, more immediate signals, more false crosses on noisy bars. 3 is balanced. 5&ndash;7 is good for chop-prone instruments. 1&ndash;2 is for scalpers willing to accept some noise for maximum speed.</p>
             </div>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">⚠ THE SIGNAL-GATING MISCONCEPTION</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            &ldquo;I turned off Cipher Pulse — why am I still getting PX signals?&rdquo; Because the toggle is a display toggle, not a signal gate. If you want to disable PX signals entirely, change <span className="text-white font-semibold">Signal Engine</span> (in the SIGNAL ENGINE group — covered in Part 2) to &ldquo;Reversal&rdquo; or &ldquo;Visuals Only&rdquo;. The Pulse toggle is for hiding the line, not silencing the engine.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#9888; THE SIGNAL-GATING MISCONCEPTION</p>
+            <p className="text-sm text-gray-400 leading-relaxed">&ldquo;I turned off Cipher Pulse &mdash; why am I still getting PX signals?&rdquo; Because the toggle is a display toggle, not a signal gate. If you want to disable PX signals entirely, change <strong className="text-white">Signal Engine</strong> (in the SIGNAL ENGINE group &mdash; covered in Part 2) to &ldquo;Reversal&rdquo; or &ldquo;Visuals Only&rdquo;. The Pulse toggle is for hiding the line, not silencing the engine.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S12 — The Intensity Universal Language ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S12 · CROSS-CUTTING CONCEPT</div>
-        <h2 className="text-3xl font-bold mb-6">The Intensity universal language</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            Every visual group in CIPHER has an &ldquo;Intensity&rdquo; dropdown with three options: <span className="text-white font-semibold">Subtle · Normal · Bold</span>. You have seen it appear in RIBBON, RISK ENVELOPE, STRUCTURE, SPINE, IMBALANCE, and PULSE. It is intentionally the same three options everywhere — a universal language across the visual layer.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="p-5 rounded-xl bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-widest text-teal-300 mb-2">SUBTLE</div>
-            <div className="text-lg font-bold mb-2">Whisper</div>
-            <p className="text-sm text-white/70 leading-relaxed">
-              Lowest opacity, thinnest lines, most transparent fills. Use when this visual is <span className="text-white">not the primary</span> — it&apos;s one of three on-chart and you want it to stay in the background. Also use on charts with busy price action where you need price to stay readable.
-            </p>
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; The Intensity Universal Language</p>
+          <h2 className="text-2xl font-extrabold mb-4">Subtle &middot; Normal &middot; Bold, across every group</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Every visual group in CIPHER has an &ldquo;Intensity&rdquo; dropdown with three options: <strong className="text-white">Subtle &middot; Normal &middot; Bold</strong>. You have seen it appear in RIBBON, RISK ENVELOPE, STRUCTURE, SPINE, IMBALANCE, and PULSE. It is intentionally the same three options everywhere &mdash; <strong className="text-amber-400">a universal language across the visual layer</strong>.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">SUBTLE &mdash; whisper</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Lowest opacity, thinnest lines, most transparent fills. Use when this visual is <strong className="text-white">not the primary</strong> &mdash; one of three on-chart and you want it to stay in the background. Also use on charts with busy price action where you need price to stay readable.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">NORMAL &mdash; balanced</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The baseline. What the preset engine defaults to. A safe middle ground &mdash; the visual is clearly visible but not overwhelming. Use when you do not have a strong opinion yet, or as the default when adding a new visual to your chart.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">BOLD &mdash; dominant</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Maximum opacity, thickest lines, vivid fills. Use when this visual is the <strong className="text-white">primary tool</strong> on the chart &mdash; you are trading directly off it. Also use on dark charts where Normal starts to fade into the background.</p>
+            </div>
           </div>
-          <div className="p-5 rounded-xl bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-widest text-white/70 mb-2">NORMAL</div>
-            <div className="text-lg font-bold mb-2">Balanced</div>
-            <p className="text-sm text-white/70 leading-relaxed">
-              The baseline. What the preset engine defaults to. A safe middle ground — the visual is clearly visible but not overwhelming. Use when you do not have a strong opinion yet, or as the default when adding a new visual to your chart.
-            </p>
+          <div className="p-5 rounded-2xl glass-card mb-6">
+            <p className="text-xs font-bold text-amber-400 mb-2">THE 3-TIER INTENSITY DOCTRINE</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3">When you have exactly 3 visuals active (the preset rule), a common operator pattern is:</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-amber-400">Primary (BOLD)</strong> &mdash; the visual you are trading from. Its signals are your triggers.</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-amber-400">Secondary (NORMAL)</strong> &mdash; the visual that provides context. Its readings shape your bias.</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-amber-400">Background (SUBTLE)</strong> &mdash; the visual that provides orientation. Its readings frame the market regime.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">This creates <strong className="text-white">visual hierarchy</strong>. Your eye goes to the BOLD visual first, checks NORMAL for agreement, and glances at SUBTLE for context. Three different Intensity settings on the same chart, three different roles.</p>
           </div>
-          <div className="p-5 rounded-xl bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-widest text-amber-400 mb-2">BOLD</div>
-            <div className="text-lg font-bold mb-2">Dominant</div>
-            <p className="text-sm text-white/70 leading-relaxed">
-              Maximum opacity, thickest lines, vivid fills. Use when this visual is the <span className="text-white">primary tool</span> on the chart — you are trading directly off it. Also use on dark charts (dark theme) where Normal starts to fade into the background.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">SUBTLE IS NOT OFF</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Intensity Subtle still draws the visual. It is quieter, not absent. If you want the visual to be truly hidden, use the <strong className="text-white">master toggle</strong> at the top of the group. Confusing &ldquo;hard to see&rdquo; with &ldquo;turned off&rdquo; is a common rookie error &mdash; and it leads to complaints like &ldquo;my Risk Envelope disappeared&rdquo; when really the chart just zoomed out and Subtle fills became invisible at that zoom.</p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-white/5 border border-white/10 mb-6">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE 3-TIER INTENSITY DOCTRINE</div>
-          <p className="text-white/80 text-sm leading-relaxed mb-3">
-            When you have exactly 3 visuals active (the preset rule), a common operator pattern is:
-          </p>
-          <ul className="space-y-2 pl-6 text-sm text-white/75 list-disc">
-            <li><span className="text-amber-400 font-semibold">Primary (BOLD)</span> — the visual you are trading from. Its signals are your triggers.</li>
-            <li><span className="text-amber-400 font-semibold">Secondary (NORMAL)</span> — the visual that provides context. Its readings shape your bias.</li>
-            <li><span className="text-amber-400 font-semibold">Background (SUBTLE)</span> — the visual that provides orientation. Its readings frame the market regime.</li>
-          </ul>
-          <p className="text-white/80 text-sm leading-relaxed mt-3">
-            This creates visual hierarchy. Your eye goes to the BOLD visual first, checks NORMAL for agreement, and glances at SUBTLE for context. Three different Intensity settings on the same chart, three different roles.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">SUBTLE IS NOT OFF</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Intensity Subtle still draws the visual. It is quieter, not absent. If you want the visual to be truly hidden, use the master toggle at the top of the group. Confusing &ldquo;hard to see&rdquo; with &ldquo;turned off&rdquo; is a common rookie error — and it leads to complaints like &ldquo;my Risk Envelope disappeared&rdquo; when really the chart just zoomed out and Subtle fills became invisible at that zoom.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S13 — Three Visual-Layer Playbooks ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S13 · TUNING PLAYBOOKS</div>
-        <h2 className="text-3xl font-bold mb-6">Three visual-layer playbooks to steal</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            You do not have to derive a visual combination from scratch. Below are three playbooks built from the same 9 visual-layer groups you just learned, each tuned for a specific operator profile. Set the PRESET dropdown to <span className="text-white font-mono">None</span> first, then manually flip the toggles below.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Playbook 1 */}
-          <div className="p-6 rounded-xl bg-gradient-to-br from-teal-500/10 to-transparent border border-teal-500/25">
-            <div className="text-xs font-bold tracking-widest text-teal-300 mb-3">PLAYBOOK 1</div>
-            <h3 className="text-xl font-bold mb-4">The Scalper visuals</h3>
-            <p className="text-sm text-white/70 mb-4 italic">1m–5m charts · fast reads · tight stops</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Structure</span>
-                <span className="text-amber-400 text-xs font-mono">BOLD · Pivot=3</span>
-              </div>
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Imbalance</span>
-                <span className="text-amber-400 text-xs font-mono">NORMAL</span>
-              </div>
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Pulse</span>
-                <span className="text-amber-400 text-xs font-mono">SUBTLE · F=0.8</span>
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-white/55 leading-relaxed">
-              Structure is the primary — you scalp from levels. Imbalances are the target magnets. Tight Pulse provides the trigger, subtle so it does not dominate the small timeframe.
-            </p>
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Three Visual-Layer Playbooks</p>
+          <h2 className="text-2xl font-extrabold mb-4">Ready-to-steal setups for three operator profiles</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">You do not have to derive a visual combination from scratch. Below are three playbooks built from the same 9 visual-layer groups you just learned, each tuned for a specific operator profile. Set the PRESET dropdown to <strong className="text-white">None</strong> first, then manually flip the toggles below.</p>
+          <div className="p-5 rounded-2xl glass-card mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-2">PLAYBOOK 1 &mdash; THE SCALPER</p>
+            <p className="text-xs text-gray-500 mb-3 italic">1m&ndash;5m charts &middot; fast reads &middot; tight stops</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Cipher Structure</strong> &mdash; BOLD &middot; Pivot Length 3</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Cipher Imbalance</strong> &mdash; NORMAL</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-white">Cipher Pulse</strong> &mdash; SUBTLE &middot; ATR Factor 0.8</p>
+            <p className="text-xs text-gray-500 leading-relaxed italic">Structure is the primary &mdash; you scalp from levels. Imbalances are the target magnets. Tight Pulse provides the trigger, subtle so it does not dominate the small timeframe.</p>
           </div>
-
-          {/* Playbook 2 */}
-          <div className="p-6 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/25">
-            <div className="text-xs font-bold tracking-widest text-amber-400 mb-3">PLAYBOOK 2</div>
-            <h3 className="text-xl font-bold mb-4">The Swing trader visuals</h3>
-            <p className="text-sm text-white/70 mb-4 italic">1H–4H charts · HTF alignment · wider stops</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Ribbon</span>
-                <span className="text-amber-400 text-xs font-mono">BOLD · Div+Proj ON</span>
-              </div>
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Spine</span>
-                <span className="text-amber-400 text-xs font-mono">NORMAL</span>
-              </div>
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Pulse</span>
-                <span className="text-amber-400 text-xs font-mono">SUBTLE · F=1.8</span>
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-white/55 leading-relaxed">
-              Ribbon is your trend barometer — Divergence and Projection are your early-warning system. Spine is your confidence gauge. Wide Pulse (1.8) gives rare, high-conviction entries only.
-            </p>
+          <div className="p-5 rounded-2xl glass-card mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-2">PLAYBOOK 2 &mdash; THE SWING TRADER</p>
+            <p className="text-xs text-gray-500 mb-3 italic">1H&ndash;4H charts &middot; HTF alignment &middot; wider stops</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Cipher Ribbon</strong> &mdash; BOLD &middot; Divergence + Projection ON</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Cipher Spine</strong> &mdash; NORMAL</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-white">Cipher Pulse</strong> &mdash; SUBTLE &middot; ATR Factor 1.8</p>
+            <p className="text-xs text-gray-500 leading-relaxed italic">Ribbon is your trend barometer &mdash; Divergence and Projection are your early-warning system. Spine is your confidence gauge. Wide Pulse (1.8) gives rare, high-conviction entries only.</p>
           </div>
-
-          {/* Playbook 3 */}
-          <div className="p-6 rounded-xl bg-gradient-to-br from-magenta-500/10 to-transparent border border-white/15" style={{ background: 'linear-gradient(135deg, rgba(239,83,80,0.10), transparent)' }}>
-            <div className="text-xs font-bold tracking-widest text-rose-300 mb-3">PLAYBOOK 3</div>
-            <h3 className="text-xl font-bold mb-4">The Structure reader</h3>
-            <p className="text-sm text-white/70 mb-4 italic">15m–1H charts · pure chart reading · no signals</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Structure</span>
-                <span className="text-amber-400 text-xs font-mono">BOLD · Pivot=5</span>
-              </div>
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Imbalance</span>
-                <span className="text-amber-400 text-xs font-mono">NORMAL</span>
-              </div>
-              <div className="flex justify-between items-center p-2 rounded bg-white/5">
-                <span className="text-white">Cipher Sweeps</span>
-                <span className="text-amber-400 text-xs font-mono">NORMAL</span>
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-white/55 leading-relaxed">
-              Zero signals on the chart — this is for operators who distrust automated triggers. Structure tells you where. Imbalance tells you the magnet. Sweeps tell you when liquidity was just grabbed. You make the call.
-            </p>
+          <div className="p-5 rounded-2xl glass-card mb-6">
+            <p className="text-xs font-bold text-amber-400 mb-2">PLAYBOOK 3 &mdash; THE STRUCTURE READER</p>
+            <p className="text-xs text-gray-500 mb-3 italic">15m&ndash;1H charts &middot; pure chart reading &middot; no signals</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Cipher Structure</strong> &mdash; BOLD &middot; Pivot Length 5</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Cipher Imbalance</strong> &mdash; NORMAL</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-white">Cipher Sweeps</strong> &mdash; NORMAL</p>
+            <p className="text-xs text-gray-500 leading-relaxed italic">Zero signals on the chart &mdash; this is for operators who distrust automated triggers. Structure tells you where. Imbalance tells you the magnet. Sweeps tell you when liquidity was just grabbed. You make the call.</p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE BIG CAVEAT</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            These playbooks are starting points, not destinations. Run each for at least 20 trades before judging. If something does not feel right — a visual is too loud, too quiet, or fighting for attention — adjust one setting at a time and note the change. That is how you develop your own visual language.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE BIG CAVEAT</p>
+            <p className="text-sm text-gray-400 leading-relaxed">These playbooks are starting points, not destinations. Run each for at least <strong className="text-white">20 trades</strong> before judging. If something does not feel right &mdash; a visual is too loud, too quiet, or fighting for attention &mdash; adjust one setting at a time and note the change. That is how you develop your own visual language.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S14 — Common Mistakes ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S14 · WHAT GOES WRONG</div>
-        <h2 className="text-3xl font-bold mb-6">Common visual-layer mistakes</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            Every mistake in this list costs real operators real trades. They are listed in order of how often they show up in practice.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {[
-            {
-              num: 1,
-              title: 'Stacking 5+ visuals on one chart',
-              body: 'You turn on every visual because &ldquo;why not, I bought the PRO version.&rdquo; The chart becomes unreadable. You miss setups because your eye does not know where to look. THE FIX: pick 3 visuals max. Preset engine enforces it for a reason. Use presets until you earn the right to go None.',
-            },
-            {
-              num: 2,
-              title: 'Confusing display toggles with calculation toggles',
-              body: 'You turn off Fair Value Line and expect the Mean Reversion Score to go dark. It does not — the sub-toggle is display only. THE FIX: read the S05 &ldquo;display vs calculation trap&rdquo; warning again. When a sub-toggle controls drawing vs calculation, the parent master toggle is what you want if you want the whole system gone.',
-            },
-            {
-              num: 3,
-              title: 'Changing Pulse ATR Factor mid-trade',
-              body: 'You have an open position. You think &ldquo;the Pulse feels too tight&rdquo; and bump the factor from 1.5 to 2.0. Your tooltip SL recalculates. Your open trade&apos;s risk-reward is now different. You are mid-trade and you just changed the instrument. THE FIX: never retune mid-trade. Close the trade, adjust the instrument, open a new trade.',
-            },
-            {
-              num: 4,
-              title: 'Turning Pulse OFF and expecting signals to stop',
-              body: 'The Pulse toggle is display only. Signals keep firing. THE FIX: to silence PX signals, go to Signal Engine (Part 2) and change it to Reversal or Visuals Only.',
-            },
-            {
-              num: 5,
-              title: 'Changing Structure defaults before you understand them',
-              body: 'You drop Pivot Length from 5 to 2 because you want &ldquo;more zones.&rdquo; You get 30+ zones. The chart is noise. You cannot tell which zones matter. THE FIX: change one default at a time, wait 20 bars, evaluate. Run the defaults for a full session before deciding anything is wrong with them.',
-            },
-            {
-              num: 6,
-              title: 'Picking a preset and thinking you are done',
-              body: 'Presets are training wheels. They work on average. Your specific market is not average. THE FIX: use a preset for 1–2 weeks, pay attention to when it feels wrong, then graduate to None and build your own.',
-            },
-          ].map((m) => (
-            <div key={m.num} className="flex gap-4 p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold text-sm">
-                {m.num}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; Common Mistakes</p>
+          <h2 className="text-2xl font-extrabold mb-4">Six ways the visual layer gets misconfigured</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Every mistake in this list costs real operators real trades. Listed in order of how often they show up in practice. For each, ask yourself honestly: have I done this?</p>
+          <div className="space-y-3">
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 1 &mdash; Stacking 5+ visuals on one chart</p>
               </div>
-              <div className="flex-1">
-                <div className="font-bold text-white mb-1" dangerouslySetInnerHTML={{ __html: m.title }} />
-                <p className="text-sm text-white/75 leading-relaxed" dangerouslySetInnerHTML={{ __html: m.body }} />
-              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">You turn on every visual because &ldquo;why not, I bought the PRO version.&rdquo; The chart becomes unreadable. You miss setups because your eye does not know where to look. <strong className="text-white">THE FIX:</strong> pick 3 visuals max. Preset engine enforces it for a reason. Use presets until you earn the right to go None.</p>
             </div>
-          ))}
-        </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 2 &mdash; Confusing display toggles with calculation toggles</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">You turn off Fair Value Line and expect the Mean Reversion Score to go dark. It does not &mdash; the sub-toggle is display only. <strong className="text-white">THE FIX:</strong> re-read the Section 05 &ldquo;display vs calculation trap&rdquo; warning. When a sub-toggle controls drawing vs calculation, the parent master toggle is what you want if you want the whole system gone.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 3 &mdash; Changing Pulse ATR Factor mid-trade</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">You have an open position. You think &ldquo;the Pulse feels too tight&rdquo; and bump the factor from 1.5 to 2.0. Your tooltip SL recalculates. Your open trade&apos;s risk-reward is now different. You are mid-trade and you just changed the instrument. <strong className="text-white">THE FIX:</strong> never retune mid-trade. Close the trade, adjust the instrument, open a new trade.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 4 &mdash; Turning Pulse OFF and expecting signals to stop</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">The Pulse toggle is display only. Signals keep firing. <strong className="text-white">THE FIX:</strong> to silence PX signals, go to Signal Engine (Part 2) and change it to Reversal or Visuals Only.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 5 &mdash; Changing Structure defaults before you understand them</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">You drop Pivot Length from 5 to 2 because you want &ldquo;more zones.&rdquo; You get 30+ zones. The chart is noise. You cannot tell which zones matter. <strong className="text-white">THE FIX:</strong> change one default at a time, wait 20 bars, evaluate. Run the defaults for a full session before deciding anything is wrong with them.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 6 &mdash; Picking a preset and thinking you are done</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">Presets are training wheels. They work on average. Your specific market is not average. <strong className="text-white">THE FIX:</strong> use a preset for 1&ndash;2 weeks, pay attention to when it feels wrong, then graduate to None and build your own.</p>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
-      {/* ================ SECTION S15 — Game + Quiz + Certificate ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S15 · PROVE IT</div>
-        <h2 className="text-3xl font-bold mb-6">Game · Quiz · Certificate</h2>
-        <p className="text-white/70 leading-relaxed mb-8">
-          Five rounds of cascade-reading, followed by an eight-question quiz. Pass the quiz at 66% and you unlock your PRO certificate for Lesson 11.3a.
-        </p>
-
-        {/* ---------- GAME ---------- */}
-        {!gameActive && !gameComplete && (
-          <div className="p-8 rounded-2xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 mb-8">
-            <div className="text-xs font-bold tracking-widest text-amber-400 mb-3">INTERACTIVE CHALLENGE</div>
-            <h3 className="text-2xl font-bold mb-4">The Silent Cascade — 5 scenarios</h3>
-            <p className="text-white/75 leading-relaxed mb-6">
-              Each round puts you in a situation where a single settings change ripples through CIPHER. Your job: pick the correct downstream effect. No time limit. Full explanations on each answer.
-            </p>
-            <button
-              onClick={() => setGameActive(true)}
-              className="px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold tracking-wide transition"
-            >
-              START GAME →
-            </button>
-          </div>
-        )}
-
-        {gameActive && !gameComplete && (
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="text-xs font-bold tracking-widest text-amber-400">ROUND {gameRound + 1} OF {gameRounds.length}</div>
-              <div className="flex gap-1.5">
-                {gameRounds.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-8 h-1.5 rounded-full ${
-                      gameSelections[i] ? 'bg-amber-400' : i === gameRound ? 'bg-white/40' : 'bg-white/10'
-                    }`}
-                  />
-                ))}
+      {/* ================ SECTION S15 — Visual Layer Cheat Sheet ================ */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; The Visual Layer Cheat Sheet</p>
+          <h2 className="text-2xl font-extrabold mb-4">Screenshot This. Pin It.</h2>
+          <div className="p-5 rounded-2xl glass-card">
+            <div className="space-y-3">
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The 9 Visual-Layer Groups (26 inputs total)</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">PRESET</strong> 1 &middot; <strong className="text-white">RIBBON</strong> 4 &middot; <strong className="text-white">RISK ENVELOPE</strong> 5 &middot; <strong className="text-white">STRUCTURE</strong> 6 &middot; <strong className="text-white">SPINE</strong> 2 &middot; <strong className="text-white">IMBALANCE</strong> 2 &middot; <strong className="text-white">SWEEPS</strong> 1 &middot; <strong className="text-white">COIL</strong> 1 &middot; <strong className="text-white">PULSE</strong> 4.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The Four-Part Input Grammar</p>
+                <p className="text-sm text-gray-300">1. LABEL (name of the setting) &middot; 2. CONTROL (checkbox / dropdown / number) &middot; 3. INFO ICON &#9432; (tap to reveal tooltip) &middot; 4. TOOLTIP (the WHY). Read the tooltip BEFORE you touch the control.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">Master vs Sub-toggles</p>
+                <p className="text-sm text-gray-300">Master toggle (the group header) = full on/off. Sub-toggles (indented) = display-only, or feature-specific flags. <strong className="text-white">If you want a system truly gone, use the master toggle.</strong></p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The Display-vs-Calculation Trap</p>
+                <p className="text-sm text-gray-300">Some sub-toggles hide drawings but the math keeps running. <strong className="text-white">Fair Value Line</strong> hides the line but MR score still computes. <strong className="text-white">Cipher Pulse</strong> hides the line but PX signals still fire. To fully disable: use the master, or the Signal Engine dropdown (Part 2).</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">Intensity Universal Language</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">SUBTLE</strong> = background reference &middot; <strong className="text-white">NORMAL</strong> = default balanced &middot; <strong className="text-white">BOLD</strong> = primary trading visual. 3-tier pattern: Primary BOLD, Secondary NORMAL, Background SUBTLE.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The Silent Cascade (Everywhere)</p>
+                <p className="text-sm text-gray-300">Every setting change touches 2&ndash;4 other systems. Before changing anything ask: &ldquo;what ELSE does this change?&rdquo; If you can&apos;t answer in 5 seconds, you don&apos;t know the cascade well enough yet &mdash; leave it alone.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The Three Playbooks</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">Scalper:</strong> Structure&#47;Imbalance&#47;Pulse tight. <strong className="text-white">Swing:</strong> Ribbon&#47;Spine&#47;Pulse wide. <strong className="text-white">Structure Reader:</strong> Structure&#47;Imbalance&#47;Sweeps no signals. Run each 20+ trades before judging.</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-red-400 mb-1">Mistakes to Avoid</p>
+                <p className="text-sm text-gray-300">&#10060; 5+ visuals at once &middot; &#10060; display vs calculation confusion &middot; &#10060; ATR Factor change mid-trade &middot; &#10060; Pulse OFF expecting signals to stop &middot; &#10060; Structure defaults tweaked too early &middot; &#10060; preset-and-forget.</p>
               </div>
             </div>
+          </div>
+        </motion.div>
+      </section>
 
-            <div className="mb-6 p-5 rounded-lg bg-black/30 border border-white/10">
-              <div className="text-[10px] font-bold tracking-widest text-white/40 mb-2">SCENARIO</div>
-              <p className="text-white/90 leading-relaxed">{gameRounds[gameRound].scenario}</p>
+      {/* === S16 — Scenario Game === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">16 &mdash; Scenario Game</p>
+          <h2 className="text-2xl font-extrabold mb-4">Read the Silent Cascade</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios. Each one puts you in a situation where a single settings change ripples through CIPHER. Pick the correct downstream effect. Explanations appear after every answer &mdash; including for the wrong ones.</p>
+          <div className="p-5 rounded-2xl glass-card">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
+              <p className="text-xs text-gray-500">Score: {gameSelections.filter((sel, i) => sel !== null && gameRounds[i].options.find(o => o.id === sel)?.correct).length}/{gameRounds.length}</p>
             </div>
-
-            <div className="text-sm font-bold text-white/80 mb-3">{gameRounds[gameRound].prompt}</div>
-
-            <div className="space-y-3 mb-6">
+            <p className="text-sm text-gray-300 leading-relaxed mb-4">{gameRounds[gameRound].scenario}</p>
+            <p className="text-sm font-semibold text-white mb-4">{gameRounds[gameRound].prompt}</p>
+            <div className="space-y-2">
               {gameRounds[gameRound].options.map((opt) => {
+                const answered = gameSelections[gameRound] !== null;
                 const selected = gameSelections[gameRound] === opt.id;
-                const showCorrectness = selected;
                 const isCorrect = opt.correct;
+                let cls = 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07]';
+                if (answered && selected && isCorrect) cls = 'bg-green-500/10 border border-green-500/30';
+                if (answered && selected && !isCorrect) cls = 'bg-red-500/10 border border-red-500/30';
+                if (answered && !selected && isCorrect) cls = 'bg-green-500/5 border border-green-500/20';
                 return (
-                  <button
-                    key={opt.id}
-                    onClick={() => {
-                      if (gameSelections[gameRound] !== null) return;
-                      const next = [...gameSelections];
-                      next[gameRound] = opt.id;
-                      setGameSelections(next);
-                    }}
-                    disabled={gameSelections[gameRound] !== null}
-                    className={`w-full text-left p-4 rounded-lg border transition ${
-                      showCorrectness
-                        ? isCorrect
-                          ? 'bg-teal-500/15 border-teal-500/50'
-                          : 'bg-rose-500/15 border-rose-500/50'
-                        : 'bg-white/5 border-white/10 hover:border-amber-500/40'
-                    } ${gameSelections[gameRound] !== null ? 'cursor-default' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">
-                        {opt.id.toUpperCase()}
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white/90">{opt.text}</div>
-                        {showCorrectness && (
-                          <div className="mt-2 text-sm text-white/70 italic">{opt.explain}</div>
-                        )}
-                      </div>
-                    </div>
-                  </button>
+                  <div key={opt.id}>
+                    <button
+                      onClick={() => {
+                        if (gameSelections[gameRound] !== null) return;
+                        const next = [...gameSelections];
+                        next[gameRound] = opt.id;
+                        setGameSelections(next);
+                      }}
+                      disabled={answered}
+                      className={`w-full text-left p-4 rounded-xl transition-all text-sm ${cls}`}
+                    >
+                      <span className="text-gray-200">{opt.text}</span>
+                    </button>
+                    {answered && selected && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-1 p-3 rounded-lg bg-white/[0.02]">
+                        <p className={`text-xs leading-relaxed ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>{isCorrect ? '✓' : '✗'} {opt.explain}</p>
+                      </motion.div>
+                    )}
+                  </div>
                 );
               })}
             </div>
-
-            {gameSelections[gameRound] !== null && (
-              <button
-                onClick={() => {
-                  if (gameRound < gameRounds.length - 1) {
-                    setGameRound(gameRound + 1);
-                  } else {
-                    setGameComplete(true);
-                    setGameActive(false);
-                  }
-                }}
-                className="px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold tracking-wide transition"
-              >
-                {gameRound < gameRounds.length - 1 ? 'Next Round →' : 'Finish Game →'}
-              </button>
+            {gameSelections[gameRound] !== null && gameRound < gameRounds.length - 1 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5">
+                <button onClick={() => setGameRound(gameRound + 1)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 text-white text-sm font-bold active:scale-95 transition-transform">Next Round &rarr;</button>
+              </motion.div>
             )}
+            {gameSelections[gameRound] !== null && gameRound === gameRounds.length - 1 && (() => {
+              const finalScore = gameSelections.filter((sel, i) => sel !== null && gameRounds[i].options.find(o => o.id === sel)?.correct).length;
+              return (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                  <p className="text-lg font-extrabold text-amber-400">{finalScore}/{gameRounds.length} Correct</p>
+                  <p className="text-xs text-gray-400 mt-1">{finalScore >= 4 ? 'Operator-grade cascade reading installed. Every settings change now comes with a mental ripple map.' : finalScore >= 3 ? 'Solid grasp. Re-read the Pulse ATR Factor section (11) and the Display-vs-Calculation trap (S05) before the quiz.' : 'Re-study the Silent Cascade (S01) and the Display-vs-Calculation trap (S05) before the quiz.'}</p>
+                </motion.div>
+              );
+            })()}
           </div>
-        )}
-
-        {gameComplete && (
-          <div className="p-8 rounded-2xl bg-gradient-to-br from-teal-500/10 to-transparent border border-teal-500/30 mb-8">
-            <div className="text-xs font-bold tracking-widest text-teal-300 mb-3">GAME COMPLETE</div>
-            <h3 className="text-2xl font-bold mb-4">Cascade reading — checked</h3>
-            <p className="text-white/75 leading-relaxed mb-6">
-              You worked through all 5 scenarios. Now take the quiz to earn your Lesson 11.3a certificate. 8 questions. 66% to pass.
-            </p>
-            {!quizActive && (
-              <button
-                onClick={() => setQuizActive(true)}
-                className="px-6 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold tracking-wide transition"
-              >
-                START QUIZ →
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* ---------- QUIZ ---------- */}
-        {quizActive && !quizSubmitted && (
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="text-xs font-bold tracking-widest text-amber-400">FINAL QUIZ · 8 QUESTIONS · 66% TO PASS</div>
-              <div className="text-xs text-white/50 font-mono">
-                {quizAnswers.filter((a) => a !== null).length} / {quizQuestions.length} answered
-              </div>
-            </div>
-
-            <div className="space-y-6 mb-6">
-              {quizQuestions.map((q, qi) => (
-                <div key={q.id} className="p-5 rounded-lg bg-black/30 border border-white/10">
-                  <div className="text-xs font-bold text-amber-400 mb-2">Q{qi + 1}</div>
-                  <div className="text-white/90 mb-4 leading-relaxed">{q.question}</div>
-                  <div className="space-y-2">
-                    {q.options.map((opt) => {
-                      const selected = quizAnswers[qi] === opt.id;
-                      return (
-                        <button
-                          key={opt.id}
-                          onClick={() => {
-                            const next = [...quizAnswers];
-                            next[qi] = opt.id;
-                            setQuizAnswers(next);
-                          }}
-                          className={`w-full text-left p-3 rounded border transition text-sm ${
-                            selected
-                              ? 'bg-amber-500/15 border-amber-500/50 text-white'
-                              : 'bg-white/5 border-white/10 text-white/70 hover:border-amber-500/30'
-                          }`}
-                        >
-                          <span className="inline-block w-5 text-xs font-mono text-white/40 mr-2">{opt.id.toUpperCase()}.</span>
-                          {opt.text}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setQuizSubmitted(true)}
-              disabled={quizAnswers.some((a) => a === null)}
-              className={`px-6 py-3 rounded-lg font-bold tracking-wide transition ${
-                quizAnswers.some((a) => a === null)
-                  ? 'bg-white/10 text-white/30 cursor-not-allowed'
-                  : 'bg-amber-500 hover:bg-amber-400 text-black'
-              }`}
-            >
-              SUBMIT QUIZ →
-            </button>
-            <p className="text-xs text-white/40 mt-2 italic">Answer all {quizQuestions.length} questions to submit.</p>
-          </div>
-        )}
-
-        {quizSubmitted && (
-          <div className={`p-8 rounded-2xl border mb-8 ${quizPassed ? 'bg-gradient-to-br from-teal-500/15 to-transparent border-teal-500/40' : 'bg-gradient-to-br from-rose-500/15 to-transparent border-rose-500/40'}`}>
-            <div className={`text-xs font-bold tracking-widest mb-3 ${quizPassed ? 'text-teal-300' : 'text-rose-300'}`}>
-              {quizPassed ? 'PASSED' : 'TRY AGAIN'}
-            </div>
-            <h3 className="text-3xl font-bold mb-4">
-              Score: {quizScore} / {quizQuestions.length} · {quizPercent}%
-            </h3>
-            <p className="text-white/75 leading-relaxed mb-6">
-              {quizPassed
-                ? 'You have demonstrated mastery of the visual-layer inputs. Your PRO certificate is unlocked below.'
-                : `You need 66% to pass. You scored ${quizPercent}%. Review the sections, then retry.`}
-            </p>
-
-            <div className="mb-6">
-              <div className="text-xs font-bold tracking-widest text-white/50 mb-3">REVIEW</div>
-              <div className="space-y-3">
-                {quizQuestions.map((q, qi) => {
-                  const correctId = q.options.find((o) => o.correct)?.id;
-                  const yourId = quizAnswers[qi];
-                  const correct = yourId === correctId;
-                  return (
-                    <div key={q.id} className={`p-4 rounded-lg border text-sm ${correct ? 'bg-teal-500/5 border-teal-500/20' : 'bg-rose-500/5 border-rose-500/20'}`}>
-                      <div className="flex items-start gap-3">
-                        <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${correct ? 'bg-teal-500 text-black' : 'bg-rose-500 text-black'}`}>
-                          {correct ? '✓' : '✕'}
-                        </span>
-                        <div className="flex-1">
-                          <div className="text-white/85 mb-1 text-xs">Q{qi + 1}. {q.question}</div>
-                          <div className="text-xs text-white/60 italic">{q.explain}</div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {!quizPassed && (
-              <button
-                onClick={() => {
-                  setQuizAnswers(new Array(quizQuestions.length).fill(null));
-                  setQuizSubmitted(false);
-                }}
-                className="px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold tracking-wide transition"
-              >
-                RETRY QUIZ →
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* ---------- CERTIFICATE ---------- */}
-        {quizPassed && quizSubmitted && (
-          <div className="relative mb-8">
-            {certRevealed && <Confetti active={certRevealed} />}
-            <div
-              className="relative p-10 rounded-2xl border overflow-hidden"
-              style={{
-                background: 'conic-gradient(from 180deg at 50% 50%, rgba(255,179,0,0.15) 0deg, rgba(38,166,154,0.12) 120deg, rgba(255,196,61,0.15) 240deg, rgba(255,179,0,0.15) 360deg)',
-                borderColor: 'rgba(255,196,61,0.5)',
-              }}
-            >
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <Crown className="w-4 h-4 text-amber-400" />
-                  <div className="text-xs font-bold tracking-widest text-amber-400">PRO · LEVEL 11 · CERTIFICATE</div>
-                  <Crown className="w-4 h-4 text-amber-400" />
-                </div>
-                <h3 className="text-4xl font-bold mb-2">CIPHER Visual Layer Mastery</h3>
-                <p className="text-white/70 italic mb-6">Lesson 11.3a · Part 1</p>
-
-                <div className="inline-block p-6 rounded-xl bg-black/40 border border-amber-400/30 mb-6">
-                  <div className="text-[10px] tracking-widest text-white/50 mb-1">CERT ID</div>
-                  <div className="text-lg font-mono text-amber-400">{certId}</div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-6">
-                  <div>
-                    <div className="text-[10px] tracking-widest text-white/40 mb-1">QUIZ</div>
-                    <div className="text-white/80 font-mono">{quizScore} / {quizQuestions.length}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] tracking-widest text-white/40 mb-1">SCORE</div>
-                    <div className="text-white/80 font-mono">{quizPercent}%</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] tracking-widest text-white/40 mb-1">DATE</div>
-                    <div className="text-white/80 font-mono text-sm">{new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
-                  </div>
-                </div>
-
-                <p className="text-sm text-white/60 max-w-xl mx-auto italic">
-                  Certified operator of CIPHER&apos;s visual layer — 9 groups, 26 inputs, and the Silent Cascade doctrine.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        </motion.div>
       </section>
 
-      {/* ================ FOOTER NAV ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-12 border-t border-white/5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link
-            href="/academy/lesson/cipher-command-center-anatomy"
-            className="group p-5 rounded-xl bg-white/5 border border-white/10 hover:border-amber-500/40 transition"
-          >
-            <div className="text-[10px] font-bold tracking-widest text-white/40 mb-2">← PREVIOUS</div>
-            <div className="text-white font-bold group-hover:text-amber-400 transition">Lesson 11.2 · The CIPHER Command Center — Anatomy</div>
-          </Link>
-          <Link
-            href="/academy"
-            className="group p-5 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 hover:border-amber-500/60 transition"
-          >
-            <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">NEXT →</div>
-            <div className="text-white font-bold group-hover:text-amber-300 transition">Lesson 11.3b · Inputs Anatomy Part 2 (coming soon)</div>
-          </Link>
-        </div>
+      {/* === S17 — Final Quiz === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">17 &mdash; Knowledge Check</p>
+          <h2 className="text-2xl font-extrabold mb-6">Final Quiz &mdash; {quizQuestions.length} Questions</h2>
+          <div className="space-y-6">
+            {quizQuestions.map((q, qi) => (
+              <div key={qi} className="p-5 rounded-2xl glass-card">
+                <p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">Question {qi + 1} of {quizQuestions.length}</p>
+                <p className="text-sm font-semibold text-white mb-4">{q.question}</p>
+                <div className="space-y-2">
+                  {q.options.map((opt) => {
+                    const answered = quizAnswers[qi] !== null;
+                    const selected = quizAnswers[qi] === opt.id;
+                    const isCorrect = opt.correct;
+                    let cls = 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07]';
+                    if (answered && selected && isCorrect) cls = 'bg-green-500/10 border border-green-500/30';
+                    if (answered && selected && !isCorrect) cls = 'bg-red-500/10 border border-red-500/30';
+                    if (answered && !selected && isCorrect) cls = 'bg-green-500/5 border border-green-500/20';
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => {
+                          if (quizAnswers[qi] !== null) return;
+                          const next = [...quizAnswers];
+                          next[qi] = opt.id;
+                          setQuizAnswers(next);
+                          if (next.every(a => a !== null)) setQuizSubmitted(true);
+                        }}
+                        disabled={answered}
+                        className={`w-full text-left p-3 rounded-xl transition-all text-sm ${cls}`}
+                      >
+                        {opt.text}
+                      </button>
+                    );
+                  })}
+                </div>
+                {quizAnswers[qi] !== null && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 p-3 rounded-lg bg-white/[0.02]">
+                    <p className="text-xs text-amber-400"><span className="font-bold">&#9989;</span> {q.explain}</p>
+                  </motion.div>
+                )}
+              </div>
+            ))}
+          </div>
+          {quizSubmitted && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 text-center">
+              <p className="text-3xl font-extrabold mb-2">{quizPercent}%</p>
+              <p className="text-sm text-gray-400">{quizPassed ? 'You passed! Certificate unlocked below.' : 'You need 66% to earn the certificate. Review and try again.'}</p>
+            </motion.div>
+          )}
+          {certRevealed && (
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="mt-10">
+              <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
+                <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
+                <div className="relative z-10 text-center">
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">&#9636;</div>
+                  <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
+                  <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 11.3a: CIPHER Inputs Anatomy &mdash; Part 1 (The Visual Layer)</strong><br />at ATLAS Academy by Interakktive</p>
+                  <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; CIPHER Visual-Layer Operator &mdash;</p>
+                  <p className="font-mono text-[9px] text-amber-600/60 tracking-wider uppercase">{certId}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      </section>
 
-        <div className="mt-8 text-center">
-          <Link href="/academy" className="text-xs text-white/40 hover:text-white/70 transition">
-            ← Return to Academy
-          </Link>
-        </div>
+      <section className="max-w-2xl mx-auto px-5 py-20 text-center">
+        <Link href="/academy" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 hover:from-amber-600 hover:to-accent-600 text-white font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95">&larr; Back to Academy</Link>
       </section>
     </div>
   );

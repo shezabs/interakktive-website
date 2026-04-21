@@ -2629,15 +2629,16 @@ const quizQuestions = [
 // Component intentionally UNCLOSED — Phase 3B-2 appends S09–S15 + game/quiz/cert + closing tags
 // ============================================================
 export default function CipherInputsAnatomyPart2() {
-  const [gameActive, setGameActive] = useState(false);
   const [gameRound, setGameRound] = useState(0);
   const [gameSelections, setGameSelections] = useState<(string | null)[]>(new Array(gameRounds.length).fill(null));
-  const [gameComplete, setGameComplete] = useState(false);
-  const [quizActive, setQuizActive] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<(string | null)[]>(new Array(quizQuestions.length).fill(null));
   const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [certRevealed, setCertRevealed] = useState(false);
   const [certId] = useState(() => `PRO-CERT-L11.3B-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
+  const [scrollY, setScrollY] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => { const h = () => setScrollY(window.scrollY); window.addEventListener('scroll', h); return () => window.removeEventListener('scroll', h); }, []);
 
   const quizScore = quizAnswers.filter((ans, i) => {
     const correct = quizQuestions[i].options.find((o) => o.correct)?.id;
@@ -2648,1350 +2649,689 @@ export default function CipherInputsAnatomyPart2() {
 
   useEffect(() => {
     if (quizPassed && quizSubmitted && !certRevealed) {
-      const timer = setTimeout(() => setCertRevealed(true), 600);
+      const timer = setTimeout(() => { setCertRevealed(true); setShowConfetti(true); setTimeout(() => setShowConfetti(false), 5000); }, 600);
       return () => clearTimeout(timer);
     }
   }, [quizPassed, quizSubmitted, certRevealed]);
 
+  const fadeUp = { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } };
+
   return (
-    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12 0%, #0a0f1a 100%)' }}>
-      {/* ================ HERO ================ */}
-      <section className="relative overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(ellipse at top, rgba(255,179,0,0.15), transparent 60%)' }} />
-        <div className="relative max-w-5xl mx-auto px-6 py-16 md:py-24">
-          <div className="flex items-center gap-3 mb-6">
-            <Link href="/academy" className="text-xs text-white/50 hover:text-white/80 transition">← Academy</Link>
-            <span className="text-white/20">/</span>
-            <span className="text-xs text-white/50">Level 11 · CIPHER PRO Mastery</span>
-            <span className="text-white/20">/</span>
-            <span className="text-xs text-amber-400">Lesson 11.3b</span>
-          </div>
+    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
+      <Confetti active={showConfetti} />
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-900/50"><motion.div className="h-full bg-gradient-to-r from-amber-500 to-accent-500" style={{ width: `${Math.min((scrollY / (typeof document !== 'undefined' ? document.body.scrollHeight - window.innerHeight : 1)) * 100, 100)}%` }} /></div>
+      <nav className="fixed top-1 left-0 right-0 z-40 flex items-center justify-between px-5 py-2.5">
+        <Link href="/academy" className="font-extrabold text-sm tracking-wide bg-gradient-to-r from-amber-400 to-accent-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>ATLAS ACADEMY</Link>
+        <div className="flex items-center gap-2"><Crown className="w-3.5 h-3.5 text-amber-400" /><span className="text-xs font-bold text-amber-400">PRO &middot; LEVEL 11</span></div>
+      </nav>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 mb-6">
-            <Crown className="w-3 h-3 text-amber-400" />
-            <span className="text-[10px] font-bold tracking-widest text-amber-400">PRO · LEVEL 11 · CIPHER</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-            CIPHER Inputs Anatomy
-            <br />
-            <span className="text-amber-400">· Part 2 — The Behavioral Layer</span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/60 mb-8 max-w-3xl italic">
-            Three groups. Thirty-three inputs. Where CIPHER decides what to DO.
-          </p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Sections</div>
-              <div className="text-lg font-bold">16</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Animations</div>
-              <div className="text-lg font-bold">14</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Game rounds</div>
-              <div className="text-lg font-bold">5</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white/5 border border-white/10">
-              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Est. time</div>
-              <div className="text-lg font-bold">50 min</div>
-            </div>
-          </div>
-
-          <div className="mt-8 p-4 rounded-xl bg-white/5 border border-white/10 max-w-3xl">
-            <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">COVERED IN THIS LESSON</div>
-            <div className="flex flex-wrap gap-2">
-              {['SIGNAL ENGINE', 'CIPHER RISK MAP', 'COMMAND CENTER'].map((g) => (
-                <span key={g} className="text-[11px] font-mono text-white/70 bg-white/5 border border-white/10 rounded px-2 py-1">
-                  {g}
-                </span>
-              ))}
-            </div>
-            <p className="mt-3 text-xs text-white/50 italic">
-              You completed Part 1 (the visual layer). This lesson covers the remaining 33 behavioral inputs — the settings that decide what CIPHER DOES with those drawings.
-            </p>
-          </div>
-        </div>
+      {/* === HERO === */}
+      <section className="relative min-h-[85vh] flex flex-col items-center justify-center text-center px-6 pt-20">
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(245,158,11,0.08),transparent_70%)] pointer-events-none" />
+        <div className="absolute top-[-50px] right-[20%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(217,70,239,0.05),transparent_70%)] pointer-events-none" />
+        <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
+          <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 11 &middot; Lesson 3b</p></motion.div>
+          <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">CIPHER Inputs Anatomy<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Part 2 &mdash; The Behavioral Layer</span></motion.h1>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">Three groups. Thirty-three inputs. Where CIPHER stops reporting and starts <em>deciding</em>.</motion.p>
+          <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5"><span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span><div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" /></motion.div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S00 — Bridge ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S00 · BRIDGE FROM PART 1</div>
-        <h2 className="text-3xl font-bold mb-6">From drawings to decisions</h2>
-        <div className="space-y-4 text-white/80 leading-relaxed text-lg">
-          <p>
-            Part 1 taught you what CIPHER DRAWS on your chart. Twenty-six inputs across nine visual groups. The Ribbon, the Spine, the Imbalance boxes, the Sweeps diamonds. Every one of those is a READING — CIPHER reporting on the market honestly across many layers.
-          </p>
-          <p>
-            Part 2 teaches you what CIPHER DOES with those readings. Thirty-three inputs across three behavioral groups: SIGNAL ENGINE (4 inputs that control what fires), CIPHER RISK MAP (10 inputs that decide the trade plan), and the COMMAND CENTER row toggles (19 inputs that configure the panel you read in real time).
-          </p>
-          <p className="pt-4 border-l-4 border-amber-500/50 pl-5 italic text-white/70">
-            The visual layer is CIPHER reporting. The behavioral layer is CIPHER deciding. Together they are 59 inputs across 12 groups — and once you complete Part 2, you will know every single one.
-          </p>
-        </div>
+      <section className="max-w-2xl mx-auto px-5 py-20">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">From drawings to decisions.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">Part 1 taught you what CIPHER <strong className="text-white">draws</strong> on your chart. Twenty-six inputs across nine visual groups. The Ribbon, the Spine, the Imbalance boxes, the Sweeps diamonds. Every one of those is a <strong className="text-white">reading</strong> &mdash; CIPHER reporting on the market honestly across many layers.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">Part 2 teaches what CIPHER <strong className="text-white">does</strong> with those readings. Thirty-three inputs across three behavioral groups: <strong className="text-amber-400">SIGNAL ENGINE</strong> (4 inputs that decide what fires), <strong className="text-amber-400">CIPHER RISK MAP</strong> (10 inputs that decide the trade plan), and the <strong className="text-amber-400">COMMAND CENTER row toggles</strong> (19 inputs that configure the panel you read in real time).</p>
+            <p className="text-gray-400 leading-relaxed">The visual layer is CIPHER <em>reporting</em>. The behavioral layer is CIPHER <em>deciding</em>. Together they are 59 inputs across 12 groups &mdash; and once you finish this lesson, you will know every single one.</p>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-2">&#128270; THE COMPLETION MILESTONE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">This is the final lesson in the <strong className="text-white">CIPHER Inputs Anatomy</strong> arc. When you finish, you have walked every input in the PRO indicator &mdash; visual and behavioral. Every checkbox, dropdown, and slider. You will never open CIPHER settings again and wonder what a toggle does. The arc closes here.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S01 — The Arrow Is the Last Word (Groundbreaking) ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="text-[10px] font-bold tracking-widest text-amber-400">S01 · GROUNDBREAKING CONCEPT</div>
-          <span className="text-amber-400">★</span>
-        </div>
-        <h2 className="text-3xl font-bold mb-6">The Arrow Is the Last Word</h2>
-
-        <div className="p-6 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 mb-8">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-3">CORE DOCTRINE</div>
-          <p className="text-xl text-white/90 leading-relaxed">
-            Every arrow on your chart is a <span className="text-amber-400 font-semibold">tally</span>, not a trigger. Four upstream votes decide whether the arrow fires — Ribbon alignment, ADX strength, Volume, and Momentum health. Three of four must agree. The arrow is the OUTCOME of a vote, never the command.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; &#11088; The Arrow Is the Last Word</p>
+          <h2 className="text-2xl font-extrabold mb-4">The Groundbreaking Concept</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Every arrow on your chart is a <strong className="text-amber-400">tally</strong>, not a trigger. Four upstream votes decide whether the arrow fires: <strong className="text-white">Ribbon alignment</strong>, <strong className="text-white">ADX strength</strong>, <strong className="text-white">Volume</strong>, and <strong className="text-white">Momentum health</strong>. Three of four must agree. The arrow is the outcome of a vote, never the command.</p>
           <ArrowTallyAnim />
-        </div>
-
-        <div className="space-y-4 text-white/80 leading-relaxed">
-          <p>
-            Watch the animation cycle through four scenarios. In the first, all four voters agree — the arrow fires as a STRONG signal. In the second, three agree — barely passing, the arrow still fires but with lower conviction. In the third, only two agree — the arrow is FILTERED OUT entirely. In the fourth, only one agrees — crushed, no arrow at all.
-          </p>
-          <p>
-            This is the literal mechanic behind the <span className="text-white font-semibold">Strong Signals Only</span> toggle in the SIGNAL ENGINE group. You will meet it in section S03. Understand this: when Strong Signals Only is ON, CIPHER runs every would-be signal through this 4-factor audit and drops any that don&apos;t hit the 3-of-4 threshold. When it is OFF, all signals pass through regardless — and your chart floods with marginal setups.
-          </p>
-          <div className="mt-6 p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE OPERATOR&apos;S RULE — PART 2</div>
-            <p className="text-white/80 leading-relaxed">
-              Every arrow you see has already been through a vote. Your job is not to trust the arrow blindly — it is to know <span className="text-white font-semibold">which votes passed</span>. When an arrow fires, glance at the Command Center: check the Trend row, the Pulse row, the Volume row, the Momentum row. If you see the vote breakdown agreeing, execute. If you see them fighting each other, wait for the next one.
-            </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation cycle through four scenarios. In the first, all four voters agree &mdash; the arrow fires as a STRONG signal. In the second, three agree &mdash; barely passing, the arrow still fires but with lower conviction. In the third, only two agree &mdash; the arrow is <strong className="text-white">filtered out entirely</strong>. In the fourth, only one agrees &mdash; crushed, no arrow at all. This is the literal mechanic behind the <strong className="text-amber-400">Strong Signals Only</strong> toggle in SIGNAL ENGINE (section 03). When ON, every would-be signal runs through this 4-factor audit and only 3-of-4 survivors get arrows. When OFF, all signals pass through and your chart floods with marginal setups.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S RULE &mdash; PART 2</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Every arrow has already been through a vote. Your job is not to trust the arrow blindly &mdash; it is to know <strong className="text-white">which votes passed</strong>. When an arrow fires, glance at the Command Center: check Trend, Pulse, Volume, Momentum. If the vote breakdown agrees, execute. If they fight each other, wait for the next one.</p>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S02 — SIGNAL ENGINE overview ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S02 · THE DECISION GROUP</div>
-        <h2 className="text-3xl font-bold mb-2">SIGNAL ENGINE</h2>
-        <p className="text-white/50 italic mb-8">4 inputs · the most behaviorally consequential group in CIPHER</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The SIGNAL ENGINE group decides EVERYTHING about what arrows appear on your chart and how candles are colored. Four inputs: <span className="text-white font-semibold">Signal Engine</span> (the master mode), <span className="text-white font-semibold">Direction</span> (directional filter), <span className="text-white font-semibold">Strong Signals Only</span> (the conviction gate), and <span className="text-white font-semibold">Cipher Candles</span> (the color-coding mode).
-          </p>
-          <p>
-            These four settings interact. Signal Engine decides WHAT fires (trend, reversal, both, or nothing). Direction filters that output by long/short. Strong Signals Only gates what remains through the 4-factor audit. And Cipher Candles recolors every candle in a language that matches your trading style.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; SIGNAL ENGINE</p>
+          <h2 className="text-2xl font-extrabold mb-4">The most behaviorally consequential group in CIPHER</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The SIGNAL ENGINE group decides EVERYTHING about what arrows appear on your chart and how candles are colored. <strong className="text-amber-400">Four inputs</strong>: <strong className="text-white">Signal Engine</strong> (the master mode), <strong className="text-white">Direction</strong> (directional filter), <strong className="text-white">Strong Signals Only</strong> (the conviction gate), and <strong className="text-white">Cipher Candles</strong> (the color-coding mode). These four settings interact. Signal Engine decides WHAT fires. Direction filters that output by long/short. Strong Signals Only gates what remains through the 4-factor audit. Cipher Candles recolors every candle in a language that matches your style.</p>
           <SignalEngineSwitcherAnim />
-        </div>
-
-        <div className="space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Watch the animation cycle through the 4 Signal Engine modes. All Signals fires both PX (Pulse Cross — trend signals) and TS (Tension Snap — reversal signals). Trend fires only PX. Reversal fires only TS. Visuals Only fires neither — the indicator draws every visual from Part 1 but emits zero arrows.
-          </p>
-          <p>
-            The signal count badge in the top-right updates with each mode. Visuals Only reads ZERO. This mode is for operators who want CIPHER&apos;s complete diagnostic readout (Command Center, Ribbon, Spine, Imbalance) but prefer to make their own entry decisions without arrow temptation.
-          </p>
-        </div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation cycle through the 4 Signal Engine modes. <strong className="text-white">All Signals</strong> fires both PX (Pulse Cross &mdash; trend signals) and TS (Tension Snap &mdash; reversal signals). <strong className="text-white">Trend</strong> fires only PX. <strong className="text-white">Reversal</strong> fires only TS. <strong className="text-white">Visuals Only</strong> fires neither &mdash; the indicator draws every visual from Part 1 but emits zero arrows. Visuals Only is for operators who want CIPHER&apos;s complete diagnostic readout but prefer to make their own entry decisions without arrow temptation.</p>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S03 — The 4 SIGNAL ENGINE inputs ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S03 · INPUTS</div>
-        <h2 className="text-3xl font-bold mb-6">The 4 SIGNAL ENGINE inputs</h2>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; The 4 SIGNAL ENGINE Inputs</p>
+          <h2 className="text-2xl font-extrabold mb-4">Master mode &middot; Direction filter &middot; Conviction gate &middot; Candles</h2>
           <DirectionFilterAnim />
-        </div>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The Direction filter is a second gate that runs AFTER Signal Engine. It narrows whatever Signal Engine produced by long/short. The animation above shows the same signal set through all three filter modes — the signal counts differ dramatically, but the underlying signal logic is unchanged.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Signal Engine</div>
-                <div className="text-xs text-white/50">dropdown · default: Trend · options: All Signals / Trend / Reversal / Visuals Only</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">⚡ master mode</div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">The Direction filter is a <strong className="text-white">second gate</strong> that runs AFTER Signal Engine. It narrows whatever Signal Engine produced by long/short. The animation shows the same signal set through all three filter modes &mdash; signal counts differ dramatically, but underlying signal logic is unchanged.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">SIGNAL ENGINE &middot; dropdown &middot; default Trend &middot; &#9889; master mode</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The master switch for what arrow types appear. <strong className="text-white">All Signals</strong> = both PX + TS. <strong className="text-white">Trend</strong> = PX only (best for breakouts and continuations). <strong className="text-white">Reversal</strong> = TS only (best for pullbacks and V-bottoms). <strong className="text-white">Visuals Only</strong> = no arrows at all, visuals stay live. <strong className="text-amber-400">The single most consequential setting in the lesson.</strong></p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              The master switch for what arrow types appear. <span className="text-white">All Signals</span> = both PX + TS. <span className="text-white">Trend</span> = PX only (best for breakouts and continuations). <span className="text-white">Reversal</span> = TS only (best for pullbacks and V-bottoms). <span className="text-white">Visuals Only</span> = no arrows at all, visuals stay live. This is the single most consequential setting in the lesson.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Direction</div>
-                <div className="text-xs text-white/50">dropdown · default: Both · options: Both / Long Only / Short Only</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">bias filter</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">DIRECTION &middot; dropdown &middot; default Both &middot; Both / Long Only / Short Only</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Filter signals by direction. Use <strong className="text-white">Long Only</strong> when your HTF bias is bullish and you want CIPHER to stop offering countertrend shorts. Use <strong className="text-white">Short Only</strong> when HTF bias is bearish. Keep <strong className="text-white">Both</strong> if you trade equally in both directions. <strong className="text-amber-400">This is a discipline dial</strong> &mdash; it physically prevents you from taking trades that fight your bias.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Filter signals by direction. Use <span className="text-white">Long Only</span> when your HTF bias is bullish and you want CIPHER to stop offering you countertrend shorts. Use <span className="text-white">Short Only</span> when HTF bias is bearish. Keep <span className="text-white">Both</span> if you trade equally in both directions. This is a discipline dial — it physically prevents you from taking trades that fight your bias.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Strong Signals Only</div>
-                <div className="text-xs text-white/50">checkbox · default: OFF · the 4-factor conviction gate</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">★ the filter</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STRONG SIGNALS ONLY &middot; checkbox &middot; default OFF &middot; &#9733; the filter</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When ON, every signal must pass a 4-factor audit before its arrow appears: <strong className="text-white">Ribbon stacked</strong>, <strong className="text-white">ADX &gt; 20</strong>, <strong className="text-white">Volume &gt; 1.0&times; average</strong>, and <strong className="text-white">Momentum health &gt; 50%</strong>. Three of four must agree. Turn this on when your chart floods with marginal setups. Note: Swing Trader and Sniper presets force this ON.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              When ON, every signal must pass a 4-factor audit before its arrow appears: <span className="text-white">Ribbon stacked</span> with signal direction, <span className="text-white">ADX &gt; 20</span> (trend strength), <span className="text-white">Volume &gt; 1.0× average</span>, and <span className="text-white">Momentum health &gt; 50%</span>. Three of four must agree. Turn this on when your chart floods with marginal setups. Note: Swing Trader and Sniper presets force this ON.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Cipher Candles</div>
-                <div className="text-xs text-white/50">dropdown · default: Default · 7 options</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">candle colorization</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">CIPHER CANDLES &middot; dropdown &middot; default Default &middot; 7 options</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Repaints every candle using CIPHER&apos;s proprietary color logic (not RSI). <strong className="text-white">Default</strong> = standard direction. <strong className="text-white">Trend / Trend Bold</strong> = velocity gradient. <strong className="text-white">Tension / Tension Bold</strong> = stretch from Flow. <strong className="text-white">Composite / Composite Bold</strong> = blends velocity + tension + volume into every candle. Full breakdown in section 05.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Repaints every candle using CIPHER&apos;s proprietary color logic (not RSI). <span className="text-white">Default</span> = standard direction. <span className="text-white">Trend</span> / <span className="text-white">Trend Bold</span> = velocity gradient. <span className="text-white">Tension</span> / <span className="text-white">Tension Bold</span> = stretch from Flow. <span className="text-white">Composite</span> / <span className="text-white">Composite Bold</span> = blends velocity + tension + volume into every candle. The Bold variants exist for dark-theme charts where Normal opacity fades into the background.
-            </p>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S04 — The 4-factor conviction audit ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S04 · STRONG SIGNALS DEEP DIVE</div>
-        <h2 className="text-3xl font-bold mb-6">The 4-factor conviction audit</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            When Strong Signals Only is ON, CIPHER runs EVERY would-be signal through a 4-factor audit. Each factor is a live market measurement that either agrees with the signal direction or doesn&apos;t. Three of four must agree for the arrow to fire.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; The 4-Factor Conviction Audit</p>
+          <h2 className="text-2xl font-extrabold mb-4">Strong Signals Only, under the hood</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">When Strong Signals Only is ON, CIPHER runs <strong className="text-white">every</strong> would-be signal through a 4-factor audit. Each factor is a live market measurement that either agrees with the signal direction or doesn&apos;t. Three of four must agree for the arrow to fire.</p>
           <StrongSignalsAuditAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Watch the gauges. The amber dashed line is the threshold. When the current value (teal or magenta fill) passes the threshold, that factor votes YES. The verdict panel on the right tallies the votes. Over the 4 scenarios, the system cycles through 4/4 PASSES, 3/4 PASSES (barely), 2/4 FAILS, 1/4 FAILS.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">FACTOR 1 · RIBBON STACK</div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              The Cipher Ribbon (Core/Flow/Anchor) must be stacked in signal direction. For a long signal, Core must be above Flow, which must be above Anchor. For a short, inverted. This is the structural alignment vote.
-            </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the gauges. The amber dashed line is the threshold. When the current value (teal or magenta fill) passes the threshold, that factor votes YES. The verdict panel on the right tallies the votes. Over the 4 scenarios, the system cycles through 4/4 PASSES, 3/4 PASSES (barely), 2/4 FAILS, 1/4 FAILS.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 1 &middot; RIBBON STACK</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The Cipher Ribbon (Core/Flow/Anchor) must be stacked in signal direction. For a long signal: Core above Flow above Anchor. For a short: inverted. <strong className="text-white">The structural alignment vote.</strong></p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 2 &middot; ADX &gt; 20</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Average Directional Index above 20. This is the &ldquo;is there a trend at all&rdquo; vote. Below 20 = chop, no directional edge. Above 20 = a trend exists in some direction; whether it aligns with your signal is factor 1&apos;s job.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 3 &middot; VOLUME &gt; 1.0&times;</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Current bar volume above the 20-bar average. <strong className="text-white">The participation vote.</strong> Signals that fire on dead-volume bars are high whipsaw risk. Above-average volume = there are actual buyers/sellers at this level.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 4 &middot; MOMENTUM &gt; 50%</p>
+              <p className="text-sm text-gray-400 leading-relaxed">CIPHER&apos;s internal momentum health score above 50%. <strong className="text-white">The &ldquo;is momentum fresh or dying&rdquo; vote.</strong> Above 50% = momentum has room. Below 50% = momentum is exhausted &mdash; any signal firing here is leaning into a dying trend.</p>
+            </div>
           </div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">FACTOR 2 · ADX &gt; 20</div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Average Directional Index above 20. This is the &quot;is there a trend at all&quot; vote. Below 20 = chop, no directional edge. Above 20 = a trend exists in some direction; whether it aligns with your signal is factor 1&apos;s job.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE GATE IS 3 OF 4, NOT 4 OF 4</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Requiring all 4 factors to align would reject too many valid signals &mdash; real markets don&apos;t produce 4-factor alignment often. <strong className="text-white">3 of 4 is the sweet spot</strong>: enough conviction to filter junk, permissive enough to let real setups through. The 4th factor is allowed to disagree &mdash; which factor disagrees is useful information. Glance at the Command Center to see which one.</p>
           </div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">FACTOR 3 · VOLUME &gt; 1.0×</div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Current bar volume above the 20-bar average. This is the participation vote. Signals that fire on dead-volume bars are high whipsaw risk. Above-average volume = there are actual buyers/sellers at this level.
-            </p>
-          </div>
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">FACTOR 4 · MOMENTUM &gt; 50%</div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              CIPHER&apos;s internal momentum health score above 50%. This is the &quot;is momentum fresh or dying&quot; vote. Above 50% = momentum has room. Below 50% = momentum is exhausted — any signal firing here is leaning into a dying trend.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE GATE IS 3 OF 4, NOT 4 OF 4</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Requiring all 4 factors to align would reject too many valid signals — real markets don&apos;t produce 4-factor alignment often. 3 of 4 is the sweet spot: enough conviction to filter junk, permissive enough to let real setups through. The 4th factor is allowed to disagree. Which factor disagrees is useful information — glance at the Command Center to see which one.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S05 — The 7 Cipher Candle modes ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S05 · CANDLE COLORING</div>
-        <h2 className="text-3xl font-bold mb-6">The 7 Cipher Candle modes</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            CIPHER does not use RSI to color candles. It uses proprietary dimensions: velocity (how fast price moved), tension (how stretched from Flow), and for Composite modes, volume. Every mode picks a different dimension to emphasize, and the Bold variants boost saturation for operators on dark charts.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; The 7 Cipher Candle Modes</p>
+          <h2 className="text-2xl font-extrabold mb-4">Proprietary color logic &mdash; velocity, tension, volume</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">CIPHER does not use RSI to color candles. It uses proprietary dimensions: <strong className="text-white">velocity</strong> (how fast price moved), <strong className="text-white">tension</strong> (how stretched from Flow), and for Composite modes, <strong className="text-white">volume</strong>. Every mode picks a different dimension to emphasize, and the Bold variants boost saturation for operators on dark charts.</p>
           <CipherCandlesSpectrumAnim />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-white/70 mb-1">DEFAULT</div>
-            <p className="text-sm text-white/70 leading-relaxed">Standard teal (bull) / magenta (bear) direction coloring. No additional dimension encoded. Use when you want traditional visuals and rely on the Ribbon or Pulse line for nuance.</p>
+          <div className="p-5 rounded-2xl glass-card mt-6 mb-6 space-y-3">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">DEFAULT</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Standard teal (bull) / magenta (bear) direction coloring. No additional dimension encoded. Use when you want traditional visuals and rely on the Ribbon or Pulse line for nuance.</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TREND</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Velocity gradient. Fast-moving candles are vivid; slow candles fade. You instantly see where momentum is strongest on the chart.</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TREND BOLD</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Same velocity logic, higher saturation. For dark-theme charts where the Normal variant fades into the background.</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TENSION</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Stretch-from-Flow gradient. Candles glow amber when price is stretched far from the Cipher Flow &mdash; a visual version of the Mean Reversion Score.</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TENSION BOLD</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Same tension logic, higher saturation. Makes the stretch zones unmistakable even at small zoom.</p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">COMPOSITE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Every candle encodes three dimensions &mdash; velocity + tension + volume &mdash; blended into one color. <strong className="text-white">The operator&apos;s color language.</strong></p>
+            </div>
+            <div className="pt-3 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">COMPOSITE BOLD</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The top-tier mode. Same 3-dimension blend at bold saturation. If you trade from candles rather than indicator lines, this is where you eventually end up. <strong className="text-white">Used by Scalper preset by default.</strong></p>
+            </div>
           </div>
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-teal-300 mb-1">TREND</div>
-            <p className="text-sm text-white/70 leading-relaxed">Velocity gradient. Fast-moving candles are vivid; slow candles fade. You instantly see where momentum is strongest on the chart.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">WHY 7 MODES AND NOT ONE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Different trading styles value different signals. A trend trader cares about velocity. A mean-reversion trader cares about tension. A composite trader cares about both plus volume. Rather than forcing one mode, CIPHER ships seven so you pick the language that matches how you actually make decisions. <strong className="text-white">Start with Default, experiment with Trend and Composite, find what makes you read the chart faster.</strong></p>
           </div>
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-teal-300 mb-1">TREND BOLD</div>
-            <p className="text-sm text-white/70 leading-relaxed">Same velocity logic, higher saturation. For dark-theme charts where the Normal variant fades into the background.</p>
-          </div>
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-1">TENSION</div>
-            <p className="text-sm text-white/70 leading-relaxed">Stretch-from-Flow gradient. Candles glow amber when price is stretched far from the Cipher Flow — a visual version of the Mean Reversion Score.</p>
-          </div>
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-amber-400 mb-1">TENSION BOLD</div>
-            <p className="text-sm text-white/70 leading-relaxed">Same tension logic, higher saturation. Makes the stretch zones unmistakable even at small zoom.</p>
-          </div>
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-            <div className="text-xs font-bold tracking-wider text-white/90 mb-1">COMPOSITE</div>
-            <p className="text-sm text-white/70 leading-relaxed">Every candle encodes three dimensions — velocity + tension + volume — blended into one color. The operator&apos;s color language.</p>
-          </div>
-          <div className="p-4 rounded-lg bg-white/5 border border-white/10 md:col-span-2">
-            <div className="text-xs font-bold tracking-wider text-white/90 mb-1">COMPOSITE BOLD</div>
-            <p className="text-sm text-white/70 leading-relaxed">The top-tier mode. Same 3-dimension blend at bold saturation. If you trade from candles rather than indicator lines, this is where you eventually end up. Used by Scalper preset by default.</p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">WHY 7 MODES AND NOT ONE</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Different trading styles value different signals. A trend trader cares about velocity. A mean-reversion trader cares about tension. A composite trader cares about both plus volume. Rather than forcing one mode, CIPHER ships seven so you pick the language that matches how you actually make decisions. Start with Default, experiment with Trend and Composite, find what makes you read the chart faster.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S06 — Risk Map overview ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S06 · THE TRADE PLAN ENGINE</div>
-        <h2 className="text-3xl font-bold mb-2">CIPHER RISK MAP</h2>
-        <p className="text-white/50 italic mb-8">10 inputs · the "what happens after the arrow" · entry → SL → TP1/TP2/TP3</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            When a signal arrow fires, the Risk Map activates. It calculates five price levels automatically: ENTRY (where the arrow fired), STOP LOSS (below for longs, above for shorts), and three TAKE PROFITS at 1R / 2R / 3R (or whatever you&apos;ve configured). The entire trade plan is drawn or reported in the tooltip — every arrow comes with its math already done.
-          </p>
-          <p>
-            The Risk Map has 10 inputs across three subsections: <span className="text-white font-semibold">display toggles</span> (3 inputs — do you want lines on the chart or just the tooltip?), <span className="text-white font-semibold">Stop Loss method + tuning</span> (3 inputs — how is the SL calculated?), and <span className="text-white font-semibold">Take Profit method + targets</span> (4 inputs — how are the TPs placed?).
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; CIPHER RISK MAP</p>
+          <h2 className="text-2xl font-extrabold mb-4">The trade-plan engine &mdash; entry, SL, TP1/TP2/TP3</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">When a signal arrow fires, the Risk Map activates. It calculates five price levels automatically: <strong className="text-white">ENTRY</strong> (where the arrow fired), <strong className="text-white">STOP LOSS</strong> (below for longs, above for shorts), and three <strong className="text-white">TAKE PROFITS</strong> at 1R / 2R / 3R (or whatever you&apos;ve configured). The entire trade plan is drawn or reported in the tooltip &mdash; <strong className="text-amber-400">every arrow comes with its math already done</strong>. 10 inputs across three subsections: <strong className="text-white">display toggles</strong> (3), <strong className="text-white">Stop Loss method + tuning</strong> (3), and <strong className="text-white">Take Profit method + targets</strong> (4).</p>
           <RiskMapOverviewAnim />
-        </div>
-
-        <div className="space-y-3 text-white/80 leading-relaxed mb-8">
-          <p>
-            Watch the animation reveal each price level in sequence: Entry fires → SL drawn → TP1 → TP2 → TP3 → complete trade plan with red and green risk-reward zones. This is what you see (in some form) every time a CIPHER arrow fires. What changes between operators is <span className="text-white font-semibold">which lines show on the chart</span> and <span className="text-white font-semibold">how the numbers are calculated</span>.
-          </p>
-        </div>
-
-        <div className="space-y-3 mb-6">
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">TP/SL in Tooltip</div>
-                <div className="text-xs text-white/50">checkbox · default: ON · display toggle</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">display only</div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation reveal each price level in sequence: Entry fires → SL drawn → TP1 → TP2 → TP3 → complete trade plan with red and green risk-reward zones. This is what you see (in some form) every time a CIPHER arrow fires. What changes between operators is <strong className="text-white">which lines show on the chart</strong> and <strong className="text-white">how the numbers are calculated</strong>.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">TP/SL IN TOOLTIP &middot; checkbox &middot; default ON &middot; display only</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When ON, every signal&apos;s tooltip includes the full trade plan &mdash; entry, SL, TP1, TP2, TP3 &mdash; when you hover on the signal marker. Most operators leave this ON because the tooltip is the primary way to read a signal&apos;s plan without cluttering the chart.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              When ON, every signal&apos;s tooltip includes the full trade plan — entry, SL, TP1, TP2, TP3 — when you hover on the signal marker. Most operators leave this ON because the tooltip is the primary way to read a signal&apos;s plan without cluttering the chart.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">TP Lines on Chart</div>
-                <div className="text-xs text-white/50">checkbox · default: OFF · display toggle</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">display only</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TP LINES ON CHART &middot; checkbox &middot; default OFF &middot; display only</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When ON, TP1 / TP2 / TP3 are drawn as dotted horizontal lines on the chart when a signal fires. Auto-clears when the next signal fires. Use if you prefer visual targets over tooltip reads. Adds chart clutter &mdash; off by default for chart-minimalists.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              When ON, TP1 / TP2 / TP3 are drawn as dotted horizontal lines on the chart when a signal fires. Auto-clears when the next signal fires. Use if you prefer visual targets over tooltip reads. Adds chart clutter — off by default for chart-minimalists.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">SL Line on Chart</div>
-                <div className="text-xs text-white/50">checkbox · default: OFF · display toggle</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">display only</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SL LINE ON CHART &middot; checkbox &middot; default OFF &middot; display only</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When ON, the SL line draws as a dotted magenta horizontal line on the chart. Same auto-clear behavior as TP lines. <strong className="text-white">Pairs well with TP Lines on Chart</strong> &mdash; together they give you the whole trade plan visible at a glance.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              When ON, the SL line draws as a dotted magenta horizontal line on the chart. Same auto-clear behavior as TP lines. Pairs well with TP Lines on Chart — together they give you the whole trade plan visible at a glance.
-            </p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">⚠ DISPLAY TOGGLES ARE NOT CALCULATION TOGGLES</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            These three toggles control what you SEE. They do not affect what CIPHER CALCULATES. The SL and TP prices are always computed whenever a signal fires, regardless of whether these toggles are on. Turning them all OFF does not disable the Risk Map — it just hides the visual output. Your broker-execution workflow still has access to the numbers via the tooltip or your own alerts.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#9888; DISPLAY TOGGLES ARE NOT CALCULATION TOGGLES</p>
+            <p className="text-sm text-gray-400 leading-relaxed">These three toggles control what you SEE. They do not affect what CIPHER CALCULATES. The SL and TP prices are <strong className="text-white">always computed</strong> whenever a signal fires, regardless of whether these toggles are on. Turning them all OFF does not disable the Risk Map &mdash; it just hides the visual output. Your broker-execution workflow still has access to the numbers via the tooltip or your own alerts.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S07 — The 4 Stop Loss methods ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S07 · STOP LOSS DEEP DIVE</div>
-        <h2 className="text-3xl font-bold mb-6">The 4 Stop Loss methods</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            CIPHER offers four distinct philosophies for stop placement. The SL Method input selects which philosophy applies. Each has a different trade-off between whipsaw protection and loss size.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; The 4 Stop Loss Methods</p>
+          <h2 className="text-2xl font-extrabold mb-4">Four philosophies, one dropdown</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">CIPHER offers <strong className="text-white">four distinct philosophies</strong> for stop placement. The SL Method input selects which philosophy applies. Each has a different trade-off between whipsaw protection and loss size.</p>
           <SLMethodComparisonAnim />
-        </div>
-
-        <div className="space-y-3 mb-8">
-          <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Auto</div>
-                <div className="text-xs text-white/50">dropdown option · default · RECOMMENDED</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">★ asset-class router</div>
+          <div className="p-5 rounded-2xl glass-card mt-6 mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">AUTO &middot; default &middot; &#9733; asset-class router &middot; RECOMMENDED</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Not a single method &mdash; a <strong className="text-white">router</strong>. Auto selects the best method per asset class: <strong className="text-white">Crypto → Structure</strong> (swings dominate), <strong className="text-white">Forex → Pulse</strong> (pulse-based stops fit intraday forex rhythm), <strong className="text-white">Stocks / Indices → Structure</strong> (institutional levels dominate). The default because it works well across asset classes without requiring you to know which method fits which market.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Not a single method — a ROUTER. Auto selects the best method per asset class: <span className="text-white">Crypto → Structure</span> (swings are the dominant feature), <span className="text-white">Forex → Pulse</span> (pulse-based stops fit intraday forex rhythm), <span className="text-white">Stocks / Indices → Structure</span> (institutional levels dominate). This is the default because it works well across asset classes without requiring you to know which method fits which market.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Structure</div>
-                <div className="text-xs text-white/50">dropdown option · stop at recent swing</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">structural stop</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STRUCTURE &middot; stop at recent swing</p>
+              <p className="text-sm text-gray-400 leading-relaxed">SL is placed just beyond the most recent swing low (long) or swing high (short) detected by CIPHER Structure &mdash; minus an ATR buffer. <strong className="text-white">Logic:</strong> if price takes out that swing, the setup is invalidated. The classical &ldquo;technical stop&rdquo; philosophy. Works well when the chart has clear structure; can produce very wide stops when structure is loose.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              SL is placed just beyond the most recent swing low (long) or swing high (short) detected by CIPHER Structure — minus an ATR buffer. Logic: if price takes out that swing, the setup is invalidated. This is the classical &quot;technical stop&quot; philosophy. Works well when the chart has clear structure; can produce very wide stops when structure is loose.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Pulse</div>
-                <div className="text-xs text-white/50">dropdown option · stop at Cipher Pulse line</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">trigger-based stop</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">PULSE &middot; stop at Cipher Pulse line</p>
+              <p className="text-sm text-gray-400 leading-relaxed">SL is placed just beyond the current Cipher Pulse line value, minus an ATR buffer. <strong className="text-white">Logic:</strong> the Pulse line is the signal trigger &mdash; if price crosses back through it, the signal is invalidated. Tight stops, fast invalidation, more whipsaw. Best when you trust CIPHER&apos;s Pulse as your trigger discipline.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              SL is placed just beyond the current Cipher Pulse line value, minus an ATR buffer. Logic: the Pulse line is the signal trigger — if price crosses back through it, the signal is invalidated. Tight stops, fast invalidation, more whipsaw. Best when you trust CIPHER&apos;s Pulse as your trigger discipline.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">ATR</div>
-                <div className="text-xs text-white/50">dropdown option · fixed volatility distance</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">volatility stop</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ATR &middot; fixed volatility distance</p>
+              <p className="text-sm text-gray-400 leading-relaxed">SL is placed at a fixed multiple of ATR away from entry. The multiplier is controlled by the ATR Multiplier input below (default 1.5). <strong className="text-white">Predictable, uniform stops</strong> regardless of structure. Best when structure is noisy or when you want statistical consistency across many trades.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              SL is placed at a fixed multiple of ATR away from entry. The multiplier is controlled by the <span className="text-white">ATR Multiplier</span> input below (default 1.5). Predictable, uniform stops regardless of structure. Best when structure is noisy or when you want statistical consistency across many trades.
-            </p>
           </div>
-        </div>
-
-        <h3 className="text-xl font-bold mb-4 text-white">The Auto asset-class resolver</h3>
-        <div className="mb-8">
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">The Auto asset-class resolver</p>
           <AssetClassRoutingAnim />
-        </div>
-
-        <div className="space-y-3 mb-6 text-white/80 leading-relaxed">
-          <p>
-            The animation shows how Auto resolves to different underlying methods depending on which asset class your chart is on. CIPHER detects the asset class automatically — you don&apos;t configure it. BTCUSDT is crypto, GBPUSD is forex, SPY is a stock/index ETF.
-          </p>
-          <p>
-            If you want to override the routing for a specific chart (say, you want ATR stops on crypto), just change SL Method from Auto to your preferred method directly.
-          </p>
-        </div>
-
-        <div className="space-y-3 mb-6">
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">ATR Multiplier</div>
-                <div className="text-xs text-white/50">float · default: 1.5 · range: 0.3–5.0 · step: 0.1</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">used in ATR mode</div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">The animation shows how Auto resolves to different underlying methods depending on which asset class your chart is on. CIPHER detects the asset class automatically &mdash; you don&apos;t configure it. BTCUSDT is crypto, GBPUSD is forex, SPY is a stock/index ETF. If you want to override the routing for a specific chart (say, ATR stops on crypto), just change SL Method from Auto to your preferred method directly.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">ATR MULTIPLIER &middot; float &middot; default 1.5 &middot; range 0.3&ndash;5.0 &middot; step 0.1</p>
+              <p className="text-sm text-gray-400 leading-relaxed">SL distance in ATR multiples, used <strong className="text-white">ONLY when SL Method = ATR</strong>. 0.5 is tight (scalping). 1.0 is standard. 1.5 is the default &mdash; wide enough to avoid most whipsaw on 15m+ charts. 2.0+ is for swing trades on higher timeframes.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              SL distance in ATR multiples, used ONLY when SL Method = ATR. 0.5 is tight (scalping). 1.0 is standard. 1.5 is the default — wide enough to avoid most whipsaw on 15m+ charts. 2.0+ is for swing trades on higher timeframes.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">SL Buffer</div>
-                <div className="text-xs text-white/50">float · default: 0.3 · range: 0.1–1.0 · step: 0.1</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">wick-clip protection</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SL BUFFER &middot; float &middot; default 0.3 &middot; range 0.1&ndash;1.0 &middot; step 0.1</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Extra breathing room below the SL level (above for shorts), measured in ATR multiples. Used by <strong className="text-white">ALL SL methods</strong> to prevent wick-clipping &mdash; a 0.3 buffer places the stop slightly beyond the raw structural/Pulse/ATR level. 0.2 is tight. 0.3 is standard. 0.5 is wide. <strong className="text-amber-400">The unsung hero of the Risk Map</strong> &mdash; it is the difference between &ldquo;stopped out on a 1-tick wick&rdquo; and &ldquo;the trade runs to target.&rdquo;</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Extra breathing room below the SL level (above for shorts), measured in ATR multiples. Used by ALL SL methods to prevent wick-clipping — a 0.3 buffer places the stop slightly beyond the raw structural/Pulse/ATR level. 0.2 is tight. 0.3 is standard. 0.5 is wide. This input is the unsung hero of the Risk Map — it is the difference between &quot;stopped out on a 1-tick wick&quot; and &quot;the trade runs to target.&quot;
-            </p>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S08 — The 4 Take Profit methods ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S08 · TAKE PROFIT DEEP DIVE</div>
-        <h2 className="text-3xl font-bold mb-6">The 4 Take Profit methods</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            Take Profit has its own method dropdown, symmetric with Stop Loss. Four options, four philosophies. The method determines the GEOMETRY of where TP1, TP2, and TP3 land relative to your entry.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; The 4 Take Profit Methods</p>
+          <h2 className="text-2xl font-extrabold mb-4">Symmetric with SL &mdash; four philosophies</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Take Profit has its own method dropdown, symmetric with Stop Loss. Four options, four philosophies. The method determines the <strong className="text-white">geometry</strong> of where TP1, TP2, and TP3 land relative to your entry.</p>
           <TPMethodComparisonAnim />
-        </div>
-
-        <div className="space-y-3 mb-8">
-          <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/25">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Auto</div>
-                <div className="text-xs text-white/50">dropdown option · default · RECOMMENDED</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">★ asset-class router</div>
+          <div className="p-5 rounded-2xl glass-card mt-6 mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">AUTO &middot; default &middot; &#9733; asset-class router &middot; RECOMMENDED</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Same router logic as Auto SL. <strong className="text-white">Crypto → R-Multiple</strong> (works well in trend-heavy, volatile markets). <strong className="text-white">Forex → ATR Targets</strong> (tight, consistent across sessions). <strong className="text-white">Stocks / Indices → Structure</strong> (price respects structural levels). What Scalper, Trend Trader, and Swing Trader presets inherit by default.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Same router logic as Auto SL. <span className="text-white">Crypto → R-Multiple</span> (works well in trend-heavy, volatile markets). <span className="text-white">Forex → ATR Targets</span> (tight, consistent across sessions). <span className="text-white">Stocks / Indices → Structure</span> (price respects structural levels). This is what Scalper, Trend Trader, and Swing Trader presets inherit by default.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">R-Multiple</div>
-                <div className="text-xs text-white/50">dropdown option · 1R / 2R / 3R targets</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">risk-reward math</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">R-MULTIPLE &middot; 1R / 2R / 3R targets</p>
+              <p className="text-sm text-gray-400 leading-relaxed">TP1 = entry + 1&times; risk, TP2 = entry + 2&times; risk, TP3 = entry + 3&times; risk (for longs; inverted for shorts). <strong className="text-white">Pure risk-reward geometry.</strong> Targets scale with your SL distance &mdash; wide SL means wide TPs. Best for trend-follow systems where the exit is about R:R, not a specific price level.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              TP1 = entry + 1× risk, TP2 = entry + 2× risk, TP3 = entry + 3× risk (for longs; inverted for shorts). Pure risk-reward geometry. Targets scale with your SL distance — wide SL means wide TPs. Best for trend-follow systems where the exit is about R:R, not a specific price level.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Structure</div>
-                <div className="text-xs text-white/50">dropdown option · targets at next S/R levels</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">level-based targets</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STRUCTURE &middot; targets at next S/R levels</p>
+              <p className="text-sm text-gray-400 leading-relaxed">TPs placed at the nearest S/R levels from CIPHER Structure. TP1 = closest level in the signal direction. TP2 = the level after that. TP3 = the level after that. <strong className="text-white">Targets are WHERE PRICE TENDS TO PAUSE</strong>, not where risk math says. Best when structure is clean and price respects levels.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              TPs placed at the nearest S/R levels from CIPHER Structure. TP1 = closest level in the signal direction. TP2 = the level after that. TP3 = the level after that. Targets are WHERE PRICE TENDS TO PAUSE, not where risk math says. Best when structure is clean and price respects levels.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">ATR Targets</div>
-                <div className="text-xs text-white/50">dropdown option · fixed ATR-based targets</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">volatility targets</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ATR TARGETS &middot; fixed ATR-based targets</p>
+              <p className="text-sm text-gray-400 leading-relaxed">TP1 / TP2 / TP3 at fixed ATR multiples from entry (controlled by the TP1/TP2/TP3 Target inputs in section 09). Like ATR stop &mdash; predictable, uniform targets regardless of structure. <strong className="text-white">Pairs naturally with ATR SL method</strong> for a fully volatility-based trade plan.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              TP1 / TP2 / TP3 at fixed ATR multiples from entry (controlled by the TP1/TP2/TP3 Target inputs below). Like ATR stop — predictable, uniform targets regardless of structure. Pairs naturally with ATR SL method for a fully volatility-based trade plan.
-            </p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">CAN YOU MIX SL AND TP METHODS?</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Yes — SL Method and TP Method are independent. You can use Structure SL with R-Multiple TPs, or Pulse SL with Structure TPs, any combination. The most common mixes: <span className="text-white">Structure SL + R-Multiple TP</span> (structural invalidation, clean R:R targets) and <span className="text-white">Pulse SL + ATR TPs</span> (tight trigger stop, consistent scalp targets). Experiment — there&apos;s no wrong combination if it matches your style.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">CAN YOU MIX SL AND TP METHODS?</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Yes &mdash; SL Method and TP Method are <strong className="text-white">independent</strong>. You can use Structure SL with R-Multiple TPs, or Pulse SL with Structure TPs, any combination. The most common mixes: <strong className="text-white">Structure SL + R-Multiple TP</strong> (structural invalidation, clean R:R targets) and <strong className="text-white">Pulse SL + ATR TPs</strong> (tight trigger stop, consistent scalp targets). Experiment &mdash; there&apos;s no wrong combination if it matches your style.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S09 — TP1/TP2/TP3 Scale-out Mechanics ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S09 · THE SCALE-OUT DISCIPLINE</div>
-        <h2 className="text-3xl font-bold mb-6">TP1 / TP2 / TP3 — three exits, one trade</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            CIPHER ships with THREE take-profit levels by default, not one. This is deliberate — most operators benefit from a scale-out model where they take partial profits progressively rather than trying to nail a single perfect exit. Each TP level serves a different purpose.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; TP1 / TP2 / TP3 Scale-Out</p>
+          <h2 className="text-2xl font-extrabold mb-4">Three exits, one trade</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">CIPHER ships with <strong className="text-white">three</strong> take-profit levels by default, not one. This is deliberate &mdash; most operators benefit from a scale-out model where they take partial profits progressively rather than trying to nail a single perfect exit. Each TP level serves a different purpose.</p>
           <TPScaleOutAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Watch the runner walk from ENTRY to TP1, then TP2, then TP3. The position-size bar on the right shrinks at each TP — 100% at entry, 67% after TP1, 33% after TP2, 0% at TP3. Also watch the SL line: at TP1 it moves to <span className="text-amber-400 font-semibold">break-even (BE)</span>. This is the canonical scale-out playbook baked into CIPHER&apos;s philosophy.
-          </p>
-        </div>
-
-        <div className="mb-8">
-          <div className="text-[10px] font-bold tracking-widest text-white/40 mb-3">THE 3 TP TARGET INPUTS</div>
-          <div className="space-y-3">
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">TP1 Target</div>
-                  <div className="text-xs text-white/50">float · default: 1.0 · range: 0.5–5.0 · step: 0.5</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">first exit</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                The first scale-out target. Units depend on TP Method: in R-Multiple mode, 1.0 = 1R (entry + risk). In ATR Targets mode, 1.0 = 1× ATR. In Structure mode, the input is ignored and TP1 sits at the nearest S/R level. <span className="text-white">Default 1.0 is the sweet spot</span> — a 1:1 R:R exit is high-probability and triggers the BE stop move, which locks in a risk-free trade for the remaining 67%.
-              </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the runner walk from ENTRY to TP1, then TP2, then TP3. The position-size bar on the right shrinks at each TP &mdash; 100% at entry, 67% after TP1, 33% after TP2, 0% at TP3. Also watch the SL line: at TP1 it moves to <strong className="text-amber-400">break-even (BE)</strong>. This is the canonical scale-out playbook baked into CIPHER&apos;s philosophy.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">TP1 TARGET &middot; float &middot; default 1.0 &middot; range 0.5&ndash;5.0 &middot; step 0.5</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The first scale-out target. Units depend on TP Method: in R-Multiple mode, 1.0 = 1R (entry + risk). In ATR Targets mode, 1.0 = 1&times; ATR. In Structure mode, the input is ignored and TP1 sits at the nearest S/R level. <strong className="text-amber-400">Default 1.0 is the sweet spot</strong> &mdash; a 1:1 R:R exit is high-probability and triggers the BE stop move, which locks in a risk-free trade for the remaining 67%.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">TP2 Target</div>
-                  <div className="text-xs text-white/50">float · default: 2.0 · range: 1.0–10.0 · step: 0.5</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">second exit</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Second scale-out. Default 2.0 = 2R (or 2× ATR). Where you take another 33% off. After TP2 hits, you are holding 33% of the original position and your SL is at BE — worst case is scratch, runner is on for TP3 or trail.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TP2 TARGET &middot; float &middot; default 2.0 &middot; range 1.0&ndash;10.0 &middot; step 0.5</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Second scale-out. Default 2.0 = 2R (or 2&times; ATR). Where you take another 33% off. After TP2 hits, you are holding 33% of the original position and your SL is at BE &mdash; <strong className="text-white">worst case is scratch, runner is on for TP3 or trail</strong>.</p>
             </div>
-
-            <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="font-bold text-white">TP3 Target</div>
-                  <div className="text-xs text-white/50">float · default: 3.0 · range: 1.5–15.0 · step: 0.5</div>
-                </div>
-                <div className="text-xs font-mono text-amber-400 whitespace-nowrap">runner target</div>
-              </div>
-              <p className="text-sm text-white/75 leading-relaxed">
-                Final target for the runner. Default 3.0 = 3R. Most operators tighten SL to lock in gains as price approaches TP3 rather than letting TP3 fill as a hard limit — but the level is there as a reference for how far you expect the move to go.
-              </p>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TP3 TARGET &middot; float &middot; default 3.0 &middot; range 1.5&ndash;15.0 &middot; step 0.5</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Final target for the runner. Default 3.0 = 3R. Most operators tighten SL to lock in gains as price approaches TP3 rather than letting TP3 fill as a hard limit &mdash; but the level is there as a reference for how far you expect the move to go.</p>
             </div>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE CANONICAL SCALE-OUT SEQUENCE</div>
-          <p className="text-white/80 text-sm leading-relaxed mb-3">
-            When TP1 hits: <span className="text-white font-semibold">scale out 33% + move SL to break-even</span>. This is the key step — the remainder is risk-free. When TP2 hits: scale out another 33%. Your worst case is now &quot;scratch on the runner,&quot; your profit is locked. When TP3 hits (or you trail the final third): you&apos;re out completely.
-          </p>
-          <p className="text-white/80 text-sm leading-relaxed">
-            This is NOT enforced by the indicator. CIPHER draws the levels; you execute the discipline. Pick a prop-firm dashboard or a broker that supports TIF orders, or set manual alerts and move stops at TP1 as soon as the alert fires.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE CANONICAL SCALE-OUT SEQUENCE</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2">When TP1 hits: <strong className="text-white">scale out 33% + move SL to break-even</strong>. This is the key step &mdash; the remainder is risk-free. When TP2 hits: scale out another 33%. Your worst case is now &ldquo;scratch on the runner,&rdquo; your profit is locked. When TP3 hits (or you trail the final third): you&apos;re out completely.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">This is <strong className="text-amber-400">NOT enforced by the indicator</strong>. CIPHER draws the levels; you execute the discipline. Pick a prop-firm dashboard or a broker that supports TIF orders, or set manual alerts and move stops at TP1 as soon as the alert fires.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S10 — Command Center Panel Master ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S10 · THE PANEL CONFIG</div>
-        <h2 className="text-3xl font-bold mb-2">COMMAND CENTER — master, position, size</h2>
-        <p className="text-white/50 italic mb-8">3 top-level inputs + 16 row toggles · 19 total</p>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            The COMMAND CENTER group is the LARGEST in CIPHER — 19 inputs. Three top-level inputs configure the panel itself: a master on/off, a Position dropdown for which corner of the chart it sits in, and a Size dropdown for how much space it takes. The remaining 16 are individual row toggles, which we cover in section S11.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; COMMAND CENTER &mdash; master, position, size</p>
+          <h2 className="text-2xl font-extrabold mb-4">The panel config &mdash; 3 top-level inputs</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The COMMAND CENTER group is the <strong className="text-white">largest in CIPHER</strong> &mdash; 19 inputs. Three top-level inputs configure the panel itself: a master on/off, a Position dropdown for which corner of the chart it sits in, and a Size dropdown for how much space it takes. The remaining 16 are individual row toggles, which we cover in section 11.</p>
           <PanelPositioningAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Watch the animation cycle through all 12 combinations — 4 positions × 3 sizes. The panel occupies different chart real estate at each scale. Bottom Right at Small (the Pine default) is the minimal footprint; Top Left at Large is the most dominating configuration.
-          </p>
-        </div>
-
-        <div className="space-y-3 mb-6">
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Command Center</div>
-                <div className="text-xs text-white/50">checkbox · default: ON</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">master toggle</div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation cycle through all 12 combinations &mdash; 4 positions &times; 3 sizes. The panel occupies different chart real estate at each scale. <strong className="text-white">Bottom Right at Small</strong> (the Pine default) is the minimal footprint; <strong className="text-white">Top Left at Large</strong> is the most dominating configuration.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">COMMAND CENTER &middot; checkbox &middot; default ON &middot; master toggle</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Master on/off for the entire panel. When OFF, no rows display regardless of individual row toggles. When ON, the panel shows all rows that have their individual toggle checked. <strong className="text-white">One of only two COMMAND CENTER inputs that default ON</strong> (the other is Live Conditions).</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Master on/off for the entire panel. When OFF, no rows display regardless of individual row toggles. When ON, the panel shows all rows that have their individual toggle checked. One of only two COMMAND CENTER inputs that default ON (the other is Live Conditions).
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Position</div>
-                <div className="text-xs text-white/50">dropdown · default: Bottom Right · options: Top Left / Top Right / Bottom Left / Bottom Right</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">placement</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">POSITION &middot; dropdown &middot; default Bottom Right &middot; Top Left / Top Right / Bottom Left / Bottom Right</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Which corner of the chart the panel anchors to. <strong className="text-white">Bottom Right</strong> is default because it keeps the panel out of the way of most price action (price tends to be on the right). <strong className="text-white">Top Left</strong> works if you prefer to reference the panel first before scanning price. <strong className="text-white">Top Right</strong> and <strong className="text-white">Bottom Left</strong> are alternatives based on which other tools you have on your chart.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Which corner of the chart the panel anchors to. <span className="text-white">Bottom Right</span> is default because it keeps the panel out of the way of most price action (price tends to be on the right). <span className="text-white">Top Left</span> works if you prefer to reference the panel first before scanning price. <span className="text-white">Top Right</span> and <span className="text-white">Bottom Left</span> are alternatives based on which other tools you have on your chart.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-start justify-between gap-4 mb-2">
-              <div>
-                <div className="font-bold text-white">Size</div>
-                <div className="text-xs text-white/50">dropdown · default: Small · options: Small / Normal / Large</div>
-              </div>
-              <div className="text-xs font-mono text-amber-400 whitespace-nowrap">density</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SIZE &middot; dropdown &middot; default Small &middot; Small / Normal / Large</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Panel scale. <strong className="text-white">Small</strong> is default &mdash; dense, minimal chart footprint, best for operators with sharp vision and multi-monitor setups. <strong className="text-white">Normal</strong> is the comfortable read for most screens. <strong className="text-white">Large</strong> is for presentation, streaming, or older eyes. Note: size does not change information density, only visual scale.</p>
             </div>
-            <p className="text-sm text-white/75 leading-relaxed">
-              Panel scale. <span className="text-white">Small</span> is default — dense, minimal chart footprint, best for operators with sharp vision and multi-monitor setups. <span className="text-white">Normal</span> is the comfortable read for most screens. <span className="text-white">Large</span> is for presentation, streaming, or older eyes. Note: size does not change information density, only visual scale.
-            </p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">CHOOSING POSITION BY MONITOR SETUP</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            If you trade on a single monitor, Bottom Right stays out of the way. If you trade on two monitors with the chart full-screen on one, Top Left or Bottom Left frees the right side where live price action happens. If you have the Command Center on a SEPARATE monitor via a mirrored instance, the position on each chart is less important — you&apos;re reading from the dedicated screen.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">CHOOSING POSITION BY MONITOR SETUP</p>
+            <p className="text-sm text-gray-400 leading-relaxed">If you trade on a single monitor, Bottom Right stays out of the way. If you trade on two monitors with the chart full-screen on one, <strong className="text-white">Top Left or Bottom Left</strong> frees the right side where live price action happens. If you have the Command Center on a separate monitor via a mirrored instance, position on each chart matters less &mdash; you&apos;re reading from the dedicated screen.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S11 — The 16 Row Toggles ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S11 · ROW-LEVEL CONTROL</div>
-        <h2 className="text-3xl font-bold mb-6">The 16 row toggles — organized by family</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            After the 3 panel-config inputs come 16 individual row toggles. Each one controls whether a specific Command Center row appears. Per Pine default, <span className="text-amber-400 font-semibold">15 of these 16 default OFF</span>, with only <span className="text-white">Live Conditions</span> defaulting ON. The intent is clear: start empty, turn on only what you actually read.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; The 16 Row Toggles</p>
+          <h2 className="text-2xl font-extrabold mb-4">Organized by family &mdash; TREND, ENERGY, RISK, STRUCTURE, CONTEXT, SIGNAL</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">After the 3 panel-config inputs come 16 individual row toggles. Each one controls whether a specific Command Center row appears. Per Pine default, <strong className="text-amber-400">15 of these 16 default OFF</strong>, with only <strong className="text-white">Live Conditions</strong> defaulting ON. The intent is clear: <strong className="text-white">start empty, turn on only what you actually read</strong>.</p>
           <RowFamilyOverviewAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            The animation groups the 16 rows into six families: TREND (Ribbon, Pulse, Tension, Momentum), ENERGY (Volatility &amp; Squeeze, Volume), RISK (Risk Envelope), STRUCTURE (Structure, Imbalance, Sweeps), CONTEXT (Market Bias, Session, Regime, HTF Trend), and SIGNAL (Last Signal, Live Conditions). Family grouping helps you decide which rows matter for your trading style: trend traders need TREND + CONTEXT; mean-reversion traders need RISK + ENERGY; structure readers need STRUCTURE + CONTEXT.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-teal-400" />
-              <div className="text-xs font-bold tracking-wider text-teal-300">TREND FAMILY · 4 rows</div>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">The animation groups the 16 rows into six families. Family grouping helps you decide which rows matter for your trading style: trend traders need TREND + CONTEXT; mean-reversion traders need RISK + ENERGY; structure readers need STRUCTURE + CONTEXT.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">TREND FAMILY &middot; 4 rows</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Ribbon</strong> (7-state priority cascade) &middot; <strong className="text-white">Pulse</strong> (HOLDING → CLOSE → VERY CLOSE → FLIP WARNING) &middot; <strong className="text-white">Tension</strong> (RELAXED → BUILDING → STRETCHED → SNAPPING) &middot; <strong className="text-white">Momentum</strong> (NOW state + NEXT prediction).</p>
             </div>
-            <div className="space-y-1 text-sm text-white/75">
-              <div><span className="font-mono text-white/90">Ribbon</span> — 7-state priority cascade</div>
-              <div><span className="font-mono text-white/90">Pulse</span> — HOLDING → CLOSE → VERY CLOSE → FLIP WARNING</div>
-              <div><span className="font-mono text-white/90">Tension</span> — RELAXED → BUILDING → STRETCHED → SNAPPING</div>
-              <div><span className="font-mono text-white/90">Momentum</span> — NOW state + NEXT prediction</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ENERGY FAMILY &middot; 2 rows</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Volatility &amp; Squeeze</strong> (dual-mode, normal + squeeze-aware) &middot; <strong className="text-white">Volume</strong> (EMPTY → THIN → NORMAL → STRONG → EXTREME).</p>
             </div>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-amber-400" />
-              <div className="text-xs font-bold tracking-wider text-amber-400">ENERGY FAMILY · 2 rows</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">RISK FAMILY &middot; 1 row</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Risk Envelope</strong> (SAFE → NORMAL → CAUTION → DANGER).</p>
             </div>
-            <div className="space-y-1 text-sm text-white/75">
-              <div><span className="font-mono text-white/90">Volatility &amp; Squeeze</span> — dual-mode (normal + squeeze-aware)</div>
-              <div><span className="font-mono text-white/90">Volume</span> — EMPTY → THIN → NORMAL → STRONG → EXTREME</div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STRUCTURE FAMILY &middot; 3 rows</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Structure</strong> (nearest S/R + proximity) &middot; <strong className="text-white">Imbalance</strong> (nearest FVG + proximity) &middot; <strong className="text-white">Sweeps</strong> (HOT / COOLING / COLD / NONE).</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">CONTEXT FAMILY &middot; 4 rows</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Market Bias</strong> (asset-class aware) &middot; <strong className="text-white">Session</strong> (PRIME / HIGH VOL / NORMAL / LOW VOL) &middot; <strong className="text-white">Regime</strong> (TREND / RANGE / VOLATILE + transitions) &middot; <strong className="text-white">HTF Trend</strong> (dual-HTF with alignment verdict).</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SIGNAL FAMILY &middot; 2 rows</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Last Signal</strong> (most recent arrow + freshness) &middot; <strong className="text-white">Live Conditions</strong> (4 histogram gauges &mdash; the only row defaulting ON).</p>
             </div>
           </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-rose-400" />
-              <div className="text-xs font-bold tracking-wider text-rose-300">RISK FAMILY · 1 row</div>
-            </div>
-            <div className="space-y-1 text-sm text-white/75">
-              <div><span className="font-mono text-white/90">Risk Envelope</span> — SAFE → NORMAL → CAUTION → DANGER</div>
-            </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">ROW-SELECTION RECOMMENDATIONS</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Trend follower:</strong> Ribbon &middot; Pulse &middot; Momentum &middot; HTF Trend &middot; Live Conditions (5 rows)</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Mean reversion:</strong> Tension &middot; Risk Envelope &middot; Volume &middot; Regime &middot; Live Conditions (5 rows)</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Structure reader:</strong> Structure &middot; Imbalance &middot; Sweeps &middot; Market Bias &middot; Session &middot; Live Conditions (6 rows)</p>
+            <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">All-rounder:</strong> Ribbon &middot; Pulse &middot; Risk Envelope &middot; Structure &middot; HTF Trend &middot; Last Signal &middot; Live Conditions (7 rows)</p>
           </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-teal-300/75" />
-              <div className="text-xs font-bold tracking-wider text-teal-200/80">STRUCTURE FAMILY · 3 rows</div>
-            </div>
-            <div className="space-y-1 text-sm text-white/75">
-              <div><span className="font-mono text-white/90">Structure</span> — nearest S/R + proximity</div>
-              <div><span className="font-mono text-white/90">Imbalance</span> — nearest FVG + proximity</div>
-              <div><span className="font-mono text-white/90">Sweeps</span> — HOT / COOLING / COLD / NONE</div>
-            </div>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full bg-white/80" />
-              <div className="text-xs font-bold tracking-wider text-white/80">CONTEXT FAMILY · 4 rows</div>
-            </div>
-            <div className="space-y-1 text-sm text-white/75">
-              <div><span className="font-mono text-white/90">Market Bias</span> — asset-class aware (crypto / stocks / forex)</div>
-              <div><span className="font-mono text-white/90">Session</span> — PRIME / HIGH VOL / NORMAL / LOW VOL</div>
-              <div><span className="font-mono text-white/90">Regime</span> — TREND / RANGE / VOLATILE + transitions</div>
-              <div><span className="font-mono text-white/90">HTF Trend</span> — dual-HTF with alignment verdict</div>
-            </div>
-          </div>
-
-          <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-2 h-2 rounded-full" style={{ background: 'rgba(255,196,61,1)' }} />
-              <div className="text-xs font-bold tracking-wider" style={{ color: 'rgba(255,196,61,1)' }}>SIGNAL FAMILY · 2 rows</div>
-            </div>
-            <div className="space-y-1 text-sm text-white/75">
-              <div><span className="font-mono text-white/90">Last Signal</span> — most recent arrow + freshness</div>
-              <div><span className="font-mono text-white/90">Live Conditions</span> — 4 histogram gauges (default ON)</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-amber-500/5 border border-amber-500/20">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">ROW-SELECTION RECOMMENDATIONS</div>
-          <div className="text-sm text-white/80 leading-relaxed space-y-2">
-            <div><span className="text-white font-semibold">Trend follower:</span> Ribbon · Pulse · Momentum · HTF Trend · Live Conditions (5 rows)</div>
-            <div><span className="text-white font-semibold">Mean reversion:</span> Tension · Risk Envelope · Volume · Regime · Live Conditions (5 rows)</div>
-            <div><span className="text-white font-semibold">Structure reader:</span> Structure · Imbalance · Sweeps · Market Bias · Session · Live Conditions (6 rows)</div>
-            <div><span className="text-white font-semibold">All-rounder:</span> Ribbon · Pulse · Risk Envelope · Structure · HTF Trend · Last Signal · Live Conditions (7 rows)</div>
-          </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S12 — The Cross-Group Cascade ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S12 · INTER-GROUP INTERACTIONS</div>
-        <h2 className="text-3xl font-bold mb-6">The Cross-Group Cascade</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            In Part 1 you learned the Silent Cascade within a single group. Part 2 introduces the more dangerous version: the <span className="text-amber-400 font-semibold">Cross-Group Cascade</span>, where settings in one group silently affect systems in OTHER groups. Three settings are particularly cascading — changing any one of them reshapes 5+ downstream systems across multiple groups.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; The Cross-Group Cascade</p>
+          <h2 className="text-2xl font-extrabold mb-4">The dangerous version &mdash; one input, eight downstream systems</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">In Part 1 you learned the <strong className="text-white">Silent Cascade</strong> within a single group. Part 2 introduces the more dangerous version: the <strong className="text-amber-400">Cross-Group Cascade</strong>, where settings in one group silently affect systems in OTHER groups. Three settings are particularly cascading &mdash; changing any one of them reshapes 5+ downstream systems across multiple groups.</p>
           <CrossGroupCascadeAnim />
-        </div>
-
-        <div className="mb-8 space-y-3 text-white/80 leading-relaxed">
-          <p>
-            Watch the animation. Three input cards at the top: Strong Signals Only, Signal Engine, Pulse ATR Factor. Eight output cards at the bottom: Signal count, Candle coloring, Last Signal row, Pulse row action, Tooltip SL, Tooltip TP, Live Conditions, Chart density. Amber lightning lines connect each input to the outputs it affects. Strong Signals Only affects 7 of 8. Signal Engine affects 5. Pulse ATR Factor affects 5. These three settings are the most cascading in all of CIPHER.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="p-5 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30">
-            <div className="text-xs font-bold tracking-widest text-amber-400 mb-2">CASCADE #1</div>
-            <h3 className="text-lg font-bold mb-2">Strong Signals Only</h3>
-            <p className="text-sm text-white/70 leading-relaxed">
-              Flipping this toggle rewrites the entire signal distribution. Fewer signals = newer &quot;most recent&quot; signal = different Last Signal freshness = different Pulse row action = different tooltip values. Seven downstream shifts from one checkbox.
-            </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation. Three input cards at the top: <strong className="text-white">Strong Signals Only, Signal Engine, Pulse ATR Factor</strong>. Eight output cards at the bottom: Signal count, Candle coloring, Last Signal row, Pulse row action, Tooltip SL, Tooltip TP, Live Conditions, Chart density. Amber lightning lines connect each input to the outputs it affects. <strong className="text-amber-400">Strong Signals Only affects 7 of 8. Signal Engine affects 5. Pulse ATR Factor affects 5.</strong> These three settings are the most cascading in all of CIPHER.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CASCADE #1 &mdash; STRONG SIGNALS ONLY</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Flipping this toggle rewrites the entire signal distribution. Fewer signals = newer &ldquo;most recent&rdquo; signal = different Last Signal freshness = different Pulse row action = different tooltip values. <strong className="text-white">Seven downstream shifts from one checkbox.</strong></p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">CASCADE #2 &mdash; SIGNAL ENGINE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Switching from Trend to Reversal changes WHICH signals exist. Candle coloring interacts (Composite candles encode different dimensions for reversal setups). Last Signal updates. Live Conditions shifts. <strong className="text-white">Five systems.</strong></p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">CASCADE #3 &mdash; PULSE ATR FACTOR</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Moving the slider by 0.1 shifts every Pulse line pixel. Signal count changes. If SL Method = Pulse, the tooltip SL value changes. Last Signal changes. Pulse row action changes. Live Conditions shifts. <strong className="text-white">Five systems &mdash; across both the visual layer (Part 1) and behavioral layer (Part 2).</strong></p>
+            </div>
           </div>
-
-          <div className="p-5 rounded-xl bg-gradient-to-br from-teal-500/10 to-transparent border border-teal-500/30">
-            <div className="text-xs font-bold tracking-widest text-teal-300 mb-2">CASCADE #2</div>
-            <h3 className="text-lg font-bold mb-2">Signal Engine</h3>
-            <p className="text-sm text-white/70 leading-relaxed">
-              Switching from Trend to Reversal changes WHICH signals exist. Candle coloring interacts (Composite candles encode different dimensions for reversal setups). Last Signal updates. Live Conditions shifts. Five systems.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE CROSS-GROUP RULE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Before changing any of these three settings <strong className="text-white">mid-session</strong>, close any open positions. The cascade recalculates live &mdash; if you have an open trade with SL Method = Pulse and you move Pulse ATR Factor, your displayed SL price shifts. Your actual broker stop does not &mdash; but the chart tooltip will now disagree with your real trade. <strong className="text-amber-400">Stop drift in chart-vs-broker is the most common way operators get confused</strong> about whether they&apos;re in a winning or losing position. Don&apos;t introduce it unnecessarily.</p>
           </div>
-
-          <div className="p-5 rounded-xl bg-gradient-to-br from-rose-500/10 to-transparent border border-rose-500/30">
-            <div className="text-xs font-bold tracking-widest text-rose-300 mb-2">CASCADE #3</div>
-            <h3 className="text-lg font-bold mb-2">Pulse ATR Factor</h3>
-            <p className="text-sm text-white/70 leading-relaxed">
-              Moving the slider by 0.1 shifts every Pulse line pixel. Signal count changes. If SL Method = Pulse, the tooltip SL value changes. Last Signal changes. Pulse row action changes. Live Conditions shifts. Five systems — across both the visual layer (Part 1) and behavioral layer (Part 2).
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">THE CROSS-GROUP RULE</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Before changing any of these three settings mid-session, close any open positions. The cascade recalculates live — if you have an open trade with SL Method = Pulse and you move Pulse ATR Factor, your displayed SL price shifts. Your ACTUAL broker stop does not — but the chart tooltip will now disagree with your real trade. Stop drift in chart-vs-broker is the most common way operators get confused about whether they&apos;re in a winning or losing position. Don&apos;t introduce it unnecessarily.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S13 — Three Behavioral Playbooks ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S13 · BEHAVIORAL PLAYBOOKS</div>
-        <h2 className="text-3xl font-bold mb-6">Three behavioral-layer playbooks to steal</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            Mirroring the visual-layer playbooks in Part 1, here are three behavioral-layer configurations tuned for different operator profiles. Set PRESET = None first, then manually configure the SIGNAL ENGINE, RISK MAP, and COMMAND CENTER rows below.
-          </p>
-        </div>
-
-        <div className="mb-8">
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Three Behavioral Playbooks</p>
+          <h2 className="text-2xl font-extrabold mb-4">Ready-to-steal configs for three operator profiles</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Mirroring the visual-layer playbooks in Part 1, here are three behavioral-layer configurations tuned for different operator profiles. Set PRESET = <strong className="text-white">None</strong> first, then manually configure the SIGNAL ENGINE, RISK MAP, and COMMAND CENTER rows below.</p>
           <BehavioralPlaybookMatrixAnim />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Playbook 1 — Trend Follower */}
-          <div className="p-6 rounded-xl bg-gradient-to-br from-teal-500/10 to-transparent border border-teal-500/25">
-            <div className="text-xs font-bold tracking-widest text-teal-300 mb-3">PLAYBOOK 1</div>
-            <h3 className="text-xl font-bold mb-4">Trend Follower</h3>
-            <p className="text-sm text-white/70 mb-4 italic">15m–1H · ride the wave · HTF aligned</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Signal Engine</span><span className="text-amber-400 text-xs font-mono">Trend</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Direction</span><span className="text-amber-400 text-xs font-mono">Both</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Strong Signals</span><span className="text-amber-400 text-xs font-mono">OFF</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Candles</span><span className="text-amber-400 text-xs font-mono">Trend Bold</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">SL Method</span><span className="text-amber-400 text-xs font-mono">Auto</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">TP Method</span><span className="text-amber-400 text-xs font-mono">R-Multiple</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">CC Rows</span><span className="text-amber-400 text-xs font-mono">Ribbon · Pulse · HTF</span></div>
-            </div>
-            <p className="mt-4 text-xs text-white/55 leading-relaxed">
-              Strong Signals OFF because you want to catch more signals in the direction of a clean trend. R-Multiple targets scale with volatility. HTF row keeps you aligned with the bigger trend.
-            </p>
+          <div className="p-5 rounded-2xl glass-card mt-6 mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-2">PLAYBOOK 1 &mdash; THE TREND FOLLOWER</p>
+            <p className="text-xs text-gray-500 mb-3 italic">15m&ndash;1H &middot; ride the wave &middot; HTF aligned</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Signal Engine:</strong> Trend &middot; <strong className="text-white">Direction:</strong> Both &middot; <strong className="text-white">Strong Signals:</strong> OFF &middot; <strong className="text-white">Candles:</strong> Trend Bold</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">SL Method:</strong> Auto &middot; <strong className="text-white">TP Method:</strong> R-Multiple</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-white">CC Rows:</strong> Ribbon &middot; Pulse &middot; HTF</p>
+            <p className="text-xs text-gray-500 leading-relaxed italic">Strong Signals OFF because you want to catch more signals in the direction of a clean trend. R-Multiple targets scale with volatility. HTF row keeps you aligned with the bigger trend.</p>
           </div>
-
-          {/* Playbook 2 — Mean Reversion */}
-          <div className="p-6 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/25">
-            <div className="text-xs font-bold tracking-widest text-amber-400 mb-3">PLAYBOOK 2</div>
-            <h3 className="text-xl font-bold mb-4">Mean Reversion</h3>
-            <p className="text-sm text-white/70 mb-4 italic">5m–15m · catch the snap · tight filter</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Signal Engine</span><span className="text-amber-400 text-xs font-mono">Reversal</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Direction</span><span className="text-amber-400 text-xs font-mono">Both</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Strong Signals</span><span className="text-amber-400 text-xs font-mono">ON</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Candles</span><span className="text-amber-400 text-xs font-mono">Tension</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">SL Method</span><span className="text-amber-400 text-xs font-mono">ATR</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">TP Method</span><span className="text-amber-400 text-xs font-mono">Structure</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">CC Rows</span><span className="text-amber-400 text-xs font-mono">Tension · Risk · Structure</span></div>
-            </div>
-            <p className="mt-4 text-xs text-white/55 leading-relaxed">
-              Tension candles glow amber when price is stretched far from Flow — the setup signal. Strong Signals ON because reversal trades need conviction. Structure TPs because you&apos;re targeting the nearest institutional level.
-            </p>
+          <div className="p-5 rounded-2xl glass-card mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-2">PLAYBOOK 2 &mdash; MEAN REVERSION</p>
+            <p className="text-xs text-gray-500 mb-3 italic">5m&ndash;15m &middot; catch the snap &middot; tight filter</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Signal Engine:</strong> Reversal &middot; <strong className="text-white">Direction:</strong> Both &middot; <strong className="text-white">Strong Signals:</strong> ON &middot; <strong className="text-white">Candles:</strong> Tension</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">SL Method:</strong> ATR &middot; <strong className="text-white">TP Method:</strong> Structure</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-white">CC Rows:</strong> Tension &middot; Risk Envelope &middot; Structure</p>
+            <p className="text-xs text-gray-500 leading-relaxed italic">Tension candles glow amber when price is stretched far from Flow &mdash; the setup signal. Strong Signals ON because reversal trades need conviction. Structure TPs because you&apos;re targeting the nearest institutional level.</p>
           </div>
-
-          {/* Playbook 3 — Structure-Based */}
-          <div className="p-6 rounded-xl bg-gradient-to-br from-white/5 to-transparent border border-white/15">
-            <div className="text-xs font-bold tracking-widest text-white/70 mb-3">PLAYBOOK 3</div>
-            <h3 className="text-xl font-bold mb-4">Structure-Based</h3>
-            <p className="text-sm text-white/70 mb-4 italic">15m–1H · levels drive everything · elite filter</p>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Signal Engine</span><span className="text-amber-400 text-xs font-mono">All Signals</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Direction</span><span className="text-amber-400 text-xs font-mono">Both</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Strong Signals</span><span className="text-amber-400 text-xs font-mono">ON</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">Candles</span><span className="text-amber-400 text-xs font-mono">Default</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">SL Method</span><span className="text-amber-400 text-xs font-mono">Structure</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">TP Method</span><span className="text-amber-400 text-xs font-mono">Structure</span></div>
-              <div className="flex justify-between p-2 rounded bg-white/5"><span className="text-white">CC Rows</span><span className="text-amber-400 text-xs font-mono">Structure · Sweeps · Imbalance</span></div>
-            </div>
-            <p className="mt-4 text-xs text-white/55 leading-relaxed">
-              Everything revolves around levels. Structure SL + Structure TP + Default candles = pure chart-reading. Strong Signals ON to filter noise — you only want high-conviction trades around levels.
-            </p>
+          <div className="p-5 rounded-2xl glass-card mb-6">
+            <p className="text-xs font-bold text-amber-400 mb-2">PLAYBOOK 3 &mdash; STRUCTURE-BASED</p>
+            <p className="text-xs text-gray-500 mb-3 italic">15m&ndash;1H &middot; levels drive everything &middot; elite filter</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">Signal Engine:</strong> All Signals &middot; <strong className="text-white">Direction:</strong> Both &middot; <strong className="text-white">Strong Signals:</strong> ON &middot; <strong className="text-white">Candles:</strong> Default</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-2"><strong className="text-white">SL Method:</strong> Structure &middot; <strong className="text-white">TP Method:</strong> Structure</p>
+            <p className="text-sm text-gray-400 leading-relaxed mb-3"><strong className="text-white">CC Rows:</strong> Structure &middot; Sweeps &middot; Imbalance</p>
+            <p className="text-xs text-gray-500 leading-relaxed italic">Everything revolves around levels. Structure SL + Structure TP + Default candles = pure chart-reading. Strong Signals ON to filter noise &mdash; you only want high-conviction trades around levels.</p>
           </div>
-        </div>
-
-        <div className="p-5 rounded-lg bg-white/5 border border-white/10">
-          <div className="text-xs font-bold tracking-wider text-amber-400 mb-2">RUN ONE PLAYBOOK AT A TIME</div>
-          <p className="text-white/80 text-sm leading-relaxed">
-            Don&apos;t mix playbooks across symbols. Pick one, run it for at least 20 trades, measure the result, adjust ONE thing at a time. Switching between playbooks mid-session is how operators convince themselves that &quot;nothing works&quot; — what&apos;s actually happening is that they never gave any single configuration enough runway.
-          </p>
-        </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">RUN ONE PLAYBOOK AT A TIME</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Don&apos;t mix playbooks across symbols. Pick one, run it for at least <strong className="text-white">20 trades</strong>, measure the result, adjust ONE thing at a time. Switching between playbooks mid-session is how operators convince themselves that &ldquo;nothing works&rdquo; &mdash; what&apos;s actually happening is that they never gave any single configuration enough runway.</p>
+          </div>
+        </motion.div>
       </section>
 
       {/* ================ SECTION S14 — Common Behavioral Mistakes ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S14 · WHAT GOES WRONG</div>
-        <h2 className="text-3xl font-bold mb-6">Common behavioral-layer mistakes</h2>
-
-        <div className="space-y-4 text-white/80 leading-relaxed mb-8">
-          <p>
-            These are the six most common behavioral-layer errors operators make in live trading. Each is listed with its consequence and the fix.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {[
-            {
-              num: 1,
-              title: 'Turning OFF the Pulse display and expecting signals to stop',
-              body: 'The Pulse toggle is in the PULSE group of the visual layer (Part 1) — it hides the LINE, not the signals. To actually silence PX arrows, change <span class="text-white">Signal Engine</span> to Reversal or Visuals Only. This mistake is so common it appears as Game R1.',
-            },
-            {
-              num: 2,
-              title: 'Assuming Auto SL is a single method',
-              body: 'Auto is a ROUTER. It resolves to different methods per asset class. A trader who runs Auto on crypto and expects it to behave like a forex trader&apos;s Auto is comparing different underlying methods. Know your asset class, know the resolution.',
-            },
-            {
-              num: 3,
-              title: 'Leaving Strong Signals Only OFF on a chart that floods with signals',
-              body: 'If you&apos;re getting 10+ arrows per hour on a 15m chart, your signal distribution is too permissive for actual execution. Turn Strong Signals ON — you&apos;ll drop 50–70% of signals but the survivors will be the 3-of-4-factor plays. Fewer trades, higher conviction.',
-            },
-            {
-              num: 4,
-              title: 'Enabling all 16 Command Center row toggles',
-              body: 'The Pine default is 15 of 16 OFF for a reason — <span class="text-white">information density kills decision latency</span>. Most expert operators run 5–8 rows. All-16 is a beginner configuration, and the cognitive load makes you slower, not better-informed.',
-            },
-            {
-              num: 5,
-              title: 'Changing Cipher Candles mid-session because you don&apos;t like the look',
-              body: 'The candle mode is a semantic choice, not a cosmetic one. Composite Bold encodes different information than Tension. Switching mid-session means you&apos;re reading a different signal from the exact same bars — which causes misreads. Pick a mode, run it for a full session at minimum.',
-            },
-            {
-              num: 6,
-              title: 'Mixing SL Method and TP Method without thinking about it',
-              body: 'SL Structure + TP Structure is coherent (both level-based). SL ATR + TP R-Multiple is coherent (both volatility-based). SL Pulse + TP Structure is mixing philosophies. Not wrong, but you should be ABLE to articulate why. If you can&apos;t explain why SL Pulse feels right but TP Structure feels right, go back to Auto for both until you can.',
-            },
-          ].map((m) => (
-            <div key={m.num} className="flex gap-4 p-5 rounded-lg bg-white/5 border border-white/10">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold text-sm">
-                {m.num}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; Common Behavioral Mistakes</p>
+          <h2 className="text-2xl font-extrabold mb-4">Six ways the behavioral layer gets misconfigured</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">These are the six most common behavioral-layer errors operators make in live trading. Each is listed with its consequence and the fix. For each, ask honestly: have I done this?</p>
+          <div className="space-y-3">
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 1 &mdash; Turning OFF the Pulse display and expecting signals to stop</p>
               </div>
-              <div className="flex-1">
-                <div className="font-bold text-white mb-1" dangerouslySetInnerHTML={{ __html: m.title }} />
-                <p className="text-sm text-white/75 leading-relaxed" dangerouslySetInnerHTML={{ __html: m.body }} />
-              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">The Pulse toggle is in the PULSE group of the visual layer (Part 1) &mdash; it hides the LINE, not the signals. <strong className="text-white">THE FIX:</strong> to actually silence PX arrows, change <strong className="text-white">Signal Engine</strong> to Reversal or Visuals Only. This mistake is so common it appears as Game R1.</p>
             </div>
-          ))}
-        </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 2 &mdash; Assuming Auto SL is a single method</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">Auto is a <strong className="text-white">router</strong>. It resolves to different methods per asset class. A trader who runs Auto on crypto and expects it to behave like a forex trader&apos;s Auto is comparing different underlying methods. <strong className="text-white">THE FIX:</strong> know your asset class, know the resolution.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 3 &mdash; Leaving Strong Signals Only OFF on a signal-flooded chart</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">If you&apos;re getting 10+ arrows per hour on a 15m chart, your signal distribution is too permissive for actual execution. <strong className="text-white">THE FIX:</strong> turn Strong Signals ON &mdash; you&apos;ll drop 50&ndash;70% of signals but the survivors will be the 3-of-4-factor plays. Fewer trades, higher conviction.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 4 &mdash; Enabling all 16 Command Center row toggles</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">The Pine default is 15 of 16 OFF for a reason &mdash; <strong className="text-white">information density kills decision latency</strong>. Most expert operators run 5&ndash;8 rows. <strong className="text-white">THE FIX:</strong> All-16 is a beginner configuration; the cognitive load makes you slower, not better-informed. Pick 5&ndash;7 rows that match your style (see section 11).</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 5 &mdash; Changing Cipher Candles mid-session</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">The candle mode is a <strong className="text-white">semantic choice</strong>, not a cosmetic one. Composite Bold encodes different information than Tension. Switching mid-session means you&apos;re reading a different signal from the exact same bars &mdash; which causes misreads. <strong className="text-white">THE FIX:</strong> pick a mode, run it for a full session at minimum.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-2xl">&#10060;</span>
+                <p className="text-sm font-extrabold text-red-400 flex-1">Mistake 6 &mdash; Mixing SL Method and TP Method without thinking about it</p>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed ml-10">SL Structure + TP Structure is coherent (both level-based). SL ATR + TP R-Multiple is coherent (both volatility-based). SL Pulse + TP Structure is mixing philosophies. <strong className="text-white">THE FIX:</strong> not wrong, but you should be ABLE to articulate why. If you can&apos;t explain why SL Pulse feels right but TP Structure feels right, go back to Auto for both until you can.</p>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
-      {/* ================ SECTION S15 — Game + Quiz + Certificate ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-white/5">
-        <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">S15 · PROVE IT</div>
-        <h2 className="text-3xl font-bold mb-6">Game · Quiz · Certificate</h2>
-        <p className="text-white/70 leading-relaxed mb-8">
-          Five rounds of behavioral-layer reasoning, followed by an eight-question quiz. Pass the quiz at 66% and you unlock your PRO certificate for Lesson 11.3b — and by extension, the complete CIPHER Inputs Anatomy tour.
-        </p>
-
-        {/* ---------- GAME ---------- */}
-        {!gameActive && !gameComplete && (
-          <div className="p-8 rounded-2xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 mb-8">
-            <div className="text-xs font-bold tracking-widest text-amber-400 mb-3">INTERACTIVE CHALLENGE</div>
-            <h3 className="text-2xl font-bold mb-4">The Behavioral Gauntlet — 5 scenarios</h3>
-            <p className="text-white/75 leading-relaxed mb-6">
-              Each round puts you in a live behavioral-layer situation. Your job: identify the correct reasoning. Instant feedback with detailed explanations.
-            </p>
-            <button
-              onClick={() => setGameActive(true)}
-              className="px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold tracking-wide transition"
-            >
-              START GAME →
-            </button>
-          </div>
-        )}
-
-        {gameActive && !gameComplete && (
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="text-xs font-bold tracking-widest text-amber-400">ROUND {gameRound + 1} OF {gameRounds.length}</div>
-              <div className="flex gap-1.5">
-                {gameRounds.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-8 h-1.5 rounded-full ${
-                      gameSelections[i] ? 'bg-amber-400' : i === gameRound ? 'bg-white/40' : 'bg-white/10'
-                    }`}
-                  />
-                ))}
+      {/* ================ SECTION S15 — Behavioral Layer Cheat Sheet ================ */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; The Behavioral Layer Cheat Sheet</p>
+          <h2 className="text-2xl font-extrabold mb-4">Screenshot This. Pin It.</h2>
+          <div className="p-5 rounded-2xl glass-card">
+            <div className="space-y-3">
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The 3 Behavioral Groups (33 inputs total)</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">SIGNAL ENGINE</strong> 4 &middot; <strong className="text-white">CIPHER RISK MAP</strong> 10 &middot; <strong className="text-white">COMMAND CENTER</strong> 19 (3 panel + 16 row toggles).</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The Arrow Is the Last Word</p>
+                <p className="text-sm text-gray-300">Every arrow passes a 4-factor vote: <strong className="text-white">Ribbon stacked &middot; ADX &gt; 20 &middot; Volume &gt; 1.0&times; &middot; Momentum &gt; 50%</strong>. Three of four must agree. Strong Signals Only enforces this filter.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">Signal Engine Modes</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">All Signals</strong> = PX + TS &middot; <strong className="text-white">Trend</strong> = PX only (continuations) &middot; <strong className="text-white">Reversal</strong> = TS only (pullbacks/V-bottoms) &middot; <strong className="text-white">Visuals Only</strong> = no arrows, visuals live.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">Auto SL Router (per asset class)</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">Crypto → Structure</strong> &middot; <strong className="text-white">Forex → Pulse</strong> &middot; <strong className="text-white">Stocks/Indices → Structure</strong>. Auto TP: <strong className="text-white">Crypto → R-Multiple &middot; Forex → ATR Targets &middot; Stocks/Indices → Structure</strong>. Override by setting the dropdown to a specific method.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">Scale-Out Discipline</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">TP1 (1R) = scale out 33% + move SL to BE</strong>. TP2 (2R) = scale out another 33%. TP3 (3R) = runner close or trail. CIPHER draws the levels, you execute the discipline.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The 6 Row Families</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">TREND</strong> (Ribbon/Pulse/Tension/Momentum) &middot; <strong className="text-white">ENERGY</strong> (Volatility/Volume) &middot; <strong className="text-white">RISK</strong> (Envelope) &middot; <strong className="text-white">STRUCTURE</strong> (Structure/Imbalance/Sweeps) &middot; <strong className="text-white">CONTEXT</strong> (Bias/Session/Regime/HTF) &middot; <strong className="text-white">SIGNAL</strong> (Last Signal/Live Conditions).</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">Cross-Group Cascade &mdash; the Big 3</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">Strong Signals Only</strong> (7 downstream) &middot; <strong className="text-white">Signal Engine</strong> (5) &middot; <strong className="text-white">Pulse ATR Factor</strong> (5 across visual+behavioral). Don&apos;t change these mid-session with open positions.</p>
+              </div>
+              <div className="pb-3 border-b border-white/5">
+                <p className="text-xs font-bold text-amber-400 mb-1">The Three Playbooks</p>
+                <p className="text-sm text-gray-300"><strong className="text-white">Trend Follower:</strong> Signal=Trend, SL=Auto, TP=R-Multiple, Candles=Trend Bold. <strong className="text-white">Mean Reversion:</strong> Signal=Reversal, Strong ON, SL=ATR, TP=Structure, Candles=Tension. <strong className="text-white">Structure-Based:</strong> Signal=All, Strong ON, SL=Structure, TP=Structure, Candles=Default.</p>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-red-400 mb-1">Mistakes to Avoid</p>
+                <p className="text-sm text-gray-300">&#10060; Pulse OFF expecting signals to stop &middot; &#10060; Auto SL assumed to be one method &middot; &#10060; Strong Signals OFF on flooded charts &middot; &#10060; All 16 CC rows enabled &middot; &#10060; Changing Candles mid-session &middot; &#10060; Mixing SL/TP methods blindly.</p>
               </div>
             </div>
+          </div>
+        </motion.div>
+      </section>
 
-            <div className="mb-6 p-5 rounded-lg bg-black/30 border border-white/10">
-              <div className="text-[10px] font-bold tracking-widest text-white/40 mb-2">SCENARIO</div>
-              <p className="text-white/90 leading-relaxed">{gameRounds[gameRound].scenario}</p>
+      {/* === S16 — Scenario Game === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">16 &mdash; Scenario Game</p>
+          <h2 className="text-2xl font-extrabold mb-4">The Behavioral Gauntlet</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios testing your grasp of the behavioral layer &mdash; Signal Engine behavior, Strong Signals, SL/TP method choice, scale-out discipline. Pick the right answer. Explanations appear after every answer &mdash; including for the wrong ones.</p>
+          <div className="p-5 rounded-2xl glass-card">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
+              <p className="text-xs text-gray-500">Score: {gameSelections.filter((sel, i) => sel !== null && gameRounds[i].options.find(o => o.id === sel)?.correct).length}/{gameRounds.length}</p>
             </div>
-
-            <div className="text-sm font-bold text-white/80 mb-3">{gameRounds[gameRound].prompt}</div>
-
-            <div className="space-y-3 mb-6">
+            <p className="text-sm text-gray-300 leading-relaxed mb-4">{gameRounds[gameRound].scenario}</p>
+            <p className="text-sm font-semibold text-white mb-4">{gameRounds[gameRound].prompt}</p>
+            <div className="space-y-2">
               {gameRounds[gameRound].options.map((opt) => {
+                const answered = gameSelections[gameRound] !== null;
                 const selected = gameSelections[gameRound] === opt.id;
-                const showCorrectness = selected;
                 const isCorrect = opt.correct;
+                let cls = 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07]';
+                if (answered && selected && isCorrect) cls = 'bg-green-500/10 border border-green-500/30';
+                if (answered && selected && !isCorrect) cls = 'bg-red-500/10 border border-red-500/30';
+                if (answered && !selected && isCorrect) cls = 'bg-green-500/5 border border-green-500/20';
                 return (
-                  <button
-                    key={opt.id}
-                    onClick={() => {
-                      if (gameSelections[gameRound] !== null) return;
-                      const next = [...gameSelections];
-                      next[gameRound] = opt.id;
-                      setGameSelections(next);
-                    }}
-                    disabled={gameSelections[gameRound] !== null}
-                    className={`w-full text-left p-4 rounded-lg border transition ${
-                      showCorrectness
-                        ? isCorrect
-                          ? 'bg-teal-500/15 border-teal-500/50'
-                          : 'bg-rose-500/15 border-rose-500/50'
-                        : 'bg-white/5 border-white/10 hover:border-amber-500/40'
-                    } ${gameSelections[gameRound] !== null ? 'cursor-default' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">
-                        {opt.id.toUpperCase()}
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-white/90">{opt.text}</div>
-                        {showCorrectness && (
-                          <div className="mt-2 text-sm text-white/70 italic">{opt.explain}</div>
-                        )}
-                      </div>
-                    </div>
-                  </button>
+                  <div key={opt.id}>
+                    <button
+                      onClick={() => {
+                        if (gameSelections[gameRound] !== null) return;
+                        const next = [...gameSelections];
+                        next[gameRound] = opt.id;
+                        setGameSelections(next);
+                      }}
+                      disabled={answered}
+                      className={`w-full text-left p-4 rounded-xl transition-all text-sm ${cls}`}
+                    >
+                      <span className="text-gray-200">{opt.text}</span>
+                    </button>
+                    {answered && selected && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-1 p-3 rounded-lg bg-white/[0.02]">
+                        <p className={`text-xs leading-relaxed ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>{isCorrect ? '✓' : '✗'} {opt.explain}</p>
+                      </motion.div>
+                    )}
+                  </div>
                 );
               })}
             </div>
-
-            {gameSelections[gameRound] !== null && (
-              <button
-                onClick={() => {
-                  if (gameRound < gameRounds.length - 1) {
-                    setGameRound(gameRound + 1);
-                  } else {
-                    setGameComplete(true);
-                    setGameActive(false);
-                  }
-                }}
-                className="px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold tracking-wide transition"
-              >
-                {gameRound < gameRounds.length - 1 ? 'Next Round →' : 'Finish Game →'}
-              </button>
+            {gameSelections[gameRound] !== null && gameRound < gameRounds.length - 1 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5">
+                <button onClick={() => setGameRound(gameRound + 1)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 text-white text-sm font-bold active:scale-95 transition-transform">Next Round &rarr;</button>
+              </motion.div>
             )}
+            {gameSelections[gameRound] !== null && gameRound === gameRounds.length - 1 && (() => {
+              const finalScore = gameSelections.filter((sel, i) => sel !== null && gameRounds[i].options.find(o => o.id === sel)?.correct).length;
+              return (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                  <p className="text-lg font-extrabold text-amber-400">{finalScore}/{gameRounds.length} Correct</p>
+                  <p className="text-xs text-gray-400 mt-1">{finalScore >= 4 ? 'Behavioral-layer instinct installed. You understand every dropdown, every cascade, every scale-out.' : finalScore >= 3 ? 'Solid grasp. Re-read the Cross-Group Cascade (12) and the Signal Engine modes (02) before the quiz.' : 'Re-study The Arrow Is the Last Word (01), the 4-factor audit (04), and the Cross-Group Cascade (12) before the quiz.'}</p>
+                </motion.div>
+              );
+            })()}
           </div>
-        )}
-
-        {gameComplete && (
-          <div className="p-8 rounded-2xl bg-gradient-to-br from-teal-500/10 to-transparent border border-teal-500/30 mb-8">
-            <div className="text-xs font-bold tracking-widest text-teal-300 mb-3">GAME COMPLETE</div>
-            <h3 className="text-2xl font-bold mb-4">Behavioral reasoning — checked</h3>
-            <p className="text-white/75 leading-relaxed mb-6">
-              All 5 scenarios complete. Take the quiz now to earn your Lesson 11.3b certificate and complete the full CIPHER Inputs Anatomy tour. 8 questions. 66% to pass.
-            </p>
-            {!quizActive && (
-              <button
-                onClick={() => setQuizActive(true)}
-                className="px-6 py-3 rounded-lg bg-teal-500 hover:bg-teal-400 text-black font-bold tracking-wide transition"
-              >
-                START QUIZ →
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* ---------- QUIZ ---------- */}
-        {quizActive && !quizSubmitted && (
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="text-xs font-bold tracking-widest text-amber-400">FINAL QUIZ · 8 QUESTIONS · 66% TO PASS</div>
-              <div className="text-xs text-white/50 font-mono">
-                {quizAnswers.filter((a) => a !== null).length} / {quizQuestions.length} answered
-              </div>
-            </div>
-
-            <div className="space-y-6 mb-6">
-              {quizQuestions.map((q, qi) => (
-                <div key={q.id} className="p-5 rounded-lg bg-black/30 border border-white/10">
-                  <div className="text-xs font-bold text-amber-400 mb-2">Q{qi + 1}</div>
-                  <div className="text-white/90 mb-4 leading-relaxed">{q.question}</div>
-                  <div className="space-y-2">
-                    {q.options.map((opt) => {
-                      const selected = quizAnswers[qi] === opt.id;
-                      return (
-                        <button
-                          key={opt.id}
-                          onClick={() => {
-                            const next = [...quizAnswers];
-                            next[qi] = opt.id;
-                            setQuizAnswers(next);
-                          }}
-                          className={`w-full text-left p-3 rounded border transition text-sm ${
-                            selected
-                              ? 'bg-amber-500/15 border-amber-500/50 text-white'
-                              : 'bg-white/5 border-white/10 text-white/70 hover:border-amber-500/30'
-                          }`}
-                        >
-                          <span className="inline-block w-5 text-xs font-mono text-white/40 mr-2">{opt.id.toUpperCase()}.</span>
-                          {opt.text}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => setQuizSubmitted(true)}
-              disabled={quizAnswers.some((a) => a === null)}
-              className={`px-6 py-3 rounded-lg font-bold tracking-wide transition ${
-                quizAnswers.some((a) => a === null)
-                  ? 'bg-white/10 text-white/30 cursor-not-allowed'
-                  : 'bg-amber-500 hover:bg-amber-400 text-black'
-              }`}
-            >
-              SUBMIT QUIZ →
-            </button>
-            <p className="text-xs text-white/40 mt-2 italic">Answer all {quizQuestions.length} questions to submit.</p>
-          </div>
-        )}
-
-        {quizSubmitted && (
-          <div className={`p-8 rounded-2xl border mb-8 ${quizPassed ? 'bg-gradient-to-br from-teal-500/15 to-transparent border-teal-500/40' : 'bg-gradient-to-br from-rose-500/15 to-transparent border-rose-500/40'}`}>
-            <div className={`text-xs font-bold tracking-widest mb-3 ${quizPassed ? 'text-teal-300' : 'text-rose-300'}`}>
-              {quizPassed ? 'PASSED' : 'TRY AGAIN'}
-            </div>
-            <h3 className="text-3xl font-bold mb-4">
-              Score: {quizScore} / {quizQuestions.length} · {quizPercent}%
-            </h3>
-            <p className="text-white/75 leading-relaxed mb-6">
-              {quizPassed
-                ? 'You have demonstrated mastery of the behavioral layer. Your PRO certificate is unlocked below — and you have now completed the full CIPHER Inputs Anatomy tour.'
-                : `You need 66% to pass. You scored ${quizPercent}%. Review the sections, then retry.`}
-            </p>
-
-            <div className="mb-6">
-              <div className="text-xs font-bold tracking-widest text-white/50 mb-3">REVIEW</div>
-              <div className="space-y-3">
-                {quizQuestions.map((q, qi) => {
-                  const correctId = q.options.find((o) => o.correct)?.id;
-                  const yourId = quizAnswers[qi];
-                  const correct = yourId === correctId;
-                  return (
-                    <div key={q.id} className={`p-4 rounded-lg border text-sm ${correct ? 'bg-teal-500/5 border-teal-500/20' : 'bg-rose-500/5 border-rose-500/20'}`}>
-                      <div className="flex items-start gap-3">
-                        <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${correct ? 'bg-teal-500 text-black' : 'bg-rose-500 text-black'}`}>
-                          {correct ? '✓' : '✕'}
-                        </span>
-                        <div className="flex-1">
-                          <div className="text-white/85 mb-1 text-xs">Q{qi + 1}. {q.question}</div>
-                          <div className="text-xs text-white/60 italic">{q.explain}</div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {!quizPassed && (
-              <button
-                onClick={() => {
-                  setQuizAnswers(new Array(quizQuestions.length).fill(null));
-                  setQuizSubmitted(false);
-                }}
-                className="px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold tracking-wide transition"
-              >
-                RETRY QUIZ →
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* ---------- CERTIFICATE ---------- */}
-        {quizPassed && quizSubmitted && (
-          <div className="relative mb-8">
-            {certRevealed && <Confetti active={certRevealed} />}
-            <div
-              className="relative p-10 rounded-2xl border overflow-hidden"
-              style={{
-                background: 'conic-gradient(from 180deg at 50% 50%, rgba(255,179,0,0.15) 0deg, rgba(38,166,154,0.12) 120deg, rgba(255,196,61,0.15) 240deg, rgba(255,179,0,0.15) 360deg)',
-                borderColor: 'rgba(255,196,61,0.5)',
-              }}
-            >
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  <Crown className="w-4 h-4 text-amber-400" />
-                  <div className="text-xs font-bold tracking-widest text-amber-400">PRO · LEVEL 11 · CERTIFICATE</div>
-                  <Crown className="w-4 h-4 text-amber-400" />
-                </div>
-                <h3 className="text-4xl font-bold mb-2">CIPHER Behavioral Layer Mastery</h3>
-                <p className="text-white/70 italic mb-6">Lesson 11.3b · Part 2 · CIPHER Inputs Anatomy COMPLETE</p>
-
-                <div className="inline-block p-6 rounded-xl bg-black/40 border border-amber-400/30 mb-6">
-                  <div className="text-[10px] tracking-widest text-white/50 mb-1">CERT ID</div>
-                  <div className="text-lg font-mono text-amber-400">{certId}</div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-6">
-                  <div>
-                    <div className="text-[10px] tracking-widest text-white/40 mb-1">QUIZ</div>
-                    <div className="text-white/80 font-mono">{quizScore} / {quizQuestions.length}</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] tracking-widest text-white/40 mb-1">SCORE</div>
-                    <div className="text-white/80 font-mono">{quizPercent}%</div>
-                  </div>
-                  <div>
-                    <div className="text-[10px] tracking-widest text-white/40 mb-1">DATE</div>
-                    <div className="text-white/80 font-mono text-sm">{new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
-                  </div>
-                </div>
-
-                <p className="text-sm text-white/60 max-w-xl mx-auto italic">
-                  Certified operator of CIPHER&apos;s complete inputs anatomy — 59 inputs across 12 groups, the Silent Cascade, and the Arrow Tally doctrine.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        </motion.div>
       </section>
 
-      {/* ================ FOOTER NAV ================ */}
-      <section className="max-w-4xl mx-auto px-6 py-12 border-t border-white/5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link
-            href="/academy/lesson/cipher-inputs-anatomy-part-1"
-            className="group p-5 rounded-xl bg-white/5 border border-white/10 hover:border-amber-500/40 transition"
-          >
-            <div className="text-[10px] font-bold tracking-widest text-white/40 mb-2">← PREVIOUS</div>
-            <div className="text-white font-bold group-hover:text-amber-400 transition">Lesson 11.3a · CIPHER Inputs Anatomy Part 1 (Visual Layer)</div>
-          </Link>
-          <Link
-            href="/academy"
-            className="group p-5 rounded-xl bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 hover:border-amber-500/60 transition"
-          >
-            <div className="text-[10px] font-bold tracking-widest text-amber-400 mb-2">NEXT →</div>
-            <div className="text-white font-bold group-hover:text-amber-300 transition">Lesson 11.4 (coming soon)</div>
-          </Link>
-        </div>
+      {/* === S17 — Final Quiz === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">17 &mdash; Knowledge Check</p>
+          <h2 className="text-2xl font-extrabold mb-6">Final Quiz &mdash; {quizQuestions.length} Questions</h2>
+          <div className="space-y-6">
+            {quizQuestions.map((q, qi) => (
+              <div key={qi} className="p-5 rounded-2xl glass-card">
+                <p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">Question {qi + 1} of {quizQuestions.length}</p>
+                <p className="text-sm font-semibold text-white mb-4">{q.question}</p>
+                <div className="space-y-2">
+                  {q.options.map((opt) => {
+                    const answered = quizAnswers[qi] !== null;
+                    const selected = quizAnswers[qi] === opt.id;
+                    const isCorrect = opt.correct;
+                    let cls = 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07]';
+                    if (answered && selected && isCorrect) cls = 'bg-green-500/10 border border-green-500/30';
+                    if (answered && selected && !isCorrect) cls = 'bg-red-500/10 border border-red-500/30';
+                    if (answered && !selected && isCorrect) cls = 'bg-green-500/5 border border-green-500/20';
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => {
+                          if (quizAnswers[qi] !== null) return;
+                          const next = [...quizAnswers];
+                          next[qi] = opt.id;
+                          setQuizAnswers(next);
+                          if (next.every(a => a !== null)) setQuizSubmitted(true);
+                        }}
+                        disabled={answered}
+                        className={`w-full text-left p-3 rounded-xl transition-all text-sm ${cls}`}
+                      >
+                        {opt.text}
+                      </button>
+                    );
+                  })}
+                </div>
+                {quizAnswers[qi] !== null && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 p-3 rounded-lg bg-white/[0.02]">
+                    <p className="text-xs text-amber-400"><span className="font-bold">&#9989;</span> {q.explain}</p>
+                  </motion.div>
+                )}
+              </div>
+            ))}
+          </div>
+          {quizSubmitted && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 text-center">
+              <p className="text-3xl font-extrabold mb-2">{quizPercent}%</p>
+              <p className="text-sm text-gray-400">{quizPassed ? 'You passed! Certificate unlocked below.' : 'You need 66% to earn the certificate. Review and try again.'}</p>
+            </motion.div>
+          )}
+          {certRevealed && (
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="mt-10">
+              <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
+                <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
+                <div className="relative z-10 text-center">
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">&#9636;</div>
+                  <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
+                  <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 11.3b: CIPHER Inputs Anatomy &mdash; Part 2 (The Behavioral Layer)</strong><br />at ATLAS Academy by Interakktive</p>
+                  <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; CIPHER Behavioral-Layer Operator &mdash;</p>
+                  <p className="font-mono text-[9px] text-amber-600/60 tracking-wider uppercase">{certId}</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      </section>
 
-        <div className="mt-8 text-center">
-          <Link href="/academy" className="text-xs text-white/40 hover:text-white/70 transition">
-            ← Return to Academy
-          </Link>
-        </div>
+      <section className="max-w-2xl mx-auto px-5 py-20 text-center">
+        <Link href="/academy" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 hover:from-amber-600 hover:to-accent-600 text-white font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95">&larr; Back to Academy</Link>
       </section>
     </div>
   );
 }
-
