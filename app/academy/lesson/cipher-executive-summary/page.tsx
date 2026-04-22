@@ -36,7 +36,7 @@ const gameRounds = [
         text: 'TREND CURVING has higher priority (6) than TREND AGING (7) in the cascade. Both conditions are true, but only the first true condition outputs.',
         correct: true,
         explain:
-          'Correct. Pine line 3089 evaluates conditions top to bottom. proj_converging is checked before stack_aging. When both are true simultaneously, TREND CURVING fires and TREND AGING is never reached. The header is telling you the projection is bending back \u2014 a more urgent warning than the stack simply aging.',
+          'Correct. evaluates conditions top to bottom. proj_converging is checked before stack_aging. When both are true simultaneously, TREND CURVING fires and TREND AGING is never reached. The header is telling you the projection is bending back \u2014 a more urgent warning than the stack simply aging.',
       },
       {
         id: 'c',
@@ -101,7 +101,7 @@ const gameRounds = [
         text: 'FADING is a Momentum signal \u2014 momentum is fading so continue buying the range boundary.',
         correct: false,
         explain:
-          'FADING is not a momentum label \u2014 it is a health/spread condition. Pine line 3089: FADING fires when spread_contracting OR health_critical is true (priority 11). It means the ribbon is losing directional energy or health has degraded critically. This is independent of and higher-priority than the Momentum row\u2019s reading.',
+          'FADING is not a momentum label \u2014 it is a health/spread condition. FADING fires when spread_contracting OR health_critical is true (priority 11). It means the ribbon is losing directional energy or health has degraded critically. This is independent of and higher-priority than the Momentum row\u2019s reading.',
       },
       {
         id: 'b',
@@ -194,7 +194,7 @@ const gameRounds = [
         text: 'Red action cell means the indicator has an error. Restart CIPHER.',
         correct: false,
         explain:
-          'Red action cells are intentional and documented. FADING, EXIT SOON, and REVERSAL NEAR all render in bright red (#FF1744) by design (Pine line 3090). Red means danger-tier urgency \u2014 not malfunction. The color is information, not an error state.',
+          'Red action cells are intentional and documented. FADING, EXIT SOON, and REVERSAL NEAR all render in bright red (#FF1744) by design . Red means danger-tier urgency \u2014 not malfunction. The color is information, not an error state.',
       },
     ],
   },
@@ -217,7 +217,7 @@ const quizQuestions = [
       { id: 'd', text: 'Majority vote across all rows', correct: false },
     ],
     explain:
-      'Pine line 3089 is a single long ternary chain evaluated top to bottom. The first condition that evaluates true outputs its state and blocks all remaining conditions. This is a strict priority waterfall \u2014 no averaging, no voting, no recency bias.',
+      'is a single long ternary chain evaluated top to bottom. The first condition that evaluates true outputs its state and blocks all remaining conditions. This is a strict priority waterfall \u2014 no averaging, no voting, no recency bias.',
   },
   {
     id: 'q2',
@@ -243,7 +243,7 @@ const quizQuestions = [
       { id: 'd', text: 'Teal \u2014 go tier', correct: false },
     ],
     explain:
-      'Pine line 3090 assigns bright red (#FF1744) to FADING, EXIT SOON, and REVERSAL NEAR. This is a distinct color from the magenta used for VOLATILE states \u2014 it signals danger-tier urgency (capital risk) rather than volatility-regime conditions.',
+      'assigns bright red (#FF1744) to FADING, EXIT SOON, and REVERSAL NEAR. This is a distinct color from the magenta used for VOLATILE states \u2014 it signals danger-tier urgency (capital risk) rather than volatility-regime conditions.',
   },
   {
     id: 'q4',
@@ -256,12 +256,12 @@ const quizQuestions = [
       { id: 'd', text: 'White', correct: false },
     ],
     explain:
-      'Pine line 3087: the header state color for RANGING regime is AMBER. TREND is teal (bull) or magenta (bear). VOLATILE is magenta. RANGING is amber \u2014 consistent with the amber used throughout CIPHER for range/uncertainty states.',
+      'the header state color for RANGING regime is AMBER. TREND is teal (bull) or magenta (bear). VOLATILE is magenta. RANGING is amber \u2014 consistent with the amber used throughout CIPHER for range/uncertainty states.',
   },
   {
     id: 'q5',
     question:
-      '\u2192 RIDE IT requires which conditions to fire (from Pine line 3089)?',
+      '\u2192 RIDE IT requires which conditions to fire ()?',
     options: [
       { id: 'a', text: 'TREND regime + ADX above 30', correct: false },
       { id: 'b', text: 'TREND regime + spread_expanding + health_smooth above 50', correct: true },
@@ -269,7 +269,7 @@ const quizQuestions = [
       { id: 'd', text: 'Any regime + spread_expanding', correct: false },
     ],
     explain:
-      'From Pine line 3089: regime == "TREND" and spread_expanding and health_smooth > 50. All three must be true simultaneously. RIDE IT is regime-gated \u2014 it cannot fire during RANGE or VOLATILE. It also requires the ribbon spread to be actively expanding and the health smoothing above the midpoint.',
+      'From regime == "TREND" and spread_expanding and health_smooth > 50. All three must be true simultaneously. RIDE IT is regime-gated \u2014 it cannot fire during RANGE or VOLATILE. It also requires the ribbon spread to be actively expanding and the health smoothing above the midpoint.',
   },
   {
     id: 'q6',
@@ -295,7 +295,7 @@ const quizQuestions = [
       { id: 'd', text: '\u2192 DOUBLE COIL', correct: false },
     ],
     explain:
-      'Pine line 3089: \u2192 REDUCE SIZE fires only when regime == "VOLATILE". It is the only action state that is exclusively regime-gated to a single regime type. SNAP ZONE fires on tension regardless of regime. FADING fires on spread/health regardless of regime. DOUBLE COIL fires on ribbon + squeeze compression regardless of regime.',
+      '\u2192 REDUCE SIZE fires only when regime == "VOLATILE". It is the only action state that is exclusively regime-gated to a single regime type. SNAP ZONE fires on tension regardless of regime. FADING fires on spread/health regardless of regime. DOUBLE COIL fires on ribbon + squeeze compression regardless of regime.',
   },
   {
     id: 'q8',
@@ -526,152 +526,208 @@ function PriorityWaterfallAnim() {
 
     const scenes = [
       {
-        label: 'SCENE 1 \u00b7 RIDE IT \u2014 Clean trend',
+        label: 'SCENE 1 \u00b7 RIDE IT \u2014 Clean trend running',
         hState: '\u25b2 BULL TREND', hSC: TEAL,
-        hAction: '\u2192 RIDE IT', hAC: TEAL,
-        activeP: 9,
+        hAction: '\u2192 RIDE IT', hAC: TEAL, activeP: 9,
         rows: [
-          { label: 'Ribbon',   state: '\u25b2 BULL', sc: TEAL,   action: 'PRIME  13b (avg 26)', ac: TEAL },
-          { label: 'Momentum', state: '\u25b2 BUILDING  70%\u25bc', sc: TEAL, action: '\u2192 ENTRY ZONE', ac: TEAL },
-          { label: 'Regime',   state: 'TREND',   sc: TEAL,   action: '\u2192 TREND INTACT', ac: TEAL },
+          { label: 'Ribbon',   state: '\u25b2 BULL',          sc: TEAL,    action: 'PRIME 13b (avg 26)',     ac: TEAL  },
+          { label: 'Momentum', state: '\u25b2 BUILDING 70%\u25bc', sc: TEAL, action: '\u2192 ENTRY ZONE',   ac: TEAL  },
+          { label: 'Regime',   state: 'TREND',                sc: TEAL,    action: '\u2192 TREND INTACT',   ac: TEAL  },
         ],
+        note: 'Priorities 1\u20138 all false. RIDE IT fires at priority 9.',
       },
       {
-        label: 'SCENE 2 \u00b7 TREND CURVING \u2014 Projection bending back',
+        label: 'SCENE 2 \u00b7 TREND CURVING \u2014 Projection bending',
         hState: '\u25b2 BULL TREND', hSC: TEAL,
-        hAction: '\u2192 TREND CURVING', hAC: AMBER,
-        activeP: 6,
+        hAction: '\u2192 TREND CURVING', hAC: AMBER, activeP: 6,
         rows: [
-          { label: 'Ribbon',   state: '\u25b2 BULL',  sc: TEAL,  action: '\u2192 CURVING', ac: AMBER },
-          { label: 'Momentum', state: '\u25bc FADING  57%\u25bc', sc: AMBER, action: '\u2192 REDUCE SIZE', ac: MAGENTA },
-          { label: 'Regime',   state: 'TREND',    sc: TEAL,  action: '\u2192 SHIFTING TO RANGE', ac: AMBER },
+          { label: 'Ribbon',   state: '\u25b2 BULL',          sc: TEAL,  action: '\u2192 CURVING',             ac: AMBER   },
+          { label: 'Momentum', state: '\u25bc FADING 57%\u25bc', sc: AMBER, action: '\u2192 REDUCE SIZE',      ac: MAGENTA },
+          { label: 'Regime',   state: 'TREND',                sc: TEAL,  action: '\u2192 SHIFTING TO RANGE',   ac: AMBER   },
         ],
+        note: 'CURVING (priority 6) fires, blocking AGING (7) even if also true.',
       },
       {
         label: 'SCENE 3 \u00b7 TREND AGING \u2014 Stack past average',
         hState: '\u25b2 BULL TREND', hSC: TEAL,
-        hAction: '\u2192 TREND AGING', hAC: AMBER,
-        activeP: 7,
+        hAction: '\u2192 TREND AGING', hAC: AMBER, activeP: 7,
         rows: [
-          { label: 'Ribbon',   state: '\u25b2 BULL',  sc: TEAL,  action: '\u2192 EXTENDED  50b (avg 30)', ac: AMBER },
-          { label: 'Momentum', state: '\u25bc FADING  56%\u25bc', sc: AMBER, action: '\u2192 REDUCE SIZE', ac: MAGENTA },
-          { label: 'Regime',   state: 'TREND',    sc: TEAL,  action: '\u2192 RANGE FORMING', ac: AMBER },
+          { label: 'Ribbon',   state: '\u25b2 BULL',          sc: TEAL,  action: '\u2192 EXTENDED 50b (avg 30)', ac: AMBER   },
+          { label: 'Momentum', state: '\u25bc FADING 56%\u25bc', sc: AMBER, action: '\u2192 REDUCE SIZE',        ac: MAGENTA },
+          { label: 'Regime',   state: 'TREND',                sc: TEAL,  action: '\u2192 RANGE FORMING',         ac: AMBER   },
         ],
+        note: 'CURVING is false this bar. AGING fires at priority 7.',
       },
       {
         label: 'SCENE 4 \u00b7 SNAP ZONE \u2014 Tension beats momentum',
         hState: '\u21d4 RANGING', hSC: AMBER,
-        hAction: '\u2192 SNAP ZONE', hAC: AMBER,
-        activeP: 10,
+        hAction: '\u2192 SNAP ZONE', hAC: AMBER, activeP: 10,
         rows: [
-          { label: 'Tension',  state: '\u25b2 STRETCHED', sc: MAGENTA, action: '\u2192 SNAP LIKELY', ac: AMBER },
-          { label: 'Momentum', state: '\u25b2 SURGING  77%\u25b2', sc: TEAL, action: '\u2192 HOLD POSITION', ac: TEAL },
-          { label: 'Regime',   state: 'RANGE',      sc: AMBER, action: '\u2192 RANGE HOLDING', ac: AMBER },
+          { label: 'Tension',  state: '\u25b2 STRETCHED',     sc: MAGENTA, action: '\u2192 SNAP LIKELY',   ac: AMBER },
+          { label: 'Momentum', state: '\u25b2 SURGING 77%\u25b2', sc: TEAL, action: '\u2192 HOLD POSITION', ac: TEAL  },
+          { label: 'Regime',   state: 'RANGE',               sc: AMBER,   action: '\u2192 RANGE HOLDING', ac: AMBER },
         ],
+        note: 'Tension (priority 10) outranks any momentum state (priority 14+).',
       },
       {
         label: 'SCENE 5 \u00b7 FADING \u2014 Health critical, danger tier',
         hState: '\u21d4 RANGING', hSC: AMBER,
-        hAction: '\u2192 FADING', hAC: RED,
-        activeP: 11,
+        hAction: '\u2192 FADING', hAC: RED, activeP: 11,
         rows: [
-          { label: 'Ribbon',   state: '\u25bc BEAR',  sc: MAGENTA, action: '\u2192 CURVING', ac: AMBER },
-          { label: 'Momentum', state: '\u25b2 STRONG  62%\u2212', sc: TEAL, action: '\u2192 TIGHTEN STOPS', ac: AMBER },
-          { label: 'Regime',   state: 'RANGE',    sc: AMBER, action: '\u2192 SHIFTING TO TREND', ac: AMBER },
+          { label: 'Ribbon',   state: '\u25bc BEAR',          sc: MAGENTA, action: '\u2192 CURVING',         ac: AMBER },
+          { label: 'Momentum', state: '\u25b2 STRONG 62%\u2212', sc: TEAL, action: '\u2192 TIGHTEN STOPS',   ac: AMBER },
+          { label: 'Regime',   state: 'RANGE',               sc: AMBER,   action: '\u2192 SHIFTING TO TREND', ac: AMBER },
         ],
+        note: 'Rows show mixed colors. Header resolved: health failing = red FADING.',
       },
     ];
     const s = scenes[sceneIdx];
 
+    // ── Layout: top label bar, then LEFT = CC rows, RIGHT = cascade list ──
+    const LABEL_H  = 18;
+    const PAD      = 10;
+    const listW    = Math.min(110, w * 0.28); // cascade panel width
+    const leftW    = w - listW - PAD * 3;     // CC panel width
+
     // Scene label
-    ctx.fillStyle = 'rgba(255,179,0,0.65)';
+    ctx.fillStyle = 'rgba(255,179,0,0.7)';
     ctx.font = 'bold 10px Inter, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(s.label, 16, 16);
-    ctx.fillStyle = 'rgba(255,255,255,0.22)';
+    ctx.fillText(s.label, PAD, LABEL_H - 4);
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
     ctx.font = '10px Inter, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(`${sceneIdx + 1} / 5`, w - 16, 16);
+    ctx.fillText(`${sceneIdx + 1} / 5`, w - PAD, LABEL_H - 4);
 
-    // CC rows
-    drawCCRows(ctx, w, 24, s.hState, s.hSC, s.hAction, s.hAC, s.rows, true);
+    // ── LEFT: CC rows (constrained to leftW) ──
+    const ccStartY = LABEL_H + 4;
+    const rowH     = 28;
+    const rowGap   = 2;
 
-    // Cascade strip — right side mini-list (abbreviated)
+    // Header row
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(PAD, ccStartY, leftW, rowH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(PAD, ccStartY, leftW, rowH);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = 'bold 10px "SF Mono", monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('CIPHER PRO \u24d8', PAD + 8, ccStartY + rowH / 2 + 4);
+
+    ctx.fillStyle = s.hSC;
+    ctx.font = 'bold 10px "SF Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(s.hState, PAD + leftW * 0.5, ccStartY + rowH / 2 + 4);
+
+    if (s.hAC === RED) { ctx.shadowBlur = 10; ctx.shadowColor = RED; }
+    else if (s.hAC === TEAL) { ctx.shadowBlur = 8; ctx.shadowColor = TEAL; }
+    ctx.fillStyle = s.hAC;
+    ctx.font = 'bold 11px "SF Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(s.hAction, PAD + leftW - 8, ccStartY + rowH / 2 + 4);
+    ctx.shadowBlur = 0;
+
+    // Evidence rows
+    s.rows.forEach((row, ri) => {
+      const ry = ccStartY + (rowH + rowGap) * (ri + 1);
+      ctx.fillStyle = 'rgba(0,0,0,0.32)';
+      ctx.fillRect(PAD, ry, leftW, rowH);
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.strokeRect(PAD, ry, leftW, rowH);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.36)';
+      ctx.font = '10px "SF Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(row.label, PAD + 8, ry + rowH / 2 + 4);
+
+      ctx.fillStyle = row.sc;
+      ctx.font = 'bold 10px "SF Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(row.state, PAD + leftW * 0.5, ry + rowH / 2 + 4);
+
+      ctx.fillStyle = row.ac;
+      ctx.font = '9px "SF Mono", monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(row.action, PAD + leftW - 8, ry + rowH / 2 + 4);
+    });
+
+    // Note bar below CC rows
+    const noteY = ccStartY + (rowH + rowGap) * 4 + 6;
+    ctx.fillStyle = s.hAC === RED ? 'rgba(255,23,68,0.07)' : 'rgba(255,179,0,0.06)';
+    ctx.strokeStyle = s.hAC === RED ? 'rgba(255,23,68,0.25)' : 'rgba(255,179,0,0.2)';
+    ctx.lineWidth = 1;
+    ctx.fillRect(PAD, noteY, leftW, 22);
+    ctx.strokeRect(PAD, noteY, leftW, 22);
+    ctx.fillStyle = s.hAC === RED ? RED + 'cc' : 'rgba(255,179,0,0.8)';
+    ctx.font = 'bold 9px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(s.note, PAD + leftW / 2, noteY + 14);
+
+    // ── RIGHT: Cascade priority list ──
     const cascadeItems = [
-      { p: 1,  label: 'BREAKOUT',      color: TEAL    },
-      { p: 3,  label: 'BRKOUT LOAD',   color: AMBER   },
-      { p: 4,  label: 'DOUBLE COIL',   color: MAGENTA },
-      { p: 5,  label: 'HOLLOWING',     color: AMBER   },
-      { p: 6,  label: 'CURVING',       color: AMBER   },
-      { p: 7,  label: 'AGING',         color: AMBER   },
-      { p: 8,  label: 'COILED',        color: AMBER   },
-      { p: 9,  label: 'RIDE IT',       color: TEAL    },
-      { p: 10, label: 'SNAP ZONE',     color: AMBER   },
-      { p: 11, label: 'FADING',        color: RED     },
-      { p: 12, label: 'BUILDING',      color: '#00BCD4'},
-      { p: 13, label: 'COILING',       color: AMBER   },
-      { p: 14, label: 'REDUCE SIZE',   color: MAGENTA },
-      { p: 19, label: 'WAIT',          color: 'rgba(255,255,255,0.3)' },
+      { p: 1,  label: 'BREAKOUT',    color: TEAL    },
+      { p: 2,  label: 'BRKOUT LOAD', color: AMBER   },
+      { p: 3,  label: 'DBL COIL',    color: MAGENTA },
+      { p: 4,  label: 'HOLLOWING',   color: AMBER   },
+      { p: 5,  label: 'CURVING',     color: AMBER   },
+      { p: 6,  label: 'AGING',       color: AMBER   },
+      { p: 7,  label: 'COILED',      color: AMBER   },
+      { p: 8,  label: 'RIDE IT',     color: TEAL    },
+      { p: 9,  label: 'SNAP ZONE',   color: AMBER   },
+      { p: 10, label: 'FADING',      color: RED     },
+      { p: 11, label: 'BUILDING',    color: '#00BCD4'},
+      { p: 12, label: 'COILING',     color: AMBER   },
+      { p: 13, label: 'REDUCE SIZE', color: MAGENTA },
+      { p: 14, label: 'WAIT',        color: 'rgba(255,255,255,0.3)' },
     ];
 
-    const listX    = w - 120;
-    const listY    = 24;
-    const itemH    = (h - listY - 20) / cascadeItems.length;
+    const listX   = w - listW - PAD;
+    const listY   = ccStartY;
+    const listH   = h - listY - PAD;
+    const itemH   = listH / (cascadeItems.length + 1);
 
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.fillRect(listX - 4, listY, 116, h - listY - 16);
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
     ctx.lineWidth = 1;
-    ctx.strokeRect(listX - 4, listY, 116, h - listY - 16);
+    ctx.fillRect(listX, listY, listW, listH);
+    ctx.strokeRect(listX, listY, listW, listH);
 
-    ctx.fillStyle = 'rgba(255,179,0,0.45)';
+    ctx.fillStyle = 'rgba(255,179,0,0.5)';
     ctx.font = 'bold 7px Inter, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('PRIORITY CASCADE', listX, listY + 9);
+    ctx.textAlign = 'center';
+    ctx.fillText('PRIORITY CASCADE', listX + listW / 2, listY + 10);
 
     cascadeItems.forEach((item, idx) => {
-      const iy   = listY + 14 + idx * itemH;
-      const isActive  = item.p === s.activeP;
+      const iy       = listY + itemH + idx * itemH;
+      const isActive = item.p === s.activeP;
       const isBlocked = item.p < s.activeP;
 
       if (isActive) {
-        ctx.fillStyle = item.color + '22';
-        ctx.fillRect(listX - 4, iy, 116, itemH);
+        ctx.fillStyle = item.color + '28';
+        ctx.fillRect(listX, iy - itemH * 0.3, listW, itemH * 0.9);
         ctx.shadowBlur  = 8;
         ctx.shadowColor = item.color;
       }
 
       ctx.fillStyle = isBlocked
-        ? 'rgba(255,255,255,0.12)'
-        : isActive ? item.color : item.color + 'aa';
+        ? 'rgba(255,255,255,0.14)'
+        : isActive ? item.color : item.color + 'bb';
       ctx.font = `${isActive ? 'bold ' : ''}8px Inter, sans-serif`;
       ctx.textAlign = 'left';
-      ctx.fillText(`${item.p}. ${item.label}`, listX, iy + itemH * 0.65);
+      ctx.fillText(`${item.p}. ${item.label}`, listX + 6, iy + itemH * 0.25);
       ctx.shadowBlur = 0;
 
       if (isBlocked) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
         ctx.lineWidth = 0.5;
         ctx.beginPath();
-        ctx.moveTo(listX, iy + itemH * 0.55);
-        ctx.lineTo(listX + 100, iy + itemH * 0.55);
+        ctx.moveTo(listX + 6, iy + itemH * 0.12);
+        ctx.lineTo(listX + listW - 6, iy + itemH * 0.12);
         ctx.stroke();
       }
     });
-
-    // Conflict annotation for scenes 4 and 5
-    if (sceneIdx >= 3 && sceneT > 0.5) {
-      const annoY = 24 + 26 * 4 + 8;
-      ctx.fillStyle = 'rgba(255,179,0,0.06)';
-      ctx.strokeStyle = 'rgba(255,179,0,0.2)';
-      ctx.lineWidth = 1;
-      ctx.fillRect(16, annoY, w - 140, 20);
-      ctx.strokeRect(16, annoY, w - 140, 20);
-      ctx.fillStyle = 'rgba(255,179,0,0.75)';
-      ctx.font = 'bold 9px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Rows show mixed colors \u2014 header has already resolved the conflict', 16 + (w - 140) / 2, annoY + 13);
-    }
   }, []);
 
   return <AnimScene draw={draw} aspectRatio={16 / 9} />;
@@ -1057,7 +1113,7 @@ function RegimeGatingAnim() {
       { regime: 'RANGE', color: AMBER,
         can:    ['\u2192 SNAP ZONE', '\u2192 FADING', '\u2192 COILING', '\u2192 ENTRY ZONE', '\u2192 EXIT SOON'],
         cannot: ['\u2192 RIDE IT', '\u2192 TREND AGING', '\u2192 REDUCE SIZE'],
-        note:   'COILING requires regime == "RANGE" + vol_ratio_atr < 0.8 (Pine line 3089)' },
+        note:   'COILING requires regime == "RANGE" + vol_ratio_atr < 0.8 ' },
       { regime: 'VOLATILE', color: MAGENTA,
         can:    ['\u2192 REDUCE SIZE', '\u2192 SNAP ZONE', '\u2192 FADING'],
         cannot: ['\u2192 RIDE IT', '\u2192 TREND AGING', '\u2192 COILING', '\u2192 BUILDING'],
@@ -1764,7 +1820,7 @@ export default function CipherExecutiveSummaryLesson() {
           </p>
           {/* Tooltip quote */}
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-6">
-            <p className="text-xs font-bold text-amber-400 mb-2">FROM THE CIPHER PRO HEADER TOOLTIP (Pine line 3091)</p>
+            <p className="text-xs font-bold text-amber-400 mb-2">FROM THE CIPHER PRO HEADER TOOLTIP </p>
             <p className="text-sm text-gray-300 leading-relaxed italic">
               &ldquo;This row reads ALL intelligence below and shows the single most important
               action right now. Rows below are the evidence &mdash; they show different dimensions
@@ -1816,7 +1872,7 @@ export default function CipherExecutiveSummaryLesson() {
             The header&apos;s middle cell (col 2) is not the same as the Regime row&apos;s state
             cell. It combines regime classification with ribbon direction to give you a richer
             context label. There are exactly four possible outputs, each with its own color
-            locked by Pine line 3087.
+            locked by CIPHER enforces this.
           </p>
           <HeaderStateCellAnim />
           <p className="text-gray-400 leading-relaxed mt-4 mb-6">
@@ -1979,7 +2035,7 @@ export default function CipherExecutiveSummaryLesson() {
             Not all 17 header states are available on every bar. Several are{' '}
             <strong className="text-white">regime-gated</strong> &mdash; they can only output
             when a specific regime is active. This is hardcoded into the cascade conditions on
-            Pine line 3089, not a setting you control.
+            The cascade logic, not a setting you control.
           </p>
           <RegimeGatingAnim />
           <p className="text-gray-400 leading-relaxed mt-4 mb-6">
@@ -2026,7 +2082,7 @@ export default function CipherExecutiveSummaryLesson() {
             17 conditions. Top to bottom. First true wins.
           </h2>
           <p className="text-gray-400 leading-relaxed mb-6">
-            The full cascade from Pine line 3089, visualized as an animated waterfall. When the
+            The full cascade from The cascade logic, visualized as an animated waterfall. When the
             market bar closes, CIPHER evaluates each condition from priority 1 downward. The
             first condition that evaluates true immediately outputs its state and{' '}
             <strong className="text-white">blocks all remaining conditions</strong> from being
@@ -2094,7 +2150,7 @@ export default function CipherExecutiveSummaryLesson() {
           </p>
           <div className="p-5 rounded-2xl glass-card space-y-4">
             <div>
-              <p className="text-xs font-bold text-teal-400 mb-1">THE THREE CONDITIONS (Pine line 3089)</p>
+              <p className="text-xs font-bold text-teal-400 mb-1">THE THREE CONDITIONS </p>
               <p className="text-sm text-gray-400 leading-relaxed font-mono">
                 regime == &quot;TREND&quot;<br />
                 AND spread_expanding &nbsp;&nbsp;// ribbon width actively growing<br />
@@ -2394,7 +2450,7 @@ export default function CipherExecutiveSummaryLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Narrative Reader Operator reference</h2>
           <div className="p-5 rounded-2xl glass-card space-y-5">
             <div>
-              <p className="text-xs font-bold text-amber-400 mb-2">COLOR GRAMMAR (Pine line 3090)</p>
+              <p className="text-xs font-bold text-amber-400 mb-2">COLOR GRAMMAR </p>
               <div className="space-y-1 text-sm text-gray-400 leading-relaxed">
                 <p><strong className="text-teal-400">Teal</strong> &mdash; Go: RIDE IT &middot; BREAKOUT &#9650; &middot; ENTRY ZONE</p>
                 <p><strong className="text-amber-400">Amber</strong> &mdash; Caution: AGING &middot; CURVING &middot; HOLLOWING &middot; SNAP ZONE &middot; COILING &middot; BREAKOUT LOADING</p>
@@ -2404,7 +2460,7 @@ export default function CipherExecutiveSummaryLesson() {
               </div>
             </div>
             <div className="pt-4 border-t border-white/5">
-              <p className="text-xs font-bold text-amber-400 mb-2">FULL PRIORITY ORDER (Pine line 3089)</p>
+              <p className="text-xs font-bold text-amber-400 mb-2">FULL PRIORITY ORDER </p>
               <p className="text-sm text-gray-400 leading-relaxed font-mono">
                 1 BREAKOUT &rarr; 2 BREAKOUT LOADING &rarr; 3 DOUBLE COIL &rarr; 4 TREND HOLLOWING &rarr; 5 TREND CURVING &rarr; 6 TREND AGING &rarr; 7 RIBBON COILED &rarr; 8 RIDE IT &rarr; 9 SNAP ZONE &rarr; 10 FADING &rarr; 11 BUILDING &rarr; 12 COILING &rarr; 13 REDUCE SIZE &rarr; 14 ENTRY ZONE &rarr; 15 EXIT SOON &rarr; 16 REVERSAL NEAR &rarr; 17 SNAP LIKELY &rarr; WAIT
               </p>
