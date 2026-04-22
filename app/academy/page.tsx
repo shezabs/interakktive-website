@@ -152,6 +152,7 @@ const liveLessons = new Set([
   'cipher-command-center-anatomy',
   'cipher-inputs-anatomy-part-1',
   'cipher-inputs-anatomy-part-2',
+  'cipher-regime-engine',
 ]);
 
 export default function AcademyPage() {
