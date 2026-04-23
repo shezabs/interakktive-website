@@ -4,9 +4,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, X, LogOut } from 'lucide-react';
+import { Menu, X, LogOut, Shield } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
+
+// Must match middleware.ts + app/lib/admin-auth.ts
+const ADMIN_EMAILS = [
+  'shezabmediaworxltd@gmail.com',
+  'mustafamoinmirza@icloud.com',
+];
 
 export default function Navigation() {
   const router = useRouter();
@@ -37,6 +43,8 @@ export default function Navigation() {
     setIsMenuOpen(false);
     router.push('/');
   };
+
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase());
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-dark border-b border-white/10">
@@ -90,6 +98,15 @@ export default function Navigation() {
                     >
                       Dashboard
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 transition-colors"
+                      >
+                        <Shield className="w-4 h-4" />
+                        Admin
+                      </Link>
+                    )}
                     <button
                       onClick={handleSignOut}
                       className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
@@ -189,6 +206,16 @@ export default function Navigation() {
                     >
                       Dashboard
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className="flex items-center gap-2 text-amber-400 hover:text-amber-300 transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <Shield className="w-4 h-4" />
+                        Admin
+                      </Link>
+                    )}
                     <button
                       onClick={handleSignOut}
                       className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"

@@ -1,72 +1,117 @@
-# Lesson 11.7 + 11.8 — Gold Standard Expansion (Joint Deploy)
+# Admin Panel — Round 1
 
-## Scope
-Two files updated. No changes to academy-data.ts or allowlist — already correct.
+**What this ships:** a full admin panel at `/admin` with four tabs:
+1. **Overview** — MRR, sub counts, churn, recent activity, alerts strip
+2. **Users** — full user table with detail drawer (edit TV username, resend verification, ban/unban, delete)
+3. **Subscriptions** — table + drawer with plan editing, force cancel, reactivate, extend period, reset swap, grant comp, mark TV invite sent
+4. **Audit Log** — every admin action logged with before/after JSON snapshots
 
-- app/academy/lesson/cipher-regime-sizing/page.tsx       (11.7)
-- app/academy/lesson/cipher-signal-philosophy/page.tsx   (11.8)
+**Auth model:** hardcoded email allowlist in middleware + API-side check.
+Admin emails:
+- `shezabmediaworxltd@gmail.com` (Shezab)
+- `mustafamoinmirza@icloud.com` (Mustafa)
 
-## Lesson 11.7 — Regime-Based Position Sizing
+Non-admin users hitting `/admin/*` get redirected to home with no error (avoids leaking the existence of admin routes). `/api/admin/*` returns 401.
 
-### Content fixes
-- BandScaleAnim — VOLATILE max corrected 1.25× → 1.35× (with vol bonus)
-- SameCandleAnim — VOLATILE scale updated, regime color fixed to AMBER
-- TransitionJourneyAnim — fabricated "JUST HIT WATCH" removed (no such product message)
-- S01 caption — updated to match corrected band scales
+---
 
-### 5 new animations
-- DwellEscalationAnim — SPIKE/VISIT/ESTABLISHED/ENTRENCHED progression
-- StopPlacementAnim — asymmetric stops in a Bull Trend
-- DrawdownSimulatorAnim — RANGE+DANGER vs TREND+SAFE equity-curve comparison
-- LiveDecisionLoopAnim — 4 inputs → 1 size converger
-- ConfluenceAlertAnim — zone+dwell+MR all firing = full exit
+## Deploy steps
 
-### 5 new teaching sections
-- S09 Dwell Phases
-- S10 Stop Placement in a Trend
-- S11 Position Sizing Math
-- S12 Decision Loop
-- S13 Confluence Exit
-(Old S09-S13 renumbered to S14-S18)
+### 1. Run the SQL **FIRST** in Supabase SQL Editor
 
-### Metrics
-- Lines: 1,101 → 1,648
-- Animations: 8 → 13
-- Teaching sections: 14 → 20
+Open `supabase/admin-schema.sql` and run it in the Supabase SQL Editor. This:
+- Adds `tv_invite_sent` (boolean) and `admin_notes` (text) columns to the `subscriptions` table
+- Creates the `admin_audit_log` table with indexes and RLS policy
 
-## Lesson 11.8 — The Signal Philosophy
+**Must be done before the code deploys**, or the admin APIs will 500 on missing columns.
 
-### Content fix
-- FinalGateAnim scene 4 — label corrected (clearly differentiates OR-false vs Strong-Only-false)
+### 2. Extract the tarball into the repo
 
-### 5 new animations
-- PXMechanicsAnim — 3-check breakdown (body / distance / rapid-flip)
-- TSConditionsAnim — 4-condition checklist
-- DirectionFilterAnim — two streams, one gate
-- StrongThresholdAnim — slider with 6 sample candidates
-- LabelAnatomyAnim — label explodes apart with annotations
-
-### 5 new teaching sections
-- S03 PX Mechanics
-- S04 TS Conditions
-- S07 Direction Filter in Action
-- S09 Strong Only: The 3+ Threshold
-- S11 Signal Label Anatomy
-(Old S03-S08 renumbered, downstream cascade to S14-S17)
-
-### Metrics
-- Lines: 1,160 → 1,734
-- Animations: 8 → 13
-- Teaching sections: 13 → 19
-
-## Joint metrics
-- Both lessons: no Pine refs, no line numbers, no screenshot mentions in any student-facing content
-- Both lessons: SWC parse OK
-- Both lessons: gold-standard-compliant on structure, sections, animations, body prose
-
-## Deploy
+```bash
+cd ~/OneDrive/Desktop/interakktive-website && tar -xzf ~/Downloads/admin-panel-round-1.tar.gz
 ```
-cd ~/OneDrive/Desktop/interakktive-website && tar -xzf ~/Downloads/lessons-11-7-and-11-8-GOLD.tar.gz
-git add -A && git commit -m "Academy: expand 11.7 and 11.8 to gold-standard depth"
-git push origin main
+
+### 3. Commit and push
+
+```bash
+git add -A && git commit -m "Admin panel Round 1: Overview, Users, Subscriptions, Audit" && git push origin main
 ```
+
+### 4. Verify Vercel env vars
+
+The API routes use `SUPABASE_SERVICE_ROLE_KEY` to bypass RLS. This is already set in Vercel (the webhook uses it), but double-check if deploys fail. Other env vars used: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `STRIPE_SECRET_KEY`.
+
+### 5. Visit `/admin`
+
+Sign in with an admin email. You'll see the "Admin" link appear in the main nav with a shield icon (only visible to admin accounts).
+
+---
+
+## Files shipped
+
+```
+middleware.ts                                  # NEW — protects /admin/* at the edge
+supabase/admin-schema.sql                      # NEW — SQL to run before deploy
+app/lib/admin-auth.ts                          # NEW — requireAdmin() + writeAuditLog()
+app/admin/layout.tsx                           # NEW — shared chrome
+app/admin/page.tsx                             # NEW — Overview tab
+app/admin/users/page.tsx                       # NEW — Users tab
+app/admin/subscriptions/page.tsx               # NEW — Subscriptions tab
+app/admin/audit/page.tsx                       # NEW — Audit log viewer
+app/admin/components/AdminNav.tsx              # NEW — top tab bar
+app/admin/components/DataTable.tsx             # NEW — generic sortable/searchable table
+app/admin/components/Drawer.tsx                # NEW — side panel for details
+app/admin/components/ConfirmModal.tsx          # NEW — typed-confirm destructive modal
+app/admin/components/shared.tsx                # NEW — badges, metric cards, formatters
+app/api/admin/overview/route.ts                # NEW — GET dashboard metrics
+app/api/admin/users/route.ts                   # NEW — GET users list
+app/api/admin/users/[id]/route.ts              # NEW — GET/PATCH/DELETE individual user
+app/api/admin/subscriptions/route.ts           # NEW — GET list, POST grant comp
+app/api/admin/subscriptions/[id]/route.ts      # NEW — GET/PATCH/DELETE individual sub
+app/api/admin/audit/route.ts                   # NEW — GET audit log entries
+app/components/Navigation.tsx                  # MODIFIED — added conditional Admin link
+```
+
+---
+
+## Notes
+
+- **MRR source:** tries Stripe live first; falls back to estimate from sub plans if Stripe is unreachable.
+- **Audit log never blocks:** if the write fails, the action still completes (logged to console).
+- **Stripe actions sync:** cancel/reactivate also update Stripe if `stripe_subscription_id` is present. Comp subs (no Stripe ID) skip Stripe calls.
+- **Ban uses Supabase `ban_duration`:** `'876000h'` (~100 years) for ban, `'none'` to unban.
+- **Delete cascades:** deleting a user also removes subs, swaps, prop accounts, prop trades, prop sessions, Academy progress/certs, and finally the auth row.
+
+---
+
+## Adding a new admin
+
+Admin emails are in **three** places that must all be kept in sync:
+1. `middleware.ts` → `ADMIN_EMAILS` constant
+2. `app/lib/admin-auth.ts` → `ADMIN_EMAILS` constant  
+3. `app/components/Navigation.tsx` → `ADMIN_EMAILS` constant
+4. `supabase/admin-schema.sql` → RLS policy on `admin_audit_log`
+
+Edit all four, redeploy, and update the RLS policy by running this in Supabase SQL Editor:
+
+```sql
+DROP POLICY IF EXISTS "Admins can read audit log" ON admin_audit_log;
+CREATE POLICY "Admins can read audit log" ON admin_audit_log
+  FOR SELECT
+  USING (
+    auth.jwt() ->> 'email' IN (
+      'shezabmediaworxltd@gmail.com',
+      'mustafamoinmirza@icloud.com',
+      'new-admin@example.com'
+    )
+  );
+```
+
+---
+
+## What comes in Round 2
+
+Once Round 1 has been live for a few days:
+- Prop tab — view/edit all user prop accounts, see trade history, close accounts
+- Academy tab — full course management, grant certificates, edit progress
+- Revenue tab — deeper Stripe analytics, LTV, cohort retention, refund tools
