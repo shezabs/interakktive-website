@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Shield, Users, CreditCard, FileText, Home, LogOut } from 'lucide-react';
+import { Shield, Users, CreditCard, FileText, Home, Settings, LogOut } from 'lucide-react';
 import { supabase } from '@/app/lib/supabase';
 
 const TABS = [
@@ -10,6 +10,7 @@ const TABS = [
   { href: '/admin/users',         label: 'Users',         icon: Users,      exact: false },
   { href: '/admin/subscriptions', label: 'Subscriptions', icon: CreditCard, exact: false },
   { href: '/admin/audit',         label: 'Audit Log',     icon: FileText,   exact: false },
+  { href: '/admin/settings',      label: 'Settings',      icon: Settings,   exact: false },
 ];
 
 export default function AdminNav() {
