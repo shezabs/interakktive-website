@@ -118,8 +118,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     if (action === 'resend_verification') {
-      // Supabase admin sends a magic link / invite via generateLink
-      const { error } = await supabase.auth.admin.generateLink({
+      // Use the dedicated resend() method — it re-triggers Supabase's
+      // existing signup confirmation email template. Simpler and correct
+      // for this use case than generateLink(), which requires a password.
+      const { error } = await supabase.auth.resend({
         type: 'signup',
         email: userBefore.user.email!,
       });
