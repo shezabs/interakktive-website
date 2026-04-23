@@ -1,0 +1,4 @@
+INSERT 'cipher-signal-philosophy' after 'cipher-regime-sizing' in the liveLessons Set in app/academy/page.tsx:
+
+  'cipher-regime-sizing',
+  'cipher-signal-philosophy',

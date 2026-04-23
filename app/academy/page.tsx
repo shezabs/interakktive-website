@@ -155,6 +155,8 @@ const liveLessons = new Set([
   'cipher-regime-engine',
   'cipher-regime-transitions',
   'cipher-executive-summary',
+  'cipher-regime-sizing',
+  'cipher-signal-philosophy',
 ]);
 
 export default function AcademyPage() {

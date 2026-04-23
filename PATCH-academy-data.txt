@@ -1,0 +1,13 @@
+INSERT after the 'cipher-regime-sizing' lesson entry in app/lib/academy-data.ts:
+
+      {
+        id: 'cipher-signal-philosophy',
+        courseId: 'level-11-cipher-pro-mastery',
+        title: 'The Signal Philosophy',
+        subtitle: 'Every signal you see survived a five-gate qualification pipeline.',
+        description: 'CIPHER does not fire signals freely — it qualifies them. This lesson teaches the dual signal origins (PX and TS), the Signal Engine mode and Direction filter, the 4-factor conviction scoring system, the Strong Only gate, the 13-level context tag waterfall, and Last Signal freshness states. Earn the Signal Architect certificate.',
+        estimatedMinutes: 45,
+        isFree: false,
+        totalSections: 17,
+        quizPassThreshold: 66,
+      },
