@@ -676,10 +676,10 @@ function FinalGateAnim() {
     const cycleT=t%16; const sceneIdx=Math.floor(cycleT/4); const sceneT=(cycleT%4)/4;
     const fadeIn=Math.min(1,sceneT*4);
     const scenes=[
-      {pxFire:true, tsFire:false, conv:3, label:'PX long fires, TS quiet', result:true},
-      {pxFire:false,tsFire:true,  conv:3, label:'TS snap fires, PX quiet', result:true},
-      {pxFire:true, tsFire:true,  conv:4, label:'Both fire simultaneously', result:true},
-      {pxFire:false,tsFire:false, conv:2, label:'Neither fires (strong only blocks)', result:false},
+      {pxFire:true, tsFire:false, conv:3, label:'PX long fires, TS quiet. Conviction 3/4. buy_signal = TRUE.', result:true},
+      {pxFire:false,tsFire:true,  conv:3, label:'TS snap fires, PX quiet. Conviction 3/4. buy_signal = TRUE.', result:true},
+      {pxFire:true, tsFire:true,  conv:4, label:'Both origins trigger on same bar. OR resolves TRUE. Conviction 4/4.', result:true},
+      {pxFire:false,tsFire:false, conv:2, label:'Neither origin triggers. OR resolves FALSE. Signal blocked at the OR gate.', result:false},
     ];
     const s=scenes[sceneIdx];
 
@@ -844,6 +844,448 @@ function StandardVsStrongAnim() {
   return <AnimScene draw={draw} aspectRatio={16/9} />;
 }
 
+// ============================================================
+// ANIMATION 9 — PXMechanicsAnim
+// PX signal 3-check breakdown: body size, pre-cross distance,
+// rapid-flip suppression. Tile cycles through 4 scenarios.
+// ============================================================
+function PXMechanicsAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    const cycleT = t % 16; const sceneIdx = Math.floor(cycleT / 4); const sceneT = (cycleT % 4) / 4;
+    const fadeIn = Math.min(1, sceneT * 4);
+
+    // Each scene shows a different pass/fail combination
+    const scenes = [
+      { body: true,  dist: true,  flip: true,  fires: true,  label: 'All 3 checks pass. PX long fires.' },
+      { body: false, dist: true,  flip: true,  fires: false, label: 'Body too small. Blocked before conviction scoring.' },
+      { body: true,  dist: false, flip: true,  fires: false, label: 'Too close to last cross. Distance filter blocks.' },
+      { body: true,  dist: true,  flip: false, fires: false, label: 'Long just followed a short — rapid flip suppressed.' },
+    ];
+    const s = scenes[sceneIdx];
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('PX MECHANICS — THREE CHECKS BEFORE ORIGIN QUALIFIES', w / 2, 22);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(`${String(sceneIdx + 1).padStart(2, '0')} / 04`, w - 20, 22);
+
+    // Three check tiles (body / distance / rapid-flip)
+    const checks = [
+      { label: 'BODY SIZE',     sub: s.body ? 'candle body > min_body' : 'candle body too small',     pass: s.body, icon: '▮' },
+      { label: 'PRE-CROSS DIST',sub: s.dist ? 'distance > threshold'  : 'too close to last flip',    pass: s.dist, icon: '↔' },
+      { label: 'RAPID FLIP',    sub: s.flip ? 'no opposite signal recently' : 'opposite signal within window', pass: s.flip, icon: '⟳' },
+    ];
+    const cW = (w - 60) / 3; const cY = 48; const cH = h * 0.38;
+    checks.forEach((c, i) => {
+      const x = 20 + i * (cW + 10);
+      const col = c.pass ? TEAL : MAGENTA;
+      ctx.save();
+      if (c.pass) { ctx.shadowBlur = 12; ctx.shadowColor = col; }
+      ctx.fillStyle = c.pass ? col + '18' : 'rgba(239,83,80,0.08)';
+      ctx.fillRect(x, cY, cW, cH);
+      ctx.strokeStyle = c.pass ? col + 'aa' : MAGENTA + '77';
+      ctx.lineWidth = 1.5; ctx.strokeRect(x, cY, cW, cH);
+      ctx.restore();
+
+      ctx.fillStyle = col; ctx.font = 'bold 24px Inter, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(c.icon, x + cW / 2, cY + 32);
+
+      ctx.fillStyle = col; ctx.font = 'bold 10px Inter, sans-serif';
+      ctx.fillText(c.label, x + cW / 2, cY + 56);
+
+      ctx.fillStyle = c.pass ? 'rgba(255,255,255,0.55)' : 'rgba(239,83,80,0.7)';
+      ctx.font = '9px Inter, sans-serif';
+      // wrap sub if long
+      const words = c.sub.split(' ');
+      let line1 = ''; let line2 = '';
+      for (const w2 of words) {
+        if ((line1 + ' ' + w2).trim().length < 20) line1 = (line1 + ' ' + w2).trim();
+        else line2 = (line2 + ' ' + w2).trim();
+      }
+      ctx.fillText(line1, x + cW / 2, cY + 74);
+      if (line2) ctx.fillText(line2, x + cW / 2, cY + 86);
+
+      // Pass/fail mark
+      ctx.fillStyle = col; ctx.font = 'bold 16px "SF Mono", monospace';
+      ctx.fillText(c.pass ? '✓' : '✗', x + cW / 2, cY + cH - 10);
+    });
+
+    // Output verdict
+    const vY = cY + cH + 18; const vH = h - vY - 26;
+    const vC = s.fires ? TEAL : MAGENTA;
+    ctx.globalAlpha = fadeIn;
+    ctx.fillStyle = vC + '20'; ctx.fillRect(20, vY, w - 40, vH);
+    ctx.strokeStyle = vC + 'aa'; ctx.lineWidth = 1.5; ctx.strokeRect(20, vY, w - 40, vH);
+    ctx.fillStyle = vC; ctx.font = 'bold 14px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(s.fires ? 'px_long = TRUE — origin qualifies' : 'px_long = FALSE — origin blocked', w / 2, vY + vH / 2 + 5);
+    ctx.globalAlpha = 1;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '10px Inter, sans-serif';
+    ctx.fillText(s.label, w / 2, h - 8);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 10 — TSConditionsAnim
+// TS 4-condition checklist: Stretch → Snap candle → Velocity
+// → Cooldown gate. Steps light up in sequence.
+// ============================================================
+function TSConditionsAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    const cycleT = t % 10; const step = Math.min(4, Math.floor(cycleT / 2)); const stepT = (cycleT % 2) / 2;
+    const fadeIn = Math.min(1, stepT * 4);
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('TS — FOUR CONDITIONS ALL REQUIRED', w / 2, 22);
+
+    const conditions = [
+      { label: 'PRIOR STRETCH',    sub: 'Price was stretched in the opposite direction', icon: '◢' },
+      { label: 'SNAP CANDLE',      sub: 'Candle body closes against the stretch',       icon: '▶' },
+      { label: 'VELOCITY SHIFT',   sub: 'Momentum flips direction',                     icon: '⇌' },
+      { label: 'COOLDOWN GATE',    sub: 'No same-direction TS in recent bars',          icon: '⏱' },
+    ];
+    // Vertical checklist
+    const rowY0 = 44; const rowGap = 4; const rowH = (h - rowY0 - 34 - rowGap * 3) / 4;
+    conditions.forEach((c, i) => {
+      const rY = rowY0 + i * (rowH + rowGap);
+      const lit = i < step;
+      const col = lit ? TEAL : 'rgba(255,255,255,0.2)';
+      // Row bg
+      ctx.save();
+      if (lit) { ctx.shadowBlur = 8; ctx.shadowColor = TEAL; }
+      ctx.fillStyle = lit ? 'rgba(38,166,154,0.10)' : 'rgba(255,255,255,0.02)';
+      ctx.fillRect(20, rY, w - 40, rowH);
+      ctx.strokeStyle = lit ? TEAL + '66' : 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = lit ? 1.5 : 1;
+      ctx.strokeRect(20, rY, w - 40, rowH);
+      ctx.restore();
+
+      // Step number
+      ctx.fillStyle = lit ? TEAL : 'rgba(255,255,255,0.25)';
+      ctx.font = 'bold 11px "SF Mono", monospace'; ctx.textAlign = 'left';
+      ctx.fillText(`0${i + 1}`, 34, rY + rowH / 2 + 4);
+
+      // Icon
+      ctx.fillStyle = col; ctx.font = 'bold 22px Inter, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(c.icon, 78, rY + rowH / 2 + 8);
+
+      // Label
+      ctx.fillStyle = col; ctx.font = 'bold 12px Inter, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(c.label, 110, rY + rowH / 2 - 1);
+      ctx.fillStyle = lit ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.25)'; ctx.font = '10px Inter, sans-serif';
+      ctx.fillText(c.sub, 110, rY + rowH / 2 + 14);
+
+      // Pass mark
+      ctx.fillStyle = col; ctx.font = 'bold 14px "SF Mono", monospace'; ctx.textAlign = 'right';
+      ctx.fillText(lit ? '✓' : '—', w - 30, rY + rowH / 2 + 5);
+    });
+
+    // Output row
+    const outY = h - 28;
+    const allPass = step >= 4;
+    ctx.fillStyle = allPass ? TEAL : 'rgba(255,255,255,0.3)';
+    ctx.font = 'bold 12px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(allPass ? 'ALL FOUR CONDITIONS MET — ts_long = TRUE' : `Building conditions... ${step}/4`, w / 2, outY);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 11 — DirectionFilterAnim
+// Three modes cycle: BOTH / LONG ONLY / SHORT ONLY
+// Shows a stream of candidate signals passing or blocked
+// ============================================================
+function DirectionFilterAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    const cycleT = t % 12; const modeIdx = Math.floor(cycleT / 4); const modeT = (cycleT % 4) / 4;
+    const fadeIn = Math.min(1, modeT * 4);
+
+    const modes = [
+      { label: 'BOTH',       allowLong: true,  allowShort: true,  desc: 'Both directions permitted. No directional bias applied.' },
+      { label: 'LONG ONLY',  allowLong: true,  allowShort: false, desc: 'Long candidates pass. Short candidates blocked at this gate.' },
+      { label: 'SHORT ONLY', allowLong: false, allowShort: true,  desc: 'Short candidates pass. Long candidates blocked at this gate.' },
+    ];
+    const m = modes[modeIdx];
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('DIRECTION FILTER — GATE 2 IN THE PIPELINE', w / 2, 22);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(`${String(modeIdx + 1).padStart(2, '0')} / 03`, w - 20, 22);
+
+    // Mode tabs
+    const tabW = (w - 40) / 3;
+    modes.forEach((mm, i) => {
+      const tx = 20 + i * tabW; const isActive = i === modeIdx;
+      ctx.fillStyle = isActive ? TEAL + '22' : 'rgba(255,255,255,0.02)'; ctx.fillRect(tx + 2, 38, tabW - 4, 26);
+      ctx.strokeStyle = isActive ? TEAL + '88' : 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = isActive ? 1.5 : 1; ctx.strokeRect(tx + 2, 38, tabW - 4, 26);
+      ctx.fillStyle = isActive ? TEAL : 'rgba(255,255,255,0.3)';
+      ctx.font = `${isActive ? 'bold ' : ''}10px Inter, sans-serif`; ctx.textAlign = 'center';
+      ctx.fillText(mm.label, tx + tabW / 2, 38 + 17);
+    });
+
+    // Candidates flowing in (longs above, shorts below)
+    const laneY = [h * 0.42, h * 0.68];
+    const laneLabels = ['LONG CANDIDATES', 'SHORT CANDIDATES'];
+    const laneColors = [TEAL, MAGENTA];
+    const laneAllow = [m.allowLong, m.allowShort];
+
+    laneLabels.forEach((ll, li) => {
+      const ly = laneY[li]; const lc = laneColors[li]; const allow = laneAllow[li];
+
+      // Label on left
+      ctx.fillStyle = allow ? lc : 'rgba(255,255,255,0.25)';
+      ctx.font = 'bold 9px Inter, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(ll, 22, ly - 22);
+
+      // Gate barrier in middle
+      const gateX = w * 0.55;
+      ctx.save();
+      if (!allow) {
+        ctx.strokeStyle = MAGENTA; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(gateX, ly - 24); ctx.lineTo(gateX, ly + 24); ctx.stroke();
+        // X marker
+        ctx.fillStyle = MAGENTA; ctx.font = 'bold 18px Inter, sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('✗', gateX, ly + 6);
+      } else {
+        ctx.strokeStyle = TEAL + '66'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+        ctx.beginPath(); ctx.moveTo(gateX, ly - 16); ctx.lineTo(gateX, ly + 16); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+
+      // Travelling candidate dots (3 dots flowing left-to-right)
+      for (let d = 0; d < 3; d++) {
+        const phase = ((t * 0.3 + d * 0.33) % 1);
+        const xStart = 20; const xEnd = allow ? w - 40 : gateX - 8;
+        const px = xStart + (xEnd - xStart) * phase;
+        const alpha = allow ? 1 : (phase < 1 ? 1 : 0);
+        ctx.save();
+        if (alpha > 0) {
+          ctx.shadowBlur = 8; ctx.shadowColor = lc;
+          ctx.fillStyle = lc + 'cc'; ctx.beginPath();
+          ctx.arc(px, ly, 5, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // After-gate output area
+      if (allow) {
+        ctx.fillStyle = lc; ctx.font = 'bold 10px "SF Mono", monospace'; ctx.textAlign = 'left';
+        ctx.fillText('→ continue', w - 78, ly + 4);
+      } else {
+        ctx.fillStyle = MAGENTA; ctx.font = 'bold 10px "SF Mono", monospace'; ctx.textAlign = 'left';
+        ctx.fillText('→ blocked', w - 76, ly + 4);
+      }
+    });
+
+    // Caption
+    ctx.globalAlpha = fadeIn;
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(m.desc, w / 2, h - 10);
+    ctx.globalAlpha = 1;
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 12 — StrongThresholdAnim
+// Threshold slider on conviction score, 0 → 4
+// At each value, show which of a set of sample signals fire
+// ============================================================
+function StrongThresholdAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    // Threshold oscillates 0 → 4 → 0
+    const thresh = Math.max(0, Math.min(4, Math.round(2 + Math.sin(t * 0.35) * 2.4)));
+    const strongOnly = thresh >= 3;
+
+    // Sample signals with different conviction scores
+    const samples = [
+      { id: 'A', conv: 4, dir: '▲', color: TEAL },
+      { id: 'B', conv: 3, dir: '▲', color: TEAL },
+      { id: 'C', conv: 2, dir: '▼', color: MAGENTA },
+      { id: 'D', conv: 2, dir: '▲', color: TEAL },
+      { id: 'E', conv: 1, dir: '▼', color: MAGENTA },
+      { id: 'F', conv: 0, dir: '▲', color: TEAL },
+    ];
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('STRONG ONLY — THRESHOLD GATE IN ACTION', w / 2, 22);
+
+    // Threshold slider at top
+    const sliderY = 48; const sliderX1 = 40; const sliderX2 = w - 40;
+    const sliderW = sliderX2 - sliderX1;
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(sliderX1, sliderY); ctx.lineTo(sliderX2, sliderY); ctx.stroke();
+    // Tick marks 0..4
+    for (let i = 0; i <= 4; i++) {
+      const x = sliderX1 + (sliderW / 4) * i;
+      ctx.fillStyle = i <= thresh ? AMBER : 'rgba(255,255,255,0.2)';
+      ctx.beginPath(); ctx.arc(x, sliderY, i === thresh ? 7 : 4, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = 'bold 9px "SF Mono", monospace'; ctx.textAlign = 'center';
+      ctx.fillText(String(i), x, sliderY + 18);
+    }
+    // Threshold label
+    ctx.fillStyle = AMBER; ctx.font = 'bold 10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('min_conviction = ' + thresh + (strongOnly ? '  (Strong Only ON)' : '  (standard)'), w / 2, sliderY - 10);
+
+    // Signal row (6 candidates)
+    const rowY = sliderY + 50; const sW = (w - 60) / samples.length; const sH = h - rowY - 34;
+    samples.forEach((s, i) => {
+      const sx = 30 + i * sW; const passes = s.conv >= thresh;
+      const outCol = passes ? s.color : 'rgba(239,83,80,0.4)';
+
+      // Background
+      ctx.save();
+      if (passes) { ctx.shadowBlur = 10; ctx.shadowColor = s.color; }
+      ctx.fillStyle = passes ? s.color + '18' : 'rgba(255,255,255,0.02)';
+      ctx.fillRect(sx + 4, rowY, sW - 8, sH);
+      ctx.strokeStyle = passes ? s.color + 'aa' : 'rgba(239,83,80,0.3)';
+      ctx.lineWidth = passes ? 1.5 : 1; ctx.strokeRect(sx + 4, rowY, sW - 8, sH);
+      ctx.restore();
+
+      // ID
+      ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = 'bold 9px "SF Mono", monospace'; ctx.textAlign = 'center';
+      ctx.fillText(s.id, sx + sW / 2, rowY + 16);
+
+      // Big signal label or blocked marker
+      if (passes) {
+        ctx.fillStyle = s.color; ctx.font = 'bold 16px "SF Mono", monospace';
+        const txt = s.conv >= 3 ? s.dir + ' +' : s.dir;
+        ctx.fillText(txt, sx + sW / 2, rowY + sH / 2 + 4);
+      } else {
+        ctx.fillStyle = 'rgba(239,83,80,0.6)'; ctx.font = 'bold 12px "SF Mono", monospace';
+        ctx.fillText('BLOCK', sx + sW / 2, rowY + sH / 2 + 4);
+      }
+
+      // Conviction dots at bottom
+      const dotY = rowY + sH - 12;
+      for (let d = 0; d < 4; d++) {
+        const dotX = sx + sW / 2 - 12 + d * 8;
+        ctx.fillStyle = d < s.conv ? (passes ? s.color : 'rgba(239,83,80,0.5)') : 'rgba(255,255,255,0.15)';
+        ctx.beginPath(); ctx.arc(dotX, dotY, 2.5, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '8px "SF Mono", monospace';
+      ctx.fillText(s.conv + '/4', sx + sW / 2, rowY + sH - 2);
+    });
+
+    // Caption
+    const passed = samples.filter(s => s.conv >= thresh).length;
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`${passed} of ${samples.length} candidates pass at this threshold.`, w / 2, h - 10);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 13 — LabelAnatomyAnim
+// Pull apart a signal label: arrow + direction word + marker
+// Shows what each element communicates to the operator
+// ============================================================
+function LabelAnatomyAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    const explodeT = Math.abs(Math.sin(t * 0.35)); // 0 = compact, 1 = exploded
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('SIGNAL LABEL ANATOMY — WHAT EACH ELEMENT TELLS YOU', w / 2, 22);
+
+    // Main label at center, explodes apart into 3 pieces
+    const cx = w / 2; const cy = h * 0.38;
+    const gap = 60 * explodeT;
+
+    // Piece 1: Arrow
+    const p1x = cx - 62 - gap;
+    ctx.save();
+    ctx.shadowBlur = 10; ctx.shadowColor = TEAL;
+    ctx.fillStyle = TEAL + '22'; ctx.fillRect(p1x - 16, cy - 18, 32, 36);
+    ctx.strokeStyle = TEAL; ctx.lineWidth = 1.5; ctx.strokeRect(p1x - 16, cy - 18, 32, 36);
+    ctx.restore();
+    ctx.fillStyle = TEAL; ctx.font = 'bold 22px "SF Mono", monospace'; ctx.textAlign = 'center';
+    ctx.fillText('▲', p1x, cy + 8);
+    // Annotation line
+    if (explodeT > 0.1) {
+      ctx.save(); ctx.globalAlpha = explodeT;
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(p1x, cy + 22); ctx.lineTo(p1x, cy + 50); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = TEAL; ctx.font = 'bold 9px Inter, sans-serif';
+      ctx.fillText('DIRECTION', p1x, cy + 64);
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '9px Inter, sans-serif';
+      ctx.fillText('▲ = Long', p1x, cy + 78);
+      ctx.fillText('▼ = Short', p1x, cy + 90);
+      ctx.restore();
+    }
+
+    // Piece 2: Direction word "Long"
+    const p2x = cx;
+    ctx.save();
+    ctx.shadowBlur = 10; ctx.shadowColor = TEAL;
+    ctx.fillStyle = TEAL + '22'; ctx.fillRect(p2x - 28, cy - 18, 56, 36);
+    ctx.strokeStyle = TEAL; ctx.lineWidth = 1.5; ctx.strokeRect(p2x - 28, cy - 18, 56, 36);
+    ctx.restore();
+    ctx.fillStyle = TEAL; ctx.font = 'bold 16px "SF Mono", monospace';
+    ctx.fillText('Long', p2x, cy + 6);
+    if (explodeT > 0.1) {
+      ctx.save(); ctx.globalAlpha = explodeT;
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(p2x, cy + 22); ctx.lineTo(p2x, cy + 50); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = TEAL; ctx.font = 'bold 9px Inter, sans-serif';
+      ctx.fillText('ENTRY TYPE', p2x, cy + 64);
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '9px Inter, sans-serif';
+      ctx.fillText('Long / Short', p2x, cy + 78);
+      ctx.fillText('(after filters pass)', p2x, cy + 90);
+      ctx.restore();
+    }
+
+    // Piece 3: "+" marker
+    const p3x = cx + 62 + gap;
+    ctx.save();
+    ctx.shadowBlur = 10; ctx.shadowColor = AMBER;
+    ctx.fillStyle = AMBER + '22'; ctx.fillRect(p3x - 16, cy - 18, 32, 36);
+    ctx.strokeStyle = AMBER; ctx.lineWidth = 1.5; ctx.strokeRect(p3x - 16, cy - 18, 32, 36);
+    ctx.restore();
+    ctx.fillStyle = AMBER; ctx.font = 'bold 24px "SF Mono", monospace';
+    ctx.fillText('+', p3x, cy + 8);
+    if (explodeT > 0.1) {
+      ctx.save(); ctx.globalAlpha = explodeT;
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(p3x, cy + 22); ctx.lineTo(p3x, cy + 50); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = AMBER; ctx.font = 'bold 9px Inter, sans-serif';
+      ctx.fillText('STRENGTH', p3x, cy + 64);
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '9px Inter, sans-serif';
+      ctx.fillText('3+ / 4 factors', p3x, cy + 78);
+      ctx.fillText('aligned', p3x, cy + 90);
+      ctx.restore();
+    }
+
+    // Context tag below the whole label (separate element)
+    const tagY = cy + 120;
+    ctx.save();
+    ctx.fillStyle = MAGENTA + '18'; ctx.fillRect(cx - 68, tagY - 12, 136, 22);
+    ctx.strokeStyle = MAGENTA + '77'; ctx.lineWidth = 1; ctx.strokeRect(cx - 68, tagY - 12, 136, 22);
+    ctx.fillStyle = MAGENTA; ctx.font = 'bold 10px "SF Mono", monospace';
+    ctx.fillText('Sweep + FVG', cx, tagY + 3);
+    ctx.restore();
+
+    if (explodeT > 0.1) {
+      ctx.save(); ctx.globalAlpha = explodeT;
+      ctx.fillStyle = MAGENTA; ctx.font = 'bold 9px Inter, sans-serif';
+      ctx.fillText('CONTEXT TAG — WHY THIS SIGNAL FIRED', cx, tagY + 26);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '9px Inter, sans-serif';
+      ctx.fillText('Top of the 13-level priority waterfall.', cx, tagY + 38);
+      ctx.restore();
+    }
+
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('A complete signal label has three parts plus a context tag. Read all four.', w / 2, h - 8);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
 // ── MAIN COMPONENT ────────────────────────────────────────────
 export default function CipherSignalPhilosophyLesson() {
   const [scrollY, setScrollY] = useState(0);
@@ -950,10 +1392,70 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S03 */}
+      {/* S03 PX Mechanics */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; Signal Engine — Gate 1</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; PX Mechanics</p>
+          <h2 className="text-2xl font-extrabold mb-4">Pulse Cross — Three Checks Before It Qualifies</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">A raw pulse cross is not enough. Every PX candidate passes through three separate validation checks before it is even allowed to enter the pipeline as an origin. Watch the tiles cycle through the four possible outcomes — pass, body-too-small, distance-too-close, and rapid-flip-blocked.</p>
+          <PXMechanicsAnim />
+          <div className="p-5 rounded-2xl glass-card mt-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-teal-400 mb-1">BODY SIZE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The signal bar must have a body larger than the minimum body threshold. This filters out doji-style crosses and wick-only crosses where price briefly pokes through the Pulse line and closes back. Weak-bodied crossovers are noise — CIPHER silently rejects them.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-teal-400 mb-1">PRE-CROSS DISTANCE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Before the cross, price must have been some minimum distance away from the Pulse line. This filters out signals that fire immediately after another cross when price has been hugging the line. A PX with zero pre-cross distance is a chop signal, not a trend signal.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-teal-400 mb-1">RAPID-FLIP SUPPRESSION</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A long PX cannot fire immediately after a recent short signal was issued, and vice versa. The suppression window prevents the indicator from flipping direction on consecutive bars during genuine chop. If a rapid flip does happen, the secondary signal is blocked at origin.</p>
+            </div>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mt-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE WHY</p>
+            <p className="text-sm text-gray-400 leading-relaxed">These three checks exist because a naive pulse cross on its own is one of the noisiest signal types in technical analysis. Every trader who has ever used a moving-average cross has seen this pattern: price flips back and forth across the line, producing rapid long-short-long-short sequences. PX mechanics exist to kill that pattern before it reaches you.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S04 TS Conditions */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; TS Conditions</p>
+          <h2 className="text-2xl font-extrabold mb-4">Tension Snap — Four Conditions, All Required</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">A Tension Snap signal requires four separate conditions to be true simultaneously. Any single one missing and the signal does not fire. Watch the checklist light up top-to-bottom — the output only triggers when all four are green.</p>
+          <TSConditionsAnim />
+          <div className="p-5 rounded-2xl glass-card mt-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-red-400 mb-1">01 — PRIOR STRETCH</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Before the snap, price must have been stretched past the tension threshold in the opposite direction. A long TS requires price was recently stretched bearish. Without prior stretch, the "snap" is just a directional candle, not a mean reversion.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-red-400 mb-1">02 — SNAP CANDLE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The signal bar itself must be a directional candle closing against the stretch. For a long TS, a bullish-body candle is required. The body size carries conviction — a tiny snap candle does not qualify even if everything else is aligned.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-red-400 mb-1">03 — VELOCITY SHIFT</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Momentum must flip direction in alignment with the snap candle. This confirms the reversal is structural, not just a single counter-trend bar. Without velocity shift, you get snap candles that get immediately overwhelmed by continuation.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-red-400 mb-1">04 — COOLDOWN GATE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A TS in the same direction cannot fire within the cooldown window of the previous same-direction TS. This prevents a single extended reversal from producing a cluster of TS signals on every snap candle. One reversal, one TS.</p>
+            </div>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mt-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">WHY FOUR CONDITIONS</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Mean reversion is the hardest trade to time. The market tells you a reversal is near by pushing tension to an extreme, but the exact bar it snaps is stochastic. The four conditions together ensure the signal only fires at a specific pattern: stretched → snap candle → momentum confirms → not already signalled. Each condition eliminates a common false-positive case.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S05 Signal Modes */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Signal Engine — Gate 1</p>
           <h2 className="text-2xl font-extrabold mb-4">Four Modes — Which Origins Are Permitted</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The Signal Engine input is Gate 1. Before any signal can fire, it must first pass this filter. Watch all four modes cycle and see which origin columns light up or go dark.</p>
           <SignalModesAnim />
@@ -969,10 +1471,10 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S04 Direction */}
+      {/* S06 Direction */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Direction Filter — Gate 2</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Direction Filter — Gate 2</p>
           <h2 className="text-2xl font-extrabold mb-4">Aligning Signals with HTF Bias</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The Direction filter is Gate 2. It lets you restrict signals to one side of the market. If your HTF analysis says bearish, set Short Only — every long candidate is blocked here regardless of conviction or origin type.</p>
           <div className="p-5 rounded-2xl glass-card space-y-3">
@@ -986,10 +1488,25 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S05 Conviction */}
+      {/* S07 Direction Filter Deep Dive */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Conviction Scoring — Gate 3 & 4</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; Direction Filter in Action</p>
+          <h2 className="text-2xl font-extrabold mb-4">Two Candidate Streams, One Gate</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Visualising Gate 2 directly — two candidate streams (longs above, shorts below) flow toward the gate. The gate barrier opens or closes depending on the current Direction setting. Watch the three modes cycle and see exactly which streams pass through.</p>
+          <DirectionFilterAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-4">The filter is not an override — it is a gate. A long candidate that fails Direction is not converted to a short. It is simply removed. This is why Direction is best treated as a committed alignment tool, not a dynamic filter. If you are going to trade both directions, set it to Both and use your own judgment on each signal.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE DISCIPLINE POINT</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Direction exists to protect operators from themselves during clear HTF bias windows. If you know the daily chart is bullish, Short Only off and Long Only on stops you from taking counter-trend TS shorts on impulse. The filter is a commitment mechanism — use it to enforce a plan, not to second-guess one.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S08 Conviction */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Conviction Scoring — Gate 3</p>
           <h2 className="text-2xl font-extrabold mb-4">Four Market Factors, 0–4 Score</h2>
           <p className="text-gray-400 leading-relaxed mb-6">Every signal that passes Gates 1 and 2 is scored against four market factors. Watch the tiles light up as the score builds from 0 to 4 — and see exactly when the signal switches from standard to strong.</p>
           <ConvictionScoringAnim />
@@ -1001,10 +1518,35 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S06 Final Gate */}
+      {/* S09 Strong Threshold */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; The Final Gate &amp; Standard vs Strong</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Strong Only &mdash; The 3+ Threshold</p>
+          <h2 className="text-2xl font-extrabold mb-4">Raising the Minimum Required Alignment</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Strong Only is a toggle that raises the minimum conviction required from 0 to 3. When ON, signals that scored 0, 1, or 2 of 4 factors are blocked at this gate. Watch the slider move from 0 to 4 and see which of six sample signals pass at each threshold.</p>
+          <StrongThresholdAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-4">At threshold 0, all six signals pass — that is the default behaviour with Strong Only OFF. At threshold 3 (Strong Only ON), only the 3/4 and 4/4 scores survive. The rest are blocked. This is the trade-off: fewer signals, but every surviving one has meaningful market alignment.</p>
+          <div className="p-5 rounded-2xl glass-card space-y-3">
+            <div>
+              <p className="text-xs font-bold text-teal-400 mb-1">WHEN TO KEEP IT OFF</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Active intraday trading where you want maximum opportunity count and are willing to filter with your own judgment. Chop markets where 2/4 scores are common but still tradable if the context tag is strong.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-amber-400 mb-1">WHEN TO TURN IT ON</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Swing setups where you want fewer but higher-quality entries. Prop challenge accounts where drawdown control matters more than signal frequency. Any time you want the indicator to do more of the filtering for you.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-red-400 mb-1">COMMON MISTAKE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Turning Strong Only ON and then complaining that the indicator is quiet. The quiet is the filter working. If you are getting fewer signals, it is because fewer signals have 3+ factors aligned right now — that is a real signal about market conditions, not an indicator problem.</p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S10 Final Gate */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; The Final Gate &amp; Standard vs Strong</p>
           <h2 className="text-2xl font-extrabold mb-4">OR Logic + Conviction Check</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The Final Gate resolves whether the signal fires. PX OR TS firing plus conviction meeting the minimum threshold = buy_signal TRUE. Watch all four scenarios: PX only, TS only, both, and neither.</p>
           <FinalGateAnim />
@@ -1013,10 +1555,42 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S07 Context Tags */}
+      {/* S11 Label Anatomy */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; The 13 Context Tags</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; Signal Label Anatomy</p>
+          <h2 className="text-2xl font-extrabold mb-4">What Every Element on a Label Means</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Every signal label on your chart is a compact readout with three internal pieces plus an external context tag. Each piece tells you something specific. Watch the label explode apart into its components and read what each one communicates.</p>
+          <LabelAnatomyAnim />
+          <div className="p-5 rounded-2xl glass-card mt-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-teal-400 mb-1">ARROW — DIRECTION</p>
+              <p className="text-sm text-gray-400 leading-relaxed">▲ = long entry. ▼ = short entry. The arrow is the fastest read and should be the first thing you check. If the arrow does not match your plan before you even look at the rest of the label, skip the signal.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-teal-400 mb-1">WORD — ENTRY TYPE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The word "Long" or "Short" confirms the direction after the filters. This part is redundant with the arrow but forces a double-read — useful in fast markets where you might glance and misread an arrow.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-amber-400 mb-1">PLUS MARKER — STRENGTH</p>
+              <p className="text-sm text-gray-400 leading-relaxed">"+" appended means conviction is 3 of 4 or higher. The label itself is also larger. No + marker means the signal passed the pipeline but at least two of the four conviction factors were missing.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-red-400 mb-1">CONTEXT TAG — WHY IT FIRED</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The small tag below the label names the top priority structural condition at the moment of signal. "Sweep + FVG" is Priority 1 in the waterfall. "Momentum" is the fallback at Priority 13. Two signals with identical conviction can have very different tags — the tag tells you why CIPHER fired at this specific bar.</p>
+            </div>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mt-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">READING ORDER</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Arrow first (does direction match your plan?). Plus marker second (is this a strong or standard signal?). Context tag third (why here specifically?). Word is visual confirmation only. Reading all four takes under a second once trained.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S12 Context Tags */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; The 13 Context Tags</p>
           <h2 className="text-2xl font-extrabold mb-4">Why Did This Signal Fire Here?</h2>
           <p className="text-gray-400 leading-relaxed mb-6">Every signal that passes the pipeline carries a context tag. CIPHER evaluates 13 possible states and selects the most specific one via a priority waterfall. Watch the sweep cycle through all 13 — P01 (Sweep + FVG) is the highest priority.</p>
           <ContextTagWaterfallAnim />
@@ -1026,20 +1600,20 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S08 Freshness */}
+      {/* S13 Freshness */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Last Signal Freshness</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Last Signal Freshness</p>
           <h2 className="text-2xl font-extrabold mb-4">How Old Is the Most Recent Signal?</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The Last Signal row in the Command Center tracks the most recent signal that passed your active filters. It shows direction, bars elapsed, and a freshness label. Watch the bar counter climb and the label change as the signal ages.</p>
           <FreshnessGaugeAnim />
         </motion.div>
       </section>
 
-      {/* S09 Cheat Sheet */}
+      {/* S14 Cheat Sheet */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Cheat Sheet</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; Cheat Sheet</p>
           <h2 className="text-2xl font-extrabold mb-6">Signal Philosophy at a Glance</h2>
           <div className="p-5 rounded-2xl glass-card space-y-5">
             <div><p className="text-xs font-bold text-amber-400 mb-2">SIGNAL ORIGINS</p><div className="space-y-1 text-xs font-mono"><div className="flex gap-3"><span className="text-teal-400 font-bold w-24">PX</span><span className="text-gray-400">Pulse Cross — trend continuation. Body + distance + no rapid flip.</span></div><div className="flex gap-3"><span className="text-red-400 font-bold w-24">TS</span><span className="text-gray-400">Tension Snap — mean reversion. Stretch + snap + body + velocity + cooldown.</span></div></div></div>
@@ -1050,10 +1624,10 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S10 Mistakes */}
+      {/* S15 Mistakes */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; Six Signal Philosophy Mistakes</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Six Signal Philosophy Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-6">What Operators Get Wrong</h2>
           <div className="space-y-3">
             {[
@@ -1072,10 +1646,10 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S11 Game */}
+      {/* S16 Game */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; Scenario Game</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">16 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-6">Signal Architect &mdash; 5 Live Scenarios</h2>
           <div className="p-5 rounded-2xl glass-card">
             {(()=>{
@@ -1107,10 +1681,10 @@ export default function CipherSignalPhilosophyLesson() {
         </motion.div>
       </section>
 
-      {/* S12 Quiz */}
+      {/* S17 Quiz */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; Knowledge Check</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">17 &mdash; Knowledge Check</p>
           <h2 className="text-2xl font-extrabold mb-6">Final Quiz &mdash; {quizQuestions.length} Questions</h2>
           <div className="space-y-6">
             {quizQuestions.map((q,qi)=>{

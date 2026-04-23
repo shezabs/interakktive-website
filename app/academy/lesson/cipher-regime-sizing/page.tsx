@@ -170,9 +170,9 @@ function SameCandleAnim() {
     const fadeIn = Math.min(1, sceneT * 3);
 
     const scenes = [
-      { regime: 'RANGE',    scale: 0.85, zone: 'DANGER',  zoneC: MAGENTA, guidance: 'REDUCE SIZE',   regC: MAGENTA, note: 'Narrowest bands — same candle is DANGER' },
-      { regime: 'TREND',    scale: 1.15, zone: 'CAUTION', zoneC: AMBER,   guidance: 'TIGHTEN STOPS', regC: TEAL,    note: 'Wider bands — same candle drops to CAUTION' },
-      { regime: 'VOLATILE', scale: 1.25, zone: 'WATCH',   zoneC: AMBER,   guidance: 'STAY ALERT',    regC: MAGENTA, note: 'Widest bands — same candle drops to WATCH' },
+      { regime: 'RANGE',    scale: 0.85, zone: 'DANGER',  zoneC: MAGENTA, guidance: 'REDUCE SIZE',   regC: MAGENTA, note: 'Narrowest bands — same candle sits beyond outer → DANGER' },
+      { regime: 'TREND',    scale: 1.15, zone: 'CAUTION', zoneC: AMBER,   guidance: 'TIGHTEN STOPS', regC: TEAL,    note: 'Wider bands — same candle now between mid and outer → CAUTION' },
+      { regime: 'VOLATILE', scale: 1.35, zone: 'WATCH',   zoneC: AMBER,   guidance: 'STAY ALERT',    regC: AMBER,   note: 'Widest bands (base + VOLATILE bonus) — same candle between inner and mid → WATCH' },
     ];
     const s = scenes[sceneIdx];
 
@@ -358,7 +358,10 @@ function BandScaleAnim() {
     const cycleT = t % 12; const sceneIdx = Math.floor(cycleT / 4); const sceneT = (cycleT % 4) / 4;
     const grow = Math.min(1, sceneT * 2.2); const eased = 1 - Math.pow(1-grow, 3);
 
-    const targetScales = [0.85, 1.15, 1.25];
+    // RANGE: flat ADX → 0.85
+    // TREND: example mid-trend (ADX 75) → 0.85 + 75×0.004 = 1.15
+    // VOLATILE: strong-trend base + vol bonus → 1.25 + 0.10 = 1.35
+    const targetScales = [0.85, 1.15, 1.35];
     const regimes = ['RANGE','TREND','VOLATILE'];
     const regColors = [MAGENTA, TEAL, AMBER];
 
@@ -395,9 +398,9 @@ function BandScaleAnim() {
 
     // Formula at bottom
     const formulas = [
-      '0.85 + (trend%=0 × 0.004) = 0.85',
-      '0.85 + (trend%=75 × 0.004) = 1.15',
-      '0.85 + (trend%=100 × 0.004) + 0.10 = 1.35',
+      '0.85 + (trend% 0 × 0.004)  =  0.85',
+      '0.85 + (trend% 75 × 0.004)  =  1.15',
+      '0.85 + (trend% 100 × 0.004) + 0.10  =  1.35',
     ];
     ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.font='10px "SF Mono", monospace'; ctx.textAlign='center';
     ctx.fillText(formulas[sceneIdx], w/2, h-10);
@@ -557,13 +560,13 @@ function TransitionJourneyAnim() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
     const journey = [
-      { label:'BACK TO SAFE',       zone:'SAFE',    color:TEAL,     bg:'rgba(38,166,154,0.12)', bars:0,  msg:'Price back inside inner band. Full size restored.' },
-      { label:'JUST HIT WATCH',     zone:'WATCH',   color:AMBER,    bg:'rgba(255,179,0,0.08)',  bars:1,  msg:'First bar past inner band. Awareness triggered.' },
-      { label:'JUST HIT CAUTION',   zone:'CAUTION', color:AMBER,    bg:'rgba(255,179,0,0.10)',  bars:6,  msg:'First bar past mid band. Tighten stops immediately.' },
-      { label:'JUST HIT DANGER',    zone:'DANGER',  color:MAGENTA,  bg:'rgba(239,83,80,0.12)',  bars:1,  msg:'First bar beyond outer. Your one-bar notice to act.' },
-      { label:'DANGER ENTRENCHED',  zone:'DANGER',  color:'#FF1744',bg:'rgba(255,23,68,0.15)',  bars:24, msg:'24 bars outside outer. #FF1744 with ⚠ marker fires.' },
-      { label:'LEAVING DANGER',     zone:'CAUTION', color:AMBER,    bg:'rgba(255,179,0,0.10)',  bars:0,  msg:'De-escalated — still CAUTION. Maintain reduced size.' },
       { label:'BACK TO SAFE',       zone:'SAFE',    color:TEAL,     bg:'rgba(38,166,154,0.12)', bars:0,  msg:'Price inside inner band. Full size permitted.' },
+      { label:'STAY ALERT',         zone:'WATCH',   color:AMBER,    bg:'rgba(255,179,0,0.08)',  bars:4,  msg:'Past inner band. Standard WATCH guidance, no transition message.' },
+      { label:'JUST HIT CAUTION',   zone:'CAUTION', color:AMBER,    bg:'rgba(255,179,0,0.10)',  bars:1,  msg:'First bar past mid band. Transition message fires. Tighten stops immediately.' },
+      { label:'JUST HIT DANGER',    zone:'DANGER',  color:MAGENTA,  bg:'rgba(239,83,80,0.12)',  bars:1,  msg:'First bar beyond outer band. Transition message fires. Your one-bar notice to act.' },
+      { label:'DANGER ENTRENCHED',  zone:'DANGER',  color:'#FF1744',bg:'rgba(255,23,68,0.15)',  bars:24, msg:'24 bars outside outer. Color escalates to bright red, warning marker fires.' },
+      { label:'LEAVING DANGER',     zone:'CAUTION', color:TEAL,     bg:'rgba(38,166,154,0.10)', bars:1,  msg:'First bar back in CAUTION from DANGER. De-escalation message. Maintain reduced size.' },
+      { label:'BACK TO SAFE',       zone:'SAFE',    color:TEAL,     bg:'rgba(38,166,154,0.12)', bars:1,  msg:'First bar back inside inner band. Full size restored.' },
     ];
     const n = journey.length;
     const cycleT = t % (n * 2.8); const sceneIdx = Math.min(n-1, Math.floor(cycleT/2.8));
@@ -601,7 +604,7 @@ function TransitionJourneyAnim() {
     ctx.globalAlpha=fadeIn;
     ctx.fillStyle='rgba(255,255,255,0.65)'; ctx.font='11px Inter, sans-serif'; ctx.textAlign='center';
     ctx.fillText(s.msg, w/2, cardY+cardH+18);
-    const actions=['NORMAL SIZE','STAY ALERT','TIGHTEN STOPS','REDUCE SIZE NOW','REDUCE SIZE ⚠','TIGHTEN STOPS (CAUTION)','NORMAL SIZE'];
+    const actions=['NORMAL SIZE','STAY ALERT','TIGHTEN STOPS','REDUCE SIZE NOW','REDUCE SIZE ⚠','TIGHTEN STOPS (de-escalation)','NORMAL SIZE'];
     ctx.fillStyle=s.color; ctx.font='bold 12px "SF Mono", monospace';
     ctx.fillText('ACTION: '+actions[sceneIdx], w/2, cardY+cardH+36);
     ctx.globalAlpha=1;
@@ -744,6 +747,429 @@ function RegimeZoneMatrixAnim() {
   return <AnimScene draw={draw} aspectRatio={16/9} />;
 }
 
+// ============================================================
+// ANIMATION 9 — DwellEscalationAnim (S09)
+// Dwell clock ticking inside DANGER zone
+// 30-bar progression with phase transitions and color escalation
+// ============================================================
+function DwellEscalationAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const AMBER = '#FFB300', MAGENTA = '#EF5350', ENTRENCH = '#FF1744';
+    const cycleT = t % 12;
+    const bar = Math.min(30, Math.floor(cycleT * 2.7)); // 0 → 32 over 12s, cap at 30
+
+    const phase = bar <= 2 ? 'SPIKE' : bar <= 8 ? 'VISIT' : bar <= 20 ? 'ESTABLISHED' : 'ENTRENCHED';
+    const phaseColor = bar <= 20 ? MAGENTA : ENTRENCH;
+    const showWarn = phase === 'ENTRENCHED';
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('DWELL ESCALATION — TIME INSIDE DANGER', w / 2, 22);
+
+    // Bar counter (big numeric readout)
+    ctx.fillStyle = phaseColor; ctx.font = 'bold 68px "SF Mono", monospace'; ctx.textAlign = 'center';
+    ctx.save();
+    if (showWarn) { ctx.shadowBlur = 22; ctx.shadowColor = ENTRENCH; }
+    ctx.fillText(String(bar).padStart(2, '0'), w * 0.28, h * 0.52);
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = 'bold 10px Inter, sans-serif';
+    ctx.fillText('BARS IN DANGER', w * 0.28, h * 0.64);
+
+    // Phase label below
+    ctx.fillStyle = phaseColor; ctx.font = 'bold 16px Inter, sans-serif';
+    ctx.fillText(phase + (showWarn ? ' ⚠' : ''), w * 0.28, h * 0.82);
+
+    // Phase progression strip — 4 cells
+    const phases = [
+      { l: 'SPIKE',       range: '1–2b',   c: AMBER,    lo: 1,  hi: 2 },
+      { l: 'VISIT',       range: '3–8b',   c: AMBER,    lo: 3,  hi: 8 },
+      { l: 'ESTABLISHED', range: '9–20b',  c: MAGENTA,  lo: 9,  hi: 20 },
+      { l: 'ENTRENCHED',  range: '21b+',   c: ENTRENCH, lo: 21, hi: 999 },
+    ];
+    const stripX = w * 0.50; const stripY = 48; const stripW = w - stripX - 20; const cellH = (h - 70) / 4;
+    phases.forEach((ph, i) => {
+      const y = stripY + i * cellH; const isActive = bar >= ph.lo && bar <= ph.hi;
+      ctx.fillStyle = isActive ? ph.c + '22' : 'rgba(255,255,255,0.03)';
+      ctx.fillRect(stripX, y, stripW, cellH - 4);
+      ctx.strokeStyle = isActive ? ph.c + 'aa' : 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = isActive ? 1.5 : 1;
+      ctx.strokeRect(stripX, y, stripW, cellH - 4);
+      if (isActive) { ctx.shadowBlur = 10; ctx.shadowColor = ph.c; ctx.strokeRect(stripX, y, stripW, cellH - 4); ctx.shadowBlur = 0; }
+
+      ctx.fillStyle = isActive ? ph.c : 'rgba(255,255,255,0.35)';
+      ctx.font = `bold ${isActive ? 12 : 11}px Inter, sans-serif`; ctx.textAlign = 'left';
+      ctx.fillText(ph.l, stripX + 12, y + cellH / 2 + 1);
+
+      ctx.fillStyle = isActive ? ph.c : 'rgba(255,255,255,0.25)';
+      ctx.font = '10px "SF Mono", monospace'; ctx.textAlign = 'right';
+      ctx.fillText(ph.range, stripX + stripW - 12, y + cellH / 2 + 1);
+
+      if (isActive) {
+        ctx.fillStyle = ph.c; ctx.font = '9px Inter, sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('◄ ACTIVE', stripX + stripW / 2, y + cellH / 2 + 1);
+      }
+    });
+
+    // Caption
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    const caption = bar <= 2 ? 'Fresh spike — could be a wick.' :
+                    bar <= 8 ? 'Confirmed visit — persistent extension.' :
+                    bar <= 20 ? 'Established dwell — material overextension.' :
+                    'Entrenched — structural overextension, color escalates.';
+    ctx.fillText(caption, w / 2, h - 8);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 10 — StopPlacementAnim (S10)
+// Live ADX slider drives asym_factor → asymmetric stops
+// Bull Trend: wide trend-side band, tight counter-side band
+// Two candles on opposite sides show where their stops sit
+// ============================================================
+function StopPlacementAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    // Oscillating ADX 15 → 45 → 15
+    const adx = 15 + Math.abs(Math.sin(t * 0.4)) * 30;
+    const asymFactor = Math.min(0.15, Math.max(0, (adx - 15) * 0.006));
+    const trendSide = 1.0 + asymFactor; const counterSide = 1.0 - asymFactor;
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('STOP PLACEMENT IN A BULL TREND — ASYMMETRIC BANDS', w / 2, 22);
+
+    // Chart area
+    const chartW = w * 0.68; const chartX = 18; const chartH = h - 74; const chartY = 36;
+    ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(chartX, chartY, chartW, chartH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.strokeRect(chartX, chartY, chartW, chartH);
+
+    const anchorY = chartY + chartH * 0.55; const atrPx = chartH * 0.13;
+
+    // Asymmetric mid bands (trend side = upper in Bull Trend)
+    const upperMid = anchorY - atrPx * 2.35 * trendSide;
+    const lowerMid = anchorY + atrPx * 2.35 * counterSide;
+    const upperInner = anchorY - atrPx * 1.2 * trendSide;
+    const lowerInner = anchorY + atrPx * 1.2 * counterSide;
+
+    // Zone fills
+    ctx.fillStyle = 'rgba(255,179,0,0.08)';
+    ctx.fillRect(chartX, upperMid, chartW, upperInner - upperMid);
+    ctx.fillRect(chartX, lowerInner, chartW, lowerMid - lowerInner);
+    ctx.fillStyle = 'rgba(38,166,154,0.06)';
+    ctx.fillRect(chartX, upperInner, chartW, lowerInner - upperInner);
+
+    // Band lines
+    const bands: [number, string, string][] = [
+      [upperMid, AMBER, '2.35 × ' + trendSide.toFixed(3)],
+      [upperInner, TEAL, '1.20 × ' + trendSide.toFixed(3)],
+      [lowerInner, TEAL, '1.20 × ' + counterSide.toFixed(3)],
+      [lowerMid, AMBER, '2.35 × ' + counterSide.toFixed(3)],
+    ];
+    bands.forEach(([y, c]) => {
+      ctx.save(); ctx.strokeStyle = c; ctx.globalAlpha = 0.6; ctx.lineWidth = 1; ctx.setLineDash([5, 3]);
+      ctx.beginPath(); ctx.moveTo(chartX, y); ctx.lineTo(chartX + chartW, y); ctx.stroke();
+      ctx.setLineDash([]); ctx.restore();
+    });
+
+    // Anchor EMA
+    ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(chartX, anchorY); ctx.lineTo(chartX + chartW, anchorY); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+
+    // Long candle (near trend-side inner)
+    const lcx = chartX + chartW * 0.32; const lcy = upperInner + 12;
+    ctx.fillStyle = TEAL; ctx.fillRect(lcx - 5, lcy - 16, 10, 22);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.strokeRect(lcx - 5, lcy - 16, 10, 22);
+    ctx.fillStyle = TEAL; ctx.font = 'bold 10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('LONG', lcx, lcy - 22);
+    // Stop line at counter-side inner (below anchor, TIGHT)
+    ctx.save(); ctx.strokeStyle = MAGENTA; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(lcx - 22, lowerInner); ctx.lineTo(lcx + 22, lowerInner); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = MAGENTA; ctx.font = 'bold 9px Inter, sans-serif';
+    ctx.fillText('STOP (tight)', lcx, lowerInner + 13);
+
+    // Short candle (near counter-side inner)
+    const scx = chartX + chartW * 0.72; const scy = lowerInner - 12;
+    ctx.fillStyle = MAGENTA; ctx.fillRect(scx - 5, scy - 4, 10, 22);
+    ctx.strokeStyle = '#fff'; ctx.strokeRect(scx - 5, scy - 4, 10, 22);
+    ctx.fillStyle = MAGENTA; ctx.textAlign = 'center';
+    ctx.fillText('SHORT', scx, scy + 30);
+    // Short's stop at trend-side mid (above anchor, WIDE)
+    ctx.save(); ctx.strokeStyle = MAGENTA; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(scx - 22, upperMid); ctx.lineTo(scx + 22, upperMid); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = MAGENTA; ctx.font = 'bold 9px Inter, sans-serif';
+    ctx.fillText('STOP (wide)', scx, upperMid - 5);
+
+    // Right readout panel
+    const rX = chartX + chartW + 16; const rW = w - rX - 10;
+    ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(rX, chartY, rW, chartH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.strokeRect(rX, chartY, rW, chartH);
+    const rows = [
+      { l: 'ADX',          v: adx.toFixed(0),             c: adx > 25 ? TEAL : AMBER },
+      { l: 'ASYMMETRY',    v: (asymFactor * 100).toFixed(1) + '%', c: AMBER },
+      { l: 'TREND-SIDE',   v: trendSide.toFixed(2) + '×', c: TEAL },
+      { l: 'COUNTER-SIDE', v: counterSide.toFixed(2) + '×', c: MAGENTA },
+    ];
+    const rH = (chartH - 16) / rows.length;
+    rows.forEach((rr, i) => {
+      const ry = chartY + 8 + i * rH;
+      ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = 'bold 9px Inter, sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(rr.l, rX + 8, ry + 12);
+      ctx.fillStyle = rr.c; ctx.font = 'bold 14px "SF Mono", monospace';
+      ctx.fillText(rr.v, rX + 8, ry + 28);
+    });
+
+    // Caption
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Long with the trend: wide room above, tight stop below. Short against the trend: tight room below, wide stop above.', w / 2, h - 8);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 11 — DrawdownSimulatorAnim (S11)
+// Same account size, two scenarios:
+//  A) RANGE + DANGER — narrowest band, full size = huge drawdown
+//  B) TREND + SAFE — wide band, full size = controlled drawdown
+// Two equity curves drop from 10,000 to different floors
+// ============================================================
+function DrawdownSimulatorAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    const cycleT = t % 8; const progress = Math.min(1, cycleT / 6); const eased = 1 - Math.pow(1 - progress, 3);
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('SAME SIZE, TWO REGIMES — DRAWDOWN COMPARISON', w / 2, 22);
+
+    // Two equity curve panels
+    const panelW = (w - 56) / 2; const panelH = h - 80; const panelY = 40;
+    const panels = [
+      { x: 20,               label: 'RANGE + DANGER',     sub: 'Full size, narrowest bands', start: 10000, end: 8400, color: MAGENTA, loss: '-16.0%' },
+      { x: 20 + panelW + 16, label: 'TREND + SAFE',        sub: 'Full size, widest bands',     start: 10000, end: 9550, color: TEAL,    loss: '-4.5%' },
+    ];
+
+    panels.forEach(p => {
+      // Panel bg
+      ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(p.x, panelY, panelW, panelH);
+      ctx.strokeStyle = p.color + '33'; ctx.lineWidth = 1; ctx.strokeRect(p.x, panelY, panelW, panelH);
+
+      // Header
+      ctx.fillStyle = p.color; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(p.label, p.x + panelW / 2, panelY + 18);
+      ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '9px Inter, sans-serif';
+      ctx.fillText(p.sub, p.x + panelW / 2, panelY + 32);
+
+      // Curve area
+      const chY = panelY + 46; const chH = panelH - 78; const chX = p.x + 12; const chW = panelW - 24;
+
+      // Grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)'; ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = chY + (chH / 4) * i;
+        ctx.beginPath(); ctx.moveTo(chX, y); ctx.lineTo(chX + chW, y); ctx.stroke();
+      }
+
+      // Compute curve
+      const maxVal = 10200; const minVal = 8200;
+      const yFor = (v: number) => chY + chH * (1 - (v - minVal) / (maxVal - minVal));
+      const steps = 40;
+      const pts: [number, number][] = [];
+      const currentEnd = p.start + (p.end - p.start) * eased;
+      for (let i = 0; i <= steps; i++) {
+        const pf = i / steps;
+        // Slight noise to look like equity curve
+        const noise = Math.sin(pf * 17 + (p.x + 1)) * 60 * pf;
+        const v = p.start + (currentEnd - p.start) * pf + noise;
+        pts.push([chX + chW * pf, yFor(v)]);
+      }
+
+      // Area fill
+      ctx.save(); ctx.globalAlpha = 0.18;
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.moveTo(pts[0][0], chY + chH);
+      pts.forEach(pp => ctx.lineTo(pp[0], pp[1]));
+      ctx.lineTo(pts[pts.length - 1][0], chY + chH); ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // Line
+      ctx.strokeStyle = p.color; ctx.lineWidth = 2;
+      ctx.beginPath(); pts.forEach((pp, i) => i === 0 ? ctx.moveTo(pp[0], pp[1]) : ctx.lineTo(pp[0], pp[1])); ctx.stroke();
+
+      // End dot
+      const last = pts[pts.length - 1];
+      ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = p.color;
+      ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(last[0], last[1], 5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // Final value + loss
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.font = 'bold 14px "SF Mono", monospace'; ctx.textAlign = 'center';
+      ctx.fillText('$' + Math.round(currentEnd).toLocaleString(), p.x + panelW / 2, panelY + panelH - 18);
+      ctx.fillStyle = p.color; ctx.font = 'bold 10px Inter, sans-serif';
+      ctx.fillText('Drawdown: ' + p.loss, p.x + panelW / 2, panelY + panelH - 5);
+    });
+
+    // Caption
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Same account. Same percent risk. Regime-scaled bands decide how big the drawdown actually lands.', w / 2, h - 8);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 12 — LiveDecisionLoopAnim (S12)
+// 4 inputs (Regime / Zone / Dwell / MR) feed a central converger
+// Central box outputs one Size %
+// Dots travel from each input along connector lines into the center
+// ============================================================
+function LiveDecisionLoopAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const TEAL = '#26A69A', AMBER = '#FFB300', MAGENTA = '#EF5350';
+    // Cycle through 4 scenarios
+    const cycleT = t % 16; const sceneIdx = Math.floor(cycleT / 4); const sceneT = (cycleT % 4) / 4;
+    const scenes = [
+      { regime: 'RANGE',    regC: MAGENTA, zone: 'SAFE',    zoneC: TEAL,    dwell: '—',    dwC: TEAL,    mr: '18',  mrC: TEAL,    size: '100%', sizeC: TEAL,    note: 'RANGE · inside inner · MR low — full size permitted.' },
+      { regime: 'TREND',    regC: TEAL,    zone: 'CAUTION', zoneC: AMBER,   dwell: '7b',  dwC: AMBER,   mr: '52',  mrC: AMBER,   size: '60%',  sizeC: AMBER,   note: 'TREND · CAUTION visiting · MR moderate — reduce to 60 percent.' },
+      { regime: 'VOLATILE', regC: AMBER,   zone: 'WATCH',   zoneC: AMBER,   dwell: '3b',  dwC: TEAL,    mr: '41',  mrC: AMBER,   size: '100%', sizeC: TEAL,    note: 'VOLATILE · WATCH · short dwell — widest bands allow full size.' },
+      { regime: 'RANGE',    regC: MAGENTA, zone: 'DANGER',  zoneC: MAGENTA, dwell: '24b', dwC: '#FF1744', mr: '87',  mrC: MAGENTA, size: '0%',   sizeC: '#FF1744', note: 'RANGE · DANGER entrenched · MR extreme — full exit, no new entries.' },
+    ];
+    const s = scenes[sceneIdx];
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('THE DECISION LOOP — FOUR INPUTS, ONE SIZE', w / 2, 22);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(`${String(sceneIdx + 1).padStart(2, '0')} / 04`, w - 20, 22);
+
+    // Central converger box
+    const cx = w / 2; const cy = h * 0.52; const bW = 150; const bH = 64;
+    ctx.save(); ctx.shadowBlur = 16; ctx.shadowColor = s.sizeC;
+    ctx.fillStyle = s.sizeC + '22'; ctx.fillRect(cx - bW / 2, cy - bH / 2, bW, bH);
+    ctx.strokeStyle = s.sizeC; ctx.lineWidth = 1.5; ctx.strokeRect(cx - bW / 2, cy - bH / 2, bW, bH);
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = 'bold 9px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('POSITION SIZE', cx, cy - 14);
+    ctx.fillStyle = s.sizeC; ctx.font = 'bold 26px "SF Mono", monospace';
+    ctx.fillText(s.size, cx, cy + 14);
+
+    // Four input boxes at corners
+    const iW = 120; const iH = 48;
+    const inputs = [
+      { x: 26, y: 40, label: 'REGIME',  val: s.regime, c: s.regC },
+      { x: w - iW - 26, y: 40, label: 'ZONE', val: s.zone, c: s.zoneC },
+      { x: 26, y: h - iH - 38, label: 'DWELL', val: s.dwell, c: s.dwC },
+      { x: w - iW - 26, y: h - iH - 38, label: 'MR SCORE', val: s.mr, c: s.mrC },
+    ];
+    inputs.forEach((ip, idx) => {
+      ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fillRect(ip.x, ip.y, iW, iH);
+      ctx.strokeStyle = ip.c + '77'; ctx.lineWidth = 1; ctx.strokeRect(ip.x, ip.y, iW, iH);
+      ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = 'bold 9px Inter, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(ip.label, ip.x + iW / 2, ip.y + 14);
+      ctx.fillStyle = ip.c; ctx.font = 'bold 16px "SF Mono", monospace';
+      ctx.fillText(ip.val, ip.x + iW / 2, ip.y + 36);
+
+      // Connector line
+      const fromX = ip.x + iW / 2; const fromY = ip.y + (idx < 2 ? iH : 0);
+      const toX = cx + (fromX < cx ? -bW / 2 : bW / 2); const toY = cy + (fromY < cy ? -bH / 2 : bH / 2);
+      ctx.save(); ctx.strokeStyle = ip.c + '55'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(fromX, fromY); ctx.lineTo(toX, toY); ctx.stroke();
+      ctx.setLineDash([]); ctx.restore();
+
+      // Travelling dot
+      const dotPhase = (sceneT * 2 + idx * 0.25) % 1;
+      const dx = fromX + (toX - fromX) * dotPhase;
+      const dy = fromY + (toY - fromY) * dotPhase;
+      ctx.save(); ctx.shadowBlur = 8; ctx.shadowColor = ip.c;
+      ctx.fillStyle = ip.c; ctx.beginPath(); ctx.arc(dx, dy, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+
+    // Caption
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(s.note, w / 2, h - 8);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// ============================================================
+// ANIMATION 13 — ConfluenceAlertAnim (S13)
+// Three warning pillars firing simultaneously:
+//   DANGER (zone) · ENTRENCHED 24b (dwell) · MR EXTREME 87 (score)
+// All three light up, center "FULL EXIT" verdict fires with shake
+// ============================================================
+function ConfluenceAlertAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const AMBER = '#FFB300', MAGENTA = '#EF5350', ENTRENCH = '#FF1744';
+    // 6s cycle: 0-2s silent, 2-4s warnings fire, 4-6s verdict
+    const cycleT = t % 6;
+    const fired1 = cycleT > 2;
+    const fired2 = cycleT > 2.5;
+    const fired3 = cycleT > 3;
+    const verdictFired = cycleT > 4;
+    const pulse = Math.sin(t * 8) * 0.5 + 0.5;
+
+    ctx.fillStyle = 'rgba(245,158,11,0.7)'; ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('CONFLUENCE WARNING — WHEN ALL THREE ALIGN', w / 2, 22);
+
+    // Three warning pillars
+    const pillars = [
+      { label: 'ZONE',        main: 'DANGER',      sub: 'Beyond outer band',       fired: fired1, c: MAGENTA },
+      { label: 'DWELL',       main: 'ENTRENCHED',  sub: '24 bars in DANGER',       fired: fired2, c: ENTRENCH },
+      { label: 'MR SCORE',    main: 'EXTREME',     sub: '87 of 100',               fired: fired3, c: MAGENTA },
+    ];
+    const pW = (w - 80) / 3; const pY = 48; const pH = h * 0.42;
+    pillars.forEach((p, i) => {
+      const x = 20 + i * (pW + 10);
+      // Shake when fired
+      const shakeX = p.fired && cycleT < 3.5 ? Math.sin(t * 40) * 1.5 : 0;
+      const sx = x + shakeX;
+
+      ctx.save();
+      if (p.fired) { ctx.shadowBlur = 18; ctx.shadowColor = p.c; }
+      ctx.fillStyle = p.fired ? p.c + '22' : 'rgba(255,255,255,0.03)'; ctx.fillRect(sx, pY, pW, pH);
+      ctx.strokeStyle = p.fired ? p.c + (pulse > 0.5 ? 'ff' : 'bb') : 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = p.fired ? 2 : 1; ctx.strokeRect(sx, pY, pW, pH);
+      ctx.restore();
+
+      ctx.fillStyle = p.fired ? p.c : 'rgba(255,255,255,0.3)';
+      ctx.font = 'bold 10px Inter, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText(p.label, sx + pW / 2, pY + 20);
+
+      ctx.fillStyle = p.fired ? p.c : 'rgba(255,255,255,0.25)';
+      ctx.font = `bold ${p.fired ? 20 : 18}px Inter, sans-serif`;
+      ctx.fillText(p.main, sx + pW / 2, pY + pH / 2 + 2);
+
+      ctx.fillStyle = p.fired ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.2)';
+      ctx.font = '10px Inter, sans-serif';
+      ctx.fillText(p.sub, sx + pW / 2, pY + pH - 14);
+
+      // Warning marker
+      if (p.fired) {
+        ctx.fillStyle = p.c; ctx.font = 'bold 14px Inter, sans-serif';
+        ctx.fillText('⚠', sx + pW - 18, pY + 20);
+      }
+    });
+
+    // Verdict bar at bottom
+    const vY = pY + pH + 16; const vH = h - vY - 24;
+    ctx.save();
+    if (verdictFired) { ctx.shadowBlur = 22; ctx.shadowColor = ENTRENCH; }
+    ctx.fillStyle = verdictFired ? ENTRENCH + '22' : 'rgba(255,255,255,0.02)';
+    ctx.fillRect(20, vY, w - 40, vH);
+    ctx.strokeStyle = verdictFired ? ENTRENCH : 'rgba(255,255,255,0.06)';
+    ctx.lineWidth = verdictFired ? 2 : 1; ctx.strokeRect(20, vY, w - 40, vH);
+    ctx.restore();
+
+    ctx.fillStyle = verdictFired ? ENTRENCH : 'rgba(255,255,255,0.25)';
+    ctx.font = 'bold 18px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(verdictFired ? 'OPERATOR VERDICT: FULL EXIT' : 'AWAITING CONFLUENCE...', w / 2, vY + vH / 2 + 6);
+
+    // Caption
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('When zone, dwell, and Mean Reversion all flag danger — the decision is no longer about sizing. It is about survival.', w / 2, h - 8);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
 // ── MAIN COMPONENT ────────────────────────────────────────────
 export default function CipherRegimeSizingLesson() {
   const [scrollY, setScrollY] = useState(0);
@@ -828,7 +1254,7 @@ export default function CipherRegimeSizingLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Same Candle. Same ATR. Three Different Risk Zones.</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The candle in the animation never moves. The ATR never changes. Only the regime changes — and watch what happens to the zone classification. The same price is DANGER in a Range, CAUTION in a Trend, and WATCH in a Volatile market.</p>
           <SameCandleAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4">Watch the scene cycle through all three regimes. Scene 1: RANGE — bands at 0.85×, candle is outside the outer band — DANGER. Scene 2: TREND — bands widen to 1.15×, same candle now between mid and outer — CAUTION. Scene 3: VOLATILE — bands widen to 1.25× plus the bonus, same candle now between inner and mid — WATCH.</p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-4">The scene cycles through all three regimes. Scene 1: RANGE — bands at 0.85×, the candle is beyond the outer band and classified DANGER. Scene 2: TREND — bands widen to 1.15×, the same candle now sits between the mid and outer bands and classifies as CAUTION. Scene 3: VOLATILE — bands reach their maximum 1.35× (regime base plus the VOLATILE bonus), the same candle now sits between the inner and mid bands and classifies as WATCH.</p>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR INSIGHT</p>
             <p className="text-sm text-gray-400 leading-relaxed">A stop placed based on the RANGE reading will be drastically too tight when the market shifts to VOLATILE. The regime changes your risk classification without the price moving at all. <strong className="text-white">Read the regime before setting your stop.</strong></p>
@@ -944,10 +1370,131 @@ export default function CipherRegimeSizingLesson() {
         </motion.div>
       </section>
 
-      {/* S09 Sizing Playbook */}
+      {/* S09 Dwell Phases */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Your Sizing Playbook</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Dwell Phases</p>
+          <h2 className="text-2xl font-extrabold mb-4">Time Inside the Zone Changes the Urgency</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Being in DANGER for one bar and being in DANGER for twenty-four bars are not the same situation. The first is often a wick — price spiked through the outer band and will snap back. The second is structural. CIPHER tracks how long price has been inside the current zone and attaches a dwell phase label to make the difference visible.</p>
+          <DwellEscalationAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Four dwell phases exist: <strong className="text-white">SPIKE</strong> (1–2 bars), <strong className="text-white">VISIT</strong> (3–8 bars), <strong className="text-white">ESTABLISHED</strong> (9–20 bars), and <strong className="text-white">ENTRENCHED</strong> (21+ bars). The phase applies to any non-SAFE zone. SAFE has no dwell counter because being inside the inner band is the default state.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE COLOUR ESCALATION</p>
+            <p className="text-sm text-gray-400 leading-relaxed">DANGER gets special treatment at ENTRENCHED. Once you cross 21 bars inside DANGER, the Risk row colour escalates from standard magenta to the bright-red reserved exclusively for the most urgent states. A warning marker is also appended. This is the strongest visual signal CIPHER produces in the Risk system.</p>
+          </div>
+          <div className="p-5 rounded-2xl glass-card space-y-3">
+            {[
+              {p:'SPIKE',r:'1–2 bars',v:'Treat as a wick — often reverses on the very next bar. Do not act on it unless other signals align.'},
+              {p:'VISIT',r:'3–8 bars',v:'Confirmed extension. Start tightening mental stops. This is a material signal, not noise.'},
+              {p:'ESTABLISHED',r:'9–20 bars',v:'Persistent overextension. Price has committed. If DANGER — size is already reduced.'},
+              {p:'ENTRENCHED',r:'21+ bars',v:'Structural overextension. In DANGER — colour is now bright red, warning marker fires, full exit is the default move.'},
+            ].map(ph=>(
+              <div key={ph.p} className="flex items-start gap-4">
+                <div className="shrink-0 w-32"><p className="font-mono font-bold text-xs text-amber-400">{ph.p}</p><p className="text-gray-600 text-xs">{ph.r}</p></div>
+                <p className="text-gray-400 text-sm leading-snug flex-1">{ph.v}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S10 Stop Placement */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; Stop Placement in a Trend</p>
+          <h2 className="text-2xl font-extrabold mb-4">Your Stop Distance Is Not Symmetrical</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">In a trending market, moving with the trend is structurally lower risk than moving against it. That asymmetry is not decoration — it is priced directly into the bands. The trend-side widens. The counter-side tightens. Your stops should follow the bands, which means your stops should not be symmetrical either.</p>
+          <StopPlacementAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-4">In the animation, a long candle sitting near the trend-side inner band has plenty of room above it before it reaches CAUTION. But its stop sits on the counter-side, where the bands are tighter — so the stop is physically closer to entry than a symmetric stop would be. The opposite is true for a short against the trend: its stop sits on the wider trend-side, which means the stop is farther away, and the position must be smaller to keep risk constant.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE STRUCTURAL INSIGHT</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Trading with the trend lets you use the wider side for room to breathe and the tighter side for a close stop. Same R:R setup, smaller dollar risk. Trading against the trend forces you to use the wider side as your stop, which means smaller size to keep dollar risk fixed. This is why counter-trend trades cost more size-efficiency even when the win rate is the same.</p>
+          </div>
+          <div className="p-5 rounded-2xl glass-card space-y-3">
+            <div>
+              <p className="text-xs font-bold text-teal-400 mb-1">BULL TREND — LONG SETUP</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Trend side is upper (wider). Counter side is lower (tighter). Stop goes beneath the counter-side inner or mid band — closer to entry than symmetric. You can size larger for the same dollar risk.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-red-400 mb-1">BULL TREND — SHORT SETUP</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Trend side is still upper (wider) — your stop goes above it. Farther from entry. You must size smaller to keep dollar risk constant. The asymmetry explicitly penalises counter-trend trading.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-amber-400 mb-1">RANGE REGIME</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Asymmetry factor is zero — bands are symmetric. Stops are symmetric. Stop placement and size are equal above and below the anchor line.</p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S11 Position Sizing Math */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; The Position Sizing Math</p>
+          <h2 className="text-2xl font-extrabold mb-4">Same Percent Risk, Different Drawdown</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Traders who use a fixed one-percent risk per trade believe they are treating every trade equally. They are not. One percent on a ten thousand dollar account in RANGE + DANGER exposes you to a completely different experience than one percent in TREND + SAFE. The percent risk is the same. The structural risk is not.</p>
+          <DrawdownSimulatorAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-4">The reason: when you size a full position in RANGE + DANGER, you are placing your stop inside the narrowest band configuration the system ever produces. That stop can be hit by a single average bar. The position is more likely to be taken out, and losses chain. In TREND + SAFE, the bands are at their widest. The stop has real room. The position survives normal noise.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">THE MATH STUDENTS MISS</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Regime-scaled sizing is not about capping worst-case loss on a single trade. It is about how often losses stack. Tighter bands mean more frequent stop-outs per regime cycle. More stop-outs means more instances of that full-percent risk firing in sequence. Ten consecutive losses at one percent is a ten percent drawdown — and that sequence is far more likely in RANGE + DANGER than in TREND + SAFE.</p>
+          </div>
+          <div className="p-5 rounded-2xl glass-card">
+            <p className="text-xs font-bold text-amber-400 mb-3">THE OPERATOR PRINCIPLE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Your size is not determined by risk percent alone. It is determined by risk percent <strong className="text-white">multiplied by the probability of sequential stop-outs in the current regime × zone state</strong>. CIPHER does that multiplication for you by giving you a zone output and a dwell count. Reading them is not optional if you want your stated one-percent risk to behave like one percent in practice.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S12 Decision Loop */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; The Decision Loop</p>
+          <h2 className="text-2xl font-extrabold mb-4">Four Inputs, One Size</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Regime, Zone, Dwell, and Mean Reversion Score are not independent readings to be checked off in sequence. They feed a single decision: <strong className="text-white">what size do I take this trade at?</strong> The animation shows all four inputs flowing into one output box in real time, across four different market states.</p>
+          <LiveDecisionLoopAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-4">Note how the output size does not simply track the worst input. In scene three — VOLATILE regime, WATCH zone, short dwell, moderate MR — the answer is still full size because the band width in VOLATILE is genuinely wider. In scene four — RANGE regime, DANGER zone, entrenched dwell, extreme MR — all four inputs align against the trade, and the verdict is zero percent size. The loop does not average. It reads all four and outputs the most honest size the combined state permits.</p>
+          <div className="p-5 rounded-2xl glass-card space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">THE READ-ORDER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Read Regime first — it sets the band width baseline. Read Zone second — it tells you where price sits relative to those bands. Read Dwell third — it tells you how committed the current zone reading is. Read MR Score last — it tells you how stretched price is on a smooth continuous measure. Size emerges from the combination, not from any one.</p>
+            </div>
+            <div className="border-t border-white/8 pt-3">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE MINIMUM PRINCIPLE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When inputs disagree — say Zone is SAFE but MR is EXTREME — the honest answer is the more conservative read. That situation is uncommon and usually means a deep anchor-EMA pullback is underway. Size down on any serious disagreement between the four inputs.</p>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S13 Confluence Exit */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Confluence Exit</p>
+          <h2 className="text-2xl font-extrabold mb-4">When Zone, Dwell, and MR Score All Flag</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">There is one combined state where the decision is no longer about sizing down. It is about being out. When the zone reads DANGER, the dwell reads ENTRENCHED, and the Mean Reversion Score reads EXTREME — you are in the most overextended state the entire Risk system can produce. Any one of those flags alone is a size reduction. All three together is a full exit.</p>
+          <ConfluenceAlertAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-4">This state is not common. In a normal session you may see DANGER fire for a few bars at a time, or MR Score climb above sixty for an extended run, but rarely do all three escalate simultaneously. When they do, the market is telling you that price has committed deeply past structure and is holding. Reversion is no longer a probability — it is a setup in formation. The correct move is not to trade the reversion yourself. It is to be flat and wait for the signal engine to produce a qualified entry.</p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-4">
+            <p className="text-xs font-bold text-amber-400 mb-1">WHY FULL EXIT AND NOT FULL SHORT</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Overextension is a necessary condition for reversal but not a sufficient one. Prices can stay entrenched for dozens of bars before they snap back. A full short based on confluence alone is a timing gamble. A full exit based on confluence is a risk-management discipline. The difference matters. CIPHER produces entry signals separately from risk signals — let the signal engine do its job, and let the Risk row tell you when to stand aside.</p>
+          </div>
+          <div className="p-5 rounded-2xl glass-card">
+            <p className="text-xs font-bold text-amber-400 mb-3">THE CONFLUENCE CHECKLIST</p>
+            <div className="space-y-2 text-sm">
+              <div className="flex gap-3"><span className="text-red-400 font-bold font-mono w-4">1.</span><span className="text-gray-400">Zone is <strong className="text-red-400">DANGER</strong> — price is already beyond the outer band.</span></div>
+              <div className="flex gap-3"><span className="text-red-400 font-bold font-mono w-4">2.</span><span className="text-gray-400">Dwell is <strong className="text-red-400">ENTRENCHED</strong> — twenty-one or more bars in DANGER, colour has escalated.</span></div>
+              <div className="flex gap-3"><span className="text-red-400 font-bold font-mono w-4">3.</span><span className="text-gray-400">MR Score is <strong className="text-red-400">EXTREME</strong> — reading above eighty.</span></div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3 leading-relaxed">All three required. Two out of three is still a reduce-size state, not an exit state.</p>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* S14 Sizing Playbook */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; Your Sizing Playbook</p>
           <h2 className="text-2xl font-extrabold mb-6">One Rule Per Zone Per Regime</h2>
           {[
             {r:'RANGE',color:'#EF5350',bg:'rgba(239,83,80,0.06)',border:'rgba(239,83,80,0.2)',rules:[{z:'SAFE',a:'Full size.'},{z:'WATCH',a:'Reduce to 75%.'},{z:'CAUTION',a:'Reduce to 50%.'},{z:'DANGER',a:'25% or skip.'}]},
@@ -966,10 +1513,10 @@ export default function CipherRegimeSizingLesson() {
         </motion.div>
       </section>
 
-      {/* S10 Cheat Sheet */}
+      {/* S15 Cheat Sheet */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; Cheat Sheet</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Cheat Sheet</p>
           <h2 className="text-2xl font-extrabold mb-6">Regime-Based Sizing at a Glance</h2>
           <div className="p-5 rounded-2xl glass-card space-y-5">
             <div><p className="text-xs font-bold text-amber-400 mb-2">RISK ZONES</p><div className="space-y-1 text-xs font-mono">{[{z:'SAFE',c:'text-teal-400',a:'NORMAL SIZE',n:'< 1.2× ATR'},{z:'WATCH',c:'text-amber-400',a:'STAY ALERT',n:'1.2–2.35×'},{z:'CAUTION',c:'text-amber-400',a:'TIGHTEN STOPS',n:'2.35–3.5×'},{z:'DANGER',c:'text-red-400',a:'REDUCE SIZE',n:'> 3.5×'}].map(x=>(<div key={x.z} className="flex gap-3"><span className={`font-bold w-20 ${x.c}`}>{x.z}</span><span className="text-white/70 flex-1">&rarr; {x.a}</span><span className="text-gray-600">{x.n}</span></div>))}</div></div>
@@ -980,10 +1527,10 @@ export default function CipherRegimeSizingLesson() {
         </motion.div>
       </section>
 
-      {/* S11 Mistakes */}
+      {/* S16 Mistakes */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; Six Common Sizing Mistakes</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">16 &mdash; Six Common Sizing Mistakes</p>
           <h2 className="text-2xl font-extrabold mb-6">What Operators Get Wrong</h2>
           <div className="space-y-3">
             {[
@@ -1005,10 +1552,10 @@ export default function CipherRegimeSizingLesson() {
         </motion.div>
       </section>
 
-      {/* S12 Game */}
+      {/* S17 Game */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; Scenario Game</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">17 &mdash; Scenario Game</p>
           <h2 className="text-2xl font-extrabold mb-6">Sizing Operator &mdash; 5 Live Scenarios</h2>
           <div className="p-5 rounded-2xl glass-card">
             {(()=>{
@@ -1043,10 +1590,10 @@ export default function CipherRegimeSizingLesson() {
         </motion.div>
       </section>
 
-      {/* S13 Quiz */}
+      {/* S18 Quiz */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true}}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Knowledge Check</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">18 &mdash; Knowledge Check</p>
           <h2 className="text-2xl font-extrabold mb-6">Final Quiz &mdash; {quizQuestions.length} Questions</h2>
           <div className="space-y-6">
             {quizQuestions.map((q,qi)=>{
