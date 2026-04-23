@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 // ── GET — full user detail with subs, prop accounts, swap history ──
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
 // ── PATCH — update user metadata (TV username), resend verification, ban/unban ──
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
@@ -170,7 +170,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 // ── DELETE — full user delete (cascades through Supabase Auth + related rows) ──
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {

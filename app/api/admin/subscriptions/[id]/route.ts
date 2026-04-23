@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 // ── GET — full subscription detail including Stripe live data ──
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 // ── PATCH — various update actions ──
 // Body must include { action, ... }
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
@@ -296,7 +296,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 // ── DELETE — remove a subscription row entirely ──
 // Does NOT cancel Stripe automatically (could be an orphan cleanup)
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {

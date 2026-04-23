@@ -1,4 +1,5 @@
 'use client';
+import { adminFetch } from '../lib-client';
 
 import { useEffect, useState } from 'react';
 import { Mail, Ban, Trash2, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
@@ -45,7 +46,7 @@ export default function AdminUsersPage() {
 
   const loadUsers = () => {
     setLoading(true);
-    fetch('/api/admin/users')
+    adminFetch('/api/admin/users')
       .then((r) => r.json())
       .then((d) => {
         if (d.error) setError(d.error);

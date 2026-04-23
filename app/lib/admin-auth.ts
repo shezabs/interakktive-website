@@ -1,10 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 // Single source of truth for the admin allowlist.
-// Must match middleware.ts exactly. If you edit one, edit both.
+// Must match the list in app/admin/layout.tsx (client guard).
 export const ADMIN_EMAILS = [
   'shezabmediaworxltd@gmail.com',
   'mustafamoinmirza@icloud.com',
@@ -14,16 +12,28 @@ export const ADMIN_EMAILS = [
  * Returns the signed-in admin's email if they pass the allowlist check,
  * otherwise returns null. API routes should call this and 401 on null.
  *
- * Defence in depth: even though middleware also checks this, API routes
- * can be called directly and must not trust the middleware alone.
+ * Reads the user's access token from the Authorization: Bearer header.
+ * The client (admin pages) is responsible for attaching this header to
+ * every fetch() call to /api/admin/*.
  */
-export async function getAdminEmail(): Promise<string | null> {
+export async function getAdminEmail(req: NextRequest): Promise<string | null> {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user?.email) return null;
+    const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return null;
 
-    const email = user.email.toLowerCase();
+    const token = authHeader.slice('Bearer '.length).trim();
+    if (!token) return null;
+
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !anonKey) return null;
+
+    // Validate the token by asking Supabase who owns it
+    const supabase = createClient(url, anonKey);
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data?.user?.email) return null;
+
+    const email = data.user.email.toLowerCase();
     if (!ADMIN_EMAILS.includes(email)) return null;
 
     return email;
@@ -57,8 +67,7 @@ export interface AuditLogEntry {
 }
 
 /**
- * Writes a row to admin_audit_log. Failures are logged but do not throw —
- * we never want an audit log failure to block an admin action.
+ * Writes a row to admin_audit_log. Failures are logged but do not throw.
  */
 export async function writeAuditLog(entry: AuditLogEntry): Promise<void> {
   try {
@@ -72,18 +81,12 @@ export async function writeAuditLog(entry: AuditLogEntry): Promise<void> {
       after_data: entry.after ?? null,
       ip_address: entry.ipAddress ?? null,
     });
-    if (error) {
-      console.error('Audit log write failed:', error);
-    }
+    if (error) console.error('Audit log write failed:', error);
   } catch (err) {
     console.error('Audit log exception:', err);
   }
 }
 
-/**
- * Extract IP address from the request headers.
- * Vercel sets x-forwarded-for; fallback to x-real-ip.
- */
 export function getClientIp(req: NextRequest): string | null {
   const forwarded = req.headers.get('x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0].trim();

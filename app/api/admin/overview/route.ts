@@ -22,7 +22,7 @@ function mrrContribution(plan: string, billing: string): number {
 }
 
 export async function GET(req: NextRequest) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

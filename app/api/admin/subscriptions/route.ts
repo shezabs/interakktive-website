@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 // ── GET — list all subscriptions ──
 export async function GET(req: NextRequest) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 // ── POST — grant a comp (complimentary) subscription ──
 // Body: { email, plan, billing, indicators, tradingviewUsername, note }
 export async function POST(req: NextRequest) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {

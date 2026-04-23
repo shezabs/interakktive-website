@@ -1,40 +1,23 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+// Middleware intentionally NOT guarding /admin routes anymore.
+//
+// Reason: the site's Supabase client stores sessions in localStorage (client-side only),
+// not cookies — so middleware can never see the user's session.
+//
+// Admin auth now happens in two places that DO work:
+//  1. Each /admin page's client-side layout guard redirects non-admins.
+//  2. Every /api/admin/* route validates the Authorization: Bearer <token> header
+//     server-side using the Supabase admin client.
+//
+// This file exists only so Next.js doesn't complain about a missing middleware
+// when other changes reference one. If you want to re-add middleware later,
+// ensure the app's client uses @supabase/ssr which writes cookies.
+
 import { NextResponse, type NextRequest } from 'next/server';
 
-// Admin allowlist — adding a new admin means editing this constant and redeploying.
-// Intentional: keeps the admin set small and auditable, no sneaky DB writes to grant access.
-const ADMIN_EMAILS = [
-  'shezabmediaworxltd@gmail.com',
-  'mustafamoinmirza@icloud.com',
-];
-
-export async function middleware(req: NextRequest) {
-  // Only run on /admin/* routes. API routes enforce admin separately via requireAdmin().
-  if (!req.nextUrl.pathname.startsWith('/admin')) {
-    return NextResponse.next();
-  }
-
-  const res = NextResponse.next();
-  const supabase = createMiddlewareClient({ req, res });
-
-  const { data: { session } } = await supabase.auth.getSession();
-
-  // Not signed in → bounce to signin with a return URL
-  if (!session?.user?.email) {
-    const signinUrl = new URL('/signin', req.url);
-    signinUrl.searchParams.set('next', req.nextUrl.pathname);
-    return NextResponse.redirect(signinUrl);
-  }
-
-  // Signed in but not an admin → bounce to home. No error message on purpose —
-  // we don't want to leak the existence of admin routes to regular users.
-  if (!ADMIN_EMAILS.includes(session.user.email.toLowerCase())) {
-    return NextResponse.redirect(new URL('/', req.url));
-  }
-
-  return res;
+export function middleware(_req: NextRequest) {
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [],
 };

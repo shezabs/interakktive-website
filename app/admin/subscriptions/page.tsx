@@ -1,4 +1,5 @@
 'use client';
+import { adminFetch } from '../lib-client';
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -53,7 +54,7 @@ export default function AdminSubscriptionsPage() {
 
   const loadSubs = () => {
     setLoading(true);
-    fetch('/api/admin/subscriptions')
+    adminFetch('/api/admin/subscriptions')
       .then((r) => r.json())
       .then((d) => {
         if (d.error) setError(d.error);
@@ -607,7 +608,7 @@ function GrantCompModal({ open, onClose, onGranted }: { open: boolean; onClose: 
     try {
       const payload: any = { email: email.trim(), plan, billing, note, tradingviewUsername: tvUsername.trim() };
       if (plan !== 'elite') payload.indicators = indicators;
-      const res = await fetch('/api/admin/subscriptions', {
+      const res = await adminFetch('/api/admin/subscriptions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

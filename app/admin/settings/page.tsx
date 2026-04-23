@@ -1,4 +1,5 @@
 'use client';
+import { adminFetch } from '../lib-client';
 
 import { useEffect, useState } from 'react';
 import { Shield, Key, CheckCircle2, AlertTriangle, UserPlus } from 'lucide-react';
@@ -34,7 +35,7 @@ export default function AdminSettingsPage() {
 
     setPwLoading(true);
     try {
-      const res = await fetch('/api/admin/password', {
+      const res = await adminFetch('/api/admin/password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ newPassword }),

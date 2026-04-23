@@ -1,4 +1,5 @@
 'use client';
+import { adminFetch } from '../lib-client';
 
 import { useEffect, useState } from 'react';
 import { RefreshCw, User, FileText } from 'lucide-react';
@@ -30,7 +31,7 @@ export default function AdminAuditPage() {
 
   const loadEntries = () => {
     setLoading(true);
-    fetch('/api/admin/audit')
+    adminFetch('/api/admin/audit')
       .then((r) => r.json())
       .then((d) => {
         if (d.error) setError(d.error);

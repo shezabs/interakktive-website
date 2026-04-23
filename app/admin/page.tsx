@@ -1,4 +1,5 @@
 'use client';
+import { adminFetch } from './lib-client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -39,7 +40,7 @@ export default function AdminOverviewPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/admin/overview')
+    adminFetch('/api/admin/overview')
       .then((r) => r.json())
       .then((d) => {
         if (d.error) setError(d.error);

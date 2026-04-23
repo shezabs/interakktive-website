@@ -5,7 +5,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  const adminEmail = await getAdminEmail();
+  const adminEmail = await getAdminEmail(req);
   if (!adminEmail) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

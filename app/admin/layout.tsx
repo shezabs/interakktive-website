@@ -1,13 +1,58 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/app/lib/supabase';
 import AdminNav from './components/AdminNav';
 
-export const metadata: Metadata = {
-  title: 'Admin — Interakktive',
-  description: 'Internal admin panel',
-  robots: { index: false, follow: false },
-};
+// Must match ADMIN_EMAILS in app/lib/admin-auth.ts
+const ADMIN_EMAILS = [
+  'shezabmediaworxltd@gmail.com',
+  'mustafamoinmirza@icloud.com',
+];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [state, setState] = useState<'checking' | 'authorised' | 'denied'>('checking');
+
+  useEffect(() => {
+    let active = true;
+
+    const check = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!active) return;
+
+      if (!user?.email) {
+        // Not signed in at all — send to signin with a return URL
+        router.replace(`/signin?next=${encodeURIComponent('/admin')}`);
+        return;
+      }
+
+      if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+        // Signed in but not an admin — quietly bounce home
+        setState('denied');
+        router.replace('/');
+        return;
+      }
+
+      setState('authorised');
+    };
+
+    check();
+    return () => { active = false; };
+  }, [router]);
+
+  if (state === 'checking' || state === 'denied') {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}
+      >
+        <div className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
       <AdminNav />
