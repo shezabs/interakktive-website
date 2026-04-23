@@ -65,7 +65,7 @@ export default function AdminUsersPage() {
     setActionMsg(null);
     setEditingTv(false);
     try {
-      const r = await fetch(`/api/admin/users/${u.id}`);
+      const r = await adminFetch(`/api/admin/users/${u.id}`);
       const d = await r.json();
       if (d.error) throw new Error(d.error);
       setUserDetail(d);
@@ -89,7 +89,7 @@ export default function AdminUsersPage() {
     setActionLoading(action);
     setActionMsg(null);
     try {
-      const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
+      const res = await adminFetch(`/api/admin/users/${selectedUser.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, ...body }),
@@ -111,7 +111,7 @@ export default function AdminUsersPage() {
   const handleDelete = async () => {
     if (!selectedUser) return;
     try {
-      const res = await fetch(`/api/admin/users/${selectedUser.id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/users/${selectedUser.id}`, { method: 'DELETE' });
       const d = await res.json();
       if (!res.ok) throw new Error(d.error || 'Delete failed');
       setConfirmDelete(false);

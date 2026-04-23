@@ -89,7 +89,7 @@ export default function AdminSubscriptionsPage() {
     setPlanDraft({ plan: s.plan, indicators: s.indicators || [] });
     setNotesDraft(s.admin_notes || '');
     try {
-      const r = await fetch(`/api/admin/subscriptions/${s.id}`);
+      const r = await adminFetch(`/api/admin/subscriptions/${s.id}`);
       const d = await r.json();
       if (d.error) throw new Error(d.error);
       setDetail(d);
@@ -113,7 +113,7 @@ export default function AdminSubscriptionsPage() {
     setActionLoading(action);
     setActionMsg(null);
     try {
-      const res = await fetch(`/api/admin/subscriptions/${selected.id}`, {
+      const res = await adminFetch(`/api/admin/subscriptions/${selected.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, ...body }),
@@ -138,7 +138,7 @@ export default function AdminSubscriptionsPage() {
   const handleDelete = async () => {
     if (!selected) return;
     try {
-      const res = await fetch(`/api/admin/subscriptions/${selected.id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/subscriptions/${selected.id}`, { method: 'DELETE' });
       const d = await res.json();
       if (!res.ok) throw new Error(d.error || 'Delete failed');
       setConfirmDelete(false);
