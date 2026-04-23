@@ -19,11 +19,21 @@ export async function GET(req: NextRequest) {
 
     const users = userList?.users || [];
 
+    // Academy certs — safely handle if table doesn't exist
+    const safeQuery = async (fn: () => any): Promise<{ data: any[] }> => {
+      try {
+        const res = await fn();
+        return { data: res.data || [] };
+      } catch {
+        return { data: [] };
+      }
+    };
+
     // Fetch subs + prop accounts + certs in bulk for enrichment
     const [subsRes, propRes, certsRes] = await Promise.all([
       supabase.from('subscriptions').select('id, user_id, user_email, plan, status, tradingview_username'),
       supabase.from('prop_accounts').select('id, user_id'),
-      supabase.from('academy_certificates').select('user_id').then(r => r).catch(() => ({ data: [], error: null })),
+      safeQuery(() => supabase.from('academy_certificates').select('user_id')),
     ]);
 
     const subsByUser    = new Map<string, any[]>();

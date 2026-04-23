@@ -20,6 +20,17 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
     const user = userRes.user;
 
+    // Safely query Academy tables which may not exist — wrap in real async functions
+    // so try/catch works properly (Supabase's builder is PromiseLike, not Promise).
+    const safeQuery = async (fn: () => any): Promise<{ data: any[] }> => {
+      try {
+        const res = await fn();
+        return { data: res.data || [] };
+      } catch {
+        return { data: [] };
+      }
+    };
+
     // Fetch related data. For subscriptions, match by user_id OR user_email —
     // some subs created before checkout auth have user_id=null, matched only by email.
     // Two separate queries is safer than .or() which can choke on special chars in emails.
@@ -28,8 +39,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       user.email ? supabase.from('subscriptions').select('*').eq('user_email', user.email).order('created_at', { ascending: false }) : Promise.resolve({ data: [], error: null }),
       supabase.from('prop_accounts').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
       supabase.from('swap_history').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
-      supabase.from('academy_certificates').select('*').eq('user_id', userId).order('issued_at', { ascending: false }).then(r => r).catch(() => ({ data: [], error: null })),
-      supabase.from('academy_progress').select('*').eq('user_id', userId).order('updated_at', { ascending: false }).then(r => r).catch(() => ({ data: [], error: null })),
+      safeQuery(() => supabase.from('academy_certificates').select('*').eq('user_id', userId).order('issued_at', { ascending: false })),
+      safeQuery(() => supabase.from('academy_progress').select('*').eq('user_id', userId).order('updated_at', { ascending: false })),
     ]);
 
     // Merge sub results, deduping by id (a sub may match both queries)
