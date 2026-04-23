@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Menu, X, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
 export default function Navigation() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +41,9 @@ export default function Navigation() {
 
   // Admin link is intentionally NOT shown in the public nav — admins access /admin
   // directly via URL. Keeps the admin surface invisible to regular users.
+
+  // Hide the main site nav entirely on /admin pages — admin has its own tab bar
+  if (pathname?.startsWith('/admin')) return null;
 
   return (
     <nav className="fixed top-0 w-full z-50 glass-dark border-b border-white/10">

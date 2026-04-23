@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Twitter, Youtube, Instagram } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 // Discord icon component
 function DiscordIcon({ className }: { className?: string }) {
@@ -35,6 +38,9 @@ function FacebookIcon({ className }: { className?: string }) {
 }
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname?.startsWith('/admin')) return null;
+
   return (
     <footer className="border-t border-white/10 bg-black/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
