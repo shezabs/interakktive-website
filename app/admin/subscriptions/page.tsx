@@ -1,9 +1,10 @@
 'use client';
 import { adminFetch } from '../lib-client';
+import { useAdmin } from '../admin-context';
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, RefreshCw, Send, XCircle, CheckCircle2, Trash2, Calendar, RotateCcw, Edit3, ExternalLink, Download } from 'lucide-react';
+import { Plus, RefreshCw, Send, XCircle, CheckCircle2, Trash2, Calendar, RotateCcw, Edit3, ExternalLink, Download, RefreshCcw, DollarSign } from 'lucide-react';
 import Link from 'next/link';
 import DataTable, { Column } from '../components/DataTable';
 import Drawer from '../components/Drawer';
@@ -34,6 +35,7 @@ interface Subscription {
 }
 
 export default function AdminSubscriptionsPage() {
+  const { can } = useAdmin();
   const searchParams = useSearchParams();
   const [subs, setSubs] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +48,9 @@ export default function AdminSubscriptionsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showGrantModal, setShowGrantModal] = useState(false);
   const [confirmForceCancel, setConfirmForceCancel] = useState<'period' | 'immediate' | null>(null);
+  // Phase 3C: Stripe sync + refund modals
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [refundModalOpen, setRefundModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [extendDays, setExtendDays] = useState<string>('7');
   const [editingPlan, setEditingPlan] = useState(false);
@@ -253,12 +258,14 @@ export default function AdminSubscriptionsPage() {
           <p className="text-sm text-gray-500">All subscription records with full management.</p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowGrantModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-400 hover:bg-amber-500/20 transition-colors"
-          >
-            <Plus className="w-3.5 h-3.5" /> Grant comp
-          </button>
+          {can('sub.grant_comp') && (
+            <button
+              onClick={() => setShowGrantModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-400 hover:bg-amber-500/20 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Grant comp
+            </button>
+          )}
           <button
             onClick={async () => {
               try {
@@ -371,7 +378,7 @@ export default function AdminSubscriptionsPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400/60">Plan & Indicators</h3>
-                {!editingPlan && <button onClick={() => setEditingPlan(true)} className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1"><Edit3 className="w-3 h-3" /> Edit</button>}
+                {!editingPlan && can('sub.change_plan') && <button onClick={() => setEditingPlan(true)} className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1"><Edit3 className="w-3 h-3" /> Edit</button>}
               </div>
               {editingPlan ? (
                 <div className="space-y-3 p-3 rounded-lg bg-white/[0.02] border border-white/10">
@@ -509,35 +516,43 @@ export default function AdminSubscriptionsPage() {
                 />
                 {selected.status === 'active' && (
                   <>
-                    <ActionBtn
-                      icon={XCircle}
-                      label="Cancel at period end"
-                      tone="warning"
-                      onClick={() => setConfirmForceCancel('period')}
-                    />
-                    <ActionBtn
-                      icon={XCircle}
-                      label="Cancel immediately"
-                      tone="destructive"
-                      onClick={() => setConfirmForceCancel('immediate')}
-                    />
+                    {can('sub.cancel_period_end') && (
+                      <ActionBtn
+                        icon={XCircle}
+                        label="Cancel at period end"
+                        tone="warning"
+                        onClick={() => setConfirmForceCancel('period')}
+                      />
+                    )}
+                    {can('sub.cancel_immediate') && (
+                      <ActionBtn
+                        icon={XCircle}
+                        label="Cancel immediately"
+                        tone="destructive"
+                        onClick={() => setConfirmForceCancel('immediate')}
+                      />
+                    )}
                   </>
                 )}
                 {selected.status === 'cancelling' && (
                   <>
-                    <ActionBtn
-                      icon={CheckCircle2}
-                      label="Reactivate"
-                      tone="positive"
-                      onClick={() => runAction('reactivate')}
-                      loading={actionLoading === 'reactivate'}
-                    />
-                    <ActionBtn
-                      icon={XCircle}
-                      label="Cancel now (skip period)"
-                      tone="destructive"
-                      onClick={() => setConfirmForceCancel('immediate')}
-                    />
+                    {can('sub.reactivate') && (
+                      <ActionBtn
+                        icon={CheckCircle2}
+                        label="Reactivate"
+                        tone="positive"
+                        onClick={() => runAction('reactivate')}
+                        loading={actionLoading === 'reactivate'}
+                      />
+                    )}
+                    {can('sub.cancel_immediate') && (
+                      <ActionBtn
+                        icon={XCircle}
+                        label="Cancel now (skip period)"
+                        tone="destructive"
+                        onClick={() => setConfirmForceCancel('immediate')}
+                      />
+                    )}
                   </>
                 )}
                 {selected.status === 'cancelled' && (
@@ -568,12 +583,37 @@ export default function AdminSubscriptionsPage() {
                   >Apply</button>
                 </div>
               </div>
-              <button
-                onClick={() => setConfirmDelete(true)}
-                className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/5 border border-red-500/20 text-red-400 text-xs hover:bg-red-500/10 transition-colors"
-              >
-                <Trash2 className="w-3.5 h-3.5" /> Delete subscription record
-              </button>
+
+              {/* Stripe sync + refund (owner-only for refund, configurable capability) */}
+              {selected.stripe_subscription_id && (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {can('sub.stripe_sync') && (
+                    <button
+                      onClick={() => setSyncModalOpen(true)}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-sky-500/5 border border-sky-500/20 text-sky-400 text-xs hover:bg-sky-500/10 transition-colors"
+                    >
+                      <RefreshCcw className="w-3.5 h-3.5" /> Sync from Stripe
+                    </button>
+                  )}
+                  {can('sub.refund') && (
+                    <button
+                      onClick={() => setRefundModalOpen(true)}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-purple-500/5 border border-purple-500/20 text-purple-400 text-xs hover:bg-purple-500/10 transition-colors"
+                    >
+                      <DollarSign className="w-3.5 h-3.5" /> Issue refund
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {can('sub.delete_record') && (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/5 border border-red-500/20 text-red-400 text-xs hover:bg-red-500/10 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Delete subscription record
+                </button>
+              )}
             </div>
 
             {/* Swap history */}
@@ -598,6 +638,26 @@ export default function AdminSubscriptionsPage() {
 
       {/* Grant comp modal */}
       <GrantCompModal open={showGrantModal} onClose={() => setShowGrantModal(false)} onGranted={loadSubs} />
+
+      {/* Stripe sync modal */}
+      {selected && (
+        <StripeSyncModal
+          open={syncModalOpen}
+          onClose={() => setSyncModalOpen(false)}
+          subscriptionId={selected.id}
+          onSynced={() => { loadSubs(); if (selected) openSub(selected); }}
+        />
+      )}
+
+      {/* Refund modal */}
+      {selected && (
+        <RefundModal
+          open={refundModalOpen}
+          onClose={() => setRefundModalOpen(false)}
+          subscriptionId={selected.id}
+          customerEmail={selected.user_email}
+        />
+      )}
 
       {/* Confirm force cancel */}
       <ConfirmModal
@@ -771,5 +831,319 @@ function ActionBtn({ icon: Icon, label, onClick, loading, tone = 'default' }: {
       <Icon className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
       {label}
     </button>
+  );
+}
+
+// ── STRIPE SYNC MODAL ──
+function StripeSyncModal({
+  open, onClose, subscriptionId, onSynced,
+}: {
+  open: boolean; onClose: () => void; subscriptionId: string; onSynced: () => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [diff, setDiff] = useState<any>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      setDiff(null); setErr(null); setSuccess(null); return;
+    }
+    setLoading(true);
+    adminFetch(`/api/admin/subscriptions/${subscriptionId}/stripe-sync`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.error) setErr(d.error);
+        else setDiff(d);
+      })
+      .catch((e) => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, [open, subscriptionId]);
+
+  const applySync = async () => {
+    setSyncing(true); setErr(null);
+    try {
+      const res = await adminFetch(`/api/admin/subscriptions/${subscriptionId}/stripe-sync`, { method: 'POST' });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'Sync failed');
+      setSuccess(d.message || 'Sync complete. Your DB now matches Stripe.');
+      onSynced();
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-lg bg-[#0a0f1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <RefreshCcw className="w-5 h-5 text-sky-400" />
+            <h3 className="text-lg font-bold text-white">Sync from Stripe</h3>
+          </div>
+          <p className="text-xs text-gray-500">
+            Pulls the current state from Stripe and shows what would change in your DB. Nothing is written until you confirm.
+          </p>
+
+          {loading && (
+            <div className="flex items-center justify-center py-6">
+              <div className="w-5 h-5 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+
+          {err && <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{err}</div>}
+          {success && <div className="p-3 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-400 text-sm">{success}</div>}
+
+          {diff && !success && (
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg bg-white/[0.02] border border-white/10 text-xs">
+                <p className="text-gray-400 mb-2">Stripe reports:</p>
+                <p className="text-white">
+                  Status: <span className="font-mono text-sky-400">{diff.stripeStatus}</span>
+                  {diff.stripeCancelAtPeriodEnd && <span className="ml-2 text-amber-400">(cancel at period end)</span>}
+                </p>
+              </div>
+
+              {diff.anyChanges ? (
+                <div className="space-y-2">
+                  <p className="text-xs text-amber-400 font-semibold">Fields that will change:</p>
+                  {diff.diffs.filter((d: any) => d.willChange).map((d: any) => (
+                    <div key={d.field} className="p-2 rounded-lg bg-amber-500/5 border border-amber-500/20 text-xs">
+                      <p className="text-gray-400 font-mono">{d.field}</p>
+                      <div className="flex items-center gap-2 mt-1 font-mono">
+                        <span className="text-red-400 line-through truncate">{String(d.dbValue ?? 'null')}</span>
+                        <span className="text-gray-600">→</span>
+                        <span className="text-teal-400 truncate">{String(d.stripeValue ?? 'null')}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-teal-400">Already in sync. Nothing to change.</p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-2 p-4 bg-white/[0.02] border-t border-white/5">
+          <button onClick={onClose} className="flex-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors">
+            {success ? 'Close' : 'Cancel'}
+          </button>
+          {diff?.anyChanges && !success && (
+            <button onClick={applySync} disabled={syncing} className="flex-1 px-4 py-2 rounded-lg bg-sky-500/20 border border-sky-500/30 text-sky-300 text-sm font-semibold hover:bg-sky-500/30 transition-colors disabled:opacity-50">
+              {syncing ? 'Applying...' : 'Apply Stripe state'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── REFUND MODAL ──
+function RefundModal({
+  open, onClose, subscriptionId, customerEmail,
+}: {
+  open: boolean; onClose: () => void; subscriptionId: string; customerEmail: string;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [charges, setCharges] = useState<any[]>([]);
+  const [err, setErr] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [selectedCharge, setSelectedCharge] = useState<string | null>(null);
+  const [refundType, setRefundType] = useState<'full' | 'partial'>('full');
+  const [partialAmount, setPartialAmount] = useState<string>('');
+  const [reason, setReason] = useState<string>('requested_by_customer');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setCharges([]); setErr(null); setSuccess(null); setSelectedCharge(null);
+      setRefundType('full'); setPartialAmount(''); setReason('requested_by_customer');
+      return;
+    }
+    setLoading(true);
+    adminFetch(`/api/admin/subscriptions/${subscriptionId}/refund`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.error) setErr(d.error);
+        else {
+          setCharges(d.charges || []);
+          if (d.charges && d.charges.length > 0) setSelectedCharge(d.charges[0].chargeId);
+        }
+      })
+      .catch((e) => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, [open, subscriptionId]);
+
+  const submitRefund = async () => {
+    if (!selectedCharge) return;
+    setSubmitting(true); setErr(null);
+    try {
+      const charge = charges.find((c) => c.chargeId === selectedCharge);
+      if (!charge) throw new Error('Charge not found');
+
+      const body: any = { chargeId: selectedCharge, reason };
+      if (refundType === 'partial') {
+        const amountCents = Math.round(parseFloat(partialAmount) * 100);
+        if (!amountCents || amountCents <= 0 || amountCents > charge.amountRefundable) {
+          throw new Error(`Partial amount must be between 0.01 and ${(charge.amountRefundable / 100).toFixed(2)}`);
+        }
+        body.amountCents = amountCents;
+      }
+
+      const res = await adminFetch(`/api/admin/subscriptions/${subscriptionId}/refund`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error || 'Refund failed');
+      setSuccess(`Refund issued: ${d.refund.currency} ${(d.refund.amount / 100).toFixed(2)}`);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!open) return null;
+  const selected = charges.find((c) => c.chargeId === selectedCharge);
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-lg bg-[#0a0f1a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-purple-400" />
+            <h3 className="text-lg font-bold text-white">Issue refund</h3>
+          </div>
+          <p className="text-xs text-gray-500">For <span className="text-white">{customerEmail}</span></p>
+
+          {loading && (
+            <div className="flex items-center justify-center py-6">
+              <div className="w-5 h-5 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+
+          {err && <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{err}</div>}
+          {success && <div className="p-3 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-400 text-sm">{success}</div>}
+
+          {!success && charges.length === 0 && !loading && !err && (
+            <p className="text-sm text-gray-500">No refundable charges found for this subscription.</p>
+          )}
+
+          {!success && charges.length > 0 && (
+            <>
+              <div>
+                <label className="block text-xs text-gray-400 mb-2">Choose invoice to refund:</label>
+                <div className="space-y-1 max-h-44 overflow-y-auto">
+                  {charges.map((c) => (
+                    <button
+                      key={c.chargeId}
+                      onClick={() => setSelectedCharge(c.chargeId)}
+                      disabled={c.amountRefundable === 0}
+                      className={`w-full text-left px-3 py-2 rounded-lg border text-xs transition-colors ${
+                        selectedCharge === c.chargeId
+                          ? 'bg-purple-500/10 border-purple-500/30 text-purple-300'
+                          : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                      } ${c.amountRefundable === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono">{c.invoiceNumber || c.chargeId.slice(-10)}</span>
+                        <span className="text-white font-semibold">{c.currency} {(c.amount / 100).toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] mt-0.5 text-gray-500">
+                        <span>{c.paidAt ? new Date(c.paidAt).toLocaleDateString() : ''}</span>
+                        <span>
+                          {c.amountRefunded > 0 && `Refunded: ${(c.amountRefunded / 100).toFixed(2)} · `}
+                          Refundable: {(c.amountRefundable / 100).toFixed(2)}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {selected && (
+                <>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-2">Refund amount:</label>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setRefundType('full')}
+                        className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                          refundType === 'full'
+                            ? 'bg-purple-500/20 border border-purple-500/30 text-purple-300'
+                            : 'bg-white/5 border border-white/10 text-gray-400'
+                        }`}
+                      >
+                        Full ({selected.currency} {(selected.amountRefundable / 100).toFixed(2)})
+                      </button>
+                      <button
+                        onClick={() => setRefundType('partial')}
+                        className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                          refundType === 'partial'
+                            ? 'bg-purple-500/20 border border-purple-500/30 text-purple-300'
+                            : 'bg-white/5 border border-white/10 text-gray-400'
+                        }`}
+                      >
+                        Partial
+                      </button>
+                    </div>
+                  </div>
+
+                  {refundType === 'partial' && (
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">
+                        Amount in {selected.currency} (max {(selected.amountRefundable / 100).toFixed(2)})
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={partialAmount}
+                        onChange={(e) => setPartialAmount(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Reason</label>
+                    <select
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                    >
+                      <option value="requested_by_customer">Requested by customer</option>
+                      <option value="duplicate">Duplicate charge</option>
+                      <option value="fraudulent">Fraudulent</option>
+                    </select>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+
+        <div className="flex gap-2 p-4 bg-white/[0.02] border-t border-white/5">
+          <button onClick={onClose} className="flex-1 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-gray-300 hover:bg-white/10 transition-colors">
+            {success ? 'Close' : 'Cancel'}
+          </button>
+          {!success && charges.length > 0 && (
+            <button
+              onClick={submitRefund}
+              disabled={submitting || !selectedCharge}
+              className="flex-1 px-4 py-2 rounded-lg bg-purple-500/20 border border-purple-500/30 text-purple-300 text-sm font-semibold hover:bg-purple-500/30 transition-colors disabled:opacity-40"
+            >
+              {submitting ? 'Processing...' : 'Issue refund'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

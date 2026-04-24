@@ -1,5 +1,6 @@
 'use client';
 import { adminFetch } from '../lib-client';
+import { useAdmin } from '../admin-context';
 
 import { useEffect, useState } from 'react';
 import { Mail, Ban, Trash2, RefreshCw, CheckCircle2, XCircle, Download, ExternalLink } from 'lucide-react';
@@ -33,6 +34,7 @@ interface UserDetail {
 }
 
 export default function AdminUsersPage() {
+  const { can } = useAdmin();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -297,36 +299,47 @@ export default function AdminUsersPage() {
             <div>
               <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400/60 mb-3">Actions</h3>
               <div className="flex flex-wrap gap-2">
-                <ActionButton
-                  icon={Mail}
-                  label="Resend verification"
-                  onClick={() => runAction('resend_verification')}
-                  loading={actionLoading === 'resend_verification'}
-                />
-                {userDetail.user.banned ? (
+                {can('user.resend_verification') && (
                   <ActionButton
-                    icon={CheckCircle2}
-                    label="Unban user"
-                    tone="positive"
-                    onClick={() => runAction('unban')}
-                    loading={actionLoading === 'unban'}
-                  />
-                ) : (
-                  <ActionButton
-                    icon={Ban}
-                    label="Ban user"
-                    tone="warning"
-                    onClick={() => runAction('ban')}
-                    loading={actionLoading === 'ban'}
+                    icon={Mail}
+                    label="Resend verification"
+                    onClick={() => runAction('resend_verification')}
+                    loading={actionLoading === 'resend_verification'}
                   />
                 )}
-                <ActionButton
-                  icon={Trash2}
-                  label="Delete user"
-                  tone="destructive"
-                  onClick={() => setConfirmDelete(true)}
-                />
+                {can('user.ban') && (
+                  userDetail.user.banned ? (
+                    <ActionButton
+                      icon={CheckCircle2}
+                      label="Unban user"
+                      tone="positive"
+                      onClick={() => runAction('unban')}
+                      loading={actionLoading === 'unban'}
+                    />
+                  ) : (
+                    <ActionButton
+                      icon={Ban}
+                      label="Ban user"
+                      tone="warning"
+                      onClick={() => runAction('ban')}
+                      loading={actionLoading === 'ban'}
+                    />
+                  )
+                )}
+                {can('user.delete') && (
+                  <ActionButton
+                    icon={Trash2}
+                    label="Delete user"
+                    tone="destructive"
+                    onClick={() => setConfirmDelete(true)}
+                  />
+                )}
               </div>
+              {!can('user.delete') && !can('user.ban') && (
+                <p className="text-xs text-gray-600 italic mt-2">
+                  Some actions (delete, ban) require Owner role.
+                </p>
+              )}
             </div>
 
             {/* Subscriptions */}

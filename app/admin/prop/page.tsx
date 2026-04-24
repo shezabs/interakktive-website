@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { RefreshCw, BarChart3, Trash2, Download, TrendingUp, TrendingDown, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { adminFetch } from '../lib-client';
+import { useAdmin } from '../admin-context';
 import DataTable, { Column } from '../components/DataTable';
 import Drawer from '../components/Drawer';
 import ConfirmModal from '../components/ConfirmModal';
@@ -32,6 +33,7 @@ interface PropAccount {
 }
 
 export default function AdminPropPage() {
+  const { can } = useAdmin();
   const [accounts, setAccounts] = useState<PropAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -393,12 +395,14 @@ export default function AdminPropPage() {
             )}
 
             {/* Delete */}
-            <button
-              onClick={() => setConfirmDelete(true)}
-              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/5 border border-red-500/20 text-red-400 text-xs hover:bg-red-500/10 transition-colors"
-            >
-              <Trash2 className="w-3.5 h-3.5" /> Delete account + all trades
-            </button>
+            {can('prop.delete_account') && (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/5 border border-red-500/20 text-red-400 text-xs hover:bg-red-500/10 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Delete account + all trades
+              </button>
+            )}
           </div>
         ) : null}
       </Drawer>

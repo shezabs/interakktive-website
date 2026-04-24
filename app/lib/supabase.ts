@@ -1,11 +1,28 @@
-import { createClient } from '@supabase/supabase-js';
+// ==========================================================================
+// SUPABASE CLIENT — browser-side, cookie-based via @supabase/ssr
+// ==========================================================================
+// This replaces the localStorage-only createClient with createBrowserClient,
+// which writes the session to cookies. Middleware can then read the session
+// server-side, enabling proper route protection.
+//
+// Backwards compatible: all existing code that imports `supabase` from this
+// file keeps working unchanged. The API surface is identical — only the
+// session storage changes from localStorage to cookies.
+//
+// If you need a server-side client (route handlers, server components),
+// import from './supabase-server' instead — NOT this file.
+// ==========================================================================
+
+import { createBrowserClient } from '@supabase/ssr';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Singleton browser client — reused across the app.
+// Safe to import from any 'use client' component.
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
-// Database types
+// Database types (unchanged from before)
 export interface User {
   id: string;
   email: string;
@@ -28,6 +45,4 @@ export interface UserAnalytics {
   id: string;
   user_id: string;
   page_views: number;
-  last_active: string;
-  indicators_viewed: string[];
 }

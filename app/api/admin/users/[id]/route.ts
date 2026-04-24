@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp } from '@/app/lib/admin-auth';
+import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp, requireCapability, type Capability } from '@/app/lib/admin-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -89,6 +89,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const body = await req.json();
     const { action, tradingviewUsername, banned } = body;
 
+    // Capability check per action
+    const capByAction: Record<string, Capability> = {
+      'update_tv_username': 'user.edit_tv_username',
+      'resend_verification': 'user.resend_verification',
+      'ban': 'user.ban',
+      'unban': 'user.ban',
+    };
+    const requiredCap = capByAction[action];
+    if (!requiredCap) {
+      return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+    }
+    const check = await requireCapability(requiredCap);
+    if (!check.ok) {
+      return NextResponse.json(
+        { error: check.status === 403 ? 'Your role does not permit this action' : 'Unauthorized' },
+        { status: check.status }
+      );
+    }
+
     // Snapshot before
     const { data: userBefore } = await supabase.auth.admin.getUserById(userId);
     if (!userBefore?.user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -169,9 +188,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 // ── DELETE — full user delete (cascades through Supabase Auth + related rows) ──
+// OWNER-ONLY — operators cannot delete users
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail(req);
-  if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const check = await requireCapability('user.delete');
+  if (!check.ok) {
+    return NextResponse.json(
+      { error: check.status === 403 ? 'Only Owner role can delete users' : 'Unauthorized' },
+      { status: check.status }
+    );
+  }
+  const adminEmail = check.email;
 
   try {
     const supabase = getSupabaseAdmin();

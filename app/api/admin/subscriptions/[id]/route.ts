@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp } from '@/app/lib/admin-auth';
+import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp, requireCapability, type Capability } from '@/app/lib/admin-auth';
 import { getStripe } from '@/app/lib/stripe';
 
 export const runtime = 'nodejs';
@@ -69,13 +69,41 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 // ── PATCH — various update actions ──
 // Body must include { action, ... }
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail(req);
-  if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
   try {
     const supabase = getSupabaseAdmin();
     const body = await req.json();
     const { action } = body;
+
+    // ── Capability check per action ──
+    // Operators can: change_indicators, reset_swap, extend_period, reactivate, mark_tv_invite, update_notes, update_tv_username
+    // Owners only:   change_plan, force_cancel
+    const capByAction: Record<string, Capability> = {
+      change_plan:         'sub.change_plan',
+      change_indicators:   'sub.change_indicators',
+      force_cancel:        'sub.cancel_immediate', // also covers cancel_period_end; we check immediate vs period below
+      reactivate:          'sub.reactivate',
+      reset_swap:          'sub.reset_swap',
+      extend_period:       'sub.extend_period',
+      mark_tv_invite:      'sub.mark_tv_invite',
+      update_notes:        'sub.edit_notes',
+      update_tv_username:  'sub.change_indicators', // using change_indicators since TV username is part of what operators can manage
+    };
+    const requiredCap = capByAction[action];
+    if (!requiredCap) {
+      return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+    }
+    // Special case: force_cancel with immediate flag → check cancel_immediate; else cancel_period_end
+    const effectiveCap: Capability = (action === 'force_cancel' && !body.immediate)
+      ? 'sub.cancel_period_end'
+      : requiredCap;
+    const check = await requireCapability(effectiveCap);
+    if (!check.ok) {
+      return NextResponse.json(
+        { error: check.status === 403 ? 'Your role does not permit this action' : 'Unauthorized' },
+        { status: check.status }
+      );
+    }
+    const adminEmail = check.email;
 
     // Fetch current sub
     const { data: before, error: fetchErr } = await supabase
@@ -294,10 +322,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 // ── DELETE — remove a subscription row entirely ──
+// OWNER-ONLY — operators cannot delete subscription records
 // Does NOT cancel Stripe automatically (could be an orphan cleanup)
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail(req);
-  if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const check = await requireCapability('sub.delete_record');
+  if (!check.ok) {
+    return NextResponse.json(
+      { error: check.status === 403 ? 'Only Owner role can delete subscription records' : 'Unauthorized' },
+      { status: check.status }
+    );
+  }
+  const adminEmail = check.email;
 
   try {
     const supabase = getSupabaseAdmin();

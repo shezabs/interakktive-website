@@ -113,14 +113,18 @@ export default function AdminRevenuePage() {
                   const isLast = i === data.mrrTrend.length - 1;
                   return (
                     <div key={m.month} className="flex-1 flex flex-col items-center gap-1 group">
-                      <div className="text-xs text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {formatCurrency(m.mrrCents)}
+                      <div className="text-[10px] font-mono text-gray-500 group-hover:text-amber-400 transition-colors">
+                        {m.mrrCents > 0 ? formatCurrency(m.mrrCents) : ''}
                       </div>
                       <div
                         className={`w-full rounded-t transition-colors ${
-                          isLast ? 'bg-amber-400/60 hover:bg-amber-400' : 'bg-teal-400/40 hover:bg-teal-400/60'
+                          m.mrrCents === 0
+                            ? 'bg-white/[0.03] hover:bg-white/10'
+                            : isLast
+                              ? 'bg-amber-400/60 hover:bg-amber-400'
+                              : 'bg-teal-400/40 hover:bg-teal-400/60'
                         }`}
-                        style={{ height: `${Math.max(height, 2)}%` }}
+                        style={{ height: m.mrrCents === 0 ? '1px' : `${Math.max(height, 4)}%` }}
                         title={`${m.month}: ${formatCurrency(m.mrrCents)} · ${m.activeCount} subs`}
                       />
                     </div>

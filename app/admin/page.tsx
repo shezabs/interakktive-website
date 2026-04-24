@@ -1,9 +1,13 @@
 'use client';
-import { adminFetch } from './lib-client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { TrendingUp, Users, CreditCard, AlertTriangle, Clock, DollarSign, UserPlus, XCircle } from 'lucide-react';
+import {
+  TrendingUp, Users, CreditCard, AlertTriangle, Clock, DollarSign, UserPlus, XCircle,
+  CheckCircle2, ArrowRight, BarChart3, Target, Zap,
+} from 'lucide-react';
+import { adminFetch } from './lib-client';
+import { useAdmin } from './admin-context';
 import { MetricCard, Section, PlanBadge, formatCurrency, formatRelative } from './components/shared';
 
 interface OverviewData {
@@ -35,6 +39,7 @@ interface OverviewData {
 }
 
 export default function AdminOverviewPage() {
+  const { user } = useAdmin();
   const [data, setData] = useState<OverviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,49 +73,114 @@ export default function AdminOverviewPage() {
   }
 
   const { metrics, alerts, recentActivity } = data;
-  const hasAlerts = alerts.pastDue.length > 0 || alerts.needsTvInvite.length > 0 || alerts.orphanSubs.length > 0;
+
+  // Build the "Things to do" action list
+  const todoItems: Array<{
+    icon: React.ComponentType<{ className?: string }>;
+    tone: 'urgent' | 'warning' | 'info';
+    title: string;
+    description: string;
+    href: string;
+  }> = [];
+
+  if (metrics.pastDueCount > 0) {
+    todoItems.push({
+      icon: AlertTriangle,
+      tone: 'urgent',
+      title: `${metrics.pastDueCount} ${metrics.pastDueCount === 1 ? 'payment has' : 'payments have'} failed`,
+      description: 'Reach out before these customers churn',
+      href: '/admin/subscriptions?filter=past_due',
+    });
+  }
+  if (metrics.needsTvInviteCount > 0) {
+    todoItems.push({
+      icon: Clock,
+      tone: 'warning',
+      title: `${metrics.needsTvInviteCount} awaiting TradingView invite`,
+      description: 'Grant access on TradingView, then mark as sent here',
+      href: '/admin/subscriptions?filter=needs_invite',
+    });
+  }
+  if (metrics.orphanSubsCount > 0) {
+    todoItems.push({
+      icon: AlertTriangle,
+      tone: 'warning',
+      title: `${metrics.orphanSubsCount} paid ${metrics.orphanSubsCount === 1 ? 'sub has' : 'subs have'} no user account`,
+      description: 'Customer paid but never signed up — needs manual linking',
+      href: '/admin/subscriptions',
+    });
+  }
+
+  const toneStyles = {
+    urgent:  { bg: 'bg-red-500/5',    border: 'border-red-500/20',    text: 'text-red-400',    iconBg: 'bg-red-500/10' },
+    warning: { bg: 'bg-amber-500/5',  border: 'border-amber-500/20',  text: 'text-amber-400',  iconBg: 'bg-amber-500/10' },
+    info:    { bg: 'bg-sky-500/5',    border: 'border-sky-500/20',    text: 'text-sky-400',    iconBg: 'bg-sky-500/10' },
+  };
+
+  // Greeting — personalized
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const firstName = user?.email?.split('@')[0].split('.')[0] || 'there';
+  const displayName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
   return (
     <div className="space-y-8">
-      {/* Page header */}
+      {/* Greeting */}
       <div>
-        <h1 className="text-2xl font-extrabold text-white mb-1">Overview</h1>
-        <p className="text-sm text-gray-500">Snapshot of the current admin state.</p>
+        <h1 className="text-2xl font-extrabold text-white mb-1">
+          {greeting}, {displayName}
+        </h1>
+        <p className="text-sm text-gray-500">
+          Here's what's happening at Interakktive right now.
+        </p>
       </div>
 
-      {/* Alert strip */}
-      {hasAlerts && (
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div className="flex-1 space-y-2">
-              <p className="text-sm font-semibold text-amber-400">Needs your attention</p>
-              <div className="space-y-1 text-sm text-gray-300">
-                {alerts.pastDue.length > 0 && (
-                  <p>&middot; <strong className="text-red-400">{alerts.pastDue.length}</strong> past due — payment failed, access should be reviewed</p>
-                )}
-                {alerts.needsTvInvite.length > 0 && (
-                  <p>&middot; <strong className="text-amber-400">{alerts.needsTvInvite.length}</strong> awaiting TradingView invite</p>
-                )}
-                {alerts.orphanSubs.length > 0 && (
-                  <p>&middot; <strong className="text-amber-400">{alerts.orphanSubs.length}</strong> paid subs with no matched user account</p>
-                )}
-              </div>
-              <Link href="/admin/subscriptions" className="inline-block text-xs text-amber-400 hover:text-amber-300 mt-1">
-                Review in Subscriptions &rarr;
-              </Link>
-            </div>
+      {/* ── Things to do ── */}
+      {todoItems.length > 0 ? (
+        <Section
+          title="Things to do"
+          right={<span className="text-xs text-gray-500">Prioritised</span>}
+        >
+          <div className="space-y-2">
+            {todoItems.map((item, i) => {
+              const Icon = item.icon;
+              const style = toneStyles[item.tone];
+              return (
+                <Link
+                  key={i}
+                  href={item.href}
+                  className={`flex items-center gap-4 p-4 rounded-xl border ${style.bg} ${style.border} hover:bg-opacity-20 transition-colors group`}
+                >
+                  <div className={`shrink-0 w-10 h-10 rounded-full ${style.iconBg} flex items-center justify-center`}>
+                    <Icon className={`w-5 h-5 ${style.text}`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-sm font-semibold ${style.text}`}>{item.title}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{item.description}</p>
+                  </div>
+                  <ArrowRight className={`w-4 h-4 ${style.text} opacity-40 group-hover:opacity-100 transition-opacity`} />
+                </Link>
+              );
+            })}
+          </div>
+        </Section>
+      ) : (
+        <div className="p-5 rounded-xl bg-teal-500/5 border border-teal-500/20 flex items-center gap-3">
+          <CheckCircle2 className="w-5 h-5 text-teal-400 shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-teal-400">You're all caught up</p>
+            <p className="text-xs text-gray-400">No urgent items need your attention right now.</p>
           </div>
         </div>
       )}
 
-      {/* Top metrics */}
-      <Section title="Revenue & growth">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* ── Today's money ── */}
+      <Section title="Today's money">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <MetricCard
             label="MRR"
             value={formatCurrency(metrics.mrrCents)}
-            sublabel={metrics.mrrSource === 'stripe' ? 'Live from Stripe' : 'Estimated (Stripe unreachable)'}
+            sublabel={metrics.mrrSource === 'stripe' ? 'Live from Stripe' : 'Estimated'}
             tone="positive"
             icon={DollarSign}
           />
@@ -121,7 +191,7 @@ export default function AdminOverviewPage() {
             icon={CreditCard}
           />
           <MetricCard
-            label="New subs · 7d"
+            label="New · 7d"
             value={metrics.newSubs7d}
             tone={metrics.newSubs7d > 0 ? 'positive' : 'default'}
             icon={TrendingUp}
@@ -135,8 +205,9 @@ export default function AdminOverviewPage() {
         </div>
       </Section>
 
-      <Section title="Users & health">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* ── Today's health ── */}
+      <Section title="Today's health">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <MetricCard
             label="Total users"
             value={metrics.totalUsers}
@@ -155,7 +226,7 @@ export default function AdminOverviewPage() {
             icon={AlertTriangle}
           />
           <MetricCard
-            label="Needs TV invite"
+            label="TV invites pending"
             value={metrics.needsTvInviteCount}
             tone={metrics.needsTvInviteCount > 0 ? 'warning' : 'default'}
             icon={Clock}
@@ -163,13 +234,28 @@ export default function AdminOverviewPage() {
         </div>
       </Section>
 
-      {/* Recent activity */}
-      <Section title="Recent activity"
+      {/* ── Quick links ── */}
+      <Section title="Jump to">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <QuickLink href="/admin/revenue" icon={BarChart3} label="Revenue analytics" />
+          <QuickLink href="/admin/users" icon={Users} label="All users" />
+          <QuickLink href="/admin/subscriptions" icon={CreditCard} label="Subscriptions" />
+          <QuickLink href="/admin/audit" icon={Target} label="Audit log" />
+        </div>
+      </Section>
+
+      {/* ── Recent activity ── */}
+      <Section
+        title="Recent activity"
         right={<span className="text-xs text-gray-500">Latest 20 events</span>}
       >
         <div className="rounded-xl border border-white/10 bg-white/[0.02] divide-y divide-white/5">
           {recentActivity.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 text-sm">No recent activity.</div>
+            <div className="p-12 text-center">
+              <Zap className="w-8 h-8 text-gray-600 mx-auto mb-3" />
+              <p className="text-sm text-gray-400">Nothing to show yet.</p>
+              <p className="text-xs text-gray-600 mt-1">Activity appears here as users subscribe, cancel, or swap indicators.</p>
+            </div>
           ) : (
             recentActivity.map((item, i) => (
               <div key={i} className="p-3 flex items-start gap-3 hover:bg-white/[0.02] transition-colors">
@@ -188,21 +274,25 @@ export default function AdminOverviewPage() {
         </div>
       </Section>
 
-      {/* Alert detail lists */}
-      {alerts.needsTvInvite.length > 0 && (
-        <Section title="Waiting for TradingView invite"
-          right={<Link href="/admin/subscriptions?filter=needs_invite" className="text-xs text-amber-400 hover:text-amber-300">View all &rarr;</Link>}
-        >
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] divide-y divide-white/5">
-            {alerts.needsTvInvite.slice(0, 5).map((s) => (
-              <Link key={s.id} href={`/admin/subscriptions?open=${s.id}`} className="p-3 flex items-center justify-between hover:bg-white/[0.04] transition-colors">
-                <span className="text-sm text-gray-300">{s.email}</span>
-                <PlanBadge plan={s.plan} />
-              </Link>
-            ))}
-          </div>
-        </Section>
-      )}
+      {/* Hint footer */}
+      <div className="text-center pt-4">
+        <p className="text-xs text-gray-600">
+          Press <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[10px] text-gray-500">?</kbd> for keyboard shortcuts
+          · <kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[10px] text-gray-500">⌘K</kbd> to search
+        </p>
+      </div>
     </div>
+  );
+}
+
+function QuickLink({ href, icon: Icon, label }: { href: string; icon: React.ComponentType<{ className?: string }>; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="p-4 rounded-xl bg-white/[0.02] border border-white/10 hover:bg-white/5 hover:border-amber-500/30 transition-colors group"
+    >
+      <Icon className="w-5 h-5 text-gray-500 group-hover:text-amber-400 transition-colors mb-2" />
+      <p className="text-sm text-gray-300 group-hover:text-white transition-colors">{label}</p>
+    </Link>
   );
 }

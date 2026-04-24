@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp } from '@/app/lib/admin-auth';
+import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp, requireCapability } from '@/app/lib/admin-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -29,8 +29,14 @@ export async function GET(req: NextRequest) {
 // ── POST — grant a comp (complimentary) subscription ──
 // Body: { email, plan, billing, indicators, tradingviewUsername, note }
 export async function POST(req: NextRequest) {
-  const adminEmail = await getAdminEmail(req);
-  if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const check = await requireCapability('sub.grant_comp');
+  if (!check.ok) {
+    return NextResponse.json(
+      { error: check.status === 403 ? 'Your role does not permit granting comp subs' : 'Unauthorized' },
+      { status: check.status }
+    );
+  }
+  const adminEmail = check.email;
 
   try {
     const supabase = getSupabaseAdmin();

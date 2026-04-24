@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp } from '@/app/lib/admin-auth';
+import { getAdminEmail, getSupabaseAdmin, writeAuditLog, getClientIp, requireCapability } from '@/app/lib/admin-auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -40,8 +40,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const adminEmail = await getAdminEmail(req);
-  if (!adminEmail) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const check = await requireCapability('prop.delete_account');
+  if (!check.ok) {
+    return NextResponse.json(
+      { error: check.status === 403 ? 'Only Owner role can delete prop accounts' : 'Unauthorized' },
+      { status: check.status }
+    );
+  }
+  const adminEmail = check.email;
 
   try {
     const supabase = getSupabaseAdmin();

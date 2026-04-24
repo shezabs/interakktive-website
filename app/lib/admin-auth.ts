@@ -1,52 +1,158 @@
+// ==========================================================================
+// ADMIN AUTH + ROLE SYSTEM
+// ==========================================================================
+// Two roles:
+//   - Owner:    full access (Shezab)
+//   - Operator: view + limited write (Mustafa)
+//
+// Role is determined by which constant list the admin's email appears in.
+// Actions that require Owner privileges call requireOwner() at the top and
+// 403 if the caller is an Operator.
+// ==========================================================================
+
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest } from 'next/server';
+import { createSupabaseServerClient } from './supabase-server';
 
-// Single source of truth for the admin allowlist.
-// Must match the list in app/admin/layout.tsx (client guard).
-export const ADMIN_EMAILS = [
+// ── ROLE DEFINITIONS ──
+// To add a new admin: add their email to one of these lists and redeploy.
+// The middleware allowlist is derived from these — keep in sync with
+// middleware.ts if you copy this constant there.
+
+export const OWNER_EMAILS = [
   'shezabmediaworxltd@gmail.com',
+] as const;
+
+export const OPERATOR_EMAILS = [
   'mustafamoinmirza@icloud.com',
-];
+] as const;
+
+// Combined allowlist — used by middleware
+export const ADMIN_EMAILS = [...OWNER_EMAILS, ...OPERATOR_EMAILS] as const;
+
+export type AdminRole = 'owner' | 'operator';
 
 /**
- * Returns the signed-in admin's email if they pass the allowlist check,
- * otherwise returns null. API routes should call this and 401 on null.
- *
- * Reads the user's access token from the Authorization: Bearer header.
- * The client (admin pages) is responsible for attaching this header to
- * every fetch() call to /api/admin/*.
+ * Returns the role for a given admin email, or null if not an admin.
  */
-export async function getAdminEmail(req: NextRequest): Promise<string | null> {
+export function getRoleForEmail(email: string): AdminRole | null {
+  const normalised = email.toLowerCase();
+  if ((OWNER_EMAILS as readonly string[]).includes(normalised)) return 'owner';
+  if ((OPERATOR_EMAILS as readonly string[]).includes(normalised)) return 'operator';
+  return null;
+}
+
+// ── CAPABILITY MATRIX ──
+// What each role can do. Operators have a stricter list.
+// ALL admin actions should be checked against this via `can(role, capability)`.
+
+export type Capability =
+  // Users tab
+  | 'user.view'
+  | 'user.edit_tv_username'
+  | 'user.resend_verification'
+  | 'user.ban'
+  | 'user.delete'
+  // Subscriptions tab
+  | 'sub.view'
+  | 'sub.edit_notes'
+  | 'sub.mark_tv_invite'
+  | 'sub.reset_swap'
+  | 'sub.grant_comp'
+  | 'sub.change_plan'
+  | 'sub.change_indicators'
+  | 'sub.extend_period'
+  | 'sub.cancel_period_end'
+  | 'sub.cancel_immediate'
+  | 'sub.reactivate'
+  | 'sub.delete_record'
+  | 'sub.refund'
+  | 'sub.stripe_sync'
+  // Prop tab
+  | 'prop.view'
+  | 'prop.delete_account'
+  // Audit tab
+  | 'audit.view'
+  | 'audit.export'
+  // Settings
+  | 'settings.view'
+  | 'settings.change_own_password'
+  | 'settings.change_other_password';
+
+const OPERATOR_CAPS: ReadonlySet<Capability> = new Set<Capability>([
+  // Read everywhere
+  'user.view', 'sub.view', 'prop.view', 'audit.view', 'settings.view',
+  'audit.export',
+  // Limited user edits
+  'user.edit_tv_username',
+  'user.resend_verification',
+  // Limited sub edits — can help customers but not destroy data or issue refunds
+  'sub.edit_notes',
+  'sub.mark_tv_invite',
+  'sub.reset_swap',
+  'sub.grant_comp',
+  'sub.change_indicators',
+  'sub.extend_period',
+  'sub.reactivate',
+  // Own password only
+  'settings.change_own_password',
+]);
+
+/**
+ * Check whether a role has permission for a capability.
+ * Owner has everything. Operator has the subset defined above.
+ */
+export function can(role: AdminRole | null, capability: Capability): boolean {
+  if (role === 'owner') return true;
+  if (role === 'operator') return OPERATOR_CAPS.has(capability);
+  return false;
+}
+
+// ── AUTH HELPERS ──
+
+/**
+ * Returns { email, role } if the caller is an admin, else null.
+ * Prefer this over getAdminEmail() for new code since you get the role too.
+ */
+export async function getAdminContext(): Promise<{ email: string; role: AdminRole } | null> {
   try {
-    const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) return null;
-
-    const token = authHeader.slice('Bearer '.length).trim();
-    if (!token) return null;
-
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !anonKey) return null;
-
-    // Validate the token by asking Supabase who owns it
-    const supabase = createClient(url, anonKey);
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error || !data?.user?.email) return null;
-
-    const email = data.user.email.toLowerCase();
-    if (!ADMIN_EMAILS.includes(email)) return null;
-
-    return email;
+    const supabase = createSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) return null;
+    const email = user.email.toLowerCase();
+    const role = getRoleForEmail(email);
+    if (!role) return null;
+    return { email, role };
   } catch (err) {
-    console.error('getAdminEmail error:', err);
+    console.error('getAdminContext error:', err);
     return null;
   }
 }
 
 /**
- * Supabase admin client using the service role key.
- * Bypasses RLS. Only ever call this AFTER verifying the caller is an admin.
+ * Returns the current admin's email if they pass the allowlist, else null.
+ * Legacy signature — use getAdminContext() for new code.
  */
+export async function getAdminEmail(_req?: NextRequest): Promise<string | null> {
+  const ctx = await getAdminContext();
+  return ctx?.email || null;
+}
+
+/**
+ * Checks that the current caller has a specific capability.
+ * Returns a tuple: [ok, adminEmail, role]. If !ok, route should 401/403.
+ */
+export async function requireCapability(
+  capability: Capability
+): Promise<{ ok: true; email: string; role: AdminRole } | { ok: false; status: 401 | 403 }> {
+  const ctx = await getAdminContext();
+  if (!ctx) return { ok: false, status: 401 };
+  if (!can(ctx.role, capability)) return { ok: false, status: 403 };
+  return { ok: true, email: ctx.email, role: ctx.role };
+}
+
+// ── SERVICE-ROLE CLIENT ──
+
 export function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -55,6 +161,8 @@ export function getSupabaseAdmin() {
   }
   return createClient(url, serviceKey);
 }
+
+// ── AUDIT LOG ──
 
 export interface AuditLogEntry {
   adminEmail: string;
@@ -66,9 +174,6 @@ export interface AuditLogEntry {
   ipAddress?: string | null;
 }
 
-/**
- * Writes a row to admin_audit_log. Failures are logged but do not throw.
- */
 export async function writeAuditLog(entry: AuditLogEntry): Promise<void> {
   try {
     const supabase = getSupabaseAdmin();
