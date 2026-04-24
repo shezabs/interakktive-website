@@ -39,8 +39,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     // For each invoice, pull the charge so we know the refundable amount
     const charges: any[] = [];
     for (const inv of invoices.data) {
-      if (!inv.charge || inv.status !== 'paid') continue;
-      const chargeId = typeof inv.charge === 'string' ? inv.charge : inv.charge.id;
+      // Stripe Invoice type changed across API versions — .charge exists at runtime
+      // but isn't in the current TypeScript type. Cast to any for property access.
+      const invAny = inv as any;
+      if (!invAny.charge || inv.status !== 'paid') continue;
+      const chargeId = typeof invAny.charge === 'string' ? invAny.charge : invAny.charge.id;
       try {
         const charge = await stripe.charges.retrieve(chargeId);
         charges.push({
@@ -92,7 +95,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const stripe = getStripe();
     // Validate charge belongs to this customer
     const charge = await stripe.charges.retrieve(chargeId);
-    if (charge.customer !== sub.stripe_customer_id) {
+    const chargeCustomerId = typeof charge.customer === 'string'
+      ? charge.customer
+      : (charge.customer as any)?.id || null;
+    if (chargeCustomerId !== sub.stripe_customer_id) {
       return NextResponse.json({ error: 'Charge does not belong to this subscription customer' }, { status: 400 });
     }
 
