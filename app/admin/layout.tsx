@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/app/lib/supabase';
 import AdminNav from './components/AdminNav';
+import CommandPalette from './components/CommandPalette';
 
 // Must match ADMIN_EMAILS in app/lib/admin-auth.ts
 const ADMIN_EMAILS = [
@@ -23,13 +24,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       if (!active) return;
 
       if (!user?.email) {
-        // Not signed in at all — send to signin with a return URL
         router.replace(`/signin?next=${encodeURIComponent('/admin')}`);
         return;
       }
 
       if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) {
-        // Signed in but not an admin — quietly bounce home
         setState('denied');
         router.replace('/');
         return;
@@ -56,6 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
       <AdminNav />
+      <CommandPalette />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         {children}
       </main>

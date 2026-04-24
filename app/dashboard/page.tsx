@@ -47,6 +47,8 @@ export default function DashboardPage() {
 
   // Cancel state
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancelReason, setCancelReason] = useState<string>('');
+  const [cancelReasonText, setCancelReasonText] = useState<string>('');
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState('');
 
@@ -133,9 +135,37 @@ export default function DashboardPage() {
 
   const handleCancelSubscription = async () => {
     if (!subscription) return;
+    if (!cancelReason) {
+      setCancelError('Please choose a reason so we can improve.');
+      return;
+    }
     setCancelling(true);
     setCancelError('');
     try {
+      // Step 1: record the reason FIRST (non-blocking — if it fails, cancel still proceeds)
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+        if (token) {
+          await fetch('/api/cancel-with-reason', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              subscriptionId: subscription.id,
+              reasonCode: cancelReason,
+              reasonText: cancelReasonText || null,
+            }),
+          });
+        }
+      } catch (reasonErr) {
+        // Intentionally swallow — cancellation should still proceed
+        console.warn('Failed to record churn reason:', reasonErr);
+      }
+
+      // Step 2: actually cancel
       const res = await fetch('/api/subscription', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -154,14 +184,14 @@ export default function DashboardPage() {
       if (refreshed) {
         setSubscription(refreshed);
         if (refreshed.status === 'active') {
-          // Update didn't persist — show error
           setCancelError('Cancellation may not have saved properly. Please try again or contact support.');
         }
       } else {
-        // Fallback to local state update
         setSubscription(prev => prev ? { ...prev, status: data.status || 'cancelling' } : null);
       }
       setShowCancelConfirm(false);
+      setCancelReason('');
+      setCancelReasonText('');
     } catch (err) {
       setCancelError('Network error. Please try again.');
     } finally {
@@ -991,23 +1021,65 @@ export default function DashboardPage() {
 
                   {/* Cancel confirmation */}
                   {showCancelConfirm && (
-                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-                      <p className="text-sm text-gray-300 mb-3">
-                        Are you sure? Your access continues until the end of your current billing period. No refunds for remaining time.
+                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg space-y-3">
+                      <p className="text-sm text-gray-300">
+                        Before you cancel — help us improve by sharing why. Your access continues until the end of your current billing period. No refunds for remaining time.
                       </p>
-                      {cancelError && (
-                        <p className="text-xs text-red-400 mb-2">{cancelError}</p>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs text-gray-400">What's the main reason?</label>
+                        <div className="grid grid-cols-1 gap-1.5">
+                          {[
+                            { code: 'too_expensive', label: 'Too expensive' },
+                            { code: 'not_using', label: "I'm not using it enough" },
+                            { code: 'found_competitor', label: 'Found something better' },
+                            { code: 'missing_feature', label: "It's missing a feature I need" },
+                            { code: 'tech_issues', label: 'Technical issues' },
+                            { code: 'temporary_break', label: 'Just taking a break' },
+                            { code: 'other', label: 'Other' },
+                          ].map((r) => (
+                            <button
+                              key={r.code}
+                              onClick={() => setCancelReason(r.code)}
+                              className={`text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                                cancelReason === r.code
+                                  ? 'bg-red-500/20 border border-red-500/30 text-red-300'
+                                  : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
+                              }`}
+                            >{r.label}</button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {cancelReason && (
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">
+                            Anything else? <span className="text-gray-600">(optional)</span>
+                          </label>
+                          <textarea
+                            value={cancelReasonText}
+                            onChange={(e) => setCancelReasonText(e.target.value)}
+                            rows={2}
+                            placeholder="Your feedback helps us improve..."
+                            className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-red-500/50"
+                          />
+                        </div>
                       )}
+
+                      {cancelError && (
+                        <p className="text-xs text-red-400">{cancelError}</p>
+                      )}
+
                       <div className="flex gap-2">
                         <button
                           onClick={handleCancelSubscription}
-                          disabled={cancelling}
-                          className="flex-1 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/30 transition-all text-sm font-medium disabled:opacity-50"
+                          disabled={cancelling || !cancelReason}
+                          className="flex-1 py-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/30 transition-all text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           {cancelling ? 'Cancelling...' : 'Yes, cancel'}
                         </button>
                         <button
-                          onClick={() => { setShowCancelConfirm(false); setCancelError(''); }}
+                          onClick={() => { setShowCancelConfirm(false); setCancelError(''); setCancelReason(''); setCancelReasonText(''); }}
                           className="flex-1 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-all text-sm"
                         >
                           Keep subscription

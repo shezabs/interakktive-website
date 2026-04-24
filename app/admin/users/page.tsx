@@ -2,7 +2,8 @@
 import { adminFetch } from '../lib-client';
 
 import { useEffect, useState } from 'react';
-import { Mail, Ban, Trash2, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
+import { Mail, Ban, Trash2, RefreshCw, CheckCircle2, XCircle, Download, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 import DataTable, { Column } from '../components/DataTable';
 import Drawer from '../components/Drawer';
 import ConfirmModal from '../components/ConfirmModal';
@@ -128,8 +129,16 @@ export default function AdminUsersPage() {
       key: 'email', header: 'Email', sortable: true,
       render: (u) => (
         <div className="flex items-center gap-2">
-          <span className="text-white truncate max-w-[220px]">{u.email}</span>
+          <span className="text-white truncate max-w-[200px]">{u.email}</span>
           {!u.emailConfirmed && <XCircle className="w-3 h-3 text-red-400 shrink-0" />}
+          <Link
+            href={`/admin/timeline/${u.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-xs text-amber-400 hover:text-amber-300"
+            title="View timeline"
+          >
+            <ExternalLink className="w-3 h-3" />
+          </Link>
         </div>
       ),
     },
@@ -174,13 +183,37 @@ export default function AdminUsersPage() {
           <h1 className="text-2xl font-extrabold text-white mb-1">Users</h1>
           <p className="text-sm text-gray-500">All registered accounts in Supabase Auth.</p>
         </div>
-        <button
-          onClick={loadUsers}
-          disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const res = await adminFetch('/api/admin/export?type=users');
+                if (!res.ok) throw new Error('Export failed');
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `users-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              } catch (e: any) {
+                console.error(e);
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" /> Export CSV
+          </button>
+          <button
+            onClick={loadUsers}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
       </div>
 
       {error ? (

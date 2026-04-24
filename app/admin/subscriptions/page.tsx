@@ -3,7 +3,8 @@ import { adminFetch } from '../lib-client';
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, RefreshCw, Send, XCircle, CheckCircle2, Trash2, Calendar, RotateCcw, Edit3, ExternalLink } from 'lucide-react';
+import { Plus, RefreshCw, Send, XCircle, CheckCircle2, Trash2, Calendar, RotateCcw, Edit3, ExternalLink, Download } from 'lucide-react';
+import Link from 'next/link';
 import DataTable, { Column } from '../components/DataTable';
 import Drawer from '../components/Drawer';
 import ConfirmModal from '../components/ConfirmModal';
@@ -165,6 +166,16 @@ export default function AdminSubscriptionsPage() {
         <div className="flex items-center gap-2">
           <span className="text-white truncate max-w-[200px]">{s.user_email}</span>
           {!s.user_id && <span className="text-xs text-amber-400/60" title="No linked user">⚠</span>}
+          {s.user_id && (
+            <Link
+              href={`/admin/timeline/${s.user_id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs text-amber-400 hover:text-amber-300"
+              title="View timeline"
+            >
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          )}
         </div>
       ),
     },
@@ -247,6 +258,28 @@ export default function AdminSubscriptionsPage() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-400 hover:bg-amber-500/20 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Grant comp
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                const res = await adminFetch('/api/admin/export?type=subscriptions');
+                if (!res.ok) throw new Error('Export failed');
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `subscriptions-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              } catch (e: any) {
+                console.error(e);
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" /> Export CSV
           </button>
           <button
             onClick={loadSubs}
@@ -490,7 +523,24 @@ export default function AdminSubscriptionsPage() {
                     />
                   </>
                 )}
-                {(selected.status === 'cancelling' || selected.status === 'cancelled') && (
+                {selected.status === 'cancelling' && (
+                  <>
+                    <ActionBtn
+                      icon={CheckCircle2}
+                      label="Reactivate"
+                      tone="positive"
+                      onClick={() => runAction('reactivate')}
+                      loading={actionLoading === 'reactivate'}
+                    />
+                    <ActionBtn
+                      icon={XCircle}
+                      label="Cancel now (skip period)"
+                      tone="destructive"
+                      onClick={() => setConfirmForceCancel('immediate')}
+                    />
+                  </>
+                )}
+                {selected.status === 'cancelled' && (
                   <ActionBtn
                     icon={CheckCircle2}
                     label="Reactivate"

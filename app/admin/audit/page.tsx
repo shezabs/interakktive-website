@@ -2,7 +2,7 @@
 import { adminFetch } from '../lib-client';
 
 import { useEffect, useState } from 'react';
-import { RefreshCw, User, FileText } from 'lucide-react';
+import { RefreshCw, User, FileText, Download } from 'lucide-react';
 import DataTable, { Column } from '../components/DataTable';
 import Drawer from '../components/Drawer';
 import { formatDateTime, formatRelative } from '../components/shared';
@@ -101,13 +101,37 @@ export default function AdminAuditPage() {
           <h1 className="text-2xl font-extrabold text-white mb-1">Audit Log</h1>
           <p className="text-sm text-gray-500">Every admin action, with before/after snapshots.</p>
         </div>
-        <button
-          onClick={loadEntries}
-          disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const res = await adminFetch('/api/admin/export?type=audit');
+                if (!res.ok) throw new Error('Export failed');
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              } catch (e: any) {
+                console.error(e);
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" /> Export CSV
+          </button>
+          <button
+            onClick={loadEntries}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </button>
+        </div>
       </div>
 
       {/* Filter chips */}
