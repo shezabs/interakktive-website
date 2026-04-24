@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
         .single();
       if (sub) {
         // Guard: the sub must belong to this user
-        const belongsTo = sub.user_id === user.id || sub.user_email?.toLowerCase() === user.email.toLowerCase();
+        const belongsTo = sub.user_id === user.id || sub.user_email?.toLowerCase() === user.email!.toLowerCase();
         if (!belongsTo) {
           return NextResponse.json({ error: 'Subscription does not belong to you' }, { status: 403 });
         }
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
 
     const { error: insertErr } = await service.from('churn_reasons').insert({
       user_id: user.id,
-      user_email: user.email.toLowerCase(),
+      user_email: user.email!.toLowerCase(),
       subscription_id: subscriptionId || null,
       plan,
       billing,
