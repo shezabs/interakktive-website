@@ -157,6 +157,7 @@ const liveLessons = new Set([
   'cipher-executive-summary',
   'cipher-regime-sizing',
   'cipher-signal-philosophy',
+  'cipher-pulse-factor',
 ]);
 
 export default function AcademyPage() {
