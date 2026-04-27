@@ -1,7 +1,7 @@
 // app/academy/lesson/cipher-pulse-factor/page.tsx
 // ATLAS Academy — Lesson 11.10: The 5-Layer Pulse Factor [PRO]
 // Gold/amber PRO styling — Crown badge — PRO · LEVEL 11 · CIPHER
-// The Self-Calibrating Heartbeat — CIPHER's contextual Pulse intelligence
+// FRESH BUILD v2 — Hero + multi-titled glass-card density to match Lesson 11.11 gold standard
 // Covers: i_pulse_factor + 5 dynamic multipliers (TF/asset/vol/ADX/preset)
 //         + Pulse line construction + ratchet + maturity + chop + slope
 //         + Command Center Pulse row reading
@@ -305,10 +305,9 @@ const quizQuestions = [
   },
 ];
 
+
 // ============================================================
-// ANIMSCENE — shared canvas wrapper
-// Maintains 16:9 aspect, max 720 wide, pauses when off-screen
-// Same component as 11.4 — gold pattern for all Level 11 animations
+// ANIMSCENE — shared canvas wrapper (gold-standard pattern)
 // ============================================================
 function AnimScene({
   draw,
@@ -324,7 +323,6 @@ function AnimScene({
   const startRef = useRef<number | null>(null);
   const [visible, setVisible] = useState(false);
 
-  // Resize handler — maintain aspect ratio, max 720 wide
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -345,7 +343,6 @@ function AnimScene({
     return () => window.removeEventListener('resize', resize);
   }, [aspectRatio]);
 
-  // Visibility observer — pause when off-screen
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -357,7 +354,6 @@ function AnimScene({
     return () => obs.disconnect();
   }, []);
 
-  // Animation loop — pure RAF, t in seconds since visibility start
   useEffect(() => {
     if (!visible) {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -391,8 +387,7 @@ function AnimScene({
 }
 
 // ============================================================
-// CONFETTI — for certificate reveal
-// 120 particles, 5-second auto-off
+// CONFETTI — for certificate reveal (gold-standard)
 // ============================================================
 function Confetti({ active }: { active: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -1232,6 +1227,7 @@ function AssetClassLayerAnim() {
 
   return <AnimScene draw={draw} aspectRatio={16 / 9} />;
 }
+
 
 // ============================================================
 // ANIMATION 5 — VolatilityLayerAnim (S05)
@@ -2097,6 +2093,7 @@ function RatchetAnim() {
   return <AnimScene draw={draw} aspectRatio={16 / 9} />;
 }
 
+
 // ============================================================
 // ANIMATION 10 — SmoothingAnim (S10)
 // Pulse Smoothing — i_pulse_smooth
@@ -2724,10 +2721,10 @@ function CommandCenterAnim() {
   return <AnimScene draw={draw} aspectRatio={16 / 9} />;
 }
 
+
 // ============================================================
 // MAIN COMPONENT
-// Phase 2B: Hero + S00 + S01-S15 rendered with gold pattern + cheat sheet
-// Phases 3A/3B add game/quiz/cert
+// Phase 1: Hero + S00 + S01-S04 with multi-titled glass-card density
 // ============================================================
 export default function CipherPulseFactorLesson() {
   const [scrollY, setScrollY] = useState(0);
@@ -2789,8 +2786,8 @@ export default function CipherPulseFactorLesson() {
         <div className="absolute top-[-50px] right-[20%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(217,70,239,0.05),transparent_70%)] pointer-events-none" />
         <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
           <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 11 &middot; Lesson 10</p></motion.div>
-          <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">The 5-Layer<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Pulse Factor</span></motion.h1>
-          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">You set one number. CIPHER reads your timeframe, your asset, your volatility, your trend strength, and your active preset &mdash; then tunes the Pulse for <em>your</em> context.</motion.p>
+          <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">The 5-Layer Pulse Factor<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>Why Your Setting Isn&apos;t What CIPHER Uses</span></motion.h1>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">You set <em>i_pulse_factor</em> to 1.5. CIPHER reads your timeframe, your asset, your volatility, your trend strength, and your active preset &mdash; then quietly tunes that 1.5 into something else entirely.</motion.p>
           <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5">
             <span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span>
             <div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" />
@@ -2806,7 +2803,7 @@ export default function CipherPulseFactorLesson() {
             <p className="text-xl font-extrabold mb-3">Two operators. Same setting. Different Pulse.</p>
             <p className="text-gray-400 leading-relaxed mb-4">An operator on XAUUSD 1H sets <strong className="text-amber-400">Pulse ATR Factor = 1.5</strong>. Another operator on BTC 5m sets the exact same <strong className="text-amber-400">1.5</strong>. They&apos;re using the same indicator with the same input. <strong className="text-white">The Pulse line in their charts is in completely different places relative to price.</strong> One has Pulse hugging price tightly. The other has Pulse sitting much wider out, ignoring small wicks.</p>
             <p className="text-gray-400 leading-relaxed mb-4">Most operators never realise this. They assume <strong className="text-white">1.5 is 1.5</strong> &mdash; that the input value is what gets used. It isn&apos;t. Behind the scenes, CIPHER multiplies your input by <strong className="text-amber-400">five hidden layers</strong>: timeframe, asset class, volatility, trend strength (ADX), and active preset. The number that actually controls Pulse distance is rarely your input number.</p>
-            <p className="text-gray-400 leading-relaxed">This is the lesson where you learn to stop tweaking <em>i_pulse_factor</em> blindly and start <strong className="text-white">reading what CIPHER actually used</strong>. Once you see the layers, every Pulse setting starts to make sense.</p>
+            <p className="text-gray-400 leading-relaxed">This is the lesson where you stop tweaking <em>i_pulse_factor</em> blindly and start <strong className="text-white">reading what CIPHER actually used</strong>. Once you see the layers, every Pulse setting starts to make sense.</p>
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#11088; THE PULSE FACTOR PROMISE</p>
@@ -2823,9 +2820,23 @@ export default function CipherPulseFactorLesson() {
           <p className="text-gray-400 leading-relaxed mb-6">Every other indicator with a distance setting uses your number directly. <strong className="text-amber-400">CIPHER reads your context first &mdash; timeframe, asset class, volatility, ADX, and active preset &mdash; and tunes the Pulse for that context.</strong> Your input is the seed. The five layers are the soil.</p>
           <PulseHeartbeatAnim />
           <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation. <strong className="text-white">Scene A</strong>: you&apos;re on XAUUSD 1H with the Trend Trader preset. Five contextual forces appear around your input dial &mdash; timeframe pulls 0.85, commodity asset pulls 0.80, the rest sit at 1.00. Your input of 1.5 gets tuned to <strong className="text-amber-400">1.02</strong>. <strong className="text-white">Scene B</strong>: same input. Same dial. But now you&apos;re on BTC 5m with the Scalper preset. Volatility is high, ADX is strong, preset is tight. The same 1.5 input becomes <strong className="text-amber-400">1.10</strong>. Different chart, different reality.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">THE FIVE LAYERS IN ORDER</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Layer 1 &middot; Timeframe.</strong> Lower TFs need full Pulse width; higher TFs tighten it. <strong className="text-white">Layer 2 &middot; Asset Class.</strong> Forex/commodity 0.80, crypto 0.90, indices 0.95, stocks 1.00. <strong className="text-white">Layer 3 &middot; Volatility.</strong> Self-adjusting between 0.80 and 1.30. <strong className="text-white">Layer 4 &middot; ADX.</strong> Strong trend tightens Pulse; chop widens it. <strong className="text-white">Layer 5 &middot; Active Preset.</strong> Scalper compresses, Sniper widens.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE LOGIC IS PURE MULTIPLICATION</p>
+              <p className="text-sm text-gray-400 leading-relaxed">All five layers compound by multiplication, not addition. A 0.85 timeframe layer combined with a 0.80 asset layer doesn&apos;t add to a small adjustment &mdash; it multiplies into a 32% reduction. Tiny per-layer changes stack into significant shifts in actual Pulse distance.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE INPUT IS A SEED, NOT A FINAL VALUE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When you change your <em>Pulse ATR Factor</em>, you&apos;re not setting Pulse distance. You&apos;re setting the seed that gets multiplied through five context layers. Internalise this and you stop tuning the input by feel and start tuning it by intent.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
-            <p className="text-sm text-gray-400 leading-relaxed">When you change your <strong className="text-white">Pulse ATR Factor</strong>, you&apos;re not setting Pulse distance. You&apos;re setting <strong className="text-white">the seed</strong> that gets multiplied through five context layers. Internalise this and you stop tuning the input by feel and start tuning it by intent.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Same setting. Different reality. That&apos;s the whole lesson in one phrase. Once you see the five layers, the question stops being &ldquo;what should i_pulse_factor be?&rdquo; and starts being &ldquo;what does CIPHER ACTUALLY use given my context?&rdquo;</p>
           </div>
         </motion.div>
       </section>
@@ -2837,11 +2848,28 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Five steps from price to a Pulse line</h2>
           <p className="text-gray-400 leading-relaxed mb-6">Before we open the five layers, fix what the Pulse line <em>is</em>. Every Pulse line you see on chart was built in the same five-step pipeline. Watch the build.</p>
           <PulseAnatomyAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4"><strong className="text-amber-400">Step 1 &mdash; Cipher Flow.</strong> A volume-adaptive moving average of close. It bends faster when participation is real, slower when volume is thin. Pulse anchors to Flow &mdash; not to price directly.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-amber-400">Step 2 &mdash; ATR distance.</strong> CIPHER computes a candidate support level at <em>Flow &minus; (pulse_factor &times; ATR)</em> and a candidate resistance at <em>Flow &plus; (pulse_factor &times; ATR)</em>. These are the upper and lower brackets.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-amber-400">Step 3 &mdash; Raw Pulse.</strong> When price is above Flow, the lower bracket becomes the active Pulse (support). When price is below, the upper bracket activates (resistance). Only one is live at a time.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-amber-400">Step 4 &mdash; Ratchet plus smooth.</strong> The active line is forbidden from giving back ground. In a bull state, it can only move up &mdash; never down &mdash; until price closes through it. Then it flips. The ratchet is what stops Pulse from whipsawing.</p>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-amber-400">Step 5 &mdash; The visible line.</strong> Smoothed with a small SMA (default 3 bars), coloured teal in bull state and magenta in bear. This is the line you see on chart. Every wick that fails to break it confirms the trend. The bar that closes through it is the flip.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">STEP 1 &middot; CIPHER FLOW</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A volume-adaptive moving average of close. It bends faster when participation is real, slower when volume is thin. Pulse anchors to Flow &mdash; not to price directly.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STEP 2 &middot; ATR DISTANCE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">CIPHER computes a candidate support level at <em>Flow &minus; (pulse_factor &times; ATR)</em> and a candidate resistance at <em>Flow &plus; (pulse_factor &times; ATR)</em>. These are the upper and lower brackets.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STEP 3 &middot; RAW PULSE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When price is above Flow, the lower bracket becomes the active Pulse (support). When price is below, the upper bracket activates (resistance). Only one is live at a time.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STEP 4 &middot; RATCHET PLUS SMOOTH</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The active line is forbidden from giving back ground. In a bull state, it can only move up &mdash; never down &mdash; until price closes through it. Then it flips. The ratchet is what stops Pulse from whipsawing. A short SMA smooths the ratcheted value.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STEP 5 &middot; THE VISIBLE LINE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Smoothed with a small SMA (default 3 bars), coloured teal in bull state and magenta in bear. This is the line you see on chart. Every wick that fails to break it confirms the trend. The bar that closes through it is the flip.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">THE ANCHOR DISTINCTION</p>
             <p className="text-sm text-gray-400 leading-relaxed">Pulse is <strong className="text-white">not</strong> Cipher Flow. Flow is the volume-adaptive average. Pulse is Flow shifted by <em>pulse_factor &times; ATR</em> in one direction, then ratcheted. Confusing the two is mistake number five in section fifteen.</p>
@@ -2856,9 +2884,20 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Why your timeframe silently adjusts Pulse</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The first layer that touches your input is timeframe. CIPHER looks at the chart you&apos;re on and applies a multiplier called <em>tf_pulse_adj</em>. Higher timeframes get tighter Pulse. Lower timeframes get full width.</p>
           <TimeframeLayerAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4">Watch the multiplier change as the animation cycles through six timeframes. <strong className="text-white">Scalp and intraday TFs (5m, 15m)</strong> get <strong className="text-amber-400">1.00</strong> &mdash; full width. Every wick matters at this granularity, so Pulse needs the full ATR-distance buffer to avoid noise flips.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">Mid-timeframe (1H through Daily)</strong> tightens by 15% &mdash; multiplier <strong className="text-amber-400">0.85</strong>. The reasoning: ATR runs richer at higher timeframes because each bar contains more information. A full-width Pulse on a Daily ATR would sit too far from price to flip on legitimate turns. A 15% tightening keeps Pulse close enough to react.</p>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Weekly and beyond</strong> tightens by 30% &mdash; multiplier <strong className="text-amber-400">0.70</strong>. Without this, a Weekly Pulse would be effectively unreachable. Major instruments have weekly ATRs in the hundreds of points; full-width Pulse would never flip until catastrophic moves.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">SCALP &amp; INTRADAY (5m, 15m) &middot; multiplier 1.00</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Full width. Every wick matters at this granularity, so Pulse needs the full ATR-distance buffer to avoid noise flips. No tightening applied &mdash; lower TFs already have plenty of bars per setup.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">MID-TIMEFRAME (1H, 4H, Daily) &middot; multiplier 0.85</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Tightens by 15%. ATR runs richer at higher timeframes because each bar contains more information. A full-width Pulse on a Daily ATR would sit too far from price to flip on legitimate turns. A 15% tightening keeps Pulse close enough to react.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">WEEKLY AND BEYOND &middot; multiplier 0.70</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Tightens by 30%. Without this, a Weekly Pulse would be effectively unreachable. Major instruments have weekly ATRs in the hundreds of points; full-width Pulse would never flip until catastrophic moves. The 30% compression keeps Weekly Pulse meaningful.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">THE OPERATOR READ</p>
             <p className="text-sm text-gray-400 leading-relaxed">If you find Pulse signals too rare on Daily or Weekly, the timeframe layer is already tightening for you &mdash; tightening more by lowering <em>i_pulse_factor</em> may push you below useful sensitivity. If you find Pulse flips too often on 5m or 15m, the timeframe layer isn&apos;t helping you &mdash; you&apos;re running at full width by design. Add filtering elsewhere (Strong Signals Only, Direction filter) before tweaking the seed.</p>
@@ -2873,10 +2912,24 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Pulse knows what you&apos;re trading</h2>
           <p className="text-gray-400 leading-relaxed mb-6">CIPHER detects the asset class of your chart and applies <em>asset_pulse_adj</em>. Stocks behave differently from forex. Crypto behaves differently from indices. The asset multiplier reflects that.</p>
           <AssetClassLayerAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4"><strong className="text-white">Stocks</strong> get the baseline multiplier of <strong className="text-amber-400">1.00</strong>. Earnings gaps, news shocks, illiquid hours &mdash; individual stocks need full Pulse width to absorb single-stock noise without flipping.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">Indices</strong> tighten slightly to <strong className="text-amber-400">0.95</strong>. NAS100, US30, SPX trend cleaner than individual stocks because they&apos;re diversified across many components. Less single-issue noise, so a 5% tightening keeps Pulse close enough to flip on real index turns.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">Crypto</strong> tightens further to <strong className="text-amber-400">0.90</strong>. Counterintuitive at first &mdash; crypto has bigger wicks. But it also has bigger ranges. The wide wicks scale with the wide range, and Pulse needs to sit close enough to catch the genuine reversals that hide inside that volatility.</p>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Forex and commodity CFDs</strong> get the deepest tightening &mdash; <strong className="text-amber-400">0.80</strong>. Tight ranges plus thin wicks mean a full-width Pulse would sit far from price and miss most legitimate flips. The 20% tightening compresses Pulse to where forex/commodity actually trades.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">STOCKS &middot; multiplier 1.00 (baseline)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Earnings gaps, news shocks, illiquid hours. Individual stocks need full Pulse width to absorb single-stock noise without flipping. The baseline value &mdash; everything else compresses from here.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">INDICES &middot; multiplier 0.95</p>
+              <p className="text-sm text-gray-400 leading-relaxed">NAS100, US30, SPX trend cleaner than individual stocks because they&apos;re diversified across many components. Less single-issue noise, so a 5% tightening keeps Pulse close enough to flip on real index turns.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">CRYPTO &middot; multiplier 0.90</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Counterintuitive at first &mdash; crypto has bigger wicks. But it also has bigger ranges. The wide wicks scale with the wide range, and Pulse needs to sit close enough to catch the genuine reversals that hide inside that volatility.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FOREX &amp; COMMODITY CFDs &middot; multiplier 0.80</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The deepest tightening. Tight ranges plus thin wicks mean a full-width Pulse would sit far from price and miss most legitimate flips. The 20% tightening compresses Pulse to where forex and commodity actually trade. XAUUSD inherits this value despite being technically a CFD.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">WHY THIS MATTERS BEFORE YOU TUNE</p>
             <p className="text-sm text-gray-400 leading-relaxed">Many operators discover their <em>i_pulse_factor</em> needs to be different on XAUUSD vs SPX vs BTC and assume the indicator is inconsistent. It isn&apos;t. The asset layer has already adjusted for them. Their input feels different because they&apos;re fighting the asset multiplier without knowing it.</p>
@@ -2891,9 +2944,25 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Pulse breathes with the market</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The third layer is the only one that updates in real time. As volatility rises, Pulse widens. As volatility falls, Pulse contracts. The multiplier &mdash; <em>pulse_vol_adj</em> &mdash; is computed every bar from the current vol_ratio and clamped between <strong className="text-amber-400">0.80&times;</strong> and <strong className="text-amber-400">1.30&times;</strong>.</p>
           <VolatilityLayerAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4">Watch the gauge cycle. When volatility runs at <strong className="text-white">vol_ratio = 1.0</strong> (the chart&apos;s baseline), the multiplier sits at exactly 1.00&times; &mdash; no adjustment. As vol climbs to 1.5&times; the baseline, the multiplier rises to 1.075&times;. At 2.0&times; baseline, the multiplier hits 1.15&times;.</p>
-          <p className="text-gray-400 leading-relaxed mb-4">The clamp matters. Without it, a volatility shock (think NFP on EURUSD or a CPI release on indices) could blow the multiplier to 2.0+, pushing Pulse so far out it would never flip again. <strong className="text-white">The 1.30&times; ceiling is CIPHER refusing to be useless during shocks.</strong> The 0.80&times; floor is symmetric &mdash; in a dead-quiet session, Pulse won&apos;t collapse onto price and start firing on micro-wicks.</p>
-          <p className="text-gray-400 leading-relaxed mb-6">The formula in plain English: take the current volatility ratio, scale its deviation from baseline by 15%, add 1.0, and clamp to the 0.80-to-1.30 range. The 15% scaling is a deliberate damping &mdash; Pulse should breathe with volatility, not be hijacked by it.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">THE FORMULA</p>
+              <p className="text-sm text-gray-400 leading-relaxed font-mono">pulse_vol_adj = clamp(0.80, 1.30, 1.0 + (vol_ratio &minus; 1.0) &times; 0.15)</p>
+              <p className="text-sm text-gray-400 leading-relaxed mt-2">Take the current volatility ratio, scale its deviation from baseline by 15%, add 1.0, clamp to the 0.80&ndash;1.30 range. The 15% scaling is a deliberate damping &mdash; Pulse breathes with volatility, not hijacked by it.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">QUIET REGIMES (vol_ratio &lt; 0.8) &middot; multiplier 0.80 (floor)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">In a dead-quiet session, Pulse won&apos;t collapse onto price and start firing on micro-wicks. The 0.80 floor is the minimum width CIPHER ever applies regardless of how compressed volatility gets.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">NORMAL REGIMES (vol_ratio ~ 1.0) &middot; multiplier ~ 1.00</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When volatility is at the chart&apos;s baseline, the multiplier sits near 1.00 &mdash; no adjustment. As vol climbs to 1.5&times; baseline, the multiplier rises to 1.075&times;. At 2.0&times; baseline, the multiplier hits 1.15&times;. Smooth, proportional, predictable.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">EXTREME REGIMES (vol_ratio &gt; 3.0) &middot; multiplier 1.30 (ceiling)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Without the clamp, a volatility shock (NFP on EURUSD, CPI on indices) could blow the multiplier to 2.0+, pushing Pulse so far out it would never flip again. The 1.30 ceiling is CIPHER refusing to be useless during shocks.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">THE VOLATILITY READ</p>
             <p className="text-sm text-gray-400 leading-relaxed">If you find Pulse signals firing in the middle of a news spike, this layer is doing its job &mdash; signals during clamped extremes are typically followed by quick mean-reversion. Don&apos;t fight the volatility layer. Trust it. And if Pulse seems &ldquo;wider than it should be&rdquo; on a calm day, check whether you&apos;re actually in a quiet session being bumped against the 0.80&times; floor.</p>
@@ -2906,12 +2975,26 @@ export default function CipherPulseFactorLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Layer 4 &middot; ADX (Trend Strength)</p>
           <h2 className="text-2xl font-extrabold mb-4">Stronger trend, tighter Pulse</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">The fourth layer is counter-intuitive at first. <strong className="text-amber-400">When the trend is strongest, Pulse sits tightest.</strong> The multiplier &mdash; <em>pulse_adx_adj</em> &mdash; reads the current ADX and applies one of three values: 0.85&times; in strong trends, 1.00&times; in mid-strength, 1.15&times; in chop.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">The fourth layer is counter-intuitive at first. <strong className="text-amber-400">When the trend is strongest, Pulse sits tightest.</strong> The multiplier &mdash; <em>pulse_adx_adj</em> &mdash; reads the current ADX and applies one of three values: 0.85&times; in strong trends, 1.00&times; in mid-strength, 1.15&times; in chop. Counter-intuitive on first read, perfectly logical on second &mdash; trends need tight Pulse so reversals catch quickly, chop needs loose Pulse so noise gets ignored.</p>
           <ADXLayerAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4"><strong className="text-white">ADX above 30 &rarr; multiplier 0.85.</strong> A real trend is firing. Price is moving in one direction with conviction. CIPHER&apos;s job here is not to give back ground &mdash; tighter Pulse means a real reversal flips the line faster, getting you out earlier when the trend ends. Loose Pulse in a strong trend would lag the actual reversal by 5-10 bars.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">ADX between 15 and 30 &rarr; multiplier 1.00.</strong> The neutral zone. Trend may or may not exist. CIPHER doesn&apos;t adjust &mdash; let other layers do the work.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">ADX below 15 &rarr; multiplier 1.15.</strong> Chop. Random oscillation. <strong className="text-amber-400">The widest Pulse setting CIPHER ever applies.</strong> Why? Because chop is where Pulse generates the worst signals. Every wick threatens to flip a tight Pulse. Setting Pulse 15% wider during chop is CIPHER telling you: &ldquo;don&apos;t trust signals here without strong confluence.&rdquo;</p>
-          <p className="text-gray-400 leading-relaxed mb-6">Counter-intuitive at first read, perfectly logical on second read. Trends need tight Pulse so reversals catch quickly. Chop needs loose Pulse so noise gets ignored. The layer is doing the OPPOSITE of what amateur tuning would do.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">ADX &gt; 30 &middot; multiplier 0.85 (TIGHTER)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A real trend is firing. Price is moving in one direction with conviction. CIPHER&apos;s job here is not to give back ground &mdash; tighter Pulse means a real reversal flips the line faster, getting you out earlier when the trend ends. Loose Pulse in a strong trend would lag the actual reversal by 5&ndash;10 bars.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ADX 15&ndash;30 &middot; multiplier 1.00 (NEUTRAL)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The neutral zone. Trend may or may not exist. CIPHER doesn&apos;t adjust &mdash; let other layers do the work. Most charts spend the majority of their time here, with the ADX layer simply not interfering.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ADX &lt; 15 &middot; multiplier 1.15 (WIDER)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Chop. Random oscillation. <strong className="text-amber-400">The widest Pulse setting CIPHER ever applies.</strong> Why? Because chop is where Pulse generates the worst signals. Every wick threatens to flip a tight Pulse. Setting Pulse 15% wider during chop is CIPHER telling you: &ldquo;don&apos;t trust signals here without strong confluence.&rdquo;</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE OPPOSITE OF AMATEUR TUNING</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Counter-intuitive at first read, perfectly logical on second read. Trends need tight Pulse so reversals catch quickly. Chop needs loose Pulse so noise gets ignored. The layer is doing the OPPOSITE of what untrained instinct would do &mdash; and that opposite is correct.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">WHY THE PRO READS ADX FIRST</p>
             <p className="text-sm text-gray-400 leading-relaxed">If you&apos;re wondering why your Pulse signals are weaker in chop than in trends, the ADX layer is partly responsible &mdash; not because it&apos;s broken, but because it&apos;s already widening Pulse to filter noise. Adding more filtering on top via <em>i_pulse_factor</em> compounds the widening and hides legitimate setups. Read the ADX state first, then decide whether more filtering is needed.</p>
@@ -2926,10 +3009,24 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Your preset reaches into Pulse silently</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The fifth and final layer is the one most operators don&apos;t realise exists. When you select a preset from the PRESET dropdown &mdash; Trend Trader, Scalper, Swing Trader, Sniper &mdash; you&apos;re also setting an invisible <em>preset_pulse_mult</em> that multiplies into the Pulse calculation.</p>
           <PresetLayerAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4"><strong className="text-white">Trend Trader, Reversal, Structure &rarr; 1.00.</strong> The default. No multiplier override. Pulse sits where the other four layers put it. This is what most operators see most of the time.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">Scalper &rarr; 0.80.</strong> Tightens Pulse another 20%. A scalper preset is built for signal density &mdash; more setups, tighter stops, faster cycles. The preset reaches into Pulse to compress its distance, allowing flips on smaller moves. Combined with the other layers, this can compress effective Pulse to ~0.55&times; on a forex 5m chart.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">Swing Trader &rarr; 1.20.</strong> Widens Pulse by 20%. A swing preset is built for longer holds &mdash; fewer setups, wider stops, ride-the-trend cycles. The preset stretches Pulse out, asking for stronger evidence before flipping.</p>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-white">Sniper &rarr; 1.30.</strong> The widest preset multiplier. Sniper is built for the highest-conviction flips only. Pulse sits the furthest out it ever sits. The result: very few signals, but each one carries strong context.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">TREND TRADER, REVERSAL, STRUCTURE &middot; multiplier 1.00 (DEFAULT)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">No multiplier override. Pulse sits where the other four layers put it. This is what most operators see most of the time &mdash; the &ldquo;baseline&rdquo; preset experience.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SCALPER &middot; multiplier 0.80 (TIGHTEN)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Tightens Pulse another 20%. A scalper preset is built for signal density &mdash; more setups, tighter stops, faster cycles. The preset reaches into Pulse to compress its distance, allowing flips on smaller moves. Combined with the other layers, this can compress effective Pulse to ~0.55&times; on a forex 5m chart.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SWING TRADER &middot; multiplier 1.20 (WIDEN)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Widens Pulse by 20%. A swing preset is built for longer holds &mdash; fewer setups, wider stops, ride-the-trend cycles. The preset stretches Pulse out, asking for stronger evidence before flipping.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SNIPER &middot; multiplier 1.30 (WIDEST)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The widest preset multiplier. Sniper is built for the highest-conviction flips only. Pulse sits the furthest out it ever sits. The result: very few signals, but each one carries strong context.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">THE SILENT REACH</p>
             <p className="text-sm text-gray-400 leading-relaxed">The preset multiplier is the layer most likely to confuse new operators. You switch from Trend Trader to Scalper expecting only the visual layout to change &mdash; but Pulse just compressed by 20%. Same chart, same input, different signals. <strong className="text-white">When you change preset, Pulse changes too.</strong> Always.</p>
@@ -2944,19 +3041,28 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">Five layers, one multiplied number</h2>
           <p className="text-gray-400 leading-relaxed mb-6">All five layers compound. They don&apos;t add &mdash; they <strong className="text-amber-400">multiply</strong>. A small adjustment from one layer combined with a small adjustment from another can produce a meaningful shift in actual Pulse distance.</p>
           <CompositionAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4">Watch the worked example. We&apos;re on XAUUSD 1H with the Trend Trader preset, mid volatility, mid ADX. Your input: <strong className="text-amber-400">1.50</strong>. The five layers in order:</p>
-          <ul className="list-disc pl-6 mb-4 text-gray-400 leading-relaxed space-y-1.5">
-            <li><strong className="text-white">Timeframe (1H):</strong> &times; 0.85</li>
-            <li><strong className="text-white">Asset Class (Commodity):</strong> &times; 0.80</li>
-            <li><strong className="text-white">Volatility (Normal):</strong> &times; 1.05</li>
-            <li><strong className="text-white">ADX (Moderate):</strong> &times; 1.00</li>
-            <li><strong className="text-white">Preset (Trend Trader):</strong> &times; 1.00</li>
-          </ul>
-          <p className="text-gray-400 leading-relaxed mb-4">1.50 &times; 0.85 &times; 0.80 &times; 1.05 &times; 1.00 &times; 1.00 = <strong className="text-amber-400">1.07</strong>. Your input was 1.50. CIPHER actually used 1.07. <strong className="text-white">The five layers compressed your effective Pulse factor by 29%.</strong></p>
-          <p className="text-gray-400 leading-relaxed mb-6">The order doesn&apos;t matter mathematically &mdash; multiplication is commutative. What matters is that you understand <strong className="text-white">all five participate every bar</strong>. Change any of the five contexts and the effective number changes. Your input is one of six numbers determining where Pulse sits, not the only one.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">THE FORMULA</p>
+              <p className="text-sm text-gray-400 leading-relaxed font-mono">pulse_factor = i_pulse_factor &times; tf_adj &times; asset_adj &times; vol_adj &times; adx_adj &times; preset_mult</p>
+              <p className="text-sm text-gray-400 leading-relaxed mt-2">Six numbers multiplied together. Your input is one of them, and rarely the dominant one. The order doesn&apos;t matter mathematically (multiplication is commutative); what matters is that all five participate every bar.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE WORKED EXAMPLE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">XAUUSD 1H, Trend Trader preset, mid volatility, mid ADX. Your input: <strong className="text-amber-400">1.50</strong>. Layers in order: TF (1H) &times; 0.85, Asset (Commodity) &times; 0.80, Volatility (Normal) &times; 1.05, ADX (Moderate) &times; 1.00, Preset (Trend Trader) &times; 1.00. <br /><br />Math: 1.50 &times; 0.85 &times; 0.80 &times; 1.05 &times; 1.00 &times; 1.00 = <strong className="text-amber-400">1.07</strong>. Your input was 1.50. CIPHER actually used 1.07.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE 29% COMPRESSION</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The five layers compressed your effective Pulse factor by 29% &mdash; from 1.50 to 1.07. None of those layers individually felt like a big change, but multiplied together the cumulative effect is significant. This is why operators who don&apos;t do the math feel like Pulse &ldquo;works differently&rdquo; on different charts.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE MENTAL MATH HABIT</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Take your input, multiply by 0.70&ndash;1.00 for TF, then 0.80&ndash;1.00 for asset, then ~0.90&ndash;1.15 for vol, then 0.85&ndash;1.15 for ADX, then 0.80&ndash;1.30 for preset. The product is what CIPHER actually used. Once you can do this in your head in 5 seconds, Pulse stops being mysterious.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">READING THE COMPOSITION</p>
-            <p className="text-sm text-gray-400 leading-relaxed">When operators ask &ldquo;why does Pulse feel different on this chart,&rdquo; the answer is almost always in the composition. Run the math: take your input, multiply by 0.70-1.00 for TF, then 0.80-1.00 for asset, then ~0.90-1.15 for vol, then 0.85-1.15 for ADX, then 0.80-1.30 for preset. The product is what CIPHER actually used. Once you can do this in your head, Pulse stops being mysterious.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">When operators ask &ldquo;why does Pulse feel different on this chart,&rdquo; the answer is almost always in the composition. Run the math. The product is what CIPHER actually used. Once you can do this in your head, Pulse stops being mysterious.</p>
           </div>
         </motion.div>
       </section>
@@ -2968,9 +3074,20 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">The mechanism that refuses to give back ground</h2>
           <p className="text-gray-400 leading-relaxed mb-6">Once the five layers compose into the effective <em>pulse_factor</em>, and ATR distance is applied to Cipher Flow, you have a <strong className="text-white">candidate</strong> Pulse value &mdash; not the line you see on chart yet. Between the candidate and the visible line stands the ratchet: a Supertrend-style mechanism that locks Pulse to one direction at a time and forbids it from giving back ground until price closes through it.</p>
           <RatchetAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4">The two panels show the same price action with the same flow and the same ATR distance. <strong className="text-white">Left panel:</strong> a naive Pulse line that always uses the candidate value. It whipsaws &mdash; every time price ticks above or below Cipher Flow, the candidate flips sides and the line jumps. The visual is jagged and unusable.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">Right panel:</strong> the ratcheted line CIPHER actually draws. In a bull state, the line can only move <em>up</em>. If the candidate value rises, the line rises with it. If the candidate falls, the line stays at its previous high. The line refuses to give back ground. Only when price <em>closes</em> through the line does direction flip &mdash; and only then does the line snap to the opposite bracket.</p>
-          <p className="text-gray-400 leading-relaxed mb-6">This is what makes Pulse a useful S/R line instead of a noisy oscillator. <strong className="text-amber-400">The ratchet is the difference between a Pulse line you can trade and a Pulse line you would mute.</strong> It&apos;s the same mechanism that makes Supertrend popular &mdash; CIPHER applies it to the Flow-anchored Pulse.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">THE NAIVE VERSION (left panel)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A Pulse line that always uses the candidate value. It whipsaws &mdash; every time price ticks above or below Cipher Flow, the candidate flips sides and the line jumps. The visual is jagged and unusable. Most retail Pulse-style indicators ship this.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE RATCHETED VERSION (right panel)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The line CIPHER actually draws. In a bull state, the line can only move <em>up</em>. If the candidate value rises, the line rises with it. If the candidate falls, the line stays at its previous high. The line refuses to give back ground.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">WHEN DIRECTION FLIPS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Only when price <em>closes</em> through the line does direction flip &mdash; and only then does the line snap to the opposite bracket. This is what makes Pulse a useful S/R line instead of a noisy oscillator. <strong className="text-amber-400">The ratchet is the difference between a Pulse line you can trade and a Pulse line you would mute.</strong></p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">WHY THE FLIP IS THE SIGNAL</p>
             <p className="text-sm text-gray-400 leading-relaxed">Because the ratchet refuses to whipsaw, when Pulse <strong className="text-white">does</strong> flip, it&apos;s structurally meaningful. The flip required price to close through a level the line had been defending for bars. That&apos;s why Pulse Cross becomes the foundation of CIPHER&apos;s PX (Pulse Cross) signals &mdash; covered in Lesson 11. The signal isn&apos;t the price crossing a moving average. It&apos;s the ratchet breaking.</p>
@@ -2985,12 +3102,27 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">The lag-versus-stability dial</h2>
           <p className="text-gray-400 leading-relaxed mb-6">There is one input we haven&apos;t covered yet. Below the Pulse ATR Factor sits <em>Pulse Smoothing</em>, default value <strong className="text-amber-400">3</strong>. It applies an SMA to the ratcheted candidate before the line is drawn. It does not change distance &mdash; the five layers already determined that. It changes <strong className="text-white">how the visible line moves</strong>.</p>
           <SmoothingAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4"><strong className="text-white">Smoothing 1</strong> shows the raw ratcheted line. Every bar, the line snaps to the new ratchet value. Flips happen on the exact bar of the close-through. The visual is jagged but the timing is the most precise CIPHER offers.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-white">Smoothing 5</strong> averages the last 5 ratchet values to produce the visible line. The line is much softer. But each flip lags by a bar or two as the average catches up. Cleaner chart, slightly later signals.</p>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-amber-400">Default 3</strong> is a deliberate compromise &mdash; smooth enough to read at a glance, fast enough that flips arrive within 1 bar of the structural break. Most operators never need to change it. The setting exists for two cases: lower it to 1 if you trade scalp timeframes where every bar matters, raise it to 5+ if you trade Daily/Weekly and want clean lines for chart documentation.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">SMOOTHING = 1 (RAW RATCHET)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The raw ratcheted line. Every bar, the line snaps to the new ratchet value. Flips happen on the exact bar of the close-through. The visual is jagged but the timing is the most precise CIPHER offers. Use this if you trade scalp timeframes where every bar matters.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SMOOTHING = 3 (DEFAULT)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A deliberate compromise &mdash; smooth enough to read at a glance, fast enough that flips arrive within 1 bar of the structural break. Most operators never need to change it. The default that fits the widest range of trading styles.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SMOOTHING = 5+ (HEAVY)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Averages the last 5 ratchet values to produce the visible line. The line is much softer. But each flip lags by a bar or two as the average catches up. Cleaner chart, slightly later signals. Use if you trade Daily/Weekly and want clean lines for chart documentation.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">DON&apos;T CONFUSE WIDTH WITH SMOOTHING</p>
+              <p className="text-sm text-gray-400 leading-relaxed">If you find yourself wanting to &ldquo;tighten Pulse for faster signals,&rdquo; check whether you mean <strong className="text-white">distance</strong> (use the five layers via Pulse ATR Factor) or <strong className="text-white">timing</strong> (use Pulse Smoothing). They feel similar but solve different problems. Width controls how far Pulse sits from price. Smoothing controls how quickly the visible line responds to ratchet changes.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-1">DON&apos;T CONFUSE WIDTH WITH SMOOTHING</p>
-            <p className="text-sm text-gray-400 leading-relaxed">If you find yourself wanting to &ldquo;tighten Pulse for faster signals,&rdquo; check whether you mean <strong className="text-white">distance</strong> (use the five layers via Pulse ATR Factor) or <strong className="text-white">timing</strong> (use Pulse Smoothing). They feel similar but solve different problems. Width controls how far Pulse sits from price. Smoothing controls how quickly the visible line responds to ratchet changes.</p>
+            <p className="text-xs font-bold text-amber-400 mb-1">THE OPERATOR DEFAULT</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Leave it at 3. The default is genuinely good for the vast majority of trading styles. Adjust only if you have a specific reason &mdash; scalp execution needs lower, document-grade Daily charts can use higher.</p>
           </div>
         </motion.div>
       </section>
@@ -3002,10 +3134,24 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">FRESH &middot; YOUNG &middot; ESTABLISHED &middot; MATURE</h2>
           <p className="text-gray-400 leading-relaxed mb-6">After Pulse flips, CIPHER tracks the bar count of how long the new direction has held. This is <em>pulse_hold_bars</em>. The count resets to 1 on the flip bar and increments every bar the direction holds. Four named maturity states emerge from this count.</p>
           <MaturityAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4"><strong className="text-amber-400">FRESH (0 to 5 bars)</strong>: The flip just happened. The new direction has not yet been confirmed by sustained price action. Stops on a fresh-flip trade need to be wide because the flip itself can flip back. Operators who chase fresh flips on every chart get whipsawed by the ones that fail.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-amber-400">YOUNG (5 to 20 bars)</strong>: The flip held. Direction has conviction but the trend is still proving itself. This is the typical entry window for trend-continuation trades. Stops can tighten meaningfully &mdash; behind the line itself rather than wide of the flip bar.</p>
-          <p className="text-gray-400 leading-relaxed mb-4"><strong className="text-amber-400">ESTABLISHED (20 to 50 bars)</strong>: The trend is real. Pulse has acted as an effective S/R level for a meaningful number of bars. Pullbacks to Pulse are tradeable continuation setups. The line is the level you defend.</p>
-          <p className="text-gray-400 leading-relaxed mb-6"><strong className="text-amber-400">MATURE (50+ bars)</strong>: A long-held trend. Most trends do not reach this. When they do, a flip from MATURE state is structurally significant &mdash; the strong trend has finally broken. These flips often mark major reversals.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">FRESH (0 to 5 bars)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The flip just happened. The new direction has not yet been confirmed by sustained price action. Stops on a fresh-flip trade need to be wide because the flip itself can flip back. Operators who chase fresh flips on every chart get whipsawed by the ones that fail.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">YOUNG (5 to 20 bars)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The flip held. Direction has conviction but the trend is still proving itself. This is the typical entry window for trend-continuation trades. Stops can tighten meaningfully &mdash; behind the line itself rather than wide of the flip bar.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ESTABLISHED (20 to 50 bars)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The trend is real. Pulse has acted as an effective S/R level for a meaningful number of bars. Pullbacks to Pulse are tradeable continuation setups. The line is the level you defend.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">MATURE (50+ bars)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A long-held trend. Most trends do not reach this. When they do, a flip from MATURE state is structurally significant &mdash; the strong trend has finally broken. These flips often mark major reversals.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">WHY MATURITY MATTERS BEFORE YOU TRADE</p>
             <p className="text-sm text-gray-400 leading-relaxed">A FRESH flip and a flip from MATURE state look identical in terms of the Pulse Cross signal &mdash; same bar, same price, same direction change. They are <strong className="text-white">not the same trade</strong>. The MATURE-flip carries history; the FRESH-flip does not. Read maturity before sizing.</p>
@@ -3020,12 +3166,27 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">When Pulse signals lie &mdash; and CIPHER tells you</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The ratchet prevents intra-bar whipsaw, but it cannot prevent across-bar chop. If price is genuinely oscillating, Pulse will flip back and forth on consecutive close-through events. To detect this, CIPHER tracks the bar index of the third-most-recent flip. If that flip is within 20 bars of the current bar, the <em>pulse_choppy</em> flag fires.</p>
           <ChoppyAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4">Watch the animation. The first 25 bars are deliberate chop &mdash; price oscillating around Cipher Flow. Each crossing produces a Pulse flip. Once the third flip lands within the 20-bar lookback, the chart enters CHOPPY mode and the SIGNALS UNRELIABLE warning fires.</p>
-          <p className="text-gray-400 leading-relaxed mb-4">When CHOPPY is active, every new flip is suspect. The market is not making a real directional decision &mdash; it&apos;s grinding. PX (Pulse Cross) signals during CHOPPY are routinely losers. CIPHER&apos;s response is not to suppress the flips themselves &mdash; the math still computes them &mdash; but to <strong className="text-amber-400">colour the entire row amber</strong> in the Command Center and replace the guidance cell with SIGNALS UNRELIABLE.</p>
-          <p className="text-gray-400 leading-relaxed mb-6">Notice the second half of the chart. Once the chop ends and a clean trend establishes, the third-most-recent flip falls outside the 20-bar lookback. The flag clears. Trend signals from this point onwards are tradeable again.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">THE DETECTION RULE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Track the bar index of every Pulse flip. If three or more flips have occurred within the last 20 bars, the choppy flag fires. This is structurally a sliding window detector &mdash; once the third-most-recent flip falls outside the 20-bar window, the flag clears.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">WHAT CHOPPY MEANS FOR SIGNALS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When CHOPPY is active, every new flip is suspect. The market is not making a real directional decision &mdash; it&apos;s grinding. PX (Pulse Cross) signals during CHOPPY are routinely losers. CIPHER&apos;s response is not to suppress the flips themselves &mdash; the math still computes them &mdash; but to <strong className="text-amber-400">colour the entire row amber</strong> in the Command Center and replace the guidance cell with SIGNALS UNRELIABLE.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">WHEN CHOPPY CLEARS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Once the chop ends and a clean trend establishes, the third-most-recent flip falls outside the 20-bar lookback. The flag clears. Trend signals from this point onwards are tradeable again. Typically takes 8&ndash;15 bars of inaction.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE CHOPPY DISCIPLINE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">If the Pulse row reads CHOPPY, you stop trading PX signals. Not for one bar. Not until the next flip clears it. <strong className="text-white">Until the third-most-recent flip falls outside the 20-bar window.</strong> Operators who break this rule get a guarantee &mdash; not a hope, a guarantee &mdash; that they will be on the wrong side of the next legitimate flip.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE CHOPPY DISCIPLINE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">If the Pulse row reads CHOPPY, you stop trading PX signals. Not for one bar. Not until the next flip clears it. <strong className="text-white">Until the third-most-recent flip falls outside the 20-bar window.</strong> That is typically 8 to 15 bars of inaction. Operators who break this rule get a guarantee &mdash; not a hope, a guarantee &mdash; that they will be on the wrong side of the next legitimate flip.</p>
+            <p className="text-xs font-bold text-amber-400 mb-1">CIPHER PROTECTING YOU</p>
+            <p className="text-sm text-gray-400 leading-relaxed">The CHOPPY flag is one of the highest-edge protections CIPHER provides. It costs you no signals you would have profited from &mdash; it costs you signals that statistically fail. Trust the warning. Wait for the clear.</p>
           </div>
         </motion.div>
       </section>
@@ -3035,24 +3196,25 @@ export default function CipherPulseFactorLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; The Slope Verdict</p>
           <h2 className="text-2xl font-extrabold mb-4">Reading momentum from the line itself</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">Beyond the static state of the Pulse line, CIPHER also publishes a slope verdict &mdash; <em>pulse_slope_label</em> &mdash; that describes how Pulse is moving in real time. The slope is computed as the change in Pulse over the last 5 bars, normalised by ATR. Three labels emerge:</p>
-          <div className="p-5 rounded-2xl glass-card mb-6">
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-bold text-amber-400 mb-1">STEEPENING</p>
-                <p className="text-sm text-gray-400 leading-relaxed">Slope magnitude greater than 0.3 ATR per 5 bars. The Pulse line is angling sharply with the trend. Trends that show STEEPENING Pulse are accelerating &mdash; momentum is real and likely to continue.</p>
-              </div>
-              <div>
-                <p className="text-sm font-bold text-teal-400 mb-1">STEADY</p>
-                <p className="text-sm text-gray-400 leading-relaxed">Slope magnitude between 0.1 and 0.3 ATR per 5 bars. The line is moving with the trend but not aggressively. Most healthy trends register as STEADY through their middle phase. The default reading.</p>
-              </div>
-              <div>
-                <p className="text-sm font-bold text-amber-400 mb-1">FLATTENING</p>
-                <p className="text-sm text-gray-400 leading-relaxed">Slope magnitude below 0.1 ATR per 5 bars. The Pulse line is going horizontal. Even if the line hasn&apos;t flipped, the trend is losing its lift. FLATTENING is an early-warning state &mdash; reversals often start here, before the actual flip.</p>
-              </div>
+          <p className="text-gray-400 leading-relaxed mb-6">Beyond the static state of the Pulse line, CIPHER also publishes a slope verdict &mdash; <em>pulse_slope_label</em> &mdash; that describes how Pulse is moving in real time. The slope is computed as the change in Pulse over the last 5 bars, normalised by ATR. Three labels emerge, each with its own trading implication.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">STEEPENING (slope &gt; 0.3 ATR per 5 bars)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The Pulse line is angling sharply with the trend. Trends that show STEEPENING Pulse are accelerating &mdash; momentum is real and likely to continue. Position-add-on territory for operators in trend-continuation playbooks.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STEADY (slope 0.1 to 0.3 ATR per 5 bars)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The line is moving with the trend but not aggressively. Most healthy trends register as STEADY through their middle phase. The default reading. Hold positions, no need to add or trim.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FLATTENING (slope &lt; 0.1 ATR per 5 bars)</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The Pulse line is going horizontal. Even if the line hasn&apos;t flipped, the trend is losing its lift. FLATTENING is an early-warning state &mdash; reversals often start here, before the actual flip. Trim or tighten stops.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">WHEN THE SLOPE LABEL APPEARS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The slope label appears in the Pulse row guidance cell when conditions allow &mdash; specifically, when there&apos;s no CHOPPY flag and no recent flip and price is more than 0.5 ATR from the line. In other states, more urgent guidance takes priority and the slope is suppressed.</p>
             </div>
           </div>
-          <p className="text-gray-400 leading-relaxed mb-6">The slope label appears in the Pulse row guidance cell when conditions allow &mdash; specifically, when there&apos;s no CHOPPY flag and no recent flip and price is more than 0.5 ATR from the line. In other states, more urgent guidance takes priority and the slope is suppressed.</p>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">THE SLOPE TIE-BREAK</p>
             <p className="text-sm text-gray-400 leading-relaxed">Two operators look at the same MATURE Pulse on the same chart. One reads STEEPENING and stays in. The other reads FLATTENING and exits. Same line, same maturity, different slope read &mdash; different decision. The slope is the trend&apos;s self-report on its own health. Listen to it.</p>
@@ -3067,25 +3229,24 @@ export default function CipherPulseFactorLesson() {
           <h2 className="text-2xl font-extrabold mb-4">All the Pulse intelligence in one row</h2>
           <p className="text-gray-400 leading-relaxed mb-6">Everything covered in this lesson &mdash; direction, hold duration, proximity, choppiness, slope &mdash; is rendered in three cells of the Pulse row in CIPHER&apos;s Command Center. <strong className="text-amber-400">One row. Three cells. The full Pulse picture.</strong></p>
           <CommandCenterAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-4">The animation cycles through six representative states. Each state has the same row structure: <strong className="text-white">column zero</strong> is the row label (always &ldquo;Pulse&rdquo;). <strong className="text-white">Column one</strong> reports direction (arrow + SUPPORT/RESISTANCE), hold bars, and proximity verdict. <strong className="text-white">Column two</strong> is the action guidance.</p>
-          <p className="text-gray-400 leading-relaxed mb-4">Five proximity verdicts based on tension &mdash; the distance from price to Pulse measured in ATRs:</p>
-          <ul className="list-disc pl-6 mb-4 text-gray-400 leading-relaxed space-y-1.5">
-            <li><strong className="text-white">FLIPPED</strong> &mdash; current bar is the flip bar (or one bar after). Direction just changed.</li>
-            <li><strong className="text-white">STRETCHED</strong> &mdash; tension above 2 ATR. Price is far from Pulse. Mean-reversion likely.</li>
-            <li><strong className="text-white">HOLDING</strong> &mdash; tension between 1 and 2 ATR. Healthy trend distance. The default trend state.</li>
-            <li><strong className="text-white">CLOSE</strong> &mdash; tension between 0.5 and 1 ATR. Pulse is being tested. Tighten stops.</li>
-            <li><strong className="text-white">VERY CLOSE</strong> &mdash; tension below 0.5 ATR. A flip is one or two bars away. FLIP WARNING.</li>
-          </ul>
-          <p className="text-gray-400 leading-relaxed mb-4">Six guidance verdicts in column two, each tied to a proximity state with priority overrides:</p>
-          <ul className="list-disc pl-6 mb-4 text-gray-400 leading-relaxed space-y-1.5">
-            <li><strong className="text-white">NEW TREND</strong> &mdash; on a flip. Direction just changed.</li>
-            <li><strong className="text-white">OVEREXTENDED</strong> &mdash; on STRETCHED. With MATURE appended if hold &gt; 50.</li>
-            <li><strong className="text-white">TREND SAFE</strong> &mdash; on HOLDING. With STEEPENING/STEADY/FLATTENING slope appended.</li>
-            <li><strong className="text-white">TIGHTEN STOPS</strong> &mdash; on CLOSE. Pulse is under test.</li>
-            <li><strong className="text-white">FLIP WARNING</strong> &mdash; on VERY CLOSE. Coloured urgent red.</li>
-            <li><strong className="text-white">SIGNALS UNRELIABLE  &#9888;  CHOPPY</strong> &mdash; overrides everything when the choppy flag fires.</li>
-          </ul>
-          <p className="text-gray-400 leading-relaxed mb-6">The colour grammar is rigorous. Magenta in column one always means RESISTANCE direction (price below Pulse, bear state). Teal always means SUPPORT (price above Pulse, bull state). Amber in column two always means caution. Red in column two means urgent. Teal in column two means safe to hold. The colours are not decorative.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">COLUMN STRUCTURE (3 cells)</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Column zero</strong> is the row label (always &ldquo;Pulse&rdquo;). <strong className="text-white">Column one</strong> reports direction (arrow + SUPPORT/RESISTANCE), hold bars, and proximity verdict. <strong className="text-white">Column two</strong> is the action guidance.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FIVE PROXIMITY VERDICTS (column 1)</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">FLIPPED</strong> &mdash; current bar is the flip bar (or one bar after). <strong className="text-white">STRETCHED</strong> &mdash; tension above 2 ATR, mean-reversion likely. <strong className="text-white">HOLDING</strong> &mdash; tension between 1 and 2 ATR, the default trend state. <strong className="text-white">CLOSE</strong> &mdash; tension between 0.5 and 1 ATR, Pulse is being tested. <strong className="text-white">VERY CLOSE</strong> &mdash; tension below 0.5 ATR, a flip is one or two bars away.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SIX GUIDANCE VERDICTS (column 2)</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">NEW TREND</strong> on a flip. <strong className="text-white">OVEREXTENDED</strong> on STRETCHED (with MATURE appended if hold &gt; 50). <strong className="text-white">TREND SAFE</strong> on HOLDING (with STEEPENING/STEADY/FLATTENING slope appended). <strong className="text-white">TIGHTEN STOPS</strong> on CLOSE. <strong className="text-white">FLIP WARNING</strong> on VERY CLOSE (urgent red). <strong className="text-white">SIGNALS UNRELIABLE &#9888; CHOPPY</strong> overrides everything when the choppy flag fires.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE COLOUR GRAMMAR</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Magenta in column one always means RESISTANCE direction (price below Pulse, bear state). Teal always means SUPPORT (price above Pulse, bull state). Amber in column two always means caution. Red in column two means urgent. Teal in column two means safe to hold. The colours are not decorative.</p>
+            </div>
+          </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-1">THE OPERATOR&apos;S 5-SECOND READ</p>
             <p className="text-sm text-gray-400 leading-relaxed">Read column one for direction and proximity. Read column two for what to do. If column two is teal, hold. If amber, tighten or wait. If red, prepare to act. If amber and reads CHOPPY, do nothing until it clears. The 5-second read on Pulse is enough for almost every trading decision based on Pulse alone.</p>
@@ -3134,7 +3295,7 @@ export default function CipherPulseFactorLesson() {
         </motion.div>
       </section>
 
-      {/* === S15.5 — The Pulse Factor Cheat Sheet === */}
+      {/* === Cheat Sheet === */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">The Pulse Factor Cheat Sheet</p>
@@ -3343,7 +3504,6 @@ export default function CipherPulseFactorLesson() {
       <section className="max-w-2xl mx-auto px-5 py-20 text-center">
         <Link href="/academy" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 hover:from-amber-600 hover:to-accent-600 text-white font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95">&larr; Back to Academy</Link>
       </section>
-
       {/* === LESSON COMPLETE === */}
     </div>
   );
