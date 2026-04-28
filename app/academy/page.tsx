@@ -159,6 +159,8 @@ const liveLessons = new Set([
   'cipher-signal-philosophy',
   'cipher-pulse-factor',
   'cipher-px-pipeline',
+  'cipher-ts-system',
+  'cipher-which-signals-to-take',
 ]);
 
 export default function AcademyPage() {
