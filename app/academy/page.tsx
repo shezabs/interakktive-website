@@ -161,6 +161,8 @@ const liveLessons = new Set([
   'cipher-px-pipeline',
   'cipher-ts-system',
   'cipher-which-signals-to-take',
+  'cipher-coil-mechanics',
+  'cipher-coil-reading',
 ]);
 
 export default function AcademyPage() {
