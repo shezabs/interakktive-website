@@ -166,6 +166,9 @@ const liveLessons = new Set([
   'cipher-ribbon-engine',
   'cipher-structure-spine',
   'cipher-imbalance',
+  'cipher-sweeps',
+  'cipher-risk-envelope',
+  'cipher-risk-map',
 ]);
 
 export default function AcademyPage() {
