@@ -203,7 +203,7 @@ function AnimScene({
   aspectRatio = 16 / 9,
   className = '',
 }: {
-  draw: (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => void;
+  draw: (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => void;
   aspectRatio?: number;
   className?: string;
 }) {
@@ -258,7 +258,7 @@ function AnimScene({
       const w = canvas.width / dpr;
       const h = canvas.height / dpr;
       ctx.clearRect(0, 0, w, h);
-      draw(ctx, w, h, t);
+      draw(ctx, t, w, h);
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -371,7 +371,7 @@ function Confetti({ active }: { active: boolean }) {
 // The point: the engine doesn't just say "go", it says where to.
 // ============================================================
 function WhereTheTradeGoesAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -580,7 +580,7 @@ function WhereTheTradeGoesAnim() {
 // callouts pointing to what each atom communicates.
 // ============================================================
 function TooltipAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -693,7 +693,7 @@ function TooltipAnim() {
 // Each input row reveals sequentially with its purpose annotated.
 // ============================================================
 function InputsAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -826,7 +826,7 @@ function InputsAnim() {
 // three different risk distances.
 // ============================================================
 function SLMethodsAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -977,7 +977,7 @@ function SLMethodsAnim() {
 // calibrated to absorb typical noise without degrading R/R.
 // ============================================================
 function BufferAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1168,7 +1168,7 @@ function BufferAnim() {
 // ATR TARGETS (entry + atr × 1/2/3 — uniform but ATR-based)
 // ============================================================
 function TPMethodsAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1338,7 +1338,7 @@ function TPMethodsAnim() {
 // Animation walks through the position sizing transitions.
 // ============================================================
 function TPLadderAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1526,7 +1526,7 @@ function TPLadderAnim() {
 // Cycles through three example tickers showing the routing.
 // ============================================================
 function AutoModeAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1669,7 +1669,7 @@ function AutoModeAnim() {
 // that the same logic produces context-appropriate distances.
 // ============================================================
 function ForexLogicAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1853,7 +1853,7 @@ function ForexLogicAnim() {
 // BTC-style chart with deep wicks and momentum continuation.
 // ============================================================
 function CryptoLogicAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -2025,7 +2025,7 @@ function CryptoLogicAnim() {
 // real S/R levels on the chart with TPs landing exactly at them.
 // ============================================================
 function StocksLogicAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -2187,7 +2187,7 @@ function StocksLogicAnim() {
 // 3. Safety guard fires, ATR fallback substitutes (corrected)
 // ============================================================
 function SafetyGuardAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -2374,7 +2374,7 @@ function SafetyGuardAnim() {
 // Cycle shows three signals firing in sequence with line replacement.
 // ============================================================
 function ChartLinesAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 

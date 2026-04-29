@@ -986,7 +986,7 @@ function ThreeBarAgeGateAnim() {
 // Lights up sequentially so operators can see the visual gradient.
 // ============================================================
 function StrengthAdaptiveDiamondAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1127,7 +1127,7 @@ function StrengthAdaptiveDiamondAnim() {
 // gets a label callout pointing to what the operator learns.
 // ============================================================
 function TooltipBreakdownAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1230,7 +1230,7 @@ function TooltipBreakdownAnim() {
 // Shows the 0.5 ATR proximity gate AND direction-match requirement.
 // ============================================================
 function FVGConfluenceAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1389,7 +1389,7 @@ function FVGConfluenceAnim() {
 // Verdict transitions: HOT \u2014 REVERSAL LIKELY \u2192 FAILED \u2014 CONTINUATION.
 // ============================================================
 function FailedSweepAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1516,7 +1516,7 @@ function FailedSweepAnim() {
 // Walks through inputs and lights up the matching verdict.
 // ============================================================
 function CommandCenterCascadeAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1627,7 +1627,7 @@ function CommandCenterCascadeAnim() {
 // the match through different positions.
 // ============================================================
 function SignalContextCascadeAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1737,7 +1737,7 @@ function SignalContextCascadeAnim() {
 // 1R risk box and 2R + 3R reward boxes labeled.
 // ============================================================
 function ReversalTradePlanAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1930,7 +1930,7 @@ function ReversalTradePlanAnim() {
 // level in the continuation direction. Mirror-flipped vs reversal plan.
 // ============================================================
 function ContinuationTradePlanAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -2110,7 +2110,7 @@ function ContinuationTradePlanAnim() {
 // no factor 4, requires 4+ from other factors for STRONG).
 // ============================================================
 function WithVsCounterTrendAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 

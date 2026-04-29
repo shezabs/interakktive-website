@@ -206,7 +206,7 @@ function AnimScene({
   aspectRatio = 16 / 9,
   className = '',
 }: {
-  draw: (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => void;
+  draw: (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => void;
   aspectRatio?: number;
   className?: string;
 }) {
@@ -261,7 +261,7 @@ function AnimScene({
       const w = canvas.width / dpr;
       const h = canvas.height / dpr;
       ctx.clearRect(0, 0, w, h);
-      draw(ctx, w, h, t);
+      draw(ctx, t, w, h);
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -374,7 +374,7 @@ function Confetti({ active }: { active: boolean }) {
 // Same price action, two reads — one wrong, one calibrated.
 // ============================================================
 function HowFarIsTooFarAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -614,7 +614,7 @@ function HowFarIsTooFarAnim() {
 // references; everything else is measured relative to it.
 // ============================================================
 function FairValueLineAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -726,7 +726,7 @@ function FairValueLineAnim() {
 // callout with multiplier + zone label.
 // ============================================================
 function ThreeBandsAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -880,7 +880,7 @@ function ThreeBandsAnim() {
 // Each panel shows the same anchor with bands at the regime-adjusted width.
 // ============================================================
 function RegimeScaleAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -998,7 +998,7 @@ function RegimeScaleAnim() {
 // different shape. Asymmetry visibly produces an asymmetric cloud.
 // ============================================================
 function DirectionalAsymmetryAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1153,7 +1153,7 @@ function DirectionalAsymmetryAnim() {
 // Background colors visibly change as price escalates.
 // ============================================================
 function FourZonesAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1330,7 +1330,7 @@ function FourZonesAnim() {
 // labels as price stretches from anchor. Visual gauge bar fills.
 // ============================================================
 function MeanReversionScoreAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1510,7 +1510,7 @@ function MeanReversionScoreAnim() {
 // Each transition shows the zone change + ✕ marker + verdict color.
 // ============================================================
 function ZoneTransitionEventsAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1669,7 +1669,7 @@ function ZoneTransitionEventsAnim() {
 // Shows the dwell suffix that gets appended in the cascade.
 // ============================================================
 function DwellPhasesAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1816,7 +1816,7 @@ function DwellPhasesAnim() {
 // inputs (transitions + zone state) light up different verdicts.
 // ============================================================
 function RiskCascadeAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -1940,7 +1940,7 @@ function RiskCascadeAnim() {
 // purely the Adaptive layer. Header label flips between phases.
 // ============================================================
 function AdaptiveIntensityAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -2092,7 +2092,7 @@ function AdaptiveIntensityAnim() {
 // Animation shows ATR contracting, glow appearing, then expansion + breakout.
 // ============================================================
 function CoilGlowAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
@@ -2258,7 +2258,7 @@ function CoilGlowAnim() {
 // Includes the bonus row for ENTRENCHED conditions.
 // ============================================================
 function RiskSizingPlanAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
 
