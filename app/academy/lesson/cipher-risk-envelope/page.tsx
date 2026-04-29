@@ -2406,7 +2406,7 @@ export default function CipherRiskEnvelopeLesson() {
     <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
       <Confetti active={showConfetti} />
       <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-900/50">
-        <div className="h-full bg-gradient-to-r from-amber-400 to-accent-400 transition-all duration-100" style={{ width: `${Math.min(100, (scrollY / (document.body?.scrollHeight - window.innerHeight || 1)) * 100)}%` }} />
+        <div className="h-full bg-gradient-to-r from-amber-400 to-accent-400 transition-all duration-100" style={{ width: `${Math.min(100, (scrollY / (typeof document !== 'undefined' ? document.body.scrollHeight - window.innerHeight : 1)) * 100)}%` }} />
       </div>
 
       <nav className="fixed top-1 left-0 right-0 z-40 px-6 py-3 backdrop-blur-md bg-black/40 border-b border-white/5 flex items-center justify-between">
