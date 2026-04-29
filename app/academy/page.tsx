@@ -163,6 +163,9 @@ const liveLessons = new Set([
   'cipher-which-signals-to-take',
   'cipher-coil-mechanics',
   'cipher-coil-reading',
+  'cipher-ribbon-engine',
+  'cipher-structure-spine',
+  'cipher-imbalance',
 ]);
 
 export default function AcademyPage() {
