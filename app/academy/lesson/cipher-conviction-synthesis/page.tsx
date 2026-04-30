@@ -1,41 +1,364 @@
+// app/academy/lesson/cipher-conviction-synthesis/page.tsx
+// ATLAS Academy — Lesson 11.22: Cipher Conviction Synthesis [PRO]
+// Gold/amber PRO styling — Crown badge — PRO · LEVEL 11 · CIPHER
+// Built to Lesson 11.11 gold standard
+// Covers: 4-factor conviction score (Ribbon x ADX x Volume x Health)
+//         + 13-tag context cascade
+//         + synthesis tooltip
+//         + tier-based sizing
+//         + skip discipline
+//         + the trade plan handoff
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { Crown } from 'lucide-react';
 
 // ============================================================
-// LESSON 11.22 — Cipher Conviction Synthesis
-// Cert: Conviction Operator
-// GC: When Modules Agree, Trade. When They Don't, Wait.
+// GAME ROUNDS — 5 scenario-based conviction synthesis challenges
 // ============================================================
-// First capstone lesson of Level 11. Bridges the Visual Layer arc
-// (L11.16-21) into system-level integration. Teaches:
-//   1. The 4-factor conviction score (Ribbon × ADX × Volume × Health)
-//   2. The 13-tag context cascade (Sweep+FVG → Sweep → Breakout → ...)
-//   3. The synthesis tooltip (one read, all modules)
-//   4. The min_conviction filter (the policy lever)
-//   5. Strong vs Standard label rendering on chart
-//   6. Convergence reads (when 3+ modules agree)
-//   7. Divergence warnings (when modules contradict)
-//   8. Conviction-tier sizing
-//   9. The presets as conviction philosophies
-//  10. Edge cases (2-bull/1-bear, recent flips, regime mismatch)
+const gameRounds = [
+  {
+    id: 'r1',
+    scenario:
+      'NAS100 5m. A Pulse Cross Long signal fires. Tooltip reports: Ribbon Strong (\u2713), ADX 28 (\u2713), Volume 1.6\u00d7 (\u2713), Health 72% (\u2713). Context tag: Sweep + FVG.',
+    prompt: 'What is the conviction tier and how do you size?',
+    options: [
+      {
+        id: 'a',
+        text: 'Standard tier \u2014 four factors confirmed is normal, not exceptional. Size 1.0x baseline.',
+        correct: false,
+        explain:
+          'Wrong. 4/4 factors AND a Sweep+FVG context tag is the apex setup the framework can produce. The Sweep+FVG tag is priority-1 in the cascade \u2014 the highest-confluence context CIPHER recognises. This combination is rare; treating it as standard forfeits the asymmetric edge.',
+      },
+      {
+        id: 'b',
+        text: 'Conviction tier \u2014 4/4 plus apex context tag. Size up to 1.5x baseline within risk cap.',
+        correct: true,
+        explain:
+          'Correct. 4/4 conviction score + apex context tag = Conviction tier. Sizing protocol allows up to 1.5x baseline within the max risk cap. This is the highest-confluence setup CIPHER produces. Take the size with confidence \u2014 the framework is broadcasting alignment across every dimension.',
+      },
+      {
+        id: 'c',
+        text: 'Skip \u2014 setups this strong are usually traps.',
+        correct: false,
+        explain:
+          'Counter-intuitive contrarianism. The framework was built to identify high-confluence setups precisely so you can engage them with conviction. Skipping a 4/4 apex setup because "it looks too good" is the operator overriding the synthesis with a hunch \u2014 mistake six in section fifteen.',
+      },
+      {
+        id: 'd',
+        text: 'Standard tier but skip the Sweep+FVG context \u2014 too complex to verify in real-time.',
+        correct: false,
+        explain:
+          'The synthesis tooltip already verified the context tag. The cascade ran in milliseconds; you do not re-verify it. Treating the context tag as "too complex" rather than reading the tooltip is the operator failing to use the tool the framework provides.',
+      },
+    ],
+  },
+  {
+    id: 'r2',
+    scenario:
+      'XAUUSD 1H. A Pulse Cross Short signal fires. Tooltip reports: Ribbon Strong (\u2713), ADX 19 (\u2717 below 25), Volume 1.1\u00d7 (\u2713), Health 58% (\u2713 above 50). Context tag: Breakout (priority 4).',
+    prompt: 'What is the conviction tier and the right call?',
+    options: [
+      {
+        id: 'a',
+        text: 'Standard tier \u2014 3/4 factors with a mid-priority context tag. Engage at standard size.',
+        correct: true,
+        explain:
+          'Correct. 3/4 factors + Breakout context tag = Standard tier. This is the framework\u2019s baseline engagement signal. Size 1.0x baseline within risk cap. Standard does not mean weak \u2014 it means the framework has confirmed enough factors to engage without override.',
+      },
+      {
+        id: 'b',
+        text: 'Skip \u2014 ADX failure means trend conditions are absent.',
+        correct: false,
+        explain:
+          'ADX 19 is below the 25 threshold but the other three factors are confirmed. The 3/4 score is the Standard tier threshold by design. Skipping at 3/4 means the operator has set their personal threshold higher than the framework\u2019s \u2014 acceptable as a conservatism choice but not framework-mandated.',
+      },
+      {
+        id: 'c',
+        text: 'Conviction tier \u2014 Breakout context promotes any 3/4 to Conviction.',
+        correct: false,
+        explain:
+          'Wrong. Only the apex context tags (Sweep+FVG, Sweep) promote to Conviction tier. Breakout is priority 4 in the cascade \u2014 mid-priority, qualifies a Standard engagement but does not promote the tier.',
+      },
+      {
+        id: 'd',
+        text: 'Standard tier but reduce size 50% because of ADX failure.',
+        correct: false,
+        explain:
+          'The 3/4 score already accounts for the ADX failure. Reducing size further is the operator double-counting the ADX miss \u2014 once via the score, again via discretion. The framework prices the missing factor into the tier; let it.',
+      },
+    ],
+  },
+  {
+    id: 'r3',
+    scenario:
+      'GBPUSD 15m. A Pulse Cross Long signal fires. Tooltip: Ribbon Strong (\u2713), ADX 22 (\u2717), Volume 0.8\u00d7 (\u2717), Health 45% (\u2717 below 50). Context tag: Range (priority 11, low confluence).',
+    prompt: 'What does the synthesis call for?',
+    options: [
+      {
+        id: 'a',
+        text: 'Watch tier \u2014 1/4 factors plus low-priority context. Note the setup but do not engage.',
+        correct: true,
+        explain:
+          'Correct. 1/4 factors + low-priority context = Watch tier. The synthesis is broadcasting "the signal fired but the supporting factors are absent." The right action is to log the setup in the journal as observation \u2014 not engagement. Watch tier exists precisely so operators do not reflexively trade every signal that fires.',
+      },
+      {
+        id: 'b',
+        text: 'Standard tier \u2014 the signal fired, that is sufficient.',
+        correct: false,
+        explain:
+          'A signal firing is not engagement permission. The 4-factor synthesis exists because raw signals fire too often for blind engagement. 1/4 factors fails the Standard tier threshold (which requires 3/4). The framework is explicit: do not engage at Watch tier.',
+      },
+      {
+        id: 'c',
+        text: 'Skip but compensate by taking the next 4/4 setup at 2x size.',
+        correct: false,
+        explain:
+          'Compensation sizing across separate setups breaks the per-trade risk discipline. Each setup gets sized on its own merits, not on a "make-up for skipped trades" basis. This is the gambler\u2019s fallacy in trading form.',
+      },
+      {
+        id: 'd',
+        text: 'Engage but with the SL at the structural minimum to limit damage.',
+        correct: false,
+        explain:
+          'Tightening the SL to compensate for low conviction is engaging while pretending you are not. Watch tier means do not engage. Tight stops on weak setups produce frequent stop-outs without the asymmetric upside to compensate \u2014 the worst combination.',
+      },
+    ],
+  },
+  {
+    id: 'r4',
+    scenario:
+      'You have just engaged a 4/4 Conviction tier trade on EURUSD 5m at 1.0850 long. The L11.22 trade plan calls for SL at 1.0832 (Risk Map Auto), TP1 at 1R, TP2 at 2R, TP3 at 3R, scaling 50/30/20, BE move at TP1.',
+    prompt: 'Price hits TP1 at 1.0868. What do you do?',
+    options: [
+      {
+        id: 'a',
+        text: 'Take 50% off and move SL to BE. Trail the rest per plan.',
+        correct: true,
+        explain:
+          'Correct. The L11.22 trade plan is paint-by-numbers. TP1 hit = 50% off, SL to BE. The remaining 50% (30 + 20) trails for TP2 and TP3. The plan was written before the trade so emotional state during the trade does not override execution.',
+      },
+      {
+        id: 'b',
+        text: 'Hold all of it \u2014 a 4/4 Conviction setup deserves a full hold for TP3.',
+        correct: false,
+        explain:
+          'Conviction tier sizing is set at entry, not modified at exit. 1.5x baseline at entry already reflects the conviction. Holding 100% to TP3 abandons the staged exit that protects against reversal, and gives back the asymmetric advantage the partial exits provide.',
+      },
+      {
+        id: 'c',
+        text: 'Take 100% off \u2014 a winner is a winner.',
+        correct: false,
+        explain:
+          'Premature exit forfeits the framework\u2019s positive expectancy. The 50/30/20 staging is calculated to capture trend extension while protecting against reversal. Exiting fully at TP1 turns a designed asymmetric trade into a flat 1R win.',
+      },
+      {
+        id: 'd',
+        text: 'Take 30% off and widen the SL to give the trade room.',
+        correct: false,
+        explain:
+          'Two protocol violations: wrong scale-out percentage and SL widening. Widening the SL after entry is the cardinal mistake of trade management \u2014 it converts a defined-risk trade into an undefined-risk trade. Plan-driven scaling and BE moves are the discipline.',
+      },
+    ],
+  },
+  {
+    id: 'r5',
+    scenario:
+      'You have logged 8 trades this session: 2 Conviction tier (1 winner +2.4R, 1 loser -1.0R), 4 Standard tier (2 winners totaling +2.6R, 2 losers totaling -2.0R), 2 Watch tier "engaged anyway" (both losers, -2.0R total). Net session: +0.0R.',
+    prompt: 'What does the journal review tell you?',
+    options: [
+      {
+        id: 'a',
+        text: 'Even session \u2014 wash, move on.',
+        correct: false,
+        explain:
+          'The headline P&L hides the protocol violation. Excluding the two Watch-tier engagements (which the framework explicitly forbids), session P&L is +2.0R, not 0R. The two Watch trades cost you 2R and added zero edge. The journal is showing you which discipline failure cost the session.',
+      },
+      {
+        id: 'b',
+        text: 'Watch-tier engagements cost 2R \u2014 protocol violation, journal it as the lesson.',
+        correct: true,
+        explain:
+          'Correct. Conviction (1.4R net) + Standard (0.6R net) = +2.0R legitimate edge. The two Watch trades dragged net to flat. The journal entry should explicitly flag "engaged at Watch tier x2" as the lesson. Tomorrow\u2019s adjustment: skip Watch tier without exception until the discipline holds for 20 sessions.',
+      },
+      {
+        id: 'c',
+        text: 'Cut all sizing in half tomorrow \u2014 the win rate is too low.',
+        correct: false,
+        explain:
+          'Reactive sizing changes mistake protocol failure for tier sizing failure. The Conviction and Standard tiers performed at expectancy; the Watch tier engagements were the leak. The fix is discipline (skip Watch), not sizing (which would only reduce already-correct R-multiples).',
+      },
+      {
+        id: 'd',
+        text: 'Take more Conviction setups tomorrow to compensate.',
+        correct: false,
+        explain:
+          '"Force more Conviction setups" is not a real adjustment \u2014 you take what the market provides. The lesson is to NOT take Watch tier, not to take more of something else. Setting an aspirational quota for Conviction trades creates pressure that distorts the synthesis read on borderline setups.',
+      },
+    ],
+  },
+];
+
 // ============================================================
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] } },
-};
-
-const stagger = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-};
+// QUIZ QUESTIONS — knowledge check
+// ============================================================
+const quizQuestions = [
+  {
+    id: 'q1',
+    question: 'What are the four factors in the conviction synthesis score?',
+    options: [
+      { id: 'a', text: 'Trend / Momentum / Volume / Volatility', correct: false },
+      { id: 'b', text: 'Ribbon / ADX / Volume / Health', correct: true },
+      { id: 'c', text: 'Pulse / Flow / Tension / Velocity', correct: false },
+      { id: 'd', text: 'Setup / Entry / Stop / Target', correct: false },
+    ],
+    explain:
+      'The four factors are Ribbon (trend strength), ADX (trend conviction \u2265 25), Volume (relative ratio \u2265 1.0), and Health (CIPHER\u2019s composite health score \u2265 50). Each contributes one point to the 0-4 conviction score. The factors are orthogonal by design \u2014 a Strong signal needs alignment across all four dimensions, not redundant signals.',
+  },
+  {
+    id: 'q2',
+    question: 'How many context tags are in the priority cascade?',
+    options: [
+      { id: 'a', text: '5', correct: false },
+      { id: 'b', text: '8', correct: false },
+      { id: 'c', text: '13', correct: true },
+      { id: 'd', text: '21', correct: false },
+    ],
+    explain:
+      'The cascade has 13 tags ranked by confluence. Priority 1: Sweep + FVG (apex). Priority 2: Sweep. Priorities 3-5: Breakout, S/R, Trend. Priorities 6-9: Structural alignments. Priorities 10-13: Lower-confluence contexts (Range, Chop, Counter-trend, etc.). The first matching tag wins \u2014 the cascade fires the highest-priority valid tag and stops.',
+  },
+  {
+    id: 'q3',
+    question: 'What conviction score qualifies for the Conviction tier (highest sizing)?',
+    options: [
+      { id: 'a', text: '2/4 with any context tag', correct: false },
+      { id: 'b', text: '3/4 with apex context tag', correct: false },
+      { id: 'c', text: '4/4 with apex context tag (Sweep+FVG or Sweep)', correct: true },
+      { id: 'd', text: '4/4 with any context tag', correct: false },
+    ],
+    explain:
+      'Conviction tier requires both: 4/4 factors AND an apex context tag (Sweep+FVG or Sweep). 4/4 alone with a mid-priority tag stays at Standard tier. The combined gating exists because the apex context tags are statistically rare, and pairing them with full factor confluence is the highest-edge setup the framework identifies.',
+  },
+  {
+    id: 'q4',
+    question: 'What is the sizing rule for the Standard tier?',
+    options: [
+      { id: 'a', text: '0.5x baseline', correct: false },
+      { id: 'b', text: '1.0x baseline within max risk cap', correct: true },
+      { id: 'c', text: '1.5x baseline within max risk cap', correct: false },
+      { id: 'd', text: '2.0x baseline', correct: false },
+    ],
+    explain:
+      'Standard tier sizes at 1.0x baseline within the max risk cap. Standard is the framework\u2019s default engagement size. Conviction tier scales to 1.5x within cap. Watch tier is no engagement (size 0). The cap exists so even Conviction tier never exceeds the per-trade risk limit set in the trade plan.',
+  },
+  {
+    id: 'q5',
+    question: 'What is the framework\u2019s rule on Watch tier setups?',
+    options: [
+      { id: 'a', text: 'Engage at half size to test the setup.', correct: false },
+      { id: 'b', text: 'Engage at standard size with tight stop.', correct: false },
+      { id: 'c', text: 'Do not engage. Log in journal as observation only.', correct: true },
+      { id: 'd', text: 'Engage if the chart "looks right" to override the framework.', correct: false },
+    ],
+    explain:
+      'Watch tier is do-not-engage. The synthesis is reporting that the supporting factors are absent. Engaging anyway \u2014 even at reduced size or with tight stops \u2014 is the discipline failure that section fifteen documents. Journal the setup as observation; the data accumulates and informs future framework refinements.',
+  },
+  {
+    id: 'q6',
+    question: 'In the L11.22 trade plan, what is the BE-move trigger?',
+    options: [
+      { id: 'a', text: 'When price moves 1R in your favor', correct: false },
+      { id: 'b', text: 'When TP1 is hit', correct: true },
+      { id: 'c', text: 'After 30 minutes regardless of price', correct: false },
+      { id: 'd', text: 'When the candle closes against you', correct: false },
+    ],
+    explain:
+      'BE move at TP1. The TP1 hit is the framework\u2019s confirmation that the trade is working. Moving SL to BE at TP1 protects the entry capital while the remaining 50% (30+20) trails for TP2 and TP3. Other BE triggers (time-based, candle-based) are operator overrides, not framework rules.',
+  },
+  {
+    id: 'q7',
+    question: 'What is the canonical scaling structure in the trade plan?',
+    options: [
+      { id: 'a', text: '100% at first target', correct: false },
+      { id: 'b', text: '50/50 at TP1 and TP2', correct: false },
+      { id: 'c', text: '50/30/20 at TP1/TP2/TP3 (1R/2R/3R)', correct: true },
+      { id: 'd', text: '33/33/34 evenly distributed', correct: false },
+    ],
+    explain:
+      'The canonical scaling is 50% off at TP1 (1R), 30% off at TP2 (2R), 20% trails for TP3 (3R) or extension. Front-loaded scaling protects the trade while leaving meaningful exposure to capture trend extension. The 50/30/20 ratio is calibrated for the framework\u2019s observed win-rate and average R-multiple.',
+  },
+  {
+    id: 'q8',
+    question: 'When the synthesis tooltip and your discretionary read disagree, what does the framework prescribe?',
+    options: [
+      { id: 'a', text: 'Override the synthesis \u2014 your eyes know better.', correct: false },
+      { id: 'b', text: 'Engage at half size as a compromise.', correct: false },
+      { id: 'c', text: 'Honor the synthesis. The four-factor + cascade gating is more reliable than discretion under load.', correct: true },
+      { id: 'd', text: 'Wait for the next signal and skip this one regardless.', correct: false },
+    ],
+    explain:
+      'Honor the synthesis. The four-factor score and cascade exist precisely because operator discretion fails under load. The synthesis is mechanical, fast, and consistent; discretion is biased, slow, and inconsistent. Operators who routinely override the synthesis end up with worse results than those who follow it mechanically.',
+  },
+];
+// ============================================================
+// CONFETTI — gold-standard from L11.11
+// ============================================================
+function Confetti({ active }: { active: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    if (!active) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    type P = { x: number; y: number; vx: number; vy: number; c: string; s: number; r: number; vr: number };
+    const colors = ['#26A69A', '#FFB300', '#EF5350', '#FFFFFF', '#FBBF24'];
+    const particles: P[] = Array.from({ length: 120 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -20,
+      vx: (Math.random() - 0.5) * 6,
+      vy: Math.random() * 3 + 2,
+      c: colors[Math.floor(Math.random() * colors.length)],
+      s: Math.random() * 6 + 4,
+      r: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 0.2,
+    }));
+    let rafId = 0;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.12;
+        p.r += p.vr;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.r);
+        ctx.fillStyle = p.c;
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s);
+        ctx.restore();
+      });
+      rafId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => cancelAnimationFrame(rafId);
+  }, [active]);
+  if (!active) return null;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-[100]"
+      style={{ width: '100vw', height: '100vh' }}
+    />
+  );
+}
 
 // ============================================================
-// ANIMSCENE — locked gold-standard wrapper from L11.18
-// Signature is (ctx, t, w, h). DO NOT REORDER.
+// ANIMSCENE — gold-standard from L11.11
 // ============================================================
 function AnimScene({
   draw,
@@ -114,3518 +437,1633 @@ function AnimScene({
   );
 }
 
-// ============================================================
-// CONFETTI — gold-standard cert reveal pattern from L11.18
-// ============================================================
-function Confetti({ active }: { active: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    if (!active) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    type P = { x: number; y: number; vx: number; vy: number; c: string; s: number; r: number; vr: number };
-    const colors = ['#26A69A', '#FFB300', '#EF5350', '#FFFFFF', '#FBBF24'];
-    const particles: P[] = Array.from({ length: 120 }, () => ({
-      x: Math.random() * canvas.width,
-      y: -20,
-      vx: (Math.random() - 0.5) * 6,
-      vy: Math.random() * 3 + 2,
-      c: colors[Math.floor(Math.random() * colors.length)],
-      s: Math.random() * 6 + 4,
-      r: Math.random() * Math.PI * 2,
-      vr: (Math.random() - 0.5) * 0.2,
-    }));
-    let rafId = 0;
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.12;
-        p.r += p.vr;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.r);
-        ctx.fillStyle = p.c;
-        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s);
-        ctx.restore();
-      });
-      rafId = requestAnimationFrame(draw);
-    };
-    draw();
-    return () => cancelAnimationFrame(rafId);
-  }, [active]);
-  if (!active) return null;
-  return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[100]"
-      style={{ width: '100vw', height: '100vh' }}
-    />
-  );
-}
 
 // ============================================================
-// HELPER — easing
+// ANIMATIONS — 13 total
+// Theme: conviction synthesis, 4-factor radar, cascade, tier sizing
 // ============================================================
-const easeInOut = (x: number): number => {
-  return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-};
 
-// ============================================================
-// ANIMATION 1 — ConvictionMeterAnim (Hero / S01 GC)
-// The 4-factor conviction meter. Four bars (Ribbon / ADX / Volume / Health)
-// fill in sequence over 6 seconds. The score counter animates 0 → 4.
-// At 4/4, the entire meter glows teal and a "+" badge ignites.
-// This is the visual signature of the lesson.
-// ============================================================
-function ConvictionMeterAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 8.0;
-    const tt = (t % T) / T;
-
-    // Title at top
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 14px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('CONVICTION SCORE', w / 2, 28);
-
-    // Big numeric counter
-    const factors = ['RIBBON', 'ADX > 20', 'VOLUME > 1.0\u00D7', 'HEALTH > 50%'];
-    const fillStarts = [0.10, 0.25, 0.40, 0.55];
-    const fillDur = 0.10;
-
-    const filled: number[] = factors.map((_, i) => {
-      const s = fillStarts[i];
-      if (tt < s) return 0;
-      if (tt > s + fillDur) return 1;
-      return easeInOut((tt - s) / fillDur);
-    });
-    const score = filled.reduce((a, b) => a + (b > 0.95 ? 1 : 0), 0);
-
-    // Big counter
-    const meterTeal = score === 4 && tt > 0.70;
-    const counterColor = meterTeal ? '#26A69A' : score >= 3 ? '#26A69A' : score >= 2 ? '#FFB300' : 'rgba(255,255,255,0.4)';
-    ctx.fillStyle = counterColor;
-    ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
-    ctx.fillText(`${score}/4`, w / 2, 90);
-
-    // STRONG / STANDARD / NONE label
-    let lbl = 'WAITING';
-    let lblColor = 'rgba(255,255,255,0.4)';
-    if (score === 4) { lbl = '\u2795 STRONG \u2014 4/4'; lblColor = '#26A69A'; }
-    else if (score === 3) { lbl = '\u2795 STRONG \u2014 3/4'; lblColor = '#26A69A'; }
-    else if (score === 2) { lbl = 'STANDARD \u2014 2/4'; lblColor = '#FFB300'; }
-    else if (score === 1) { lbl = 'STANDARD \u2014 1/4'; lblColor = '#FFB300'; }
-
-    ctx.fillStyle = lblColor;
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
-    ctx.fillText(lbl, w / 2, 112);
-
-    // Four factor bars
-    const barW = w * 0.7;
-    const barX = (w - barW) / 2;
-    const barH = 18;
-    const gap = 12;
-    const startY = 145;
-
-    factors.forEach((label, i) => {
-      const y = startY + i * (barH + gap + 14);
-      // Label
-      ctx.fillStyle = filled[i] > 0.5 ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
-      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(label, barX, y - 4);
-      // Check or dot
-      ctx.textAlign = 'right';
-      ctx.fillStyle = filled[i] > 0.95 ? '#26A69A' : 'rgba(255,255,255,0.3)';
-      ctx.fillText(filled[i] > 0.95 ? '\u2713' : '\u00B7', barX + barW, y - 4);
-
-      // Bar bg
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
-      ctx.fillRect(barX, y, barW, barH);
-      // Bar fill
-      const fillW = barW * filled[i];
-      ctx.fillStyle = filled[i] > 0.95 ? '#26A69A' : 'rgba(38, 166, 154, 0.6)';
-      ctx.fillRect(barX, y, fillW, barH);
-      // Bar border
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(barX, y, barW, barH);
-    });
-
-    // Glow at 4/4
-    if (meterTeal) {
-      const pulse = 0.5 + 0.5 * Math.sin(t * 4);
-      ctx.strokeStyle = `rgba(38, 166, 154, ${0.3 + 0.4 * pulse})`;
-      ctx.lineWidth = 3;
-      ctx.strokeRect(barX - 12, startY - 22, barW + 24, factors.length * (barH + gap + 14) + 8);
-    }
-
-    // Footer
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.font = '10px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Each factor that passes its test \u2014 add 1.', w / 2, h - 14);
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={4 / 3} />;
-}
-
-// ============================================================
-// ANIMATION 2 — FactorStackAnim (S02 — The 4-Factor Engine)
-// Four columns (Ribbon, ADX, Volume, Health) — each a stack of cells
-// that light up when their condition is met. The cells then collapse
-// into a single integer score (sum). Loops across 4 different scenarios:
-//   3/4 (Strong threshold), 4/4 (max), 2/4 (Standard), 1/4 (weak).
-// Teaches the formula visually.
-// ============================================================
-function FactorStackAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 12.0;
-    const tt = (t % T) / T;
-
-    // Four scenarios, each lasting 1/4 of the cycle
-    const scenarios = [
-      { name: 'TREND DAY', factors: [true, true, true, false], score: 3 },
-      { name: 'INSTITUTIONAL ALIGNMENT', factors: [true, true, true, true], score: 4 },
-      { name: 'WEAK BREAKOUT', factors: [false, true, true, false], score: 2 },
-      { name: 'CHOPPY MARKET', factors: [false, false, true, false], score: 1 },
-    ];
-
-    const scenIdx = Math.floor(tt * 4);
-    const scen = scenarios[scenIdx];
-    const localT = (tt * 4) % 1;
-    const reveal = Math.min(1, localT * 4);
-
-    // Title at top
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('SCENARIO', w / 2, 22);
-
-    ctx.fillStyle = 'rgba(255,255,255,0.95)';
-    ctx.font = 'bold 14px system-ui, -apple-system, sans-serif';
-    ctx.fillText(scen.name, w / 2, 42);
-
-    // Four columns
-    const labels = ['RIBBON', 'ADX', 'VOL', 'HEALTH'];
-    const colW = w / 5.5;
-    const colGap = (w - 4 * colW) / 5;
-    const startX = colGap;
-    const colTop = 70;
-    const colHeight = h - 150;
-
-    labels.forEach((lbl, i) => {
-      const x = startX + i * (colW + colGap);
-      const isOn = scen.factors[i] && reveal > (i * 0.15);
-      const colColor = isOn ? '#26A69A' : 'rgba(255,255,255,0.08)';
-
-      // Column body
-      ctx.fillStyle = isOn ? 'rgba(38, 166, 154, 0.18)' : 'rgba(255,255,255,0.03)';
-      ctx.fillRect(x, colTop, colW, colHeight);
-      ctx.strokeStyle = isOn ? '#26A69A' : 'rgba(255,255,255,0.1)';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(x, colTop, colW, colHeight);
-
-      // Status icon center
-      ctx.fillStyle = isOn ? '#26A69A' : 'rgba(255,255,255,0.35)';
-      ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(isOn ? '\u2713' : '\u00B7', x + colW / 2, colTop + colHeight / 2 + 8);
-
-      // Label below
-      ctx.fillStyle = isOn ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
-      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
-      ctx.fillText(lbl, x + colW / 2, colTop + colHeight + 16);
-
-      // Counter beneath label
-      ctx.fillStyle = isOn ? '#26A69A' : 'rgba(255,255,255,0.3)';
-      ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
-      ctx.fillText(isOn ? '+1' : '0', x + colW / 2, colTop + colHeight + 32);
-    });
-
-    // Sum line at bottom
-    const sumY = h - 28;
-    const visScore = Math.floor(reveal * 4) >= scen.score ? scen.score : Math.min(scen.score, Math.floor(reveal * 4));
-    const sumColor = visScore === 4 ? '#26A69A' : visScore === 3 ? '#26A69A' : visScore === 2 ? '#FFB300' : '#EF5350';
-    const sumLbl = visScore === 4 ? '\u2795 STRONG' : visScore === 3 ? '\u2795 STRONG' : visScore === 2 ? 'STANDARD' : visScore === 1 ? 'STANDARD' : 'NONE';
-
-    ctx.fillStyle = sumColor;
-    ctx.font = 'bold 18px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`SUM = ${visScore}/4   \u2192   ${sumLbl}`, w / 2, sumY);
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={4 / 3} />;
-}
-
-// ============================================================
-// ANIMATION 3 — MinConvictionFilterAnim (S03 — The Min Conviction Filter)
-// Six signal triangles fire in sequence, each with a 1-4 conviction score.
-// A horizontal "min_conviction = 0" line is drawn first — all 6 print.
-// Then it lifts to "min_conviction = 3" — only the 3+ signals survive
-// (others fade out). Teaches the policy lever.
-// ============================================================
-function MinConvictionFilterAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 10.0;
-    const tt = (t % T) / T;
-
-    // 6 signals — score, x position
-    const signals = [
-      { score: 2, x: 0.12, dir: 'long' as const },
-      { score: 4, x: 0.25, dir: 'long' as const },
-      { score: 1, x: 0.40, dir: 'short' as const },
-      { score: 3, x: 0.55, dir: 'long' as const },
-      { score: 2, x: 0.70, dir: 'short' as const },
-      { score: 3, x: 0.85, dir: 'long' as const },
-    ];
-
-    const phaseA = tt < 0.45;
-    const phaseB = tt >= 0.55;
-    const lift = tt > 0.45 && tt < 0.55 ? (tt - 0.45) / 0.10 : phaseB ? 1 : 0;
-
-    // Threshold line
-    const minConv = lift < 0.5 ? 0 : 3;
-    const thrY = h - 50 - lift * 80;
-
-    ctx.strokeStyle = 'rgba(255,179,0,0.4)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 4]);
-    ctx.beginPath();
-    ctx.moveTo(20, thrY);
-    ctx.lineTo(w - 20, thrY);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Threshold label
-    ctx.fillStyle = '#FFB300';
-    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(`min_conviction = ${minConv}`, 24, thrY - 6);
-
-    // Signals
-    signals.forEach((sig, i) => {
-      const baseY = h - 50;
-      const sigY = baseY - sig.score * 25;
-      const fireT = (i * 0.07);
-      const visible = tt > fireT;
-      if (!visible) return;
-
-      const survives = sig.score >= minConv;
-      const fadeStart = phaseB ? 0.65 : 1.5;
-      const opacity = !survives && tt > fadeStart ? Math.max(0, 1 - (tt - fadeStart) / 0.15) : 1;
-
-      ctx.globalAlpha = opacity;
-
-      // Triangle
-      const triX = w * sig.x;
-      const isLong = sig.dir === 'long';
-      const isStrong = sig.score >= 3;
-      const triColor = isLong ? '#26A69A' : '#EF5350';
-      const triSize = isStrong ? 12 : 8;
-
-      ctx.fillStyle = triColor;
-      ctx.beginPath();
-      if (isLong) {
-        ctx.moveTo(triX, sigY - triSize);
-        ctx.lineTo(triX - triSize, sigY + triSize);
-        ctx.lineTo(triX + triSize, sigY + triSize);
-      } else {
-        ctx.moveTo(triX, sigY + triSize);
-        ctx.lineTo(triX - triSize, sigY - triSize);
-        ctx.lineTo(triX + triSize, sigY - triSize);
-      }
-      ctx.closePath();
-      ctx.fill();
-
-      // Strong + marker
-      if (isStrong) {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('+', triX, sigY + (isLong ? 4 : 0));
-      }
-
-      // Score badge
-      ctx.fillStyle = isStrong ? '#26A69A' : 'rgba(255,255,255,0.4)';
-      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(`${sig.score}/4`, triX, sigY + (isLong ? 28 : -22));
-
-      ctx.globalAlpha = 1;
-    });
-
-    // Title
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(phaseB ? 'SWING TRADER \u2014 only 3+ prints' : phaseA ? 'NONE \u2014 all signals print' : 'RAISING THE FLOOR\u2026', w / 2, 24);
-
-    // Footer
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '10px system-ui, -apple-system, sans-serif';
-    ctx.fillText('The threshold is the policy. The score is the read.', w / 2, h - 14);
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={4 / 3} />;
-}
-
-// ============================================================
-// ANIMATION 4 — StrongVsStandardAnim (S04 — Strong vs Standard On Chart)
-// Two rows of price action. Row 1: a Standard signal fires (small label,
-// no +). Row 2: a Strong signal fires on a different bar (larger label,
-// "+" marker). The hover tooltip flashes on each, with the bottom line
-// revealing "Strong — 3/4 factors" only on the Strong example.
-// ============================================================
-function StrongVsStandardAnim() {
+// A1 — FourFactorHeroAnim (S01) — 4 factor pillars filling
+function FourFactorHeroAnim() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     const T = 9.0;
     const tt = (t % T) / T;
-
-    // Two side-by-side panels
-    const panelW = (w - 30) / 2;
-    const panelH = h - 30;
-    const padX = 15;
-    const padY = 15;
-
-    // Render both panels
-    const renderPanel = (px: number, py: number, isStrong: boolean) => {
-      const pw = panelW;
-      const ph = panelH;
-
-      // Panel bg
-      ctx.fillStyle = 'rgba(255,255,255,0.02)';
-      ctx.fillRect(px, py, pw, ph);
-      ctx.strokeStyle = isStrong ? 'rgba(38, 166, 154, 0.3)' : 'rgba(255,255,255,0.08)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(px, py, pw, ph);
-
-      // Title
-      ctx.fillStyle = isStrong ? '#26A69A' : 'rgba(255,255,255,0.6)';
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE 4-FACTOR CONVICTION SCORE', w / 2, 22);
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = '10px system-ui, -apple-system, sans-serif';
+    ctx.fillText('Ribbon \u00d7 ADX \u00d7 Volume \u00d7 Health', w / 2, 38);
+    const factors = [
+      { name: 'RIBBON', sub: 'Strong', value: 1, color: '#26A69A' },
+      { name: 'ADX', sub: '28 \u2265 25', value: 1, color: '#FFB300' },
+      { name: 'VOLUME', sub: '1.6\u00d7', value: 1, color: '#EF5350' },
+      { name: 'HEALTH', sub: '72%', value: 1, color: 'rgba(155, 220, 255, 0.9)' },
+    ];
+    const colW = (w - 60) / 4;
+    const startX = 30;
+    const colTop = 56;
+    const colH = h - 110;
+    factors.forEach((f, i) => {
+      const arriveStart = i * 0.13;
+      const reveal = Math.min(1, Math.max(0, (tt - arriveStart) / 0.15));
+      if (reveal <= 0) return;
+      const x = startX + i * colW + 4;
+      const cw = colW - 8;
+      ctx.globalAlpha = reveal;
+      ctx.fillStyle = `${f.color}10`;
+      ctx.fillRect(x, colTop, cw, colH);
+      ctx.strokeStyle = f.color;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x, colTop, cw, colH);
+      ctx.fillStyle = f.color;
       ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(isStrong ? 'STRONG  \u2014  3/4' : 'STANDARD  \u2014  2/4', px + pw / 2, py + 18);
-
-      // Mini candles
-      const candleArea = { x: px + 12, y: py + 32, w: pw - 24, h: ph * 0.55 };
-      const nC = 12;
-      const cw = candleArea.w / nC;
-      // Pseudo-candles, deterministic
-      const candlesData = isStrong
-        ? [0.5, 0.45, 0.5, 0.55, 0.5, 0.6, 0.55, 0.65, 0.7, 0.6, 0.5, 0.4]
-        : [0.5, 0.55, 0.45, 0.5, 0.55, 0.5, 0.6, 0.5, 0.55, 0.5, 0.45, 0.5];
-      for (let i = 0; i < nC; i++) {
-        const cx = candleArea.x + i * cw + cw / 2;
-        const open = candlesData[i] * candleArea.h;
-        const close = (i < nC - 1 ? candlesData[i + 1] : candlesData[i]) * candleArea.h;
-        const top = Math.min(open, close);
-        const bot = Math.max(open, close);
-        const isUp = close < open;
-        ctx.fillStyle = isUp ? '#26A69A' : '#EF5350';
-        ctx.fillRect(cx - cw * 0.3, candleArea.y + top, cw * 0.6, Math.max(2, bot - top));
-        ctx.strokeStyle = isUp ? '#26A69A' : '#EF5350';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(cx, candleArea.y + top - 4);
-        ctx.lineTo(cx, candleArea.y + bot + 4);
-        ctx.stroke();
-      }
-
-      // The signal label fires at tt > 0.2, persists
-      if (tt > 0.2) {
-        const sigBar = isStrong ? 7 : 6;
-        const sigX = candleArea.x + sigBar * cw + cw / 2;
-        const sigY = candleArea.y + candleArea.h - 8;
-        const lblW = isStrong ? 38 : 28;
-        const lblH = isStrong ? 18 : 14;
-
-        // Label box
-        ctx.fillStyle = '#26A69A';
-        ctx.fillRect(sigX - lblW / 2, sigY + 6, lblW, lblH);
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = `bold ${isStrong ? 10 : 8}px system-ui, -apple-system, sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.fillText(isStrong ? 'Long +' : 'Long', sigX, sigY + 6 + lblH * 0.7);
-
-        // Triangle pointer
-        ctx.fillStyle = '#26A69A';
-        ctx.beginPath();
-        ctx.moveTo(sigX, sigY);
-        ctx.lineTo(sigX - 4, sigY + 6);
-        ctx.lineTo(sigX + 4, sigY + 6);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      // Tooltip preview at tt > 0.5
-      if (tt > 0.5) {
-        const ttX = px + 14;
-        const ttY = py + ph * 0.65;
-        const ttW = pw - 28;
-        const ttH = ph * 0.30;
-
-        ctx.fillStyle = 'rgba(20,20,20,0.95)';
-        ctx.fillRect(ttX, ttY, ttW, ttH);
-        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(ttX, ttY, ttW, ttH);
-
-        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-        ctx.font = '9px system-ui, -apple-system, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText('Pulse Cross', ttX + 8, ttY + 14);
-        ctx.fillStyle = isStrong ? 'rgba(38, 166, 154, 0.85)' : 'rgba(255,255,255,0.4)';
-        ctx.fillText('Ribbon: ' + (isStrong ? '\u2713' : '\u2014'), ttX + 8, ttY + 26);
-        ctx.fillText('ADX: ' + (isStrong ? '\u2713' : '\u2713'), ttX + 8, ttY + 38);
-        ctx.fillStyle = 'rgba(38, 166, 154, 0.85)';
-        ctx.fillText('Volume: \u2713', ttX + 8, ttY + 50);
-        ctx.fillStyle = isStrong ? 'rgba(38, 166, 154, 0.85)' : 'rgba(255,255,255,0.4)';
-        ctx.fillText('Health: ' + (isStrong ? '\u2713' : '\u2014'), ttX + 8, ttY + 62);
-
-        // Strong line only on strong panel
-        if (isStrong && tt > 0.65) {
-          ctx.fillStyle = '#26A69A';
-          ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-          ctx.fillText('\u2795 Strong \u2014 3/4 factors', ttX + 8, ttY + 80);
-        }
-      }
-    };
-
-    renderPanel(padX, padY, false);
-    renderPanel(padX + panelW + 15, padY, true);
-
-    // Bottom caption
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '10px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Same chart. Same algorithm. Different conviction.', w / 2, h - 8);
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
-}
-
-
-// ============================================================
-// ANIMATION 5 — ContextCascadeAnim (S05 — The 13-Tag Context Cascade)
-// 13 tag rows stack vertically. They fall in from the top, one by one,
-// in priority order. A signal fires (triangle on left), then a "match
-// pointer" sweeps down the list and stops at the first matching tag.
-// All lower tags dim out (suppressed). The selected tag glows.
-// Cycles through 4 different signal types showing different stops.
-// ============================================================
-function ContextCascadeAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 14.0;
-    const tt = (t % T) / T;
-
-    const tags = [
-      'Sweep + FVG',
-      'Sweep',
-      'Breakout',
-      'Snap',
-      'Exhaustion',
-      'S/R Break',
-      'At Support',
-      'At Spine',
-      'At FVG',
-      'Overextended',
-      'Fade',
-      'Trend',
-      'Momentum',
-    ];
-
-    // 4 scenarios — which tag wins
-    const scenarios = [
-      { match: 0, name: 'NAS100 4H \u2014 sweep with FVG present' },
-      { match: 3, name: 'GBPUSD 15m \u2014 Tension Snap, no S/R nearby' },
-      { match: 6, name: 'XAUUSD 1H \u2014 fired at swing low' },
-      { match: 11, name: 'EURUSD 1H \u2014 with-trend, no special context' },
-    ];
-
-    const scenIdx = Math.floor(tt * 4);
-    const scen = scenarios[scenIdx];
-    const localT = (tt * 4) % 1;
-
-    // Title
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('PRIORITY CASCADE', w / 2, 18);
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-    ctx.fillText(scen.name, w / 2, 36);
-
-    // Tag list
-    const listX = 50;
-    const listY = 56;
-    const rowH = (h - 76) / tags.length;
-    const matchProgress = Math.min(1, localT * 1.8);
-    const sweepRow = Math.floor(matchProgress * (scen.match + 1));
-
-    tags.forEach((tag, i) => {
-      const y = listY + i * rowH;
-      const isMatch = i === scen.match && matchProgress > 0.95;
-      const isAbove = i < scen.match && matchProgress > 0.95;
-      const isBelow = i > scen.match && matchProgress > 0.95;
-      const isSweepHere = i === sweepRow && matchProgress < 0.95;
-
-      // Reveal animation — rows pop in
-      const revealStart = i * 0.02;
-      if (localT < revealStart) return;
-
-      // Row background
-      let bgC = 'rgba(255,255,255,0.03)';
-      if (isMatch) bgC = 'rgba(38, 166, 154, 0.18)';
-      else if (isBelow) bgC = 'rgba(255,255,255,0.015)';
-      else if (isSweepHere) bgC = 'rgba(255,179,0,0.10)';
-      ctx.fillStyle = bgC;
-      ctx.fillRect(listX, y, w - 2 * listX, rowH - 2);
-
-      // Border
-      let borderC = 'rgba(255,255,255,0.05)';
-      if (isMatch) borderC = '#26A69A';
-      else if (isSweepHere) borderC = 'rgba(255,179,0,0.5)';
-      ctx.strokeStyle = borderC;
-      ctx.lineWidth = isMatch ? 1.5 : 0.8;
-      ctx.strokeRect(listX, y, w - 2 * listX, rowH - 2);
-
-      // Priority number
-      ctx.fillStyle = isMatch ? '#26A69A' : isAbove ? 'rgba(255,255,255,0.25)' : isBelow ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.5)';
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(`${i + 1}`, listX + 8, y + rowH / 2 + 3);
-
-      // Tag name
-      ctx.fillStyle = isMatch ? '#26A69A' : isBelow ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.85)';
-      ctx.font = isMatch ? 'bold 11px system-ui, -apple-system, sans-serif' : '10px system-ui, -apple-system, sans-serif';
-      ctx.fillText(tag, listX + 28, y + rowH / 2 + 3);
-
-      // Status icon right
-      ctx.textAlign = 'right';
-      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
-      if (isMatch) {
-        ctx.fillStyle = '#26A69A';
-        ctx.fillText('\u2190 MATCH', w - listX - 8, y + rowH / 2 + 3);
-      } else if (isAbove) {
-        ctx.fillStyle = 'rgba(255,255,255,0.25)';
-        ctx.fillText('skip', w - listX - 8, y + rowH / 2 + 3);
-      } else if (isBelow) {
-        ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        ctx.fillText('\u2014', w - listX - 8, y + rowH / 2 + 3);
-      } else if (isSweepHere) {
-        ctx.fillStyle = '#FFB300';
-        ctx.fillText('test\u2026', w - listX - 8, y + rowH / 2 + 3);
-      }
-    });
-
-    // Footer
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '10px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('First match wins. Lower tags are suppressed.', w / 2, h - 8);
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={3 / 4} />;
-}
-
-// ============================================================
-// ANIMATION 6 — SweepFvgApexAnim (S06 — Sweep + FVG ★ apex)
-// Two stacked panels of price action. A swing high gets swept
-// (wick beyond, close back below). Below the swing, an FVG zone is
-// already drawn. The synthesis: sweep + FVG = highest-conviction tag.
-// A glowing "★ Sweep + FVG" label appears with a shooting star.
-// ============================================================
-function SweepFvgApexAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 8.0;
-    const tt = (t % T) / T;
-
-    // Phase 1: build chart (0 - 0.3)
-    // Phase 2: sweep happens (0.3 - 0.5)
-    // Phase 3: synthesis label appears with star (0.5 - 0.8)
-    // Phase 4: hold (0.8 - 1.0)
-
-    // Title
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('THE APEX TAG \u2014 SWEEP + FVG \u2605', w / 2, 22);
-
-    // Chart area
-    const cx = 30;
-    const cy = 50;
-    const cw = w - 60;
-    const ch = h - 100;
-
-    // FVG zone (drawn first, before sweep)
-    if (tt > 0.1) {
-      const fvgY = cy + ch * 0.55;
-      const fvgH = ch * 0.12;
-      const fvgFade = Math.min(1, (tt - 0.1) / 0.15);
-      ctx.fillStyle = `rgba(38, 166, 154, ${0.18 * fvgFade})`;
-      ctx.fillRect(cx, fvgY, cw, fvgH);
-      ctx.strokeStyle = `rgba(38, 166, 154, ${0.4 * fvgFade})`;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.strokeRect(cx, fvgY, cw, fvgH);
-      ctx.setLineDash([]);
-
-      ctx.fillStyle = `rgba(38, 166, 154, ${0.7 * fvgFade})`;
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText('Bull FVG', cx + 6, fvgY + fvgH * 0.65);
-    }
-
-    // Swing high reference line
-    const swingY = cy + ch * 0.20;
-    if (tt > 0.05) {
-      ctx.strokeStyle = 'rgba(255,179,0,0.4)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.moveTo(cx, swingY);
-      ctx.lineTo(cx + cw, swingY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      ctx.fillStyle = 'rgba(255,179,0,0.7)';
+      ctx.fillText(f.name, x + cw / 2, colTop + 18);
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
       ctx.font = '9px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText('swing high', cx + cw - 6, swingY - 4);
-    }
-
-    // Candles — pre-sweep
-    const nC = 14;
-    const cwBar = cw / nC;
-    const candles = [
-      0.45, 0.40, 0.35, 0.30, 0.28, 0.32, 0.36, 0.30, 0.24, 0.22, 0.20, 0.22, 0.30, 0.42,
-    ];
-    const sweepIdx = 10;
-
-    for (let i = 0; i < nC; i++) {
-      if (i === sweepIdx && tt < 0.3) continue;
-      const cxBar = cx + i * cwBar + cwBar / 2;
-      const yMid = cy + candles[i] * ch;
-      const yPrev = i > 0 ? cy + candles[i - 1] * ch : yMid;
-      const top = Math.min(yMid, yPrev);
-      const bot = Math.max(yMid, yPrev);
-      const isUp = yMid < yPrev;
-      ctx.fillStyle = isUp ? '#26A69A' : '#EF5350';
-      ctx.fillRect(cxBar - cwBar * 0.3, top, cwBar * 0.6, Math.max(2, bot - top));
-      ctx.strokeStyle = isUp ? '#26A69A' : '#EF5350';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(cxBar, top - 4);
-      ctx.lineTo(cxBar, bot + 4);
-      ctx.stroke();
-    }
-
-    // The sweep candle — animated wick beyond swing high
-    if (tt > 0.3) {
-      const sweepFade = Math.min(1, (tt - 0.3) / 0.10);
-      const cxBar = cx + sweepIdx * cwBar + cwBar / 2;
-      const wickTop = swingY - 12 * sweepFade; // wick above swing
-      const bodyTop = cy + 0.30 * ch;
-      const bodyBot = cy + 0.40 * ch;
-
-      ctx.fillStyle = '#EF5350';
-      ctx.fillRect(cxBar - cwBar * 0.3, bodyTop, cwBar * 0.6, bodyBot - bodyTop);
-      ctx.strokeStyle = '#EF5350';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(cxBar, wickTop);
-      ctx.lineTo(cxBar, bodyBot);
-      ctx.stroke();
-    }
-
-    // The signal label appears post-sweep
-    if (tt > 0.55) {
-      const labelFade = Math.min(1, (tt - 0.55) / 0.10);
-      const lblX = cx + sweepIdx * cwBar + cwBar / 2;
-      const lblY = swingY - 30;
-      const lblW = 60;
-      const lblH = 18;
-
-      // Glow
-      const glowR = 24 + 6 * Math.sin(t * 5);
-      const grad = ctx.createRadialGradient(lblX, lblY + lblH / 2, 0, lblX, lblY + lblH / 2, glowR);
-      grad.addColorStop(0, `rgba(255,179,0,${0.4 * labelFade})`);
-      grad.addColorStop(1, 'rgba(255,179,0,0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(lblX - 40, lblY - 10, 80, lblH + 20);
-
-      // Label box
-      ctx.fillStyle = `rgba(239, 83, 80, ${labelFade})`;
-      ctx.fillRect(lblX - lblW / 2, lblY, lblW, lblH);
-      ctx.fillStyle = `rgba(255,255,255,${labelFade})`;
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
+      ctx.fillText(f.sub, x + cw / 2, colTop + 32);
+      // Big checkmark fade in
+      const checkFade = Math.min(1, Math.max(0, (reveal - 0.3) / 0.40));
+      ctx.fillStyle = `rgba(38, 166, 154, ${checkFade})`;
+      ctx.font = 'bold 38px system-ui, -apple-system, sans-serif';
+      ctx.fillText('\u2713', x + cw / 2, colTop + colH / 2 + 14);
+      ctx.globalAlpha = 1;
+    });
+    if (tt > 0.78) {
+      const fade = Math.min(1, (tt - 0.78) / 0.12);
+      ctx.fillStyle = `rgba(255, 179, 0, ${fade})`;
+      ctx.font = 'bold 14px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('Short +', lblX, lblY + lblH * 0.7);
+      ctx.fillText('\u2192 SCORE: 4 / 4 \u2014 STRONG', w / 2, h - 14);
     }
-
-    // Tag display
-    if (tt > 0.65) {
-      const tagFade = Math.min(1, (tt - 0.65) / 0.10);
-      ctx.fillStyle = `rgba(38, 166, 154, ${0.18 * tagFade})`;
-      ctx.fillRect(cx, h - 56, cw, 36);
-      ctx.strokeStyle = `rgba(38, 166, 154, ${0.5 * tagFade})`;
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(cx, h - 56, cw, 36);
-
-      ctx.fillStyle = `rgba(255,255,255,${tagFade})`;
-      ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('\u2605  Sweep + FVG  \u2014  highest conviction', w / 2, h - 32);
-    }
-
-    // Footer
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '10px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Liquidity trapped. Magnet waiting. Two reads, one trade.', w / 2, h - 6);
   }, []);
   return <AnimScene draw={draw} aspectRatio={16 / 9} />;
 }
 
-// ============================================================
-// ANIMATION 7 — SynthesisTooltipAnim (S07 — The Synthesis Tooltip)
-// Renders the exact NAS100 1D tooltip from Image 1: Tension Snap Snap
-// Setup, all 12 atoms scrolling in. The "+ Strong — 3/4 factors" line
-// glows at the bottom. This is the operator's window into the synthesis.
-// ============================================================
-function SynthesisTooltipAnim() {
+// A2 — RibbonFactorAnim (S02) — ribbon strength visualization
+function RibbonFactorAnim() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     const T = 10.0;
     const tt = (t % T) / T;
-
-    // Tooltip box
-    const boxX = 30;
-    const boxY = 18;
-    const boxW = w - 60;
-    const boxH = h - 36;
-
-    ctx.fillStyle = 'rgba(15, 15, 15, 0.95)';
-    ctx.fillRect(boxX, boxY, boxW, boxH);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(boxX, boxY, boxW, boxH);
-
-    // 12 atoms — exact from NAS100 1D Image 1
-    const lines: { text: string; color: string; bold?: boolean }[] = [
-      { text: 'Tension Snap \u2014 Snap Setup', color: 'rgba(255,255,255,0.95)', bold: true },
-      { text: '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500', color: 'rgba(255,255,255,0.25)' },
-      { text: 'W: Bull \u25B2', color: '#26A69A' },
-      { text: 'M: Bull \u25B2', color: '#26A69A' },
-      { text: 'Regime: TREND', color: 'rgba(255,255,255,0.85)' },
-      { text: 'Ribbon: Not stacked', color: 'rgba(255,255,255,0.5)' },
-      { text: 'Pulse: Support 15b YOUNG  2.7 ATR away', color: 'rgba(255,255,255,0.85)' },
-      { text: 'ADX: 32 \u2713', color: '#26A69A' },
-      { text: 'Volume: 1.18\u00D7 \u2713', color: '#26A69A' },
-      { text: 'Momentum: 59% \u25BC DETACHED', color: '#FFB300' },
-      { text: 'Tension: 1.4 ATR', color: 'rgba(255,255,255,0.85)' },
-      { text: 'Reversion: MODERATE (48%) \u2014 FV 25960.8', color: 'rgba(255,255,255,0.7)' },
-      { text: '', color: '' },
-      { text: '\u2795 Strong \u2014 3/4 factors', color: '#26A69A', bold: true },
+    const states = [
+      { name: 'STRONG', score: 1, color: '#26A69A', spread: 22 },
+      { name: 'WEAK', score: 0, color: '#EF5350', spread: 4 },
     ];
-
-    const lineH = 14;
-    const startY = boxY + 20;
-    const padX = boxX + 14;
-
-    // Reveal lines one at a time
-    const revealCount = Math.min(lines.length, Math.floor(tt * lines.length * 1.6));
-
-    for (let i = 0; i < revealCount; i++) {
-      const ln = lines[i];
-      if (!ln.text) continue;
-      const y = startY + i * lineH;
-      ctx.fillStyle = ln.color;
-      ctx.font = `${ln.bold ? 'bold ' : ''}10px system-ui, -apple-system, sans-serif`;
-      ctx.textAlign = 'left';
-      ctx.fillText(ln.text, padX, y);
-    }
-
-    // Glow on Strong line when revealed
-    if (revealCount >= lines.length) {
-      const pulse = 0.5 + 0.5 * Math.sin(t * 3);
-      const lastY = startY + (lines.length - 1) * lineH;
-      ctx.strokeStyle = `rgba(38, 166, 154, ${0.2 + 0.4 * pulse})`;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(padX - 6, lastY - 11, boxW - 24, 16);
-    }
-
-    // Caption below tooltip
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = '9px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('NAS100 1D \u2014 29 Apr 2026 \u2014 Short + at 27,798', w / 2, h - 6);
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={3 / 4} />;
-}
-
-// ============================================================
-// ANIMATION 8 — ConvergenceAnim (S08 — Convergence Reads)
-// Six module rows on the left. Verdicts populate one at a time. As
-// they all align on the same direction (BULL), arrows on the right
-// converge to a single point — and a "CONVERGENCE" label fires.
-// ============================================================
-function ConvergenceAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 8.0;
-    const tt = (t % T) / T;
-
-    const modules = [
-      { name: 'Header', verdict: 'BULL TREND', dir: 1 },
-      { name: 'Ribbon', verdict: '\u25B2 STACKED', dir: 1 },
-      { name: 'Structure', verdict: 'AT SUPPORT', dir: 1 },
-      { name: 'Imbalance', verdict: 'NEAR BULL FVG', dir: 1 },
-      { name: 'Sweep', verdict: '\u25B2 HOT + FVG \u2605', dir: 1 },
-      { name: 'Risk Map', verdict: 'AT SUPPORT', dir: 1 },
-    ];
-
-    // Title
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('CONVERGENCE \u2014 6 MODULES, 1 DIRECTION', w / 2, 22);
-
-    const listX = 24;
-    const listW = w - 48;
-    const startY = 50;
-    const rowH = 28;
-
-    modules.forEach((mod, i) => {
-      const revealStart = i * 0.10;
-      if (tt < revealStart) return;
-      const revealT = Math.min(1, (tt - revealStart) / 0.10);
-      const y = startY + i * rowH;
-      ctx.globalAlpha = revealT;
-
-      // Row bg
-      ctx.fillStyle = 'rgba(38, 166, 154, 0.10)';
-      ctx.fillRect(listX, y, listW, rowH - 4);
-      ctx.strokeStyle = 'rgba(38, 166, 154, 0.3)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(listX, y, listW, rowH - 4);
-
-      // Module name
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(mod.name, listX + 10, y + rowH / 2);
-
-      // Verdict
-      ctx.fillStyle = '#26A69A';
-      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(mod.verdict, listX + listW - 12, y + rowH / 2);
-
-      ctx.globalAlpha = 1;
-    });
-
-    // Convergence pulse at bottom
-    if (tt > 0.7) {
-      const fade = Math.min(1, (tt - 0.7) / 0.10);
-      const py = h - 30;
-      const pulse = 0.5 + 0.5 * Math.sin(t * 4);
-      const r = 50 + 8 * pulse;
-
-      const grad = ctx.createRadialGradient(w / 2, py, 0, w / 2, py, r);
-      grad.addColorStop(0, `rgba(38, 166, 154, ${0.5 * fade})`);
-      grad.addColorStop(1, 'rgba(38, 166, 154, 0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, py - r, w, 2 * r);
-
-      ctx.fillStyle = `rgba(38, 166, 154, ${fade})`;
-      ctx.font = 'bold 14px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('\u2192 ALIGNED. ENGAGE.', w / 2, py + 5);
-    }
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={3 / 4} />;
-}
-
-// ============================================================
-// ANIMATION 9 — DivergenceAnim (S09 — Divergence Warnings)
-// Four module rows. Two say BULL (teal), two say BEAR (magenta).
-// A red warning sits at the bottom: "WAIT — modules disagree".
-// Cycles through 3 patterns: HTF mismatch, regime conflict, sweep
-// counter-trend.
-// ============================================================
-function DivergenceAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 12.0;
-    const tt = (t % T) / T;
-
-    const patterns = [
-      {
-        name: 'HTF MISMATCH',
-        rows: [
-          { name: 'W (HTF1)', verdict: '\u25B2 BULL', dir: 1 },
-          { name: 'D (HTF2)', verdict: '\u25BC BEAR', dir: -1 },
-          { name: 'Ribbon', verdict: '\u25B2 STACKED', dir: 1 },
-          { name: 'Sweep', verdict: '\u25BC HOT', dir: -1 },
-        ],
-      },
-      {
-        name: 'REGIME CONFLICT',
-        rows: [
-          { name: 'Header', verdict: 'BULL TREND', dir: 1 },
-          { name: 'Pulse', verdict: 'RESIST FLIPPED', dir: -1 },
-          { name: 'Tension', verdict: '\u25BC SNAPPING', dir: -1 },
-          { name: 'Bias', verdict: 'FAVOR SHORTS', dir: -1 },
-        ],
-      },
-      {
-        name: 'SWEEP COUNTER-TREND',
-        rows: [
-          { name: 'Ribbon', verdict: '\u25B2 STACKED', dir: 1 },
-          { name: 'Structure', verdict: 'AT RESISTANCE', dir: -1 },
-          { name: 'Sweep', verdict: '\u25BC HOT', dir: -1 },
-          { name: 'Imbalance', verdict: 'AT BEAR FVG', dir: -1 },
-        ],
-      },
-    ];
-
-    const patternIdx = Math.floor(tt * 3);
-    const pat = patterns[patternIdx];
-    const localT = (tt * 3) % 1;
-
-    // Title
+    const idx = Math.floor(tt * 2);
+    const state = states[idx];
+    const localT = (tt * 2) % 1;
     ctx.fillStyle = 'rgba(255,255,255,0.55)';
     ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('PATTERN', w / 2, 18);
-    ctx.fillStyle = '#FFB300';
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
-    ctx.fillText(pat.name, w / 2, 36);
-
-    const listX = 30;
-    const listW = w - 60;
-    const startY = 60;
-    const rowH = (h - 130) / pat.rows.length;
-
-    pat.rows.forEach((row, i) => {
-      const revealStart = i * 0.10;
-      if (localT < revealStart) return;
-      const y = startY + i * rowH;
-      const isUp = row.dir === 1;
-      const c = isUp ? '#26A69A' : '#EF5350';
-      const bgC = isUp ? 'rgba(38, 166, 154, 0.10)' : 'rgba(239, 83, 80, 0.10)';
-
-      ctx.fillStyle = bgC;
-      ctx.fillRect(listX, y, listW, rowH - 4);
-      ctx.strokeStyle = c;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(listX, y, listW, rowH - 4);
-
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('RIBBON FACTOR', w / 2, 18);
+    ctx.fillStyle = state.color;
+    ctx.font = 'bold 14px system-ui, -apple-system, sans-serif';
+    ctx.fillText(state.name, w / 2, 38);
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = '10px system-ui, -apple-system, sans-serif';
+    ctx.fillText(state.score === 1 ? 'EMAs spread, aligned, trending' : 'EMAs converged, choppy, no edge', w / 2, 54);
+    // Draw 8 ribbon EMAs
+    const cArea = { x: 30, y: 70, w: w - 60, h: h - 130 };
+    const reveal = Math.min(1, localT * 1.5);
+    for (let line = 0; line < 8; line++) {
+      const lineSpread = (line - 3.5) * state.spread / 8;
+      ctx.strokeStyle = state.color;
+      ctx.globalAlpha = 0.4 + (line / 8) * 0.5;
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      const nPoints = 40;
+      for (let i = 0; i < Math.floor(nPoints * reveal); i++) {
+        const px = cArea.x + (i / (nPoints - 1)) * cArea.w;
+        const noise = Math.sin(i * 0.4 + line * 0.6) * (state.score === 1 ? 1.5 : 6);
+        const trend = state.score === 1 ? -i * 0.5 : Math.sin(i * 0.2) * 4;
+        const py = cArea.y + cArea.h / 2 + lineSpread + trend + noise;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    if (localT > 0.65) {
+      const fade = Math.min(1, (localT - 0.65) / 0.20);
+      const ry = h - 36;
+      ctx.fillStyle = `${state.color}20`;
+      ctx.fillRect(0, ry, w, 26);
+      ctx.fillStyle = state.color;
       ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(row.name, listX + 10, y + rowH / 2 + 3);
-
-      ctx.fillStyle = c;
-      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(row.verdict, listX + listW - 12, y + rowH / 2 + 3);
-    });
-
-    // Warning bar at bottom
-    if (localT > 0.5) {
-      const fade = Math.min(1, (localT - 0.5) / 0.15);
-      const wy = h - 50;
-      const wh = 36;
-      const pulse = 0.5 + 0.5 * Math.sin(t * 6);
-
-      ctx.fillStyle = `rgba(255, 179, 0, ${0.10 + 0.10 * pulse * fade})`;
-      ctx.fillRect(0, wy, w, wh);
-      ctx.strokeStyle = `rgba(255, 179, 0, ${0.5 * fade})`;
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(0, wy, w, wh);
-
-      ctx.fillStyle = `rgba(255, 179, 0, ${fade})`;
-      ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('\u26A0 WAIT \u2014 MODULES DISAGREE', w / 2, wy + 22);
+      ctx.fillText(`Score: ${state.score === 1 ? '\u2713 +1' : '\u2717 0'}`, w / 2, ry + 17);
     }
   }, []);
-  return <AnimScene draw={draw} aspectRatio={3 / 4} />;
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
 }
 
-// ============================================================
-// ANIMATION 10 — ConvictionSizingAnim (S10 — Conviction-Tier Sizing)
-// Four bars showing risk allocation by conviction score:
-// 1/4 = 0% (no engagement), 2/4 = 0.5%, 3/4 = 1.0%, 4/4 (apex) = 1.5%.
-// Bars fill in sequence with risk-percentage labels.
-// ============================================================
-function ConvictionSizingAnim() {
+// A3 — ADXFactorAnim (S03) — ADX dial above/below 25
+function ADXFactorAnim() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 8.0;
+    const T = 11.0;
     const tt = (t % T) / T;
-
-    const tiers = [
-      { score: '1/4', label: 'STANDARD WEAK', risk: 0, color: 'rgba(239, 83, 80, 0.6)', advice: 'PASS' },
-      { score: '2/4', label: 'STANDARD', risk: 0.5, color: '#FFB300', advice: 'HALF SIZE' },
-      { score: '3/4', label: 'STRONG', risk: 1.0, color: '#26A69A', advice: 'STANDARD' },
-      { score: '4/4', label: 'APEX', risk: 1.5, color: '#26A69A', advice: 'SIZE UP' },
-    ];
-
-    // Title
     ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('CONVICTION-TIER SIZING', w / 2, 24);
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '10px system-ui, -apple-system, sans-serif';
-    ctx.fillText('% account risk per trade', w / 2, 40);
-
-    const startY = 60;
-    const rowH = (h - 100) / tiers.length;
-    const labelX = 20;
-    const labelW = 100;
-    const barX = labelX + labelW + 10;
-    const barWMax = w - barX - 20;
-    const barH = rowH - 16;
-
-    tiers.forEach((tier, i) => {
-      const revealStart = i * 0.15;
-      if (tt < revealStart) return;
-      const fillT = Math.min(1, (tt - revealStart) / 0.15);
-      const y = startY + i * rowH;
-      const barY = y + 6;
-
-      // Score box
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
-      ctx.fillRect(labelX, barY, labelW, barH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(labelX, barY, labelW, barH);
-
-      ctx.fillStyle = tier.color;
-      ctx.font = 'bold 14px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(tier.score, labelX + 10, barY + barH * 0.6);
-
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.font = '8px system-ui, -apple-system, sans-serif';
-      ctx.fillText(tier.label, labelX + 38, barY + barH * 0.6);
-
-      // Bar bg
-      ctx.fillStyle = 'rgba(255,255,255,0.04)';
-      ctx.fillRect(barX, barY, barWMax, barH);
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-      ctx.strokeRect(barX, barY, barWMax, barH);
-
-      // Bar fill — proportional to risk %
-      const fillW = (tier.risk / 1.5) * barWMax * fillT;
-      if (tier.risk > 0) {
-        ctx.fillStyle = tier.color;
-        ctx.fillRect(barX, barY, fillW, barH);
-      }
-
-      // Risk label
-      ctx.fillStyle = tier.risk > 0 ? '#FFFFFF' : 'rgba(239, 83, 80, 0.85)';
-      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(tier.risk > 0 ? `${tier.risk}% \u2014 ${tier.advice}` : tier.advice, barX + 8, barY + barH * 0.62);
-    });
-
-    // Footer note
+    ctx.fillText('ADX FACTOR \u2014 THRESHOLD 25', w / 2, 22);
+    // ADX value sweeps
+    const adxValue = 12 + Math.abs(Math.sin(tt * Math.PI * 2)) * 35;
+    const passes = adxValue >= 25;
+    const cx = w / 2;
+    const cy = h * 0.55;
+    const radius = Math.min(w, h) * 0.32;
+    // Dial arc
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.lineWidth = 14;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, Math.PI * 0.85, Math.PI * 0.15);
+    ctx.stroke();
+    // Filled arc
+    const adxNorm = Math.min(1, adxValue / 50);
+    const startAngle = Math.PI * 0.85;
+    const endAngle = startAngle + adxNorm * (Math.PI * 1.30);
+    ctx.strokeStyle = passes ? '#26A69A' : '#EF5350';
+    ctx.lineWidth = 14;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.stroke();
+    // Threshold marker at 25
+    const thresholdAngle = Math.PI * 0.85 + (25 / 50) * (Math.PI * 1.30);
+    const tmx1 = cx + Math.cos(thresholdAngle) * (radius - 18);
+    const tmy1 = cy + Math.sin(thresholdAngle) * (radius - 18);
+    const tmx2 = cx + Math.cos(thresholdAngle) * (radius + 18);
+    const tmy2 = cy + Math.sin(thresholdAngle) * (radius + 18);
+    ctx.strokeStyle = '#FFB300';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(tmx1, tmy1);
+    ctx.lineTo(tmx2, tmy2);
+    ctx.stroke();
+    ctx.fillStyle = '#FFB300';
+    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('25', tmx2 + 8, tmy2 - 4);
+    // Center text
+    ctx.fillStyle = passes ? '#26A69A' : '#EF5350';
+    ctx.font = 'bold 36px system-ui, -apple-system, sans-serif';
+    ctx.fillText(`${Math.round(adxValue)}`, cx, cy + 4);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+    ctx.fillText('ADX', cx, cy + 24);
+    // Pass/fail badge
+    ctx.fillStyle = passes ? '#26A69A' : '#EF5350';
+    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+    ctx.fillText(passes ? '\u2713 +1' : '\u2717 0', cx, cy + 50);
+    // Caption
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.font = '10px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Score sets the size. Discipline sets the cap.', w / 2, h - 14);
+    ctx.fillText('ADX < 25: trend conviction absent. ADX \u2265 25: trend has commitment.', w / 2, h - 12);
   }, []);
   return <AnimScene draw={draw} aspectRatio={4 / 3} />;
 }
 
-// ============================================================
-// ANIMATION 11 — PresetsAsPhilosophiesAnim (S11 — Presets dial)
-// 5 presets arranged as cards in a row. Each card highlights its
-// min_conviction floor and the trader archetype. Cycles through
-// activating each preset, dimming the others.
-// ============================================================
-function PresetsAsPhilosophiesAnim() {
-  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
-    const T = 12.0;
-    const tt = (t % T) / T;
-
-    const presets = [
-      { name: 'TREND', floor: 0, philosophy: 'Catch the wave', color: '#26A69A' },
-      { name: 'SCALPER', floor: 0, philosophy: 'Strike from levels', color: '#FFB300' },
-      { name: 'SWING', floor: 3, philosophy: 'Wait for alignment', color: '#26A69A' },
-      { name: 'REVERSAL', floor: 0, philosophy: 'Catch the snap', color: '#EF5350' },
-      { name: 'SNIPER', floor: 3, philosophy: 'Wait for the squeeze', color: '#26A69A' },
-    ];
-
-    const activeIdx = Math.floor(tt * 5) % 5;
-
-    // Title
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('PRESETS AS CONVICTION PHILOSOPHIES', w / 2, 24);
-
-    // 5 cards in a row
-    const cardW = (w - 60) / 5;
-    const cardH = h - 110;
-    const startX = 30;
-    const startY = 50;
-
-    presets.forEach((p, i) => {
-      const x = startX + i * cardW + (i * 0) ; // no gap
-      const cardX = x + 4;
-      const cardY = startY;
-      const cw = cardW - 8;
-      const isActive = i === activeIdx;
-
-      // Card bg
-      ctx.fillStyle = isActive ? `rgba(38, 166, 154, 0.15)` : 'rgba(255,255,255,0.03)';
-      ctx.fillRect(cardX, cardY, cw, cardH);
-      ctx.strokeStyle = isActive ? p.color : 'rgba(255,255,255,0.08)';
-      ctx.lineWidth = isActive ? 2 : 1;
-      ctx.strokeRect(cardX, cardY, cw, cardH);
-
-      // Preset name
-      ctx.fillStyle = isActive ? p.color : 'rgba(255,255,255,0.5)';
-      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(p.name, cardX + cw / 2, cardY + 22);
-
-      // Floor display
-      ctx.fillStyle = isActive ? p.color : 'rgba(255,255,255,0.3)';
-      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
-      ctx.fillText(`${p.floor}`, cardX + cw / 2, cardY + 70);
-
-      ctx.fillStyle = isActive ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)';
-      ctx.font = '8px system-ui, -apple-system, sans-serif';
-      ctx.fillText('min_conv', cardX + cw / 2, cardY + 84);
-
-      // Philosophy line (multi-line)
-      const words = p.philosophy.split(' ');
-      ctx.fillStyle = isActive ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.4)';
-      ctx.font = '9px system-ui, -apple-system, sans-serif';
-      const phLine1 = words.slice(0, 2).join(' ');
-      const phLine2 = words.slice(2).join(' ');
-      ctx.fillText(phLine1, cardX + cw / 2, cardY + cardH - 26);
-      if (phLine2) ctx.fillText(phLine2, cardX + cw / 2, cardY + cardH - 14);
-    });
-
-    // Active dial below
-    if (true) {
-      const active = presets[activeIdx];
-      const dialY = h - 36;
-
-      ctx.fillStyle = `rgba(38, 166, 154, ${active.floor === 3 ? 0.18 : 0.05})`;
-      ctx.fillRect(0, dialY, w, 28);
-      ctx.strokeStyle = active.floor === 3 ? '#26A69A' : 'rgba(255,255,255,0.1)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(0, dialY, w, 28);
-
-      ctx.fillStyle = active.floor === 3 ? '#26A69A' : 'rgba(255,255,255,0.6)';
-      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(
-        active.floor === 3
-          ? `${active.name} \u2192 only Strong (3+) signals print`
-          : `${active.name} \u2192 all signals print, operator filters`,
-        w / 2,
-        dialY + 18
-      );
-    }
-  }, []);
-  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
-}
-
-// ============================================================
-// ANIMATION 12 — TradeTheConvergenceAnim (S13 — Trading the convergence)
-// Mini chart with a Strong signal firing at convergence. Shows entry
-// price, SL line, three TP rungs (TP1/TP2/TP3) appearing in sequence
-// with R-multiples. Demonstrates the trade plan that follows from synthesis.
-// ============================================================
-function TradeTheConvergenceAnim() {
+// A4 — VolumeFactorAnim (S04) — volume bars vs threshold
+function VolumeFactorAnim() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     const T = 10.0;
     const tt = (t % T) / T;
-
-    // Chart area
-    const cx = 30;
-    const cy = 60;
-    const cw = w - 60;
-    const ch = h - 100;
-
-    // Title
     ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('TRADE THE CONVERGENCE \u2014 ENTRY \u2192 SL \u2192 TP1 \u2192 TP2 \u2192 TP3', w / 2, 22);
-
-    // Y-axis levels
-    const entryY = cy + ch * 0.55;
-    const slY = cy + ch * 0.78;
-    const tp1Y = cy + ch * 0.40;
-    const tp2Y = cy + ch * 0.22;
-    const tp3Y = cy + ch * 0.08;
-
-    // Mini candles
-    const nC = 14;
-    const cwBar = cw / nC;
-    const candleData = [0.60, 0.55, 0.50, 0.45, 0.50, 0.55, 0.50, 0.55, 0.50, 0.50, 0.55, 0.55, 0.50, 0.55];
-    for (let i = 0; i < nC; i++) {
-      const cxBar = cx + i * cwBar + cwBar / 2;
-      const yMid = cy + candleData[i] * ch;
-      const yPrev = i > 0 ? cy + candleData[i - 1] * ch : yMid;
-      const top = Math.min(yMid, yPrev);
-      const bot = Math.max(yMid, yPrev);
-      const isUp = yMid < yPrev;
-      ctx.fillStyle = isUp ? '#26A69A' : '#EF5350';
-      ctx.fillRect(cxBar - cwBar * 0.3, top, cwBar * 0.6, Math.max(2, bot - top));
-      ctx.strokeStyle = isUp ? '#26A69A' : '#EF5350';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(cxBar, top - 3);
-      ctx.lineTo(cxBar, bot + 3);
-      ctx.stroke();
-    }
-
-    // Entry line (always visible)
-    ctx.strokeStyle = '#26A69A';
+    ctx.fillText('VOLUME FACTOR \u2014 RATIO \u2265 1.0\u00d7', w / 2, 22);
+    // 12 volume bars, last 3 progressively heavy
+    const cArea = { x: 30, y: 56, w: w - 60, h: h - 100 };
+    const ratios = [0.8, 0.9, 0.7, 1.0, 0.85, 0.95, 0.75, 1.05, 0.9, 1.1, 1.4, 1.6];
+    const nBars = ratios.length;
+    const cwBar = cArea.w / nBars;
+    const reveal = Math.min(1, tt * 1.4);
+    const visCount = Math.floor(nBars * reveal);
+    // Threshold line
+    const thresholdY = cArea.y + cArea.h - (1.0 / 2.0) * cArea.h;
+    ctx.strokeStyle = 'rgba(255, 179, 0, 0.5)';
     ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
     ctx.beginPath();
-    ctx.moveTo(cx, entryY);
-    ctx.lineTo(cx + cw, entryY);
+    ctx.moveTo(cArea.x, thresholdY);
+    ctx.lineTo(cArea.x + cArea.w, thresholdY);
     ctx.stroke();
-    ctx.fillStyle = '#26A69A';
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(255, 179, 0, 0.7)';
     ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText('ENTRY', cx + cw - 6, entryY - 3);
-
-    // Signal label at entry
-    if (tt > 0.05) {
-      const labelX = cx + 7 * cwBar + cwBar / 2;
-      ctx.fillStyle = '#26A69A';
-      ctx.fillRect(labelX - 22, entryY + 6, 44, 16);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Long +', labelX, entryY + 17);
+    ctx.textAlign = 'left';
+    ctx.fillText('1.0\u00d7 threshold', cArea.x + 6, thresholdY - 6);
+    // Bars
+    for (let i = 0; i < visCount; i++) {
+      const ratio = ratios[i];
+      const bx = cArea.x + i * cwBar + cwBar * 0.15;
+      const bw = cwBar * 0.7;
+      const bh = (ratio / 2.0) * cArea.h;
+      const by = cArea.y + cArea.h - bh;
+      const passes = ratio >= 1.0;
+      ctx.fillStyle = passes ? '#26A69A' : 'rgba(239, 83, 80, 0.7)';
+      ctx.fillRect(bx, by, bw, bh);
     }
-
-    // SL line at tt > 0.15
-    if (tt > 0.15) {
-      const fade = Math.min(1, (tt - 0.15) / 0.10);
-      ctx.strokeStyle = `rgba(239, 83, 80, ${fade})`;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 3]);
-      ctx.beginPath();
-      ctx.moveTo(cx, slY);
-      ctx.lineTo(cx + cw, slY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = `rgba(239, 83, 80, ${fade})`;
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
+    // Latest bar number
+    if (visCount > 0) {
+      const last = ratios[Math.min(nBars - 1, visCount - 1)];
+      const passes = last >= 1.0;
+      ctx.fillStyle = passes ? '#26A69A' : '#EF5350';
+      ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText('SL  \u2014  Swing Low', cx + cw - 6, slY + 12);
+      ctx.fillText(`${last.toFixed(2)}\u00d7`, cArea.x + cArea.w - 4, cArea.y + 14);
+      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+      ctx.fillText(passes ? '\u2713 +1' : '\u2717 0', cArea.x + cArea.w - 4, cArea.y + 30);
     }
-
-    // TP1 at tt > 0.35
-    if (tt > 0.35) {
-      const fade = Math.min(1, (tt - 0.35) / 0.10);
-      ctx.strokeStyle = `rgba(255, 179, 0, ${0.7 * fade})`;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(cx, tp1Y);
-      ctx.lineTo(cx + cw, tp1Y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = `rgba(255, 179, 0, ${fade})`;
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText('TP1  \u2014  1R  \u2014  scale 50%', cx + cw - 6, tp1Y - 3);
-    }
-
-    // TP2 at tt > 0.50
-    if (tt > 0.50) {
-      const fade = Math.min(1, (tt - 0.50) / 0.10);
-      ctx.strokeStyle = `rgba(38, 166, 154, ${0.7 * fade})`;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(cx, tp2Y);
-      ctx.lineTo(cx + cw, tp2Y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = `rgba(38, 166, 154, ${fade})`;
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText('TP2  \u2014  2R  \u2014  scale 30%', cx + cw - 6, tp2Y - 3);
-    }
-
-    // TP3 at tt > 0.65
-    if (tt > 0.65) {
-      const fade = Math.min(1, (tt - 0.65) / 0.10);
-      ctx.strokeStyle = `rgba(38, 166, 154, ${0.7 * fade})`;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(cx, tp3Y);
-      ctx.lineTo(cx + cw, tp3Y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = `rgba(38, 166, 154, ${fade})`;
-      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText('TP3  \u2014  3R  \u2014  trail final 20%', cx + cw - 6, tp3Y - 3);
-    }
-
-    // Footer
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.font = '10px system-ui, -apple-system, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('The synthesis decides if; the Risk Map decides where.', w / 2, h - 8);
+    ctx.fillText('Volume relative to 20-bar avg. Below 1.0 = anaemic move.', w / 2, h - 12);
   }, []);
   return <AnimScene draw={draw} aspectRatio={16 / 9} />;
 }
 
-// ============================================================
-// ANIMATION 13 — EdgeCaseDialAnim (S14 — Edge cases)
-// 4 edge case scenarios on a rotating dial. Each scenario displays
-// the modules, the apparent contradiction, and the resolution rule.
-// Cycles every 3 seconds.
-// ============================================================
-function EdgeCaseDialAnim() {
+// A5 — HealthFactorAnim (S05) — health gauge sweeping
+function HealthFactorAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 11.0;
+    const tt = (t % T) / T;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('HEALTH FACTOR \u2014 THRESHOLD 50%', w / 2, 22);
+    const healthValue = 25 + Math.abs(Math.sin(tt * Math.PI * 2)) * 60;
+    const passes = healthValue >= 50;
+    // Horizontal gauge
+    const gx = 40;
+    const gy = h * 0.35;
+    const gw = w - 80;
+    const gh = 30;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(gx, gy, gw, gh);
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.strokeRect(gx, gy, gw, gh);
+    // Threshold marker
+    const tX = gx + (50 / 100) * gw;
+    ctx.strokeStyle = '#FFB300';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(tX, gy - 6);
+    ctx.lineTo(tX, gy + gh + 6);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#FFB300';
+    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('50%', tX, gy - 10);
+    // Filled portion
+    const fillW = (healthValue / 100) * gw;
+    ctx.fillStyle = passes ? '#26A69A' : '#EF5350';
+    ctx.fillRect(gx, gy, fillW, gh);
+    // Big value
+    ctx.fillStyle = passes ? '#26A69A' : '#EF5350';
+    ctx.font = 'bold 36px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.round(healthValue)}%`, w / 2, gy + gh + 50);
+    // Pass/fail badge
+    ctx.fillStyle = passes ? '#26A69A' : '#EF5350';
+    ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+    ctx.fillText(passes ? '\u2713 +1' : '\u2717 0', w / 2, gy + gh + 72);
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '10px system-ui, -apple-system, sans-serif';
+    ctx.fillText('CIPHER\u2019s composite health \u2014 a chart-wide quality gate.', w / 2, h - 12);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={4 / 3} />;
+}
+
+// A6 — ScoreCompositionAnim (S06) — 4 factors stack into score 0-4
+function ScoreCompositionAnim() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
     const T = 12.0;
     const tt = (t % T) / T;
-
-    const cases = [
-      {
-        title: '3 BULL + 1 BEAR',
-        rule: 'TRADE THE MAJORITY \u2014 STANDARD SIZE',
-        ruleColor: '#26A69A',
-        rows: ['Header: BULL', 'Ribbon: STACKED', 'Structure: AT SUP', 'Pulse: FLIPPED \u2193'],
-        dirs: [1, 1, 1, -1],
-      },
-      {
-        title: 'RECENT FLIP (< 5 BARS)',
-        rule: 'WAIT \u2014 LET THE FLIP MATURE',
-        ruleColor: '#FFB300',
-        rows: ['Pulse: just flipped', 'Ribbon: still old', 'Tension: building', 'Score: 2/4 \u2014 mid'],
-        dirs: [1, -1, 1, 0],
-      },
-      {
-        title: 'REGIME MISMATCH',
-        rule: 'SKIP \u2014 SIGNAL TYPE WRONG',
-        ruleColor: '#EF5350',
-        rows: ['Regime: RANGE', 'Signal: Pulse Cross (trend)', 'Ribbon: not stacked', 'Score: 3/4 \u2014 ignore'],
-        dirs: [0, -1, 0, 0],
-      },
-      {
-        title: 'APEX IN COUNTER-TREND',
-        rule: 'TRADE WITH DISCIPLINE \u2014 TIGHT STOPS',
-        ruleColor: '#FFB300',
-        rows: ['Sweep + FVG \u2605', 'HTF: aligned counter', 'Risk: high', 'Score: 4/4 \u2014 size cautiously'],
-        dirs: [1, -1, 0, 1],
-      },
+    const examples = [
+      { name: '4/4 STRONG', factors: [1, 1, 1, 1], tier: 'CONVICTION', tierColor: '#26A69A' },
+      { name: '3/4 STANDARD', factors: [1, 0, 1, 1], tier: 'STANDARD', tierColor: '#FFB300' },
+      { name: '1/4 WATCH', factors: [1, 0, 0, 0], tier: 'WATCH', tierColor: 'rgba(255,255,255,0.6)' },
     ];
-
-    const caseIdx = Math.floor(tt * 4);
-    const c = cases[caseIdx];
-    const localT = (tt * 4) % 1;
-
-    // Title
+    const idx = Math.floor(tt * 3);
+    const ex = examples[idx];
+    const localT = (tt * 3) % 1;
     ctx.fillStyle = 'rgba(255,255,255,0.55)';
     ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('EDGE CASE', w / 2, 18);
-
+    ctx.fillText('SCORE COMPOSITION', w / 2, 18);
     ctx.fillStyle = 'rgba(255,255,255,0.95)';
     ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
-    ctx.fillText(c.title, w / 2, 36);
-
-    // Rows
-    const listX = 30;
-    const listW = w - 60;
-    const startY = 60;
-    const rowH = (h - 130) / c.rows.length;
-
-    c.rows.forEach((row, i) => {
-      const revealStart = i * 0.10;
-      if (localT < revealStart) return;
-      const y = startY + i * rowH;
-      const dir = c.dirs[i];
-      const rc = dir === 1 ? '#26A69A' : dir === -1 ? '#EF5350' : 'rgba(255,255,255,0.5)';
-      const bg = dir === 1 ? 'rgba(38, 166, 154, 0.10)' : dir === -1 ? 'rgba(239, 83, 80, 0.10)' : 'rgba(255,255,255,0.04)';
-
-      ctx.fillStyle = bg;
-      ctx.fillRect(listX, y, listW, rowH - 4);
-      ctx.strokeStyle = rc;
-      ctx.lineWidth = 1;
-      ctx.strokeRect(listX, y, listW, rowH - 4);
-
-      ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      ctx.font = '11px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'left';
-      ctx.fillText(row, listX + 14, y + rowH / 2 + 3);
-    });
-
-    // Resolution bar
-    if (localT > 0.55) {
-      const fade = Math.min(1, (localT - 0.55) / 0.15);
-      const ry = h - 50;
-      const rh = 36;
-
-      ctx.fillStyle = `${c.ruleColor.replace(')', `, ${fade * 0.18})`).replace('rgb', 'rgba').replace('#26A69A', `rgba(38, 166, 154, ${fade * 0.18})`).replace('#FFB300', `rgba(255, 179, 0, ${fade * 0.18})`).replace('#EF5350', `rgba(239, 83, 80, ${fade * 0.18})`)}`;
-      // Manually set fillStyle since the replace logic above is fragile
-      const baseCol = c.ruleColor === '#26A69A' ? `rgba(38, 166, 154, ${fade * 0.18})` : c.ruleColor === '#FFB300' ? `rgba(255, 179, 0, ${fade * 0.18})` : `rgba(239, 83, 80, ${fade * 0.18})`;
-      ctx.fillStyle = baseCol;
-      ctx.fillRect(0, ry, w, rh);
-
-      ctx.strokeStyle = c.ruleColor;
-      ctx.lineWidth = 1.5;
-      ctx.globalAlpha = fade;
-      ctx.strokeRect(0, ry, w, rh);
+    ctx.fillText(ex.name, w / 2, 38);
+    const labels = ['RIBBON', 'ADX', 'VOLUME', 'HEALTH'];
+    const colW = (w - 60) / 4;
+    const startX = 30;
+    const colTop = 60;
+    const colH = h - 130;
+    const score = ex.factors.reduce((a, b) => a + b, 0);
+    ex.factors.forEach((val, i) => {
+      const arriveStart = i * 0.10;
+      const reveal = Math.min(1, Math.max(0, (localT - arriveStart) / 0.13));
+      if (reveal <= 0) return;
+      const x = startX + i * colW + 4;
+      const cw = colW - 8;
+      ctx.globalAlpha = reveal;
+      const passColor = '#26A69A';
+      const failColor = '#EF5350';
+      const c = val === 1 ? passColor : failColor;
+      ctx.fillStyle = `${c}10`;
+      ctx.fillRect(x, colTop, cw, colH);
+      ctx.strokeStyle = c;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x, colTop, cw, colH);
+      ctx.fillStyle = c;
+      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], x + cw / 2, colTop + 14);
+      ctx.font = 'bold 26px system-ui, -apple-system, sans-serif';
+      ctx.fillText(val === 1 ? '\u2713' : '\u2717', x + cw / 2, colTop + colH / 2 + 8);
       ctx.globalAlpha = 1;
-
-      ctx.fillStyle = c.ruleColor;
-      ctx.globalAlpha = fade;
+    });
+    if (localT > 0.55) {
+      const fade = Math.min(1, (localT - 0.55) / 0.20);
+      const ry = h - 40;
+      ctx.fillStyle = `${ex.tierColor.startsWith('rgba') ? ex.tierColor : ex.tierColor + '20'}`;
+      ctx.fillRect(0, ry, w, 30);
+      ctx.fillStyle = ex.tierColor;
       ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`\u2192 ${c.rule}`, w / 2, ry + 22);
-      ctx.globalAlpha = 1;
+      ctx.fillText(`SCORE ${score}/4 \u2192 ${ex.tier} TIER`, w / 2, ry + 19);
     }
   }, []);
-  return <AnimScene draw={draw} aspectRatio={3 / 4} />;
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
 }
 
-// ============================================================
-// GAME & QUIZ DATA SHELLS — populated in Phase 3A
-// 5 game rounds × 4 options = 20 options, 5 correct
-// 8 quiz questions × 4 options = 32 options, 8 correct
-// Total: 52 options, 13 correct: true (locked metric)
-// ============================================================
-const gameRounds: { id: string; scenario: string; prompt: string; options: { id: string; text: string; correct: boolean; explain: string }[] }[] = [
-  {
-    id: 'round-1',
-    scenario: 'NAS100 1H \u2014 Pulse Cross Long fires. Tooltip reads: Ribbon Not stacked, ADX 15, Volume 1.35\u00D7 \u2713, Momentum 59% \u2014 DETACHED. Tag: Breakout. Squeeze: 7 bars compressed.',
-    prompt: 'What is the conviction score, and what does the Conviction Operator do?',
-    options: [
-      {
-        id: 'a',
-        text: 'Score is 4/4 \u2014 size up at apex',
-        correct: false,
-        explain: 'Two factors fail: Ribbon Not stacked, ADX 15 (below 20). The score is 2/4 (Volume passed, Momentum borderline / passes if treated as &gt; 50%). Far from 4/4.',
-      },
-      {
-        id: 'b',
-        text: 'Score is 2/4 \u2014 half size, Breakout context salvages it',
-        correct: false,
-        explain: 'The score is 2/4 but the Conviction Operator&apos;s rule on 2/4 is skip, not engage at half size. Breakout is a respectable tag (priority 3) but does not override the score-based engagement rule.',
-      },
-      {
-        id: 'c',
-        text: 'Score is 2/4 \u2014 skip the trade, threshold not met',
-        correct: true,
-        explain: 'Correct. Ribbon fail (Not stacked) + ADX fail (15 &lt; 20) = 2 factors lost. Volume passes (1.35\u00D7), Momentum borderline. Score lands at 2/4. Below the 3/4 floor. Conviction Operator skips, regardless of how interesting the Breakout context looks.',
-      },
-      {
-        id: 'd',
-        text: 'Score is 3/4 \u2014 engage at standard size',
-        correct: false,
-        explain: 'Three factor passes would require Ribbon stacked OR ADX above 20. Both failed in this scenario. The score cannot reach 3/4 with two such fundamental failures.',
-      },
-    ],
-  },
-  {
-    id: 'round-2',
-    scenario: 'NAS100 1D \u2014 Tension Snap Short fires. Tooltip reads: W Bull \u25B2, M Bull \u25B2, Regime TREND, Ribbon Not stacked, Pulse Support 15b YOUNG 2.7 ATR away, ADX 32 \u2713, Volume 1.18\u00D7 \u2713, Momentum 59% \u25BC DETACHED. Tag: Snap. \u2795 Strong \u2014 3/4.',
-    prompt: 'The chart prints &quot;Short +&quot; with the bigger label. What does the Conviction Operator engage with?',
-    options: [
-      {
-        id: 'a',
-        text: 'Pass \u2014 the HTF is bullish, fading the trend is reckless',
-        correct: false,
-        explain: 'HTF mismatch with the signal direction is an edge case, not a hard pass. The score is 3/4 with Strong marker. The protocol here is to engage with discipline (smaller stops, faster TP1), not skip outright. Passing every counter-HTF Strong signal forfeits real edge.',
-      },
-      {
-        id: 'b',
-        text: 'Engage at standard size \u2014 3/4 is the workhorse tier',
-        correct: true,
-        explain: 'Correct. Score is 3/4, tag is Snap (priority 4), Strong glyph confirms. The HTF mismatch is real but the synthesis layer has scored the trade Strong. Standard size, Risk Map SL, scale at TP1/TP2/TP3. Use a tighter SL than baseline to respect the HTF risk.',
-      },
-      {
-        id: 'c',
-        text: 'Engage at apex size (1.5\u00D7) \u2014 Strong + bigger label = full conviction',
-        correct: false,
-        explain: 'Apex sizing is reserved for 4/4 with a Sweep+FVG context tag. This signal is 3/4 with a Snap tag. Standard size, not apex.',
-      },
-      {
-        id: 'd',
-        text: 'Wait for the next bar to confirm, then engage',
-        correct: false,
-        explain: 'The signal label prints at the close of the qualifying bar. Entry is at that close, not the next-bar confirmation. Waiting past the close changes the risk profile from the one CIPHER scored.',
-      },
-    ],
-  },
-  {
-    id: 'round-3',
-    scenario: 'GBPUSD 4H Command Center: Header BULL TREND, Ribbon \u25B2 STACKED, Structure AT SUPPORT, Imbalance NEAR BULL FVG, Sweep \u25B2 HOT + FVG \u2605, Risk Map AT SUPPORT. A Pulse Cross Long fires with score 3/4 \u2014 Sweep + FVG tag.',
-    prompt: 'How many independent modules converge bullish, and what is the appropriate sizing?',
-    options: [
-      {
-        id: 'a',
-        text: '4 modules \u2014 standard size',
-        correct: false,
-        explain: 'Count again: Header (1), Ribbon (2), Structure (3), Imbalance (4), Sweep (5), Risk Map (6) \u2014 all six broadcasting bullish. Six is the rare full-alignment scenario.',
-      },
-      {
-        id: 'b',
-        text: '6 modules + apex tag \u2014 size to maximum allowed (cap)',
-        correct: true,
-        explain: 'Correct. All six Visual Layer modules align bullish AND the cascade returned the apex tag (Sweep + FVG). This is once-or-twice-a-week territory. Conviction sizing protocol: 4/4-apex earns 1.5\u00D7 baseline; 6-module convergence justifies sizing up. Cap is the limit.',
-      },
-      {
-        id: 'c',
-        text: '6 modules but only 3/4 score \u2014 engage at standard size',
-        correct: false,
-        explain: 'The score being 3/4 is below 4/4, true \u2014 but the Sweep+FVG apex tag elevates the trade above standard. Strong with apex earns size-up treatment. The convergence layer corroborates.',
-      },
-      {
-        id: 'd',
-        text: '6 modules \u2014 wait, this looks too clean to be real',
-        correct: false,
-        explain: 'Operator superstition. Six-module convergence with the apex tag IS the high-edge setup. Waiting past it forfeits the rare alignment that justifies the wait between trades.',
-      },
-    ],
-  },
-  {
-    id: 'round-4',
-    scenario: 'XAUUSD 15m: A signal fires with score 4/4. But the panel shows: Header BEAR TREND, Pulse just flipped to RESISTANCE 2 bars ago, Tension SNAPPING, Bias FAVOR SHORTS \u2014 yet the signal is a Long Pulse Cross.',
-    prompt: 'The four conviction factors all passed. What is the correct read?',
-    options: [
-      {
-        id: 'a',
-        text: 'Engage \u2014 4/4 is 4/4, the score does not lie',
-        correct: false,
-        explain: 'The score is honest about what the four factors did. But the synthesis layer above the score is broken \u2014 four leading-indicator modules contradict the signal direction. Forcing a 4/4 trade into a divergent panel is the most expensive mistake.',
-      },
-      {
-        id: 'b',
-        text: 'Wait \u2014 the panel is divergent, the synthesis is broken',
-        correct: true,
-        explain: 'Correct. The score is 4/4 but Header / Pulse / Tension / Bias all broadcast bearish. The signal fired into a regime conflict pattern (priority 2 divergence). Conviction Operator&apos;s rule: when modules disagree, do not pick a side. Wait for convergence to return, in either direction.',
-      },
-      {
-        id: 'c',
-        text: 'Reverse the trade \u2014 short instead of long',
-        correct: false,
-        explain: 'Reversing the algorithmic signal is freelancing, not synthesis. CIPHER did not produce a Short signal here. The operator does not invent signals to fit divergence \u2014 they wait for the algorithm to produce one in the new direction.',
-      },
-      {
-        id: 'd',
-        text: 'Engage at half size as a hedge',
-        correct: false,
-        explain: 'Half size is the protocol for 2/4 scores, not for 4/4 in divergent conditions. The right response to divergence is no engagement, not partial engagement. The cap is binary: engage or wait.',
-      },
-    ],
-  },
-  {
-    id: 'round-5',
-    scenario: 'You are running the None preset with min_conviction = 0 (study mode) at session start. Mid-session, an apex Sweep+FVG signal fires at 4/4 on EURUSD 1H. Earlier in the session, three 2/4 signals printed and you skipped them.',
-    prompt: 'What is the highest-quality decision sequence here?',
-    options: [
-      {
-        id: 'a',
-        text: 'Toggle to min_conviction = 3 now, so weak signals stop distracting you, then engage the apex',
-        correct: false,
-        explain: 'Toggling the threshold mid-session is the discipline failure mode covered in Mistake 2. Set the floor at session start and live with it. Toggling to 3 retroactively does not change the apex signal; it just hides future weak ones from this session and breaks the contract.',
-      },
-      {
-        id: 'b',
-        text: 'Skip the apex \u2014 the threshold was 0 and you should treat it as study mode',
-        correct: false,
-        explain: 'Threshold = 0 means all signals print, not that no signals are tradeable. Study mode is about visibility, not engagement. An apex signal in study mode is still an apex signal; the operator&apos;s judgment determines whether to engage, not the toggle state.',
-      },
-      {
-        id: 'c',
-        text: 'Engage the apex at size-up (1.5\u00D7 baseline within cap), keep threshold at 0',
-        correct: true,
-        explain: 'Correct. The apex signal earns size-up regardless of the threshold setting. Skipping the earlier 2/4 signals showed correct discipline already. The threshold is a visibility lever, not an engagement lever \u2014 the operator chooses what to trade from what prints. Hold the threshold setting, take the apex.',
-      },
-      {
-        id: 'd',
-        text: 'Engage the apex at standard size (1.0\u00D7) since the threshold is 0',
-        correct: false,
-        explain: 'The threshold setting does not affect sizing. A 4/4 apex signal earns 1.5\u00D7 sizing regardless of whether you are running threshold 0 or 3. Conviction-tier sizing is independent of the visibility filter.',
-      },
-    ],
-  },
-];
+// A7 — ContextCascadeAnim (S07) — 13 tags, cascade resolves to one
+function ContextCascadeAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 12.0;
+    const tt = (t % T) / T;
+    const tags = [
+      'Sweep + FVG', 'Sweep', 'Breakout', 'S/R', 'Trend',
+      'OB align', 'Imbalance', 'Volume confirm', 'Structure shift',
+      'Range', 'Chop', 'Counter-trend', 'No context',
+    ];
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE 13-TAG PRIORITY CASCADE', w / 2, 22);
+    const startY = 44;
+    const rowH = (h - 66) / 13;
+    // Cascade scans top down
+    const scanIdx = Math.floor(tt * 13);
+    const winnerIdx = Math.min(13, scanIdx);
+    tags.forEach((tag, i) => {
+      const reveal = Math.min(1, Math.max(0, (tt - i * 0.04) / 0.06));
+      if (reveal <= 0) return;
+      const y = startY + i * rowH;
+      const isWinner = i === Math.min(0, scanIdx) || (tt > 0.85 && i === 0);
+      const isScanning = i === scanIdx && tt < 0.85;
+      ctx.globalAlpha = reveal;
+      // Priority badge
+      const isApex = i < 2;
+      const isMid = i >= 2 && i < 9;
+      const tierColor = isApex ? '#26A69A' : (isMid ? '#FFB300' : 'rgba(255,255,255,0.4)');
+      ctx.fillStyle = `${tierColor}15`;
+      ctx.fillRect(20, y, w - 40, rowH - 2);
+      ctx.strokeStyle = isScanning ? '#FFB300' : `${tierColor}50`;
+      ctx.lineWidth = isScanning ? 2 : 1;
+      ctx.strokeRect(20, y, w - 40, rowH - 2);
+      // Priority number
+      ctx.fillStyle = tierColor;
+      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`P${i + 1}`, 30, y + rowH / 2 + 3);
+      // Tag name
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = '10px system-ui, -apple-system, sans-serif';
+      ctx.fillText(tag, 64, y + rowH / 2 + 3);
+      // Winner badge for P1 at end
+      if (tt > 0.85 && i === 0) {
+        const fade = Math.min(1, (tt - 0.85) / 0.10);
+        ctx.fillStyle = `rgba(38, 166, 154, ${fade})`;
+        ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('\u2192 FIRST MATCH WINS', w - 30, y + rowH / 2 + 3);
+      }
+      ctx.globalAlpha = 1;
+    });
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={4 / 3} />;
+}
 
-const quizQuestions: { id: string; question: string; options: { id: string; text: string; correct: boolean }[]; explain: string }[] = [
-  {
-    id: 'q1',
-    question: 'What are the four factors in CIPHER&apos;s conviction score?',
-    options: [
-      { id: 'a', text: 'Ribbon, Pulse, Tension, Reversion', correct: false },
-      { id: 'b', text: 'Ribbon stack, ADX &gt; 20, Volume &gt; 1.0\u00D7, Momentum health &gt; 50%', correct: true },
-      { id: 'c', text: 'HTF1, HTF2, Regime, Bias', correct: false },
-      { id: 'd', text: 'Score, Tag, Convergence, Divergence', correct: false },
-    ],
-    explain: 'The four conviction factors test trend structure (Ribbon stack), trend strength (ADX), participation (Volume), and energy (Momentum health). Each pass adds 1 to the score. Each is independent of the others by design.',
-  },
-  {
-    id: 'q2',
-    question: 'What is the highest-priority context tag in the 13-level cascade?',
-    options: [
-      { id: 'a', text: 'Trend (with the trend, no special context)', correct: false },
-      { id: 'b', text: 'Sweep + FVG \u2605', correct: true },
-      { id: 'c', text: 'Momentum (the default fallback)', correct: false },
-      { id: 'd', text: 'Breakout (squeeze release)', correct: false },
-    ],
-    explain: 'Sweep + FVG is priority 1 in the cascade. It fires when a liquidity sweep AND an active Fair Value Gap align on the same side. Two independent reversal mechanisms confluence \u2014 the apex tag CIPHER produces.',
-  },
-  {
-    id: 'q3',
-    question: 'Under the conviction-tier sizing protocol, how is a 2/4 signal handled?',
-    options: [
-      { id: 'a', text: 'Standard size \u2014 two factors agree, two disagree, balance is fine', correct: false },
-      { id: 'b', text: 'Half size \u2014 partial agreement justifies a partial position', correct: false },
-      { id: 'c', text: 'Skip \u2014 the geometric ladder skips the 2/4 tier', correct: true },
-      { id: 'd', text: 'Apex size \u2014 don\u2019t waste a setup, double up', correct: false },
-    ],
-    explain: 'The geometric sizing ladder skips 1/4 and 2/4 (both pass), engages standard at 3/4, sizes up at 4/4-apex. Half-sizing 2/4 trades is Mistake 1 \u2014 the geometric structure exists because 2/4 has measurably worse hit rates that the half-size cushion does not compensate.',
-  },
-  {
-    id: 'q4',
-    question: 'Which presets force min_conviction = 3 (Strong signals only)?',
-    options: [
-      { id: 'a', text: 'Trend Trader and Scalper', correct: false },
-      { id: 'b', text: 'Reversal and Sniper', correct: false },
-      { id: 'c', text: 'Swing Trader and Sniper', correct: true },
-      { id: 'd', text: 'All five presets force the 3 floor', correct: false },
-    ],
-    explain: 'Swing Trader (slow, selective) and Sniper (squeeze-based, patient) bake min_conviction = 3 into their configurations. Trend Trader, Scalper, and Reversal run min_conviction = 0 because their styles need volume of opportunity over selectivity.',
-  },
-  {
-    id: 'q5',
-    question: 'When the Command Center shows divergent module verdicts, what is the Conviction Operator&apos;s default response?',
-    options: [
-      { id: 'a', text: 'Pick the side with more modules and engage at half size', correct: false },
-      { id: 'b', text: 'Wait \u2014 divergence is a closed door, do not predict the resolution', correct: true },
-      { id: 'c', text: 'Reverse the algorithmic signal', correct: false },
-      { id: 'd', text: 'Engage as planned \u2014 the score is the truth, modules just disagree', correct: false },
-    ],
-    explain: 'Divergence is the synthesis layer telling you the market is undecided. Trading into ambiguity is trading without a thesis. Wait for convergence to return \u2014 it always does, often on the side you would not have predicted. The patient operator captures both directions.',
-  },
-  {
-    id: 'q6',
-    question: 'What does the &quot;+&quot; marker on a signal label indicate?',
-    options: [
-      { id: 'a', text: 'The signal source is a Pulse Cross (vs Tension Snap)', correct: false },
-      { id: 'b', text: 'The signal fired during a high-volatility session', correct: false },
-      { id: 'c', text: 'Conviction score is &gt;= 3 (Strong threshold crossed)', correct: true },
-      { id: 'd', text: 'The signal has a Risk Map plan available', correct: false },
-    ],
-    explain: 'The &quot;+&quot; glyph is appended to the direction text when bull_conviction or bear_conviction is &gt;= 3. It is the chart-side broadcast of the Strong threshold being crossed. Three or four passes earns the plus; one or two does not.',
-  },
-  {
-    id: 'q7',
-    question: 'In the trade plan that follows from a Strong synthesis, what happens at TP1?',
-    options: [
-      { id: 'a', text: 'Close the entire position \u2014 lock the win', correct: false },
-      { id: 'b', text: 'Scale out 50% AND move SL to break-even on the remainder', correct: true },
-      { id: 'c', text: 'Add to the position \u2014 momentum confirms the thesis', correct: false },
-      { id: 'd', text: 'Widen the stop to give the trade more room', correct: false },
-    ],
-    explain: 'TP1 (1R) triggers a 50% scale-out and a BE move on the remaining position. This converts the trade from risk-on to risk-free. The remaining 50% scales 30% at TP2 (2R) and trails 20% at TP3 (3R) or beyond. Widening stops or adding to losers are protocol violations.',
-  },
-  {
-    id: 'q8',
-    question: 'A Pulse Cross fires with score 3/4 in a regime that says RANGE. What is the Conviction Operator&apos;s correct read?',
-    options: [
-      { id: 'a', text: 'Engage at standard size \u2014 3/4 is the workhorse tier', correct: false },
-      { id: 'b', text: 'Skip \u2014 trend signals in range regimes have lower follow-through', correct: true },
-      { id: 'c', text: 'Engage at half size as a hedge against the regime', correct: false },
-      { id: 'd', text: 'Wait for the score to reach 4/4 before engaging', correct: false },
-    ],
-    explain: 'This is the Regime Mismatch edge case from S14. Pulse Cross is a trend-flavored signal type; firing it in a RANGE regime means the score reflects trending bars within a non-trending market. The default rule is skip. Wait for the range break, then engage when the regime catches up to the signal.',
-  },
-];
+// A8 — TooltipDecodeAnim (S08) — synthesis tooltip rendering
+function TooltipDecodeAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 10.0;
+    const tt = (t % T) / T;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE SYNTHESIS TOOLTIP', w / 2, 22);
+    // Mock chart on left, tooltip on right
+    const chartX = 30;
+    const chartY = 50;
+    const chartW = w * 0.45;
+    const chartH = h - 90;
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fillRect(chartX, chartY, chartW, chartH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.strokeRect(chartX, chartY, chartW, chartH);
+    // Mini candle sequence rising
+    const nC = 10;
+    const cwBar = chartW / nC;
+    for (let i = 0; i < nC; i++) {
+      const cxBar = chartX + i * cwBar + cwBar / 2;
+      const trend = chartY + chartH * (0.85 - (i / nC) * 0.5);
+      const bodyH = 12 + Math.abs(Math.sin(i * 0.7)) * 16;
+      ctx.fillStyle = '#26A69A';
+      ctx.fillRect(cxBar - cwBar * 0.3, trend - bodyH / 2, cwBar * 0.6, bodyH);
+    }
+    // Signal label
+    if (tt > 0.20) {
+      const labelFade = Math.min(1, (tt - 0.20) / 0.15);
+      ctx.globalAlpha = labelFade;
+      const sigX = chartX + chartW * 0.7;
+      const sigY = chartY + chartH * 0.4;
+      ctx.fillStyle = '#26A69A';
+      ctx.fillRect(sigX - 24, sigY, 48, 18);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Long +', sigX, sigY + 13);
+      ctx.globalAlpha = 1;
+    }
+    // Tooltip on right
+    if (tt > 0.40) {
+      const ttFade = Math.min(1, (tt - 0.40) / 0.20);
+      const ttX = chartX + chartW + 20;
+      const ttY = chartY + 10;
+      const ttW = w - ttX - 20;
+      const ttH = chartH - 20;
+      ctx.fillStyle = `rgba(15,15,15,${0.95 * ttFade})`;
+      ctx.fillRect(ttX, ttY, ttW, ttH);
+      ctx.strokeStyle = `rgba(38, 166, 154, ${0.4 * ttFade})`;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(ttX, ttY, ttW, ttH);
+      ctx.globalAlpha = ttFade;
+      const lines = [
+        { text: 'Pulse Cross Long', color: 'rgba(255,255,255,0.95)', bold: true, big: true },
+        { text: '', color: '' },
+        { text: 'Ribbon: STRONG \u2713', color: '#26A69A' },
+        { text: 'ADX: 28 \u2713', color: '#26A69A' },
+        { text: 'Volume: 1.6\u00d7 \u2713', color: '#26A69A' },
+        { text: 'Health: 72% \u2713', color: '#26A69A' },
+        { text: '', color: '' },
+        { text: 'Context: Sweep + FVG', color: '#FFB300', bold: true },
+        { text: '', color: '' },
+        { text: '\u2192 4/4 CONVICTION', color: '#26A69A', bold: true, big: true },
+      ];
+      const lh = 14;
+      let yCursor = ttY + 16;
+      lines.forEach((ln) => {
+        if (!ln.text) {
+          yCursor += 6;
+          return;
+        }
+        ctx.fillStyle = ln.color;
+        ctx.font = `${ln.bold ? 'bold ' : ''}${ln.big ? 11 : 10}px system-ui, -apple-system, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText(ln.text, ttX + 12, yCursor);
+        yCursor += lh;
+      });
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('All four factors. The cascade winner. The tier. One read.', w / 2, h - 12);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// A9 — TierLadderAnim (S09) — 3 tiers cycling with sizing
+function TierLadderAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 12.0;
+    const tt = (t % T) / T;
+    const tiers = [
+      { name: 'CONVICTION', score: '4/4 + apex', size: '1.5\u00d7', color: '#26A69A', stepRise: 3 },
+      { name: 'STANDARD', score: '3/4', size: '1.0\u00d7', color: '#FFB300', stepRise: 2 },
+      { name: 'WATCH', score: '\u2264 2/4', size: '0\u00d7', color: 'rgba(239, 83, 80, 0.7)', stepRise: 1 },
+    ];
+    const idx = Math.floor(tt * 3);
+    const localT = (tt * 3) % 1;
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE TIER LADDER', w / 2, 18);
+    const stairBase = h - 40;
+    const stepW = (w - 80) / 3;
+    const stepH = 38;
+    tiers.slice().reverse().forEach((tier, revI) => {
+      const i = 2 - revI;
+      const reveal = Math.min(1, Math.max(0, (localT - i * 0.10) / 0.18));
+      if (reveal <= 0) return;
+      const isActive = i === idx;
+      const x = 40 + i * stepW;
+      const yBot = stairBase;
+      const yTop = stairBase - tier.stepRise * stepH;
+      ctx.globalAlpha = reveal;
+      const c = tier.color;
+      const baseAlpha = isActive ? 0.30 : 0.10;
+      ctx.fillStyle = c.startsWith('rgba') ? c.replace(/[\d.]+\)$/, `${baseAlpha})`) : `${c}${Math.round(baseAlpha * 255).toString(16).padStart(2, '0')}`;
+      ctx.fillRect(x, yTop, stepW, yBot - yTop);
+      ctx.strokeStyle = c;
+      ctx.lineWidth = isActive ? 2 : 1;
+      ctx.strokeRect(x, yTop, stepW, yBot - yTop);
+      ctx.fillStyle = c;
+      ctx.font = 'bold 12px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(tier.name, x + stepW / 2, yTop + 20);
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.font = '9px system-ui, -apple-system, sans-serif';
+      ctx.fillText(tier.score, x + stepW / 2, yTop + 36);
+      // Big sizing
+      ctx.fillStyle = c;
+      ctx.font = 'bold 22px system-ui, -apple-system, sans-serif';
+      ctx.fillText(tier.size, x + stepW / 2, yTop + 64);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '8px system-ui, -apple-system, sans-serif';
+      ctx.fillText('baseline', x + stepW / 2, yTop + 78);
+      ctx.globalAlpha = 1;
+    });
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Tier determines size. Size never moves mid-trade.', w / 2, 36);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// A10 — RiskMapAnim (S10) — entry, SL, TP1/2/3 with R-multiples
+function RiskMapAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 10.0;
+    const tt = (t % T) / T;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE RISK MAP \u2014 ENTRY, SL, TP1/2/3', w / 2, 22);
+    const chartX = 40;
+    const chartY = 56;
+    const chartW = w - 80;
+    const chartH = h - 100;
+    // Grid
+    const entryY = chartY + chartH * 0.62;
+    const slY = chartY + chartH * 0.85;
+    const tp1Y = chartY + chartH * 0.45;
+    const tp2Y = chartY + chartH * 0.28;
+    const tp3Y = chartY + chartH * 0.11;
+    const lines = [
+      { y: tp3Y, label: 'TP3 (3R)', color: '#26A69A', portion: '20%', revealAt: 0.50 },
+      { y: tp2Y, label: 'TP2 (2R)', color: '#26A69A', portion: '30%', revealAt: 0.40 },
+      { y: tp1Y, label: 'TP1 (1R)', color: '#26A69A', portion: '50%', revealAt: 0.30 },
+      { y: entryY, label: 'ENTRY', color: '#FFB300', portion: '', revealAt: 0.0 },
+      { y: slY, label: 'SL (Risk Map Auto)', color: '#EF5350', portion: '', revealAt: 0.15 },
+    ];
+    lines.forEach((ln) => {
+      const reveal = Math.min(1, Math.max(0, (tt - ln.revealAt) / 0.10));
+      if (reveal <= 0) return;
+      ctx.globalAlpha = reveal;
+      ctx.strokeStyle = ln.color;
+      ctx.lineWidth = ln.label === 'ENTRY' ? 2 : 1.4;
+      ctx.setLineDash(ln.label === 'ENTRY' ? [] : [4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(chartX, ln.y);
+      ctx.lineTo(chartX + chartW, ln.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Label on right
+      ctx.fillStyle = ln.color;
+      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(ln.label, chartX + chartW - 6, ln.y - 4);
+      // Portion on left
+      if (ln.portion) {
+        ctx.fillStyle = ln.color;
+        ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(ln.portion, chartX + 8, ln.y - 4);
+      }
+      ctx.globalAlpha = 1;
+    });
+    // Risk zone shading
+    if (tt > 0.20) {
+      const fade = Math.min(1, (tt - 0.20) / 0.15);
+      ctx.fillStyle = `rgba(239, 83, 80, ${0.10 * fade})`;
+      ctx.fillRect(chartX, entryY, chartW, slY - entryY);
+    }
+    // Reward zone shading
+    if (tt > 0.55) {
+      const fade = Math.min(1, (tt - 0.55) / 0.15);
+      ctx.fillStyle = `rgba(38, 166, 154, ${0.08 * fade})`;
+      ctx.fillRect(chartX, tp3Y, chartW, entryY - tp3Y);
+    }
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// A11 — BEMoveAnim (S11) — TP1 hit, SL slides up to entry
+function BEMoveAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 10.0;
+    const tt = (t % T) / T;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('TP1 HIT \u2192 SL TO BE \u2192 TRAIL THE REST', w / 2, 22);
+    const chartX = 40;
+    const chartY = 56;
+    const chartW = w - 80;
+    const chartH = h - 100;
+    const entryY = chartY + chartH * 0.62;
+    const tp1Y = chartY + chartH * 0.42;
+    const slStartY = chartY + chartH * 0.85;
+    // SL slides
+    const slideStart = 0.40;
+    const slideT = Math.min(1, Math.max(0, (tt - slideStart) / 0.20));
+    const slY = slStartY + (entryY - slStartY) * slideT;
+    // Entry line
+    ctx.strokeStyle = '#FFB300';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(chartX, entryY);
+    ctx.lineTo(chartX + chartW, entryY);
+    ctx.stroke();
+    ctx.fillStyle = '#FFB300';
+    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('ENTRY', chartX + chartW - 6, entryY - 4);
+    // SL
+    ctx.strokeStyle = '#EF5350';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(chartX, slY);
+    ctx.lineTo(chartX + chartW, slY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#EF5350';
+    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+    ctx.fillText(slideT > 0.95 ? 'SL = BE' : 'SL', chartX + chartW - 6, slY - 4);
+    // TP1
+    ctx.strokeStyle = '#26A69A';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath();
+    ctx.moveTo(chartX, tp1Y);
+    ctx.lineTo(chartX + chartW, tp1Y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#26A69A';
+    ctx.fillText('TP1 (50% off)', chartX + chartW - 6, tp1Y - 4);
+    // Price marker at TP1 if hit
+    if (tt > 0.30) {
+      const fade = Math.min(1, (tt - 0.30) / 0.10);
+      ctx.fillStyle = `rgba(38, 166, 154, ${fade})`;
+      ctx.beginPath();
+      ctx.arc(chartX + chartW * 0.65, tp1Y, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = `rgba(38, 166, 154, ${fade})`;
+      ctx.font = 'bold 9px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('TP1 HIT', chartX + chartW * 0.65, tp1Y + 22);
+    }
+    if (tt > 0.65) {
+      const fade = Math.min(1, (tt - 0.65) / 0.15);
+      ctx.fillStyle = `rgba(255, 179, 0, ${fade})`;
+      ctx.font = 'bold 11px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Trade is now risk-free \u2014 trail to TP2/TP3', w / 2, h - 14);
+    }
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// A12 — SkippedTradeAnim (S12) — Watch tier signal, "do not engage" stamp
+function SkippedTradeAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 8.0;
+    const tt = (t % T) / T;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('THE SKIP \u2014 WATCH TIER DISCIPLINE', w / 2, 22);
+    // Mini chart with weak signal
+    const chartX = 30;
+    const chartY = 50;
+    const chartW = w - 60;
+    const chartH = h - 100;
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fillRect(chartX, chartY, chartW, chartH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.strokeRect(chartX, chartY, chartW, chartH);
+    // Choppy candles
+    const nC = 14;
+    const cwBar = chartW / nC;
+    for (let i = 0; i < nC; i++) {
+      const cxBar = chartX + i * cwBar + cwBar / 2;
+      const noise = Math.sin(i * 1.7) * 8;
+      const cy = chartY + chartH * 0.5 + noise;
+      const isUp = (i % 2) === 0;
+      const bodyH = 8 + Math.abs(Math.cos(i * 0.8)) * 6;
+      ctx.fillStyle = isUp ? 'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)';
+      ctx.fillRect(cxBar - cwBar * 0.3, cy - bodyH / 2, cwBar * 0.6, bodyH);
+    }
+    // Weak signal label
+    if (tt > 0.20) {
+      const fade = Math.min(1, (tt - 0.20) / 0.15);
+      ctx.globalAlpha = fade;
+      const sigX = chartX + chartW * 0.7;
+      const sigY = chartY + chartH * 0.4;
+      ctx.fillStyle = 'rgba(255, 179, 0, 0.50)';
+      ctx.fillRect(sigX - 24, sigY, 48, 18);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Long', sigX, sigY + 13);
+      ctx.globalAlpha = 1;
+    }
+    // SKIP stamp diagonal
+    if (tt > 0.45) {
+      const fade = Math.min(1, (tt - 0.45) / 0.20);
+      ctx.save();
+      ctx.translate(w / 2, h / 2);
+      ctx.rotate(-0.12);
+      ctx.globalAlpha = fade;
+      const stampW = w * 0.5;
+      const stampH = 50;
+      ctx.fillStyle = 'rgba(239, 83, 80, 0.10)';
+      ctx.fillRect(-stampW / 2, -stampH / 2, stampW, stampH);
+      ctx.strokeStyle = '#EF5350';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-stampW / 2, -stampH / 2, stampW, stampH);
+      ctx.fillStyle = '#EF5350';
+      ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('SKIP \u2014 WATCH TIER', 0, 9);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+    if (tt > 0.75) {
+      const fade = Math.min(1, (tt - 0.75) / 0.15);
+      ctx.fillStyle = `rgba(255,255,255,${0.5 * fade})`;
+      ctx.font = '10px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Logged in journal as observation. No engagement.', w / 2, h - 10);
+    }
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
+
+// A13 — PlanHandoffAnim (S13) — synthesis tooltip arrow into trade plan card
+function PlanHandoffAnim() {
+  const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
+    const T = 11.0;
+    const tt = (t % T) / T;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = 'bold 13px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('SYNTHESIS \u2192 TRADE PLAN', w / 2, 22);
+    const cardW = (w - 70) / 2;
+    const cardH = h - 90;
+    const startY = 50;
+    // Left card: synthesis
+    const leftX = 25;
+    ctx.fillStyle = 'rgba(38, 166, 154, 0.05)';
+    ctx.fillRect(leftX, startY, cardW, cardH);
+    ctx.strokeStyle = 'rgba(38, 166, 154, 0.40)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(leftX, startY, cardW, cardH);
+    ctx.fillStyle = '#26A69A';
+    ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('SYNTHESIS', leftX + cardW / 2, startY + 18);
+    const synthLines = [
+      { text: '4/4 Conviction', color: 'rgba(255,255,255,0.95)', bold: true },
+      { text: '', color: '' },
+      { text: 'Ribbon \u2713', color: '#26A69A' },
+      { text: 'ADX 28 \u2713', color: '#26A69A' },
+      { text: 'Volume 1.6\u00d7 \u2713', color: '#26A69A' },
+      { text: 'Health 72% \u2713', color: '#26A69A' },
+      { text: '', color: '' },
+      { text: 'Tag: Sweep + FVG', color: '#FFB300' },
+    ];
+    synthLines.forEach((ln, i) => {
+      if (!ln.text) return;
+      ctx.fillStyle = ln.color;
+      ctx.font = `${ln.bold ? 'bold ' : ''}10px system-ui, -apple-system, sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.fillText(ln.text, leftX + 12, startY + 38 + i * 14);
+    });
+    // Arrow in middle
+    if (tt > 0.30) {
+      const fade = Math.min(1, (tt - 0.30) / 0.15);
+      ctx.fillStyle = `rgba(255, 179, 0, ${fade})`;
+      ctx.font = 'bold 24px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('\u2192', w / 2, startY + cardH / 2 + 8);
+    }
+    // Right card: plan
+    const rightX = leftX + cardW + 20;
+    if (tt > 0.45) {
+      const fade = Math.min(1, (tt - 0.45) / 0.20);
+      ctx.globalAlpha = fade;
+      ctx.fillStyle = 'rgba(255, 179, 0, 0.05)';
+      ctx.fillRect(rightX, startY, cardW, cardH);
+      ctx.strokeStyle = 'rgba(255, 179, 0, 0.40)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(rightX, startY, cardW, cardH);
+      ctx.fillStyle = '#FFB300';
+      ctx.font = 'bold 10px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('TRADE PLAN', rightX + cardW / 2, startY + 18);
+      const planLines = [
+        { text: 'Size: 1.5\u00d7 baseline', color: 'rgba(255,255,255,0.95)', bold: true },
+        { text: '', color: '' },
+        { text: 'Entry: signal close', color: 'rgba(255,255,255,0.7)' },
+        { text: 'SL: Risk Map Auto', color: '#EF5350' },
+        { text: 'TP1: 1R \u2014 50% off', color: '#26A69A' },
+        { text: 'TP2: 2R \u2014 30% off', color: '#26A69A' },
+        { text: 'TP3: 3R \u2014 20% trail', color: '#26A69A' },
+        { text: '', color: '' },
+        { text: 'BE move at TP1', color: '#FFB300' },
+      ];
+      planLines.forEach((ln, i) => {
+        if (!ln.text) return;
+        ctx.fillStyle = ln.color;
+        ctx.font = `${ln.bold ? 'bold ' : ''}10px system-ui, -apple-system, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillText(ln.text, rightX + 12, startY + 38 + i * 13);
+      });
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '10px system-ui, -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('The synthesis fills the plan. Plan-by-numbers.', w / 2, h - 10);
+  }, []);
+  return <AnimScene draw={draw} aspectRatio={16 / 9} />;
+}
 
 // ============================================================
 // MAIN PAGE COMPONENT
 // ============================================================
-export default function CipherConvictionSynthesisPage() {
+export default function CipherConvictionSynthesisLesson() {
   const [scrollY, setScrollY] = useState(0);
-  const { scrollYProgress } = useScroll();
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
-
-  // Game state
-  const [gameRoundIdx, setGameRoundIdx] = useState(0);
-  const [gameSelected, setGameSelected] = useState<string | null>(null);
-  const [gameAnswered, setGameAnswered] = useState(false);
-  const [gameScore, setGameScore] = useState(0);
-  const [gameComplete, setGameComplete] = useState(false);
-
-  // Quiz state
-  const [quizIdx, setQuizIdx] = useState(0);
-  const [quizSelected, setQuizSelected] = useState<string | null>(null);
-  const [quizAnswered, setQuizAnswered] = useState(false);
-  const [quizScore, setQuizScore] = useState(0);
-  const [quizComplete, setQuizComplete] = useState(false);
-
-  // Cert
-  const [certUnlocked, setCertUnlocked] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [gameRound, setGameRound] = useState(0);
+  const [gameSelections, setGameSelections] = useState<(string | null)[]>(new Array(gameRounds.length).fill(null));
+  const [quizAnswers, setQuizAnswers] = useState<(string | null)[]>(new Array(quizQuestions.length).fill(null));
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [certRevealed, setCertRevealed] = useState(false);
+  const [certId] = useState(() => `PRO-CERT-L11.22-${Math.random().toString(36).substring(2, 8).toUpperCase()}`);
 
   useEffect(() => {
     const h = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', h, { passive: true });
+    window.addEventListener('scroll', h);
     return () => window.removeEventListener('scroll', h);
   }, []);
 
+  const quizScore = quizAnswers.filter((ans, i) => {
+    if (!quizQuestions[i]) return false;
+    const correct = quizQuestions[i].options.find((o) => o.correct)?.id;
+    return ans === correct;
+  }).length;
+  const quizPercent = quizQuestions.length > 0 ? Math.round((quizScore / quizQuestions.length) * 100) : 0;
+  const quizPassed = quizPercent >= 66;
+
   useEffect(() => {
-    if (quizComplete && gameComplete && quizScore >= 6 && !certUnlocked) {
-      setCertUnlocked(true);
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 8000);
+    if (quizPassed && quizSubmitted && !certRevealed) {
+      const timer = setTimeout(() => {
+        setCertRevealed(true);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 5000);
+      }, 600);
+      return () => clearTimeout(timer);
     }
-  }, [quizComplete, gameComplete, quizScore, certUnlocked]);
+  }, [quizPassed, quizSubmitted, certRevealed]);
+
+  const fadeUp = { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } };
 
   return (
-    <div className="bg-[#0a0a0a] text-white min-h-screen relative overflow-x-hidden">
+    <div className="min-h-screen text-white" style={{ background: 'linear-gradient(to bottom, #060a12, #0a0f1a)' }}>
       <Confetti active={showConfetti} />
-
-      {/* Scroll progress bar — SSG-safe guard */}
-      <div className="fixed top-0 left-0 right-0 h-0.5 bg-white/5 z-50">
-        <div
-          className="h-full bg-gradient-to-r from-amber-400 to-accent-400"
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-900/50">
+        <motion.div
+          className="h-full bg-gradient-to-r from-amber-500 to-accent-500"
           style={{ width: `${Math.min((scrollY / (typeof document !== 'undefined' ? document.body.scrollHeight - window.innerHeight : 1)) * 100, 100)}%` }}
         />
       </div>
-
-      {/* Top nav back-link */}
-      <div className="sticky top-0 z-40 backdrop-blur-md bg-[#0a0a0a]/80 border-b border-white/5">
-        <div className="max-w-2xl mx-auto px-5 py-3 flex items-center justify-between">
-          <Link href="/academy" className="text-xs tracking-widest uppercase text-gray-500 hover:text-white transition">
-            &larr; Academy
-          </Link>
-          <span className="text-xs tracking-widest uppercase text-amber-400/60">Level 11 &middot; Lesson 22</span>
+      <nav className="fixed top-1 left-0 right-0 z-40 flex items-center justify-between px-5 py-2.5">
+        <Link href="/academy" className="font-extrabold text-sm tracking-wide bg-gradient-to-r from-amber-400 to-accent-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>ATLAS ACADEMY</Link>
+        <div className="flex items-center gap-2">
+          <Crown className="w-3.5 h-3.5 text-amber-400" />
+          <span className="text-xs font-bold text-amber-400">PRO &middot; LEVEL 11</span>
         </div>
-      </div>
+      </nav>
 
-      {/* ============================================================ */}
-      {/* HERO */}
-      {/* ============================================================ */}
-      <motion.section
-        style={{ opacity: heroOpacity }}
-        initial="hidden"
-        animate="show"
-        variants={stagger}
-        className="max-w-2xl mx-auto px-5 pt-20 pb-16"
-      >
-        <motion.div variants={fadeUp} className="mb-4">
-          <span className="inline-block px-3 py-1 rounded-full text-[10px] tracking-widest uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            Capstone &middot; Conviction Operator
-          </span>
+      {/* === HERO === */}
+      <section className="relative min-h-[85vh] flex flex-col items-center justify-center text-center px-6 pt-20">
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle,rgba(245,158,11,0.08),transparent_70%)] pointer-events-none" />
+        <div className="absolute top-[-50px] right-[20%] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(217,70,239,0.05),transparent_70%)] pointer-events-none" />
+        <motion.div initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.15 } } }} className="relative z-10">
+          <motion.div variants={fadeUp}><p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-3">Level 11 &middot; Lesson 22</p></motion.div>
+          <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">Cipher Conviction Synthesis<br /><span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>When Modules Agree, Trade. When They Don&apos;t, Wait.</span></motion.h1>
+          <motion.p variants={fadeUp} className="text-gray-300 text-lg max-w-lg mx-auto leading-relaxed">CIPHER fires signals all day. Most of them are noise. The 4-factor conviction score and the 13-tag context cascade tell you which signals to trade, at what size, with which plan. This is the synthesis layer that the Visual Layer arc was building toward.</motion.p>
+          <motion.div variants={fadeUp} className="mt-12 flex flex-col items-center gap-1.5">
+            <span className="text-xs tracking-widest uppercase text-gray-600">Scroll to begin</span>
+            <div className="w-5 h-5 border-r-2 border-b-2 border-amber-400 rotate-45 opacity-50 animate-bounce" />
+          </motion.div>
         </motion.div>
+      </section>
 
-        <motion.h1 variants={fadeUp} className="text-[clamp(32px,7vw,52px)] font-black leading-[1.1] tracking-tight mb-5">
-          Cipher Conviction Synthesis<br />
-          <span className="bg-gradient-to-r from-amber-400 via-accent-400 to-amber-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>
-            When Modules Agree, Trade.
-          </span>
-        </motion.h1>
-
-        <motion.p variants={fadeUp} className="text-base text-gray-400 leading-relaxed mb-8">
-          Six Visual Layer modules. Four conviction factors. Thirteen context tags. One synthesis layer that reads them all and tells the operator whether to engage. This is the lesson that turns a panel of indicators into a single decision.
-        </motion.p>
-
-        <motion.div variants={fadeUp} className="rounded-2xl border border-white/5 bg-white/[0.02] p-1 mb-8">
-          <ConvictionMeterAnim />
+      {/* === S00 — First, Why This Matters === */}
+      <section className="max-w-2xl mx-auto px-5 py-20">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
+          <div className="p-6 rounded-2xl glass-card mb-6">
+            <p className="text-xl font-extrabold mb-3">Every module said something. The synthesis says when to actually trade.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">By Level 11.21, you read the Ribbon, the ADX, the Volume, the Health gauge, the structural context, the candle modes &mdash; each module a separate read. In the moment of a signal, you cannot consult six modules in sequence. You have seconds. You need one decisive read.</p>
+            <p className="text-gray-400 leading-relaxed mb-4">The conviction synthesis is that one read. Four factors collapse into a score. Thirteen context tags collapse into one cascade winner. The result: a tier (Conviction, Standard, Watch) that determines whether to engage, at what size, with what trade plan. The synthesis is mechanical &mdash; it runs in milliseconds and produces the same answer every time. It is the framework saying &ldquo;trade this&rdquo; or &ldquo;do not trade this&rdquo; without leaving room for hunch.</p>
+            <p className="text-gray-400 leading-relaxed">This is the first capstone of Level 11. Every Visual Layer module fed into here. After this lesson, the candles (L11.23) and the war room (L11.24) operationalize what the synthesis decides.</p>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-2">&#11088; THE CONVICTION PROMISE</p>
+            <p className="text-sm text-gray-400 leading-relaxed">By the end of this lesson, you will know the <strong className="text-white">four conviction factors</strong>, the <strong className="text-white">13-tag context cascade</strong>, the <strong className="text-white">three engagement tiers</strong>, the <strong className="text-white">tier-based sizing</strong>, and the <strong className="text-white">trade plan handoff</strong>. You will read a synthesis tooltip and know exactly what to do.</p>
+          </div>
         </motion.div>
+      </section>
 
-        <motion.div variants={fadeUp} className="flex items-center gap-3 text-xs text-gray-500">
-          <span>16 sections</span>
-          <span className="text-white/20">&middot;</span>
-          <span>13 animations</span>
-          <span className="text-white/20">&middot;</span>
-          <span>~28 min read</span>
+      {/* === S01 — When Modules Agree, Trade (Groundbreaking Concept) === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; &#11088; When Modules Agree</p>
+          <h2 className="text-2xl font-extrabold mb-4">The Groundbreaking Concept</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Operators new to CIPHER ask the same question: &ldquo;which module do I look at first?&rdquo; The premise is wrong. You do not look at modules &mdash; you read the synthesis. Four factors get a vote. Thirteen tags compete for one slot. The result is binary: engage or do not. This is the framework&apos;s most important compression.</p>
+          <FourFactorHeroAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the four factors fill in. Ribbon strength (trend alignment of the 8 EMAs). ADX (trend conviction \u2265 25). Volume ratio (\u2265 1.0\u00d7 vs 20-bar avg). Health (CIPHER&apos;s composite quality gate \u2265 50%). Each is a yes/no check; the score is 0-4. A 4/4 score with the right context tag becomes a Conviction-tier engagement &mdash; the framework&apos;s highest-confidence call.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">FACTORS ARE ORTHOGONAL BY DESIGN</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Ribbon, ADX, Volume, Health each measure a different dimension of trend quality. A signal can fire with one, two, three, or four confirmed. Conviction grows non-linearly with the score &mdash; 4/4 is much more than 4x as confident as 1/4 because the orthogonality means each confirmation independently lowers the noise floor.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">CASCADE OVER COMMITTEE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The 13-tag context cascade resolves to one winner. There is no &ldquo;average context&rdquo; or &ldquo;weighted blend.&rdquo; The first matching tag in priority order wins, and the rest are silenced. This is deliberate &mdash; cascades produce identifiable, unambiguous reads. Committees produce vague compromises.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SYNTHESIS BEATS DISCRETION UNDER LOAD</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Operators who override the synthesis with their gut perform worse over 100 sessions than operators who follow the synthesis mechanically. Discretion fails under load (multiple alerts, fatigue, fast-moving price). Mechanical scoring does not.</p>
+            </div>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Four factors. Thirteen tags. One tier. Honor the synthesis &mdash; especially when your gut says otherwise.</p>
+          </div>
         </motion.div>
-      </motion.section>
-
-      {/* ============================================================ */}
-      {/* S00 — First, Why This Matters */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">First, Why This Matters</p>
-        <h2 className="text-2xl font-extrabold mb-4">The Visual Layer is six sensors. Conviction is the brain.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Across the last six lessons you mastered the Visual Layer arc. Ribbon told you the trend stack. Structure told you where price respects history. Imbalance told you which gaps are still magnets. Sweeps told you when liquidity got trapped. Risk Envelope told you when price was overextended. Risk Map told you what the trade is actually worth.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          Each module on its own is a single sense. A blind man with a finger on a column. Useful, but partial. The operator who reads only Ribbon enters when stack is fresh and exits when it inverts &mdash; and gets stopped out by sweeps the Ribbon module never broadcast. The operator who reads only Imbalance enters at every gap and gets caught when Structure says the level above is iron. The operator who reads everything but cannot synthesize is buried under twelve broadcasts and engages on the loudest one.
-        </p>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">SIX SENSES, ONE BRAIN</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Conviction Synthesis is the layer that reads all six sensors at once and produces a single integer score: how many of them agree right now. That score &mdash; and the qualitative tag that goes with it &mdash; IS the engagement decision. You do not weigh modules manually. CIPHER does it for you on every bar.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE WHOLE IS MORE THAN THE SUM</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Three modules agreeing carries more weight than one module screaming. A Sweep that fires inside an FVG at a Structure level with Ribbon stacked is institutional alignment. A Sweep that fires alone in a range with Ribbon flat is a coin flip. The synthesis layer is what tells you which is which.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WHY THIS IS A CAPSTONE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Lessons 11.16 through 11.21 each taught one module. This lesson teaches how the system reads itself. From here, every remaining lesson assumes you can hold all six modules in your head and read their combined verdict in one glance. That is the Conviction Operator&apos;s contract.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">WHAT CHANGES WHEN YOU LEARN THIS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Before this lesson, you read CIPHER row by row. After this lesson, you read the score and the tag, and the rows are confirmation rather than primary signal. The cognitive load drops by 80%. The discipline rises because the threshold is no longer a gut feel &mdash; it is a number on the chart.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">A WARNING UPFRONT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Synthesis is not magic. It does not predict. A 4/4 signal can fail. A 1/4 signal can be the start of a trend. What synthesis does is tell you, on this bar, how many independent reads agree. The operator&apos;s job is to size to that agreement, not to override it.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Your job is no longer to read modules. It is to read the score, read the tag, and decide. Six lessons of sensory mastery were preparation for this single decision protocol.
-          </p>
-        </div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S01 — The Groundbreaking Concept */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; The Groundbreaking Concept</p>
-        <h2 className="text-2xl font-extrabold mb-4">When modules agree, trade. When they don&apos;t, wait.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Every operator decision &mdash; entry, sizing, hold, exit &mdash; reduces to a question: how many of my reads point the same direction right now? CIPHER answers this question continuously, on every bar, with a single integer between 0 and 4. That integer is the conviction score, and it is the most honest number on the chart.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The score does not mean the trade will work. It means: of the four conviction factors that CIPHER tests, this many passed. Four passes is institutional alignment. Three passes is a Strong setup. Two is borderline. One or zero is a Standard signal that the system reluctantly prints because you asked it to. The operator&apos;s discipline is to engage at the threshold they chose, and to wait when the system is below it.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <FactorStackAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE FOUR FACTORS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Ribbon stacked. ADX above 20. Volume above 1.0&times; average. Momentum health above 50%. Each is a binary test &mdash; pass or fail. The score is the count of passes. There is no weighting, no discretion, no override. The four factors are the consensus engine.
-            </p>
+      {/* === S02 — Factor 1: The Ribbon === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; Factor 1: The Ribbon</p>
+          <h2 className="text-2xl font-extrabold mb-4">Trend strength &middot; the EMA alignment vote</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The Ribbon is CIPHER&apos;s 8-EMA fan. When the EMAs are spread, ordered, and trending in the same direction, the Ribbon is Strong. When they have converged, crossed, or pinched, the Ribbon is Weak. Strong = +1, Weak = 0. The Ribbon vote captures the cleanest read on whether the chart has trend structure right now.</p>
+          <RibbonFactorAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the two states cycle. STRONG: 8 EMAs spread vertically, sorted by length, all sloping the same direction. WEAK: EMAs converged in a narrow band, crossing each other, no clear slope. The Ribbon factor scores +1 in Strong and 0 in Weak. There is no half-credit &mdash; the EMA alignment is binary by Pine implementation.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">RIBBON STRONG &middot; +1</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The 8 EMAs are spread (good vertical separation between fastest and slowest), aligned (sorted in the same order), and sloping the same direction. This is the cleanest visual signature CIPHER has for trend structure. Most clean trends produce Strong Ribbon for the duration of the move.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">RIBBON WEAK &middot; 0</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The EMAs are converged, crossed, or pinched. Trend structure is absent or transitioning. Signals firing during Weak Ribbon often happen at structural inflection points &mdash; reversals, range starts, or post-event chop &mdash; where directional bias is unclear.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE BINARY VOTE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">No half-credit. The Pine implementation evaluates Strong/Weak as a hard threshold. This is intentional &mdash; soft thresholds invite overrides. The hard threshold means an operator either gets the Ribbon vote or does not, with no negotiation.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WHY THESE FOUR</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Each factor is independent of the others and reads a different dimension of the market. Ribbon reads trend structure. ADX reads trend strength. Volume reads institutional participation. Health reads momentum quality. When all four agree, you have four independent confirmations. When two agree, you have two. The math is conservative on purpose.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Strong = trend structure present. Weak = absent. Binary vote, no negotiation.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WHY A FLOOR, NOT A WEIGHT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              CIPHER could weight factors (e.g. Ribbon worth 2 points, ADX worth 1) and produce a richer score. It does not. A flat 4-factor count is operator-readable: at a glance, you know how many witnesses just agreed. Weighted scores hide the disagreement. Flat counts expose it.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE THRESHOLD IS THE POLICY</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The score is the read. The threshold is the policy. CIPHER lets you set a minimum conviction (0, 3) at which signals print. Below that floor, the system does not draw a label even if the algorithm fired. This is the operator&apos;s engagement protocol expressed as a number. Swing traders run min_conviction = 3. Trend traders run 0 and let everything print.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">A POLICY IS NOT A PREFERENCE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Setting min_conviction = 3 is not "I prefer strong signals." It is "I will not engage below 3, no matter how good the chart looks." The threshold is a contract you make with yourself before the trade exists. CIPHER enforces it by never showing the rejected signals.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            The score is the truth. The threshold is the rule. Trade the agreement, not the signal.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-
-      {/* ============================================================ */}
-      {/* S02 — The 4-Factor Engine */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">02 &mdash; The 4-Factor Engine</p>
-        <h2 className="text-2xl font-extrabold mb-4">Ribbon &times; ADX &times; Volume &times; Health.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          The conviction engine is four lines of Pine. Each factor is a boolean. The score is the sum. The math is small and the discipline is large. Once you see the four tests written out, you stop arguing with the score &mdash; you read it as the literal count of agreement it is.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          Each test is calibrated to its dimension. Ribbon checks for stack &mdash; not slope, not curl, not divergence, just stacked Core/Flow/Anchor in the signal&apos;s direction. ADX above 20 confirms a trending environment. Volume above 1.0&times; the 20-bar average confirms participation. Momentum health above 50% confirms the move has internal energy. Pass each test, add 1.
-        </p>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 1 &middot; RIBBON STACK</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Tests <span className="text-amber-400">bull_stack</span> for longs, <span className="text-amber-400">bear_stack</span> for shorts. Both require Core, Flow, and Anchor stacked in the signal&apos;s direction with non-trivial separation. A flat ribbon fails. A diverging ribbon fails. Only a clean directional stack passes. This is the trend dimension.
-            </p>
+      {/* === S03 — Factor 2: ADX === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; Factor 2: ADX</p>
+          <h2 className="text-2xl font-extrabold mb-4">Trend conviction &middot; the 25 threshold</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">ADX measures the strength of the trend regardless of direction. Below 25, the market lacks the conviction to sustain trends &mdash; signals that fire here tend to chop and fail. At or above 25, trends have institutional backing and tend to follow through. The ADX factor scores +1 when ADX \u2265 25 and 0 below.</p>
+          <ADXFactorAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the dial sweep. The amber threshold marker sits at 25. When ADX rises above the marker, the dial fills teal and the factor scores +1. When ADX is below, the dial fills magenta and the factor is 0. The threshold is from the original Wilder ADX framework and is the standard separator between trend and range markets.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">ADX \u2265 25 &middot; +1</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The market has trend conviction. Directional signals fired in this regime have follow-through expectancy. Most clean trend trades happen with ADX between 25 and 45; above 45 the trend is mature and reversal risk rises.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">ADX BELOW 25 &middot; 0</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The market is in a range or transitioning. Directional signals here have low expectancy &mdash; they often fire on noise rather than commitment. The factor scoring 0 is the framework saying &ldquo;the trend conviction layer is absent&rdquo; without forbidding engagement (the score is one of four).</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE 25 IS HARD</p>
+              <p className="text-sm text-gray-400 leading-relaxed">ADX 24.9 = 0. ADX 25.0 = +1. The hard threshold is intentional. Operators who soften it (&ldquo;close enough at 24&rdquo;) progressively soften other thresholds and end up with no thresholds at all. The discipline is the threshold.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 2 &middot; ADX &gt; 20</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The ADX threshold of 20 is the historical inflection between trend and chop. Below 20, directional moves rarely sustain. Above 20, the market has chosen a side and is committing to it. This is the strength dimension &mdash; orthogonal to the Ribbon&apos;s structural read.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">25 or higher: trend has commitment. Below: range or transition. Hard threshold &mdash; no &ldquo;close enough.&rdquo;</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 3 &middot; VOLUME &gt; 1.0&times;</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The volume ratio is current bar divided by the 20-bar average. Above 1.0&times; means the bar is participating &mdash; institutional desks engaging, real flow, real conviction. Below 1.0&times; is retail noise on a weekend. This is the participation dimension.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">FACTOR 4 &middot; HEALTH &gt; 50%</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Momentum health is CIPHER&apos;s composite oscillator state. Above 50% means the move has internal energy &mdash; rising momentum, expanding range, healthy follow-through. Below 50% is a tired move, susceptible to reversal. This is the energy dimension.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">WHY INDEPENDENCE MATTERS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The four factors are nearly orthogonal. Ribbon can be stacked while ADX is below 20 (early trend). ADX can be high while volume is thin (algo-driven trends). Volume can spike while health is low (climactic exhaustion). Each factor catches what the others miss. Four passes is genuine consensus.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE CALIBRATION IS LOCKED</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              ADX threshold is 20, not 25. Volume threshold is 1.0&times;, not 1.2&times;. Health threshold is 50%, not 60%. These are CIPHER&apos;s defaults &mdash; chosen to be the lowest legitimate floor for each factor. Tightening them produces fewer Strong signals; loosening them produces noisier ones. The defaults are the production calibration.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WHAT THE SCORE DOES NOT INCLUDE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Conviction does not include Structure proximity, FVG location, Sweep recency, Risk Envelope state, Risk Map quality, or HTF alignment. Those are read by the context cascade (next section), not the score. The score is the strength reading. The cascade is the situational reading. Both serve the synthesis.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Four orthogonal tests. Four passes is alignment. Three is Strong. Two is wait. The math is small because the discipline must be large.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S03 — The Min Conviction Filter */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">03 &mdash; The Min Conviction Filter</p>
-        <h2 className="text-2xl font-extrabold mb-4">The threshold is the policy lever.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Once a signal is scored, CIPHER asks one question before drawing the label: does the score meet the minimum threshold? If yes, print. If no, suppress. The threshold is set by <span className="text-amber-400">min_conviction</span>, an integer that ranges from 0 to 3. It is the operator&apos;s engagement floor expressed as a number.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          With min_conviction = 0 (the default), all signals print. The chart shows every algorithmic fire, including 0/4 and 1/4 weak ones. With min_conviction = 3, only Strong signals print &mdash; 3/4 and 4/4. The rest are suppressed silently. The chart becomes sparse, but every label that survives represents three or four agreeing reads. The threshold is how the operator chooses their own waterline.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <MinConvictionFilterAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THRESHOLD = 0 &middot; SHOW EVERYTHING</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              All scored signals print. You see the algorithm&apos;s full output, weak ones included. Useful for chart study, backtesting visual review, and learning what 1/4 and 2/4 setups actually look like. Not for live trading without manual filtering.
-            </p>
+      {/* === S04 — Factor 3: Volume === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Factor 3: Volume</p>
+          <h2 className="text-2xl font-extrabold mb-4">The 1.0\u00d7 ratio threshold</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Volume confirms or denies the move. The factor measures volume on the signal bar relative to the 20-bar moving average. Ratio \u2265 1.0\u00d7 means the signal bar has at least average participation &mdash; the move has crowd behind it. Below 1.0\u00d7 means the move is happening on lighter-than-average volume &mdash; an anaemic signature that often fails.</p>
+          <VolumeFactorAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the 12 bars build. The amber dotted line is the 1.0\u00d7 threshold. Bars above the line score teal (volume confirms). Bars below score magenta (volume absent). The latest bar shows the current ratio and the pass/fail badge. The volume factor is the simplest of the four to verify visually.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">VOLUME \u2265 1.0\u00d7 &middot; +1</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The signal bar has at least average participation. Most legitimate trend signals fire on volume between 1.2\u00d7 and 2.5\u00d7 the average. Above 3\u00d7 is exhaustion territory &mdash; volume is high but the move may be climactic. The 1.0\u00d7 threshold catches the bottom edge of legitimate participation.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">VOLUME BELOW 1.0\u00d7 &middot; 0</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The move is happening on light volume. Light-volume moves have lower follow-through. The factor scoring 0 is a yellow flag &mdash; the signal may still be valid, but the volume isn&apos;t confirming. This is one of the four factors most likely to be the missing one in 3/4 setups.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FX SPECIAL CASE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">FX volume from retail brokers is tick volume, not true exchange volume. The ratio still works but with more noise. FX traders often run the framework with a 1.2\u00d7 threshold instead of 1.0\u00d7 to compensate &mdash; and the framework allows this customization in the inputs.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THRESHOLD = 3 &middot; STRONG ONLY</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Only 3/4 and 4/4 signals print. The chart is sparse. Every surviving label is a Strong signal with the &quot;+&quot; marker. This is the production setting for serious operators &mdash; the floor below which CIPHER refuses to show a setup at all.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">1.0\u00d7 or higher: crowd is behind the move. Below: anaemic. FX traders adjust to 1.2\u00d7 if needed.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WHY NO 1 OR 2 OPTION</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The threshold ladder skips 1 and 2 by design. A 1/4 floor is barely above 0 &mdash; you would still see most weak signals. A 2/4 floor is mid-conviction &mdash; the noisiest band, where signals fail at high rates. The clean operator levers are 0 (study mode) and 3 (production mode). Anything in between is indecision.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE STRONG-ONLY TOGGLE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Outside of presets, CIPHER exposes a manual <span className="text-amber-400">Strong Signals Only</span> toggle in the Inputs panel. Toggling it ON sets min_conviction to 3. Toggling it OFF sets it to 0. This is the binary operator switch &mdash; production mode or study mode, no in-between.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRESETS OVERRIDE THE TOGGLE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When a preset is active, the Strong Signals Only toggle is ignored. Swing Trader and Sniper presets force min_conviction = 3. Trend Trader, Scalper, and Reversal presets force 0. The preset is a complete configuration &mdash; it sets the threshold along with everything else, and overrides any manual setting until you switch back to None.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WHAT THE SUPPRESSED SIGNALS LOOK LIKE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              They look like nothing. CIPHER does not draw a faint label, a ghost marker, or a debug dot. A signal below threshold is invisible. This is intentional &mdash; the operator should not be able to second-guess the floor by squinting. If the system did not print it, the system did not print it.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Pick a floor. Stick to it. The threshold is not a preference &mdash; it is a contract. Below the floor, you do not engage, no matter how the chart feels.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S04 — Strong vs Standard On Chart */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Strong vs Standard On Chart</p>
-        <h2 className="text-2xl font-extrabold mb-4">The label IS the synthesis output.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          CIPHER renders the conviction read directly on the chart through the label itself. A Standard signal prints small. A Strong signal prints larger and carries a &quot;+&quot; marker after the direction word. You do not need to open the tooltip to know the score &mdash; the label glyph tells you at a glance.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          On the NAS100 1D chart, two signals printed within the same week. The Tension Snap short at 27,798 was Strong &mdash; bigger label, &quot;Short +&quot; text, 3/4 factors. The Sweep-context Tension Snap short at 26,983 was Standard &mdash; smaller label, &quot;Short&quot; without the plus, 2/4 factors (volume failed at 0.85&times;). Same algorithm, same direction, different conviction tier. Different position size.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <StrongVsStandardAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE &quot;+&quot; IS NOT DECORATION</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The plus marker is a literal glyph appended to the direction text when bull_conviction or bear_conviction is &gt;= 3. It is the chart-side broadcast of the conviction threshold being crossed. Three or four passes earns the plus. One or two does not.
-            </p>
+      {/* === S05 — Factor 4: Health === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Factor 4: Health</p>
+          <h2 className="text-2xl font-extrabold mb-4">CIPHER\u2019s composite quality gate</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Health is CIPHER&apos;s catch-all quality gate &mdash; a composite score that blends signal-line distance, regime cleanliness, and structural alignment. It exists to catch things the other three factors miss. Health \u2265 50% means the chart broadly looks tradeable. Below 50% means something is structurally off, even if Ribbon, ADX, and Volume all confirm.</p>
+          <HealthFactorAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the gauge sweep. The 50% threshold is the pass line. Below 50% the gauge fills magenta and Health scores 0 &mdash; the chart has structural issues. Above 50% the gauge fills teal and Health scores +1. Most clean signals fire with Health between 60% and 85%. Health above 90% is rare and indicates the chart is in an unusually clean state.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">HEALTH \u2265 50% &middot; +1</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The chart is broadly tradeable. The composite quality gate is open. Most signals you should engage will have Health in this range. Health works as a sanity check on the other three factors.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">HEALTH BELOW 50% &middot; 0</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Something is structurally off. The chart may have just had a high-impact news event, may be near a major level, or may be in a transitional regime. Even if the other three factors all confirm, Health below 50% is the framework saying &ldquo;there&apos;s a structural reason this trade may not work.&rdquo;</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">THE CATCH-ALL FACTOR</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Health captures patterns that don&apos;t fit cleanly into Ribbon/ADX/Volume. A clean trend with a major news catalyst pending will often have Health in the 40s. A perfect setup at the open during high implied volatility will sometimes have Health below 50. The factor is doing real work even when the visible chart looks fine.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">SIZE IS THE SECOND CHANNEL</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Strong labels render at <span className="text-amber-400">size.normal</span> in Pine. Standard labels render at <span className="text-amber-400">size.small</span>. The visual hierarchy is intentional &mdash; the eye is drawn to Strong setups first, and Standard ones recede until you choose to inspect them.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">50% or higher: chart is tradeable. Below: something structurally off. Trust the catch-all.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">COLOR IS NOT A CHANNEL</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Strong and Standard labels share the same color &mdash; teal for longs, magenta for shorts. CIPHER deliberately does not use color to encode conviction, because color already encodes direction. Doubling up creates ambiguity. Glyph and size carry conviction; color carries direction.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WITHOUT min_conviction = 3, BOTH PRINT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At threshold 0, both labels appear on the chart with their respective sizes and glyphs. The operator sees the contrast directly. At threshold 3, only the Strong label survives &mdash; the Standard one is suppressed entirely. The same algorithm produces different chart outputs depending on the policy.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE TOOLTIP CONFIRMS THE LABEL</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Hovering a Strong label reveals a tooltip that ends with <span className="text-amber-400">&#10010; Strong &mdash; X/4 factors</span>. Hovering a Standard label produces the same tooltip body but without the Strong line. The tooltip is the long-form synthesis read &mdash; the label is the at-a-glance summary. They reinforce each other.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE NAS100 1D EXAMPLE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              On 29 Apr the daily printed Short + at 27,798 with full 3/4 factors and a Snap context tag. Three days earlier the same chart printed Short at 26,983 with only 2/4 factors (volume 0.85&times; failed) and a Sweep tag. The operator running min_conviction = 3 saw only the first label. The operator running 0 saw both and could compare directly.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">SIZING FOLLOWS THE LABEL</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The discipline is to size to the label glyph. Strong with plus = full size. Standard without = half size, or pass entirely. The label is a sizing instruction, not an entry suggestion. CIPHER tells you the conviction; you translate that into position size by your own rule.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            The plus is information. The size is information. Read them before you read the price. Strong gets full size; Standard gets half or none.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S05 — The Context-Tag Cascade */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; The Context-Tag Cascade</p>
-        <h2 className="text-2xl font-extrabold mb-4">Thirteen tags, first match wins.</h2>
+      {/* === S06 — Score Composition === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Score Composition</p>
+          <h2 className="text-2xl font-extrabold mb-4">From four factors to one number</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The four factors each contribute 0 or 1 to the score. Sum is 0-4. The score is the headline output of the synthesis &mdash; the one number that determines the engagement tier when combined with the context tag. Most signals fire at 2/4 or 3/4. The rare 4/4 with apex context is the framework&apos;s highest-edge call.</p>
+          <ScoreCompositionAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Three example compositions cycle. 4/4 STRONG: every factor confirms. 3/4 STANDARD: one factor missing (commonly ADX in mid-trend, Volume during low-volatility periods). 1/4 WATCH: only one factor confirming &mdash; usually Ribbon firing on the visual signal but the supporting context is absent. Watch what the score reveals: each missing factor is a missing dimension of confirmation.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">SCORE 4 &middot; ALL FOUR ALIGN</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Strong Ribbon, ADX \u2265 25, Volume \u2265 1.0\u00d7, Health \u2265 50%. The setup is broadcasting full alignment. Combined with the context tag, this becomes either Conviction tier (if apex tag) or high Standard tier (if mid-priority tag).</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SCORE 3 &middot; THE WORKHORSE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Three of four confirming. Most clean trend signals land here. The missing factor is informative &mdash; missing ADX means trend conviction is borderline; missing Volume means an anaemic move; missing Health means a structural concern. 3/4 is the threshold for Standard tier engagement.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SCORE 2 OR BELOW &middot; WATCH TIER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Two or fewer factors. The framework treats this as Watch tier &mdash; observe, do not engage. The signal is firing on insufficient supporting context. Engaging anyway is the discipline failure documented in section fifteen.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">DISTRIBUTION OF SCORES</p>
+              <p className="text-sm text-gray-400 leading-relaxed">In typical session backtests, score distribution is roughly: 4/4 = 5-10%, 3/4 = 25-35%, 2/4 = 35-45%, 1/4 = 15-25%. Most signals are 2/4 or 3/4. The rare 4/4 is what the framework is designed to spotlight.</p>
+            </div>
+          </div>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Score \u2265 3 = engage. Score \u2264 2 = watch. The missing factor tells you which dimension is absent.</p>
+          </div>
+        </motion.div>
+      </section>
 
-        <p className="text-gray-400 leading-relaxed mb-4">
-          The conviction score is the strength reading. The context tag is the situational reading. CIPHER runs a 13-level priority cascade on every signal &mdash; testing each tag in order, and stopping at the first one that matches. The tag that wins is the one printed in the tooltip and the one that determines the operator&apos;s read of why the signal fired.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The cascade is hard-coded by importance. Sweep+FVG is tested first because it represents the strongest two-module confluence in CIPHER. Trend-with-trend is tested second-to-last because it is the most generic context. Momentum is the fallback &mdash; the tag printed when nothing more specific applies. Lower tags are not weaker signals; they are signals where no special structural condition was active.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
+      {/* === S07 — The 13-Tag Context Cascade === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; The 13-Tag Context Cascade</p>
+          <h2 className="text-2xl font-extrabold mb-4">First match wins &middot; cascade does not blend</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The score tells you how strong the signal is. The context tag tells you what kind of setup it is. Thirteen possible tags, ranked by confluence quality. The cascade scans top-down; the first matching tag wins; the rest are silenced. The output is one tag &mdash; the framework&apos;s answer to &ldquo;what setup is this?&rdquo;</p>
           <ContextCascadeAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 1 &middot; SWEEP + FVG</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The signal fired within bars of a liquidity sweep AND inside an active Fair Value Gap. Two reversal mechanisms align. This is the apex tag &mdash; the highest-conviction context the cascade can broadcast. Tested first because if it matches, no other tag is needed.
-            </p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the cascade scan. Priorities 1-2 (Sweep+FVG, Sweep) are apex tags &mdash; they promote the score to Conviction tier when 4/4. Priorities 3-9 are mid-priority tags &mdash; structural confirmations that qualify Standard tier. Priorities 10-13 are low-confluence contexts (Range, Chop, Counter-trend) &mdash; even with a 4/4 score, these tags keep the engagement at Standard or below. The cascade is the framework&apos;s way of saying &ldquo;not all setups are equal.&rdquo;</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 1-2 &middot; APEX TAGS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Sweep+FVG (priority 1) and Sweep (priority 2) are the highest-confluence contexts CIPHER recognizes. A liquidity sweep into a fair value gap is the canonical institutional reversal pattern. These tags, combined with 4/4 score, produce the Conviction tier.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 3-9 &middot; STRUCTURAL CONFIRMATIONS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Breakout, S/R, Trend, OB align, Imbalance, Volume confirm, Structure shift. Each is a real confluence layer but lower-quality than the apex pair. With 3/4 or 4/4 score, these tags qualify Standard tier engagement.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 10-13 &middot; LOW-CONFLUENCE CONTEXTS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Range, Chop, Counter-trend, No context. These tags fire when no higher-priority pattern matches. Even a 4/4 score paired with a Range or Chop tag stays at Standard tier &mdash; the cascade is saying &ldquo;the score is strong but the context is not the kind that historically follows through.&rdquo;</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FIRST-MATCH SEMANTICS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The cascade scans priorities 1, 2, 3, ... 13 in order. The first matching pattern wins; the cascade exits. There is no &ldquo;multiple tags fire&rdquo; or &ldquo;weighted blend.&rdquo; This produces unambiguous tags and prevents the analytical paralysis of looking at 6 tags simultaneously.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 2 &middot; SWEEP</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Liquidity was swept recently but no FVG is involved. Still a strong reversal context &mdash; trapped traders are in pain. Tested second because the FVG presence elevates it to apex; without the FVG, it stands alone at priority 2.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Apex tags (P1-2) promote to Conviction. Mid (P3-9) qualifies Standard. Low (P10-13) holds at Standard or below. First match wins.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 3 &middot; BREAKOUT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The squeeze just confirmed AND the squeeze had been compressed for more than 5 bars. Energy released. The Coil Operator&apos;s lesson territory. This tag captures the structural release context &mdash; energy was building, now it is spending.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 4 &middot; SNAP</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The signal source is a Tension Snap (TS), not a Pulse Cross. TS signals are reversal-flavored by design &mdash; they fire when tension reaches a stretch threshold. The tag identifies the signal type rather than a structural condition.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 5 &middot; EXHAUSTION</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              A Tension Snap fired within 3 bars of momentum entering an EXHAUSTED or DYING state. The trend is running out of internal energy. Reversion-context for reversal traders. Captured here because exhaustion is rare enough to matter when present.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 6 &middot; S/R BREAK</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The signal fired within 3 bars of a structural support or resistance level breaking. Continuation context &mdash; the break already happened, the signal is the entry confirmation. The Structure Operator&apos;s lesson reads this directly.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 7-9 &middot; AT-LEVEL TAGS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">At Support / At Resistance</span> (priority 7) fires when the signal hit a tracked S/R level. <span className="text-amber-400">At Spine</span> (priority 8) fires when it hit the dynamic momentum spine. <span className="text-amber-400">At FVG</span> (priority 9) fires when it hit an active imbalance. All three are structural reads &mdash; the signal happened where price has historical or mechanical reason to react.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 10 &middot; OVEREXTENDED</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The Risk Envelope reports OVEREXTENDED &mdash; price is far from fair value. Reversion context &mdash; the move has stretched and a snap-back is statistically due. The Risk Envelope Operator&apos;s lesson territory.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRIORITY 11-13 &middot; FADE / TREND / MOMENTUM</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">Fade</span> (11) is a counter-trend Pulse Cross with low health &mdash; weak and contrarian. <span className="text-amber-400">Trend</span> (12) is a with-trend Pulse Cross with stack &mdash; clean continuation. <span className="text-amber-400">Momentum</span> (13) is the fallback for everything else &mdash; no special context, just the base read. Most signals on most charts end up at 12 or 13.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            The tag tells you why. The score tells you how strong. Both feed the decision. A 4/4 Momentum signal is weaker than a 3/4 Sweep+FVG signal because the context dimension matters.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S06 — Sweep + FVG ★ Apex */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Sweep + FVG &#9733; Apex</p>
-        <h2 className="text-2xl font-extrabold mb-4">The highest-conviction tag in the cascade.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          One context tag sits above all others: <span className="text-amber-400">Sweep + FVG</span>. It fires when a signal aligns with a recent liquidity sweep AND an active Fair Value Gap on the same side. Two independent reversal mechanisms agree on the same level at the same time. The result is the highest-conviction setup CIPHER is capable of identifying without weighting factors manually.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The mechanism is straightforward. A swing high gets swept &mdash; price wicks above, then closes back below. The wick&apos;s extension trapped late longs. Below the swing, an FVG zone marks where price moved with conviction earlier &mdash; an unfilled imbalance. When a Short signal fires near both, the trapped longs become forced sellers and the FVG becomes a magnet. Two confluences. One trade.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <SweepFvgApexAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">WHY THIS COMBINATION SPECIFICALLY</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Sweeps and FVGs are read by different modules with different mechanics. Sweeps read liquidity grabs &mdash; instantaneous events. FVGs read directional impulses &mdash; lingering conditions. When both align, the signal sits at an intersection of two unrelated structural reads. The probability of independence makes the confluence meaningful.
-            </p>
+      {/* === S08 — The Synthesis Tooltip === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; The Synthesis Tooltip</p>
+          <h2 className="text-2xl font-extrabold mb-4">One read &middot; all four factors &middot; the cascade winner &middot; the tier</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The synthesis tooltip is the operator-facing surface of the entire framework. It appears on every signal label. Four factor checks, one context tag, one tier. Reading the tooltip takes under two seconds for an experienced operator. The tooltip is what you read in real-time during sessions; everything else in this lesson is what runs underneath.</p>
+          <TooltipDecodeAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the tooltip render. The signal label fires on the chart. The tooltip fades in beside it: &ldquo;Pulse Cross Long&rdquo; (signal type), then the four factor checks (each with verdict), then the context tag in amber (what kind of setup), then the tier verdict. The whole tooltip is structured for fast visual scan &mdash; bold for headline, color-coded for verdicts, indented for hierarchy.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">SIGNAL HEADLINE &middot; WHAT FIRED</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The first line names the signal &mdash; Pulse Cross Long, Tension Snap Short, Squeeze Release Long, etc. This tells you which of CIPHER&apos;s signal generators fired. Each signal has its own historical edge profile.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">FOUR FACTOR LINES &middot; THE CONFLUENCE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Ribbon, ADX, Volume, Health each get a line. Each shows the actual measured value (28 ADX, 1.6\u00d7 volume, 72% health) and a teal check or magenta cross. You can see at a glance which factors confirmed and which did not.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">CONTEXT TAG &middot; THE CASCADE WINNER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The amber line names the cascade winner. &ldquo;Sweep + FVG&rdquo; for apex setups, &ldquo;Breakout&rdquo; or &ldquo;Trend&rdquo; for mid-priority, &ldquo;Range&rdquo; or &ldquo;No context&rdquo; for low-confluence. The tag tells you what kind of setup this is at a glance.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TIER VERDICT &middot; THE BOTTOM LINE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The final line is the tier &mdash; Conviction, Standard, or Watch. This is the bottom line of the entire synthesis. The tier tells you whether to engage and at what size. If Conviction, size 1.5x. If Standard, size 1.0x. If Watch, do not engage.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE STAR GLYPH IS CHART-SIDE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When the Sweep row in the Command Center detects this confluence, it broadcasts &quot;HOT + FVG &#9733;&quot; as the row verdict. The star is the visible signature. If you see the star in the panel, you are looking at the apex tag in the cascade. No other condition produces it.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Read top-down: signal, factors, context, tier. Two seconds. The tooltip is the entire synthesis compressed.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">NOT EVERY SWEEP HAS AN FVG</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              A clean sweep without a nearby FVG is still tag #2 in the cascade (Sweep). It is a strong context. But it is not the apex. The discipline is to know the distinction &mdash; do not call a Sweep a Sweep+FVG just because the chart looks pretty. The Pine code tests for both.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">RARITY IS THE FEATURE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              On most charts on most days, no Sweep+FVG signal fires. The conditions are restrictive on purpose. When one does fire, it represents the rare alignment that justifies aggressive sizing. The discipline is to treat the rarity as a virtue &mdash; CIPHER does not water down its apex tag to print more often.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">SIZE FULLY AT APEX</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The conviction-tier sizing protocol (covered in S10) treats Sweep+FVG signals as the largest size the operator allows themselves. If your standard Strong size is 1% risk, your Sweep+FVG size is 1.5% or whatever your discipline tolerates. The math is on your side &mdash; the cascade has already done the filtering.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">FAILURE MODE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When a Sweep+FVG signal fails, it tends to fail fast. The mechanism is binary &mdash; either the trapped traders capitulate and the FVG fills, or higher-timeframe momentum overwhelms both reads and breaks the level cleanly. There is little in-between. Tight stops, fast exits, no negotiation.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Apex is rare and rare is good. When the star prints, you have permission to size up. When it does not, the Sweep alone is still a strong tag, but not the apex. Honor the distinction.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S07 — The Synthesis Tooltip */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">07 &mdash; The Synthesis Tooltip</p>
-        <h2 className="text-2xl font-extrabold mb-4">One hover, every module reports in.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          When you hover any signal label, CIPHER renders a tooltip that consolidates the entire synthesis read into one block of text. Twelve atoms minimum. Every Visual Layer module&apos;s state at the moment the signal fired. The conviction score. The context tag. And the Risk Map if enabled. This is the operator&apos;s window into how the system saw the trade.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The tooltip is not a summary. It is the raw multi-module read. Each line broadcasts one module&apos;s verdict, and the order is fixed: signal source and tag, then HTF1/HTF2/Regime/Ribbon/Pulse/ADX/Volume/Momentum/Tension/Reversion/Squeeze, then conviction/Strong line, then Risk Map. Reading top to bottom is reading the synthesis layer top to bottom.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <SynthesisTooltipAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">LINE 1 &middot; SOURCE + TAG</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">Tension Snap &mdash; Snap Setup</span>. The signal source (Pulse Cross or Tension Snap) and the winning context tag from the cascade. This is the synthesis headline &mdash; everything below is supporting evidence.
-            </p>
+      {/* === S09 — Tier Ladder & Sizing === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Tier Ladder &amp; Sizing</p>
+          <h2 className="text-2xl font-extrabold mb-4">Three tiers &middot; three sizes &middot; one decision</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The score and the cascade combine into one of three tiers. Conviction at the top: 4/4 score with apex context. Standard in the middle: 3/4 score with any context, or 4/4 with mid-priority context. Watch at the bottom: 2/4 or below, or low-confluence context regardless of score. Each tier has a fixed sizing rule. The decision is mechanical.</p>
+          <TierLadderAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the three tiers cycle. Conviction at 1.5x baseline within max risk cap. Standard at 1.0x baseline. Watch at 0x &mdash; do not engage. The sizing is set at entry, not modified mid-trade. Each tier&apos;s size is calibrated to the historical edge of setups that match that tier&apos;s gating criteria.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">CONVICTION &middot; 1.5\u00d7 BASELINE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Highest tier. Requires 4/4 score AND apex context tag (Sweep+FVG or Sweep). These setups are statistically rare &mdash; expect 2-5 per session on a busy chart, sometimes zero. Sizing scales to 1.5x baseline within the max risk cap. The 1.5x is the framework asking you to express the high confluence at the trade level.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">STANDARD &middot; 1.0\u00d7 BASELINE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The framework&apos;s default engagement size. 3/4 score qualifies, or 4/4 with mid-priority context. Most engaged trades land here. The 1.0x baseline is your defined per-trade risk &mdash; usually 0.5% to 1% of equity.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">WATCH &middot; 0\u00d7 &middot; DO NOT ENGAGE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">2/4 score or below, or low-confluence context regardless of score. The framework explicitly says do not engage. Log the setup in the journal as observation. Operators who engage Watch tier &ldquo;just to see&rdquo; produce statistically negative outcomes &mdash; this is documented in section fifteen as mistake five.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SIZING DOES NOT MOVE MID-TRADE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The tier-determined size is set at entry. The trade plan executes on that size. Mid-trade adjustments to size (adding to a winner, scaling on a loser) break the per-trade risk discipline. The plan accounts for the size; do not modify the size.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">LINES 3-4 &middot; HTF ATOMS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">W: Bull &#9650;</span> and <span className="text-amber-400">M: Bull &#9650;</span>. The two higher-timeframe directions, two levels up from the chart timeframe. On a 1D chart, this is Weekly and Monthly. Aligned HTF means both broadcasts agree; conflicting HTF is one of the divergence patterns covered in S09.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Conviction = 1.5x. Standard = 1.0x. Watch = 0. Size set at entry, never moves.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">LINE 5 &middot; REGIME</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">Regime: TREND</span>. The Cipher Regime Engine&apos;s read. Possible values: TREND, RANGE, COMPRESSION, EXPANSION. The regime tells you what kind of market the trade is being entered into &mdash; the same signal in TREND is materially different from the same signal in RANGE.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">LINES 6-7 &middot; RIBBON + PULSE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">Ribbon: Not stacked</span> reports the trend stack state directly. <span className="text-amber-400">Pulse: Support 15b YOUNG 2.7 ATR away</span> reports Pulse line state, hold duration, maturity, and distance. Two adjacent reads that complement each other &mdash; structure and dynamic level.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">LINES 8-10 &middot; THE FOUR FACTORS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">ADX: 32 &#10003;</span> reports the value with a check when above 20. <span className="text-amber-400">Volume: 1.18&times; &#10003;</span> reports the ratio with a check when above 1.0. <span className="text-amber-400">Momentum: 59% &#9660; DETACHED</span> reports the health value with arrow direction. Three of the four conviction factors are visible inline. The Ribbon factor is read from line 6.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">LINES 11-13 &middot; STATE ATOMS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">Tension: 1.4 ATR</span>, <span className="text-amber-400">Reversion: MODERATE (48%) &mdash; FV 25960.8</span>, <span className="text-amber-400">Squeeze: N bars compressed</span> (when active). These are the situational atoms &mdash; how stretched is price, where is fair value, is the squeeze loaded. Used by the cascade to determine eligibility for tags like Overextended and Breakout.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE STRONG LINE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              <span className="text-amber-400">&#10010; Strong &mdash; 3/4 factors</span>. The conviction line. Only present when score is &gt;= 3. This line is the bottom of the synthesis and the most operator-relevant atom &mdash; if you read nothing else, read this.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE RISK MAP BLOCK</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When the Risk Map toggle is on, the tooltip ends with the entry, SL, three TP levels, and per-unit risk. That is the Risk Map Operator&apos;s lesson territory &mdash; the trade plan rendered into the synthesis tooltip itself. Conviction tells you whether to engage; Risk Map tells you exactly where.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            One hover. Every module. The tooltip is the synthesis. If you cannot read the tooltip top to bottom and recite each module&apos;s verdict, you have not yet earned the Conviction Operator badge.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S08 — Convergence Reads */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">08 &mdash; Convergence Reads</p>
-        <h2 className="text-2xl font-extrabold mb-4">When three or more modules agree, you have a thesis.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Convergence is the moment when independent modules broadcast compatible verdicts simultaneously. Header bullish, Ribbon stacked, Structure at support, Imbalance near a bull FVG, Sweep hot with FVG star, Risk Map at support &mdash; six modules pointing the same way. This is not coincidence. It is what alignment looks like in real time on the panel.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The operator&apos;s read of convergence is qualitative more than quantitative. The score and tag handle the binary engagement decision. Convergence handles the conviction layer above the score &mdash; how confident am I in the thesis? Three converging modules means you have a thesis you can defend. Five or six converging means you have a thesis you can size aggressively.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <ConvergenceAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">2 MODULES = WAIT FOR MORE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Two modules agreeing is not convergence &mdash; it is correlation. Header and Ribbon often agree because they read overlapping inputs. Two-module agreement is the baseline; it tells you the trend direction is identifiable, not that the setup is alignable. Wait for at least one more independent module before calling it convergence.
-            </p>
+      {/* === S10 — The Risk Map === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; The Risk Map</p>
+          <h2 className="text-2xl font-extrabold mb-4">Entry &middot; SL &middot; TP1 &middot; TP2 &middot; TP3 &middot; all preset before entry</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The Risk Map auto-renders the entry, the stop-loss, and three take-profits at 1R, 2R, 3R as soon as a signal fires. Operator engages the trade by accepting the Risk Map &mdash; the entry is signal close, SL is the auto-computed structural level, TPs are the pre-set R-multiples with 50/30/20 scaling. The plan exists before the trade is taken.</p>
+          <RiskMapAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the Risk Map populate. The entry line (amber) sits at the signal close. The SL (red dashed) drops to the structural level CIPHER auto-computes &mdash; usually a recent swing low for longs, swing high for shorts. The three TP lines (teal dashed) project at 1R, 2R, 3R above entry, with 50%/30%/20% scaling labels. The risk zone (red shaded) and reward zone (teal shaded) make the asymmetry visible.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">ENTRY &middot; SIGNAL CLOSE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The entry is the close of the signal bar. No chasing, no waiting for retracements. The signal-close entry is what the framework&apos;s historical edge is measured against &mdash; deviating from it (waiting for a 2-bar retest, entering on the next bar open) changes the trade&apos;s expectancy.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SL &middot; RISK MAP AUTO</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The SL is auto-computed at the most recent structural level &mdash; swing low for longs, swing high for shorts. Operators do not eyeball the SL. The auto-computation is consistent across trades and prevents the tendency to tighten stops on weak setups (which produces frequent stop-outs).</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TP1 / TP2 / TP3 AT 1R / 2R / 3R</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The three take-profits are at multiples of the risk distance. If the SL is 25 pips below entry on a long, TP1 is 25 pips above entry, TP2 is 50 pips above, TP3 is 75 pips above. The R-multiples make P&L tracking and edge calculation consistent regardless of asset or timeframe.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SCALING 50 / 30 / 20</p>
+              <p className="text-sm text-gray-400 leading-relaxed">50% off at TP1, 30% off at TP2, 20% trails for TP3 or extension. The front-loaded scaling captures most of the edge by TP1 (50% banked at 1R) while leaving meaningful exposure for trend continuation. The 50/30/20 ratio is calibrated to the framework&apos;s observed average win profile.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">3 MODULES = TRADEABLE THESIS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Three independent modules broadcasting the same direction is the minimum for what the Conviction Operator calls a thesis. Add Structure or Imbalance or Sweep to the trend modules and you have three orthogonal reads &mdash; each tested by different inputs. Three-module convergence is the floor for engaging at standard size.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Plan is preset. Entry at signal close. SL at Risk Map Auto. TPs at 1R/2R/3R with 50/30/20 scaling. Accept or skip.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">4-5 MODULES = STRONG THESIS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Four or five-module convergence is the territory where conviction sizing kicks in. The synthesis layer has multiple independent witnesses. Failure is still possible &mdash; markets do not respect thesis &mdash; but the asymmetry is on your side. Increase size by 25-50% over baseline.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">6 MODULES = SIZE FULLY</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              All six Visual Layer modules pointing the same direction is rare and meaningful. When it happens, the chart is broadcasting a once-or-twice-a-week setup. This is when conviction operators size to their maximum allowed risk. The math is in your favor &mdash; six independent reads do not collude by accident.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">CONVERGENCE IS NOT A SCORE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              CIPHER does not output a convergence number. There is no row that says "5 of 6 modules agree." The operator reads convergence by scanning the panel themselves. This is intentional &mdash; convergence is a qualitative read that benefits from the operator&apos;s own filter, not an algorithmic count that hides individual disagreements.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE TIME DIMENSION</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Convergence at signal-fire time is one read. Sustained convergence over multiple bars is another. A signal that fires at a 6-module convergence point and then sees the convergence persist for the next several bars is dramatically stronger than a signal that fires at convergence and then sees one or two modules immediately drop out.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">CONVERGENCE WITHOUT A SIGNAL</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Sometimes the panel converges but no signal fires &mdash; the algorithmic conditions for Pulse Cross or Tension Snap are not met. This is fine. The Conviction Operator does not invent signals to fit convergence. Wait for the signal CIPHER produces. If it does not come, the convergence was a setup that did not complete.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Three modules is your floor. Five-plus is your size-up signal. Convergence is the qualitative layer on top of the score &mdash; both feed the decision.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S09 — Divergence Warnings */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">09 &mdash; Divergence Warnings</p>
-        <h2 className="text-2xl font-extrabold mb-4">When modules contradict, the synthesis is broken.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Divergence is the inverse of convergence: independent modules broadcasting opposing verdicts at the same moment. HTF1 says bull, HTF2 says bear. Header says trend, Pulse says flipped. Ribbon stacked bull, Sweep hot bear. The synthesis layer cannot resolve. The operator&apos;s read of divergence is a wait signal &mdash; not a fade signal, not a contrarian buy &mdash; a wait.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The temptation when modules disagree is to pick a side. The discipline is to recognize that disagreement among independent reads means the market is genuinely undecided. Trading into that ambiguity is trading without a thesis. The Conviction Operator&apos;s rule is simple: when synthesis fails, the answer is no engagement, not creative interpretation.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <DivergenceAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">PATTERN 1 &middot; HTF MISMATCH</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Weekly bull, Daily bear, or vice versa. The two higher-timeframe directions disagree. The chart timeframe is caught between conflicting macro reads. Even if every other module agrees on direction, the HTF mismatch warns that one of the higher timeframes will eventually win and the local read may flip with it.
-            </p>
+      {/* === S11 — The BE Move === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; The BE Move</p>
+          <h2 className="text-2xl font-extrabold mb-4">TP1 hit &rarr; SL to entry &rarr; trade is risk-free</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The breakeven move is the framework&apos;s second risk-management discipline (after the auto-SL). When TP1 is hit, the SL on the remaining 50% of the position moves to entry (BE). The trade is now risk-free &mdash; if reversals stop you out, you lose nothing on the remaining size; if it continues, you trail to TP2 and TP3.</p>
+          <BEMoveAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the SL slide. Entry sits at the amber line. SL starts below at the auto-computed level. When price hits TP1 (50% off there), the SL slides up to the entry level &mdash; the trade is now BE-protected. The 50% remaining trails for TP2 (30% off) and TP3 (20% trail). The trade either takes profit on extension or stops out at BE for zero loss on the remainder.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">TP1 IS THE TRIGGER</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The BE move is gated on TP1 being hit, not on time or candle pattern. TP1 hit = 1R achieved = framework confirmation that the signal is working. Other BE triggers (after 30 minutes, after a strong candle close) are operator overrides not framework rules.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">RISK-FREE PROPERTY</p>
+              <p className="text-sm text-gray-400 leading-relaxed">After the BE move, the worst case on the remaining 50% is a flat exit. The 50% already taken at TP1 is locked in. The trade has converted from defined-risk to asymmetric &mdash; possible upside (TP2 + TP3) with no possible downside on the remaining size.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">DO NOT WIDEN THE SL</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Once BE-moved, the SL never moves down. Widening the SL after a BE move is a protocol violation that converts a defined-risk trade into an undefined-risk trade. If the trade gets stopped out at BE, that is the framework working as designed.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">TRAIL THE FINAL 20%</p>
+              <p className="text-sm text-gray-400 leading-relaxed">After TP2 (30% off there), the final 20% trails for TP3 or beyond. Trailing methods vary (3-bar swing low, ATR-based, structural levels). The framework allows operator choice on trailing &mdash; the constraint is just that you do not move the SL below the previous swing.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PATTERN 2 &middot; REGIME CONFLICT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Header broadcasts BULL TREND but Pulse just flipped to RESISTANCE, Tension is SNAPPING, and Bias says FAVOR SHORTS. The Header is reading the past; the leading-indicator modules are reading the imminent reversal. This is the most common divergence on tops and bottoms &mdash; the trend module trails while the reversal modules lead.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">TP1 hit = SL to BE. Risk-free remainder. Never widen. Trail the final 20%.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PATTERN 3 &middot; SWEEP COUNTER-TREND</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Ribbon stacked bull, but Sweep hot bear, Structure at resistance, and Imbalance at a bear FVG. The trend modules say up; the reversal-context modules say down. This pattern often precedes structural failures &mdash; the trend continues for one or two bars and then snaps.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PATTERN 4 &middot; SPLIT VOTE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Three modules bull, three bear, no clear majority. Different from the other patterns &mdash; here the market has no decisive read in either direction. This is range behavior, often during news compression. The Conviction Operator&apos;s response is the same: wait for the resolution, do not predict it.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">DIVERGENCE IS DATA</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              A divergent panel is not a malfunctioning panel. It is a panel telling you the truth: at this moment, the system has no synthesis. Reading divergence honestly is more valuable than forcing a synthesis that is not there. The operator who waits through divergence saves capital for the convergence that follows.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">DIVERGENCE PRECEDES CONVERGENCE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Markets do not stay in divergence indefinitely. The leading-indicator modules eventually win, or the trend modules eventually rebroadcast. Either way, convergence returns &mdash; just on a different direction than before. The divergence period is the operator&apos;s study window, not their entry window.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">A SIGNAL CAN FIRE INTO DIVERGENCE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              CIPHER does not check convergence before firing a signal. The algorithm fires when its conditions are met. A Pulse Cross can fire while the panel is divergent &mdash; the signal is real, the score may even be Strong, but the synthesis layer above it is broken. The operator&apos;s discipline is to suppress engagement at the synthesis level even when the algorithm engages at the signal level.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE ONE EXCEPTION</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When divergence is between leading and trailing modules &mdash; e.g. Header trailing while Pulse, Tension, and Bias all flip &mdash; the leading-module side often wins. Aggressive operators take counter-Header trades when three or more leading modules align. This is an advanced read, not a rule, and it requires the operator to have demonstrated they can read leading vs trailing first.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            When modules disagree, do not pick a side. Wait. Divergence is a closed door &mdash; convergence is the door opening on either side. The patient operator captures both directions; the impatient one capitalizes on neither.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S10 — Conviction-Tier Sizing */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">10 &mdash; Conviction-Tier Sizing</p>
-        <h2 className="text-2xl font-extrabold mb-4">The score sets the size. The discipline sets the cap.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          A 4/4 signal is not three times more profitable than a 1/4 signal &mdash; but the operator&apos;s expected value is materially higher. Conviction-tier sizing is the protocol that translates the score into position size, so risk allocation tracks the synthesis layer. The math is simple. The discipline is everything.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The default protocol is geometric. 1/4 = pass entirely. 2/4 = half size. 3/4 = standard size. 4/4 (apex with Sweep+FVG context) = up to 1.5&times; standard. The exact percentages depend on the operator&apos;s base risk per trade, but the proportional structure stays fixed. If your standard risk is 1% per trade, your apex trade is 1.5% and your 2/4 trade is 0.5%.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <ConvictionSizingAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">1/4 &middot; THE PASS TIER</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At 1/4 conviction, only one factor passed. This is the territory where Pulse Cross fires in a chop without volume, or Tension Snap fires without ADX support. The signal is real. The synthesis is broken. The Conviction Operator does not engage at this tier &mdash; not at half size, not at quarter size, not at all.
-            </p>
+      {/* === S12 — The Skip Discipline === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; The Skip Discipline</p>
+          <h2 className="text-2xl font-extrabold mb-4">Watch tier means do not engage &mdash; period</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The framework explicitly forbids Watch tier engagement. Score 2/4 or below, or low-confluence context regardless of score &mdash; these signals are observation only. Operators routinely violate this discipline because the signal &ldquo;looks right&rdquo; or &ldquo;feels different&rdquo; or because they are bored mid-session. The skip discipline is what separates Standard-tier operators from real ones.</p>
+          <SkippedTradeAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the skip render. A weak signal fires on a choppy chart. The synthesis evaluates and the tier resolves to Watch. The framework stamps SKIP across the setup &mdash; not as a recommendation but as a verdict. The right action: log the setup in the journal as observation, do not engage. Over 100 sessions, the skipped Watch-tier setups have negative expectancy when traded; the data is consistent.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">WATCH TIER IS NEGATIVE EDGE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The framework was built by backtesting which setups produce edge and which produce noise. Watch tier setups consistently underperform &mdash; they fire frequently but follow through rarely. Engaging them as a class is statistically negative-EV.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">&ldquo;BUT THIS ONE LOOKS DIFFERENT&rdquo;</p>
+              <p className="text-sm text-gray-400 leading-relaxed">No, it does not. The Watch-tier setup that &ldquo;looks different&rdquo; is the same setup that statistically underperforms &mdash; you are just experiencing the recency bias of having seen one work recently. The framework saw 1000 of them and built the tier accordingly. Trust the dataset.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">LOG OBSERVATIONS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Skipped setups go in the journal as observations. The data accumulates. Over 100+ sessions you can verify the framework&apos;s call &mdash; mostly skipped Watch tiers chop and fail, validating the skip. Occasionally one runs and you missed it; the framework is not perfect but the expected value is clear.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SKIPPING IS THE EDGE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The framework&apos;s edge comes as much from the trades you skip as from the trades you take. A 70% engagement rate (taking everything) produces near-zero edge. A 30% engagement rate (taking only Conviction and Standard) produces the framework&apos;s designed expectancy. Skipping is the discipline that produces the edge.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">2/4 &middot; THE HALF-SIZE TIER</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At 2/4, two factors passed but two failed. The trade is borderline. Half size respects the partial agreement without committing standard capital. This tier is also where many learning trades happen &mdash; the operator engages small to test their read against the algorithm&apos;s ambivalence.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Watch tier = do not engage. Log as observation. Skipping is the edge.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">3/4 &middot; THE STANDARD TIER</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At 3/4, the signal earned the &quot;+&quot; marker. The synthesis is positive. Three factors confirm. Engage at full base risk. This is the workhorse tier &mdash; most Strong signals across most charts land here, and the operator who systematically trades 3/4 setups at standard size builds a robust edge.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">4/4 + APEX TAG &middot; THE SIZE-UP TIER</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At 4/4 with a Sweep+FVG context tag, every factor passed AND the cascade returned the apex tag. Two independent layers of synthesis confirm. Increase size by 25-50% &mdash; the math is on your side. Do not exceed your maximum allowed risk per trade regardless. Conviction sizes up; discipline caps the up.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">WHY GEOMETRIC, NOT LINEAR</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Linear sizing (0.25%, 0.50%, 0.75%, 1.00%) overweights weak signals and underweights strong ones. Geometric sizing (0%, 0.5%, 1.0%, 1.5%) skips the weak tier and rewards the strong tier. The Conviction Operator&apos;s edge comes from concentrating risk where the synthesis is highest. Linear sizing dilutes that edge.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE CAP IS NON-NEGOTIABLE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              No matter how good the convergence, no matter how rare the apex, the operator&apos;s maximum risk per trade is fixed. If your cap is 2%, an apex signal sizes to 1.5% (within cap). If your cap is 1%, an apex signal sizes to 1% (at cap). Conviction multiplies up to the cap and stops. The cap is your account&apos;s contract with itself.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">TIER MIGRATION DURING THE TRADE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              A trade entered at 3/4 can degrade to 2/4 mid-position &mdash; one factor flips off as the move progresses. The conviction tier protocol does not call for adding to or trimming the position based on tier migration. Size is set at entry. Exits follow the Risk Map. Synthesis informs entry; mechanics inform management.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Skip 1/4. Half-size 2/4. Standard 3/4. Size up at apex 4/4. Cap everything. The ladder is geometric because conviction is non-linear.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S11 — Presets As Conviction Philosophies */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">11 &mdash; Presets As Conviction Philosophies</p>
-        <h2 className="text-2xl font-extrabold mb-4">Each preset chooses its own threshold.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          CIPHER&apos;s preset system is not just a UI shortcut. Each preset bakes a min_conviction floor into its configuration along with the visual layers and signal types. Picking a preset is picking a conviction philosophy. The trader chooses the persona; the persona chooses the threshold.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          Two presets force min_conviction = 3 &mdash; Swing Trader and Sniper. Three force min_conviction = 0 &mdash; Trend Trader, Scalper, and Reversal. The split reflects the trader archetype each preset serves. Swing and Sniper are slow, selective styles where Strong signals justify the wait. Trend and Scalper run high-frequency styles where filtering happens at the operator&apos;s discretion. Reversal is permissive because reversal trades often fire at exhaustion before the four factors fully align.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <PresetsAsPhilosophiesAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">TREND TRADER &middot; FLOOR 0 &middot; CATCH THE WAVE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Ribbon + Pulse + Trend candles. All signals print. The operator trades the trend and uses the panel to filter visually &mdash; not the algorithm. This works because trend traders engage with the trend, where most signals naturally align with Ribbon stack anyway.
-            </p>
+      {/* === S13 — Synthesis to Trade Plan Handoff === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Synthesis &rarr; Trade Plan</p>
+          <h2 className="text-2xl font-extrabold mb-4">The synthesis fills the plan &middot; plan-by-numbers</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The synthesis tooltip and the trade plan are two halves of one workflow. The synthesis decides whether and at what tier. The trade plan executes that decision with paint-by-numbers fields. Tier sets size. Risk Map sets entry, SL, and TPs. Scaling and BE rules are fixed. The operator&apos;s job is to engage the plan, not invent it.</p>
+          <PlanHandoffAnim />
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the handoff. Left card: synthesis output. 4/4 Conviction with apex tag. Right card: trade plan. Size 1.5x. Entry signal close. SL Risk Map Auto. TP1/2/3 with 50/30/20 scaling. BE move at TP1. The synthesis fills the plan deterministically &mdash; the operator does not decide entry, SL, TP, or scaling. The framework decides; the operator engages.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">TIER &rarr; SIZE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Conviction = 1.5x baseline within max risk cap. Standard = 1.0x baseline. Watch = 0 (do not engage). The tier is the only sizing input. Operators do not override tier-determined size.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">RISK MAP &rarr; LEVELS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Entry at signal close. SL at the auto-computed structural level. TPs at 1R, 2R, 3R. The three lines and three targets are deterministic from the Risk Map. Operators do not negotiate the levels.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">SCALING &amp; BE &rarr; FIXED RULES</p>
+              <p className="text-sm text-gray-400 leading-relaxed">50/30/20 scaling at TP1/TP2/TP3. BE move at TP1. These are framework constants, not operator choices. The constants exist because their alternatives have been tested and produce worse outcomes &mdash; full hold to TP3, even scaling, no BE move.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">PAINT-BY-NUMBERS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Once the synthesis tier is known, the trade plan is fully determined. The operator&apos;s job is to accept or skip the plan. There is no discretion at the plan-construction stage; discretion lives only at the engage/skip decision. This is the framework&apos;s deepest compression: synthesis decides, plan executes, operator engages.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">SCALPER &middot; FLOOR 0 &middot; STRIKE FROM LEVELS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Structure + Imbalance + Pulse (tight) + Composite candles. All signals print. Scalpers need volume of opportunity &mdash; filtering at min_conviction = 3 would cut their setup count below threshold. The Scalper trusts the structural context (S/R + FVG) over the conviction score.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Synthesis decides. Plan executes. Operator engages. No discretion at the plan-construction stage.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">SWING TRADER &middot; FLOOR 3 &middot; WAIT FOR ALIGNMENT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Ribbon + Spine + Pulse (wide). Strong signals only. The Swing Trader holds for days &mdash; selectivity matters more than count. Min_conviction = 3 ensures that only setups with genuine multi-factor agreement reach the chart, justifying the longer hold.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">REVERSAL &middot; FLOOR 0 &middot; CATCH THE SNAP</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Spine + Imbalance + Risk Envelope + Tension candles. All signals print. Reversal signals fire near exhaustion, where Ribbon stack is often broken and ADX has weakened &mdash; setting min_conviction = 3 would suppress the very signals reversal traders are hunting. The preset compensates by emphasizing Tension and Reversion in the visual layer.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">SNIPER &middot; FLOOR 3 &middot; WAIT FOR THE SQUEEZE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Pulse (widest) + Coil. Strong signals only. The Sniper waits for compression, then strikes when the squeeze releases with full conviction. Min_conviction = 3 plus the visual emphasis on the Coil module produces a setup count of two or three per week per chart &mdash; ideal for the patient operator.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">STRUCTURE &middot; NO SIGNALS &middot; PURE CHART READING</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Structure + Imbalance + Sweeps. Signal type is set to &quot;Visuals Only&quot; &mdash; no labels print regardless of conviction. This preset is for chart study and discretionary trading from raw structure. The conviction synthesis is still computed internally; it just is not broadcast as labels.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRESETS LOCK THE THRESHOLD</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When a preset is active, the manual Strong Signals Only toggle is ignored. The preset&apos;s baked-in floor wins. Switching to None unlocks manual control. This is intentional &mdash; presets are complete configurations, and inconsistent overrides defeat their purpose.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">CHOOSING A PRESET IS CHOOSING A LIFESTYLE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Swing Trader expects you to wait. Scalper expects you to engage often. Sniper expects you to be patient. Reversal expects you to be contrarian. Pick the preset that matches your actual cognitive style &mdash; not your aspirational one. The conviction floor will hold you to it.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            The preset chooses the threshold. The threshold chooses the discipline. The discipline produces the edge. Pick the preset that matches the trader you actually are.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S12 — The Strong-Only Toggle */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">12 &mdash; The Strong-Only Toggle</p>
-        <h2 className="text-2xl font-extrabold mb-4">The manual override for operators who run None.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Operators who run the None preset manage their own configuration end to end. For them, CIPHER exposes a binary <span className="text-amber-400">Strong Signals Only</span> toggle in the Inputs panel. ON sets min_conviction = 3. OFF sets min_conviction = 0. There is no middle option, no slider, no per-asset override. Binary by design.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The toggle is the manual operator&apos;s engagement contract. When it is ON, the chart shows only Strong setups. When it is OFF, the chart shows everything. Toggling it during a trading session is allowed but discouraged &mdash; the discipline benefit comes from setting the floor at session start and respecting it through the session.
-        </p>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">ON AT SESSION START</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Production discipline. The chart is sparse, the setups that print are pre-filtered to 3+ factors, and the operator&apos;s decision per setup is binary engage-or-skip. This is the production setting for live capital. ON is the default once the operator is past the learning phase.
-            </p>
+      {/* === S14 — Reading the Synthesis Live === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; Reading the Synthesis Live</p>
+          <h2 className="text-2xl font-extrabold mb-4">2 seconds &middot; tier first &middot; engage or skip</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">In the moment of a signal, you have seconds. You do not read the four factor lines individually, then the context tag, then the tier, then decide. You read the tier first. If Conviction or Standard, you engage with the corresponding plan. If Watch, you skip and log. The four factor lines exist for the journal review, not for real-time triage.</p>
+          <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-1">TIER FIRST &middot; PLAN SECOND</p>
+              <p className="text-sm text-gray-400 leading-relaxed">In the moment, eyes go to the tier line at the bottom of the tooltip. Conviction = engage 1.5x. Standard = engage 1.0x. Watch = skip. The factors and tag are useful context but not the decision input.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">2-SECOND RULE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Read the tier in under 2 seconds. If your read takes longer, you are over-analyzing &mdash; the synthesis already did the analysis. Trust it and act. Operators who read tooltips for 10+ seconds are not synthesizing; they are looking for permission to override.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">JOURNAL REVIEW IS THE TIME FOR DEEP READS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">During session-end review, read the four factor lines for each engaged trade. Note which factors were missing on losers, which were present on winners. Patterns emerge over 30+ sessions. This is the time for analytical depth.</p>
+            </div>
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-xs font-bold text-amber-400 mb-1">WHEN GUT DISAGREES</p>
+              <p className="text-sm text-gray-400 leading-relaxed">When your gut disagrees with the synthesis tier, the discipline is to honor the synthesis. Operators who routinely override the synthesis with their gut perform measurably worse over 100 sessions than those who follow it mechanically.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">OFF FOR STUDY MODE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Chart study. The full algorithmic output prints. The operator can compare 1/4 / 2/4 / 3/4 / 4/4 setups side by side and develop intuition for what each tier looks like in real conditions. Learning happens at OFF; capital deploys at ON.
-            </p>
+          <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
+            <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE OPERATOR&apos;S READ</p>
+            <p className="text-sm text-gray-400 leading-relaxed">Tier first. 2 seconds. Engage or skip. Deep reads in the journal review.</p>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">DO NOT TOGGLE DURING A TRADE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Switching from ON to OFF mid-position to see the full picture is the operator looking for confirmation of a bad trade. Switching from OFF to ON mid-position to suppress a contradictory weak signal is the operator hiding from the data. Both are anti-discipline. Set the toggle once per session and live with it.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">PRESETS OVERRIDE THE TOGGLE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When any preset is active, the manual toggle is ignored. The preset&apos;s baked-in floor takes precedence. To use the toggle at all, the preset must be None. This prevents accidental conflicts between preset discipline and manual override.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE TOGGLE STATE PERSISTS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              TradingView saves the toggle state with the chart. Re-opening the chart restores the last setting. This is helpful but also a trap &mdash; an OFF setting from a study session can persist into a live session if the operator does not check at start. Glance at the toggle when you load the chart.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">NO INTERMEDIATE FLOOR</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The toggle does not expose a min_conviction = 1 or min_conviction = 2 option. The choice is 0 or 3. CIPHER deliberately does not give operators a half-discipline option &mdash; it would dilute the meaning of the floor. If 3 feels too restrictive, the answer is to switch presets, not to dial back the threshold.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            ON for live. OFF for study. Toggle once at session start. Live with it through the session. The toggle is your engagement contract written in one switch.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S13 — Trading The Convergence */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">13 &mdash; Trading The Convergence</p>
-        <h2 className="text-2xl font-extrabold mb-4">From synthesis to position management.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Once the synthesis layer says engage, the trade plan is mechanical. Entry at the signal close (or next-bar open if your protocol allows). Stop loss at the Risk Map level. TP1 at 1R. TP2 at 2R. TP3 at 3R or trail. Scaling at 50% / 30% / 20% across the three TPs. The Conviction Operator does not freelance the management &mdash; the synthesis decided if; the Risk Map decides where.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The discipline is in not improvising. A 4/4 apex signal with strong convergence does not entitle the operator to widen the stop or chase a fourth TP. The plan is the plan. Conviction tells you which trades to take and how much to risk. Mechanics tell you how to manage. Mixing the two is how operators give back the edge they earned.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <TradeTheConvergenceAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">ENTRY &middot; AT THE LABEL</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The signal label prints at the close of the qualifying bar. Entry is at that close, or at the next-bar open if your execution protocol requires confirmation. Do not chase past the close &mdash; the synthesis read was at the close, and entries beyond it have a different risk profile than the one CIPHER scored.
-            </p>
+      {/* === S15 — Six Common Mistakes === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; Six Common Mistakes</p>
+          <h2 className="text-2xl font-extrabold mb-4">What goes wrong when the synthesis is misused</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">The synthesis framework is mechanically precise. The failure modes are operator errors, not framework errors. Six recurring mistakes operators make when working with the synthesis. Each has a fix, and the fix is more conservative than the mistake.</p>
+          <div className="space-y-4">
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <p className="text-sm font-bold text-red-400 mb-1.5">MISTAKE 1 &middot; OVERRIDING THE TIER WITH DISCRETION</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The synthesis says Watch. The operator engages anyway because &ldquo;the chart looks ready.&rdquo; The chart looking ready is a recency bias signal, not a structural one. <strong className="text-white">Fix:</strong> honor the tier mechanically. If you find yourself overriding 10%+ of the time, you are not running the framework &mdash; you are running discretion with framework decoration.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <p className="text-sm font-bold text-red-400 mb-1.5">MISTAKE 2 &middot; DOUBLE-COUNTING MISSING FACTORS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">A 3/4 setup fires. The synthesis already priced the missing factor into the Standard tier (vs Conviction). The operator then reduces size further because of the same missing factor. <strong className="text-white">Fix:</strong> the tier already handles the missing factor. Trade Standard tier at 1.0x baseline. Don&apos;t reduce again.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <p className="text-sm font-bold text-red-400 mb-1.5">MISTAKE 3 &middot; CHASING THE 4/4 SETUP</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Operator skips Standard tier setups while &ldquo;waiting for a 4/4.&rdquo; Conviction setups are rare; operators waiting for them often go many sessions without engaging. <strong className="text-white">Fix:</strong> Standard tier is the framework&apos;s default engagement. Take Standard setups at 1.0x. Conviction is the upside, not the threshold.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <p className="text-sm font-bold text-red-400 mb-1.5">MISTAKE 4 &middot; WIDENING THE SL MID-TRADE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Trade goes against you, approaching SL. Operator widens the SL to give the trade &ldquo;more room.&rdquo; This converts a defined-risk trade into an undefined-risk trade. <strong className="text-white">Fix:</strong> the SL is set at entry by the Risk Map and never moves down. Stop-outs at the auto-SL are how the framework is supposed to work.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <p className="text-sm font-bold text-red-400 mb-1.5">MISTAKE 5 &middot; ENGAGING WATCH TIER &ldquo;JUST TO SEE&rdquo;</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Watch tier setups feel like they could work. Operator engages at half size to test the framework. After 30 sessions, the Watch tier engagements net negative. <strong className="text-white">Fix:</strong> Watch tier means do not engage. Log as observation. The framework was built by backtesting that this tier underperforms. Trust the dataset.</p>
+            </div>
+            <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
+              <p className="text-sm font-bold text-red-400 mb-1.5">MISTAKE 6 &middot; CHANGING THE PLAN AFTER ENTRY</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Trade in profit, operator decides to hold the entire position to TP3 (skipping the 50% off at TP1). Or trade losing, operator decides to add to the position to lower the average. Both violate the plan. <strong className="text-white">Fix:</strong> the plan is set at entry. Execute the plan. Mid-trade modifications are the discipline failure that separates 30R quarters from -10R quarters.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">STOP LOSS &middot; FROM THE RISK MAP</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The Risk Map module produces an SL using one of three methods: Structure (recent swing), Pulse (line invalidation), or ATR (fixed distance). The synthesis tooltip shows the exact SL price. Do not override it. The Risk Map Operator&apos;s lesson covers why each method is calibrated &mdash; trust that calibration.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">TP1 &middot; 1R &middot; SCALE 50%</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At 1R (one risk unit profit), close half the position. This locks in a guaranteed 0.5R on the trade. If the remaining half stops out at break-even (BE move at TP1 hit), the trade ends at +0.5R. If it runs further, the locked-in profit becomes the floor for higher payouts.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">TP2 &middot; 2R &middot; SCALE 30%</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At 2R, close another 30%. The position is now 80% closed at progressively better prices, locking in approximately 1.1R total profit. The remaining 20% runs for the trail.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">TP3 &middot; 3R OR TRAIL FINAL 20%</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              At 3R, close the remaining 20% at target, or initiate a trail using the Pulse line, the Ribbon Anchor, or a fixed ATR distance. The trail captures the asymmetric upside on apex setups that run further than expected. Most setups end at TP2 or TP3; the occasional apex that runs to 5R or 8R compensates the losing trades disproportionately.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">BE MOVE AT TP1</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When TP1 hits, move the SL on the remaining position to break-even. This converts the trade from a risk-on position to a risk-free one. The operator&apos;s worst-case becomes locked-in profit, regardless of how the rest of the trade plays out. BE moves are non-negotiable on every trade.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">DO NOT WIDEN STOPS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              When a trade goes against you mid-position and approaches the SL, the temptation is to widen the stop to give it more room. Do not. The Risk Map calculated the SL based on structural invalidation. Widening it accepts a loss in a place where the original thesis was wrong. The synthesis was wrong, and the trade should end.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">ADDING TO WINNERS &middot; OPTIONAL</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Aggressive operators add to winners after TP1 BE move &mdash; only on sustained convergence and only with a tight stop on the addition. This is an advanced read and not part of the baseline protocol. Do not add to losers ever, regardless of conviction.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Entry at label. SL from Risk Map. Scale 50/30/20 across 1R/2R/3R. BE move at TP1. Do not improvise. The plan is the plan.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S14 — Edge Cases */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">14 &mdash; Edge Cases</p>
-        <h2 className="text-2xl font-extrabold mb-4">When the synthesis is technically valid but operationally weird.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-4">
-          Most signals are clean &mdash; the score is high or low, the modules converge or diverge, and the engagement decision is obvious. Some signals fall into edge cases where the synthesis is technically valid but the situation requires extra discretion. Four common ones below, and the resolution rule for each.
-        </p>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The edge cases are not exceptions to the protocol &mdash; they are situations the protocol handles correctly but where the operator&apos;s read of the chart matters more than usual. The rule for each case is conservative by default. Operators with track records earn the right to deviate; operators learning the system trade them strictly by the rule.
-        </p>
-
-        <div className="p-1 rounded-2xl border border-white/5 mb-6">
-          <EdgeCaseDialAnim />
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">CASE 1 &middot; 3 BULL + 1 BEAR</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Three modules say bull, one says bear. The score may still be 3/4 (Strong) because the three confirming factors hit. The bear-leaning module is typically Pulse just having flipped, or HTF2 fading. <span className="text-amber-400">Rule</span>: trade the majority at standard size. The 1-bear module is usually a leading-indicator early read, not a confirmed reversal.
-            </p>
+      {/* === Cheat Sheet === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">The Conviction Cheat Sheet</p>
+          <h2 className="text-2xl font-extrabold mb-4">For your second monitor</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Print this. The first of the three Level 11 cheat sheets. L11.23 (Candles) and L11.24 (War Room) extend it.</p>
+          <div className="p-6 rounded-2xl glass-card space-y-3">
+            <div className="border-b border-white/5 pb-4">
+              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">The 4 Factors</p>
+              <div className="text-sm text-gray-400 leading-relaxed space-y-1">
+                <p><strong className="text-white">Ribbon</strong> Strong = +1, Weak = 0</p>
+                <p><strong className="text-white">ADX</strong> \u2265 25 = +1, below = 0</p>
+                <p><strong className="text-white">Volume</strong> ratio \u2265 1.0\u00d7 = +1, below = 0 (FX: 1.2\u00d7)</p>
+                <p><strong className="text-white">Health</strong> \u2265 50% = +1, below = 0</p>
+              </div>
+            </div>
+            <div className="border-b border-white/5 pb-4">
+              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">The 13-Tag Cascade</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Apex (P1-2): Sweep+FVG, Sweep. Mid (P3-9): Breakout, S/R, Trend, OB align, Imbalance, Volume confirm, Structure shift. Low (P10-13): Range, Chop, Counter-trend, No context. First match wins.</p>
+            </div>
+            <div className="border-b border-white/5 pb-4">
+              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">The 3 Tiers</p>
+              <div className="text-sm text-gray-400 leading-relaxed space-y-1">
+                <p><strong className="text-white">Conviction</strong> 4/4 + apex tag &middot; size 1.5\u00d7</p>
+                <p><strong className="text-white">Standard</strong> 3/4 OR (4/4 + mid tag) &middot; size 1.0\u00d7</p>
+                <p><strong className="text-white">Watch</strong> \u2264 2/4 OR low-confluence tag &middot; do not engage</p>
+              </div>
+            </div>
+            <div className="border-b border-white/5 pb-4">
+              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">The Trade Plan</p>
+              <div className="text-sm text-gray-400 leading-relaxed space-y-1">
+                <p>Entry: signal close</p>
+                <p>SL: Risk Map Auto (structural level)</p>
+                <p>TP1/2/3: 1R / 2R / 3R</p>
+                <p>Scaling: 50% / 30% / 20%</p>
+                <p>BE move: at TP1 hit</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">Real-Time Read</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Tier first. 2 seconds. Engage or skip. Deep reads happen in journal review, never mid-session.</p>
+            </div>
           </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">CASE 2 &middot; RECENT FLIP (&lt; 5 BARS)</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The Pulse line just flipped. The Ribbon has not caught up yet. Tension is building but no Snap. Score lands around 2/4 because Ribbon and Health have not yet aligned with the new direction. <span className="text-amber-400">Rule</span>: wait. Recent flips need 5-10 bars to mature. Engaging early on a flip catches the noise around the flip itself.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">CASE 3 &middot; REGIME MISMATCH</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Regime says RANGE but the signal is a Pulse Cross (designed for trends). The score may be 3/4 because three factors passed in the trending bars within the range. <span className="text-amber-400">Rule</span>: skip. Trend signals in range regimes have lower follow-through. Wait for the range break, then engage when the regime catches up.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">CASE 4 &middot; APEX IN COUNTER-TREND</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              A Sweep + FVG signal fires against the higher-timeframe trend. Score is 4/4 with the apex tag. The synthesis is technically maxed. <span className="text-amber-400">Rule</span>: trade with discipline &mdash; tighter stops than baseline, smaller size than typical apex protocol, faster TP1 scale-out. The HTF will eventually reassert; capture what the apex offers and exit.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE COMMON THREAD</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Each edge case shares a structure: the score and tag look healthy in isolation, but a contextual factor (HTF mismatch, recent flip, wrong regime, counter-trend setup) introduces a hidden risk. The synthesis layer captures direct conflicts cleanly; edge cases are where the operator&apos;s read of the surrounding context matters.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">EDGE CASES ARE NOT BUGS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              The Pine code does not have a special case for these &mdash; they are normal outputs of the algorithm in unusual market conditions. CIPHER is honest about what it sees; the operator is honest about what to do with it. Every edge case is solvable by reading the panel one layer deeper than the score.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">LOGGING THE EDGE CASES</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Keep a journal entry for each edge-case trade. Note which case it was, what the resolution rule said, what you did, and what happened. Over 30-50 entries patterns emerge &mdash; some edge cases are easier than the rule suggests, others are harder. The journal is how the operator earns the right to deviate.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Edge cases happen. Each has a default rule. Trade the rule until your journal earns you the right to override it. The score is honest; the discretion is yours.
-          </p>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* S15 — The Cheat Sheet */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">15 &mdash; The Cheat Sheet</p>
-        <h2 className="text-2xl font-extrabold mb-4">Everything you need on one page.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The full Conviction Operator protocol, distilled. Print this, tape it to your monitor, read it before every session.
-        </p>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE FOUR FACTORS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Ribbon stacked &middot; ADX &gt; 20 &middot; Volume &gt; 1.0&times; &middot; Health &gt; 50%. Each pass adds 1 to the score. Score range: 0 to 4.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE SCORE TIERS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              0-1 = pass &middot; 2 = half size &middot; 3 = standard size &middot; 4 with apex tag = up to 1.5&times; standard. Cap at maximum allowed risk per trade.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE THRESHOLD</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              min_conviction = 0 (study mode, all signals print) or 3 (production mode, only Strong prints). No middle option. Set once at session start.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE 13 CONTEXT TAGS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Sweep+FVG (apex) &middot; Sweep &middot; Breakout &middot; Snap &middot; Exhaustion &middot; S/R Break &middot; At Sup/Res &middot; At Spine &middot; At FVG &middot; Overextended &middot; Fade &middot; Trend &middot; Momentum. First match wins.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">THE SYNTHESIS TOOLTIP</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Source + tag &middot; HTF1/HTF2 &middot; Regime &middot; Ribbon &middot; Pulse &middot; ADX &middot; Volume &middot; Momentum &middot; Tension &middot; Reversion &middot; Squeeze &middot; Strong line &middot; Risk Map. Read top to bottom on every signal.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">CONVERGENCE THRESHOLDS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              2 modules = correlation, wait &middot; 3 modules = thesis, engage &middot; 4-5 = strong thesis, size up 25-50% &middot; 6 = full size, rare alignment.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">DIVERGENCE PATTERNS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              HTF mismatch &middot; Regime conflict &middot; Sweep counter-trend &middot; Split vote. Default response: wait. Advanced: leading-vs-trailing reads after journal earns it.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE TRADE PLAN</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Entry at label close &middot; SL from Risk Map &middot; TP1/TP2/TP3 at 1R/2R/3R scaling 50/30/20 &middot; BE move at TP1 &middot; trail final 20%. Do not improvise.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">PRESET FLOORS</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Trend Trader 0 &middot; Scalper 0 &middot; Swing Trader 3 &middot; Reversal 0 &middot; Sniper 3 &middot; Structure (no signals) &middot; None (manual via toggle).
-            </p>
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-          <div>
-            <p className="text-xs font-bold text-amber-400 mb-1">EDGE CASES &middot; QUICK RULES</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              3-bull/1-bear &rarr; majority, standard size &middot; Recent flip &lt; 5 bars &rarr; wait &middot; Regime mismatch &rarr; skip &middot; Apex counter-trend &rarr; tight stops, fast scale.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">THE OPERATOR&apos;S CONTRACT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Score sets the size &middot; Threshold sets the engagement &middot; Plan sets the management &middot; Cap sets the discipline. Four levers, four locks.
-            </p>
-          </div>
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs font-bold text-amber-400 mb-1">WHEN IN DOUBT</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Wait. The market gives a hundred setups a week. Missing one is cheap; engaging poorly is expensive. The Conviction Operator&apos;s edge is in selectivity, not speed.
-            </p>
-          </div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">THE FOUR SENTENCES</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Read the score. Read the tag. Read the convergence. Trade what they agree on, in the size they justify, by the plan that fits them. Everything else is noise.
-          </p>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* MISTAKES — Six Common Mistakes */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Six Common Mistakes</p>
-        <h2 className="text-2xl font-extrabold mb-4">What goes wrong when synthesis is misread.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-6">
-          The Conviction Operator framework is robust, but the failure modes are real. Six mistakes that recur across operators learning the synthesis layer. Each mistake has a fix and the fix is more conservative than the mistake. Conservative is the default for a reason.
-        </p>
-
-        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15 mb-4">
-          <p className="text-xs font-bold text-red-400 mb-2">MISTAKE 1 &middot; ENGAGING AT 2/4</p>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            The operator sees 2/4 and engages at half size, reasoning that any agreement is better than none. Over time, 2/4 trades have a measurably worse hit rate than 3/4 trades, and the half-size cushion does not fully compensate. <span className="text-amber-400">Fix</span>: skip 2/4. The geometric ladder is geometric on purpose.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15 mb-4">
-          <p className="text-xs font-bold text-red-400 mb-2">MISTAKE 2 &middot; OVERRIDING THE THRESHOLD</p>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            Set min_conviction = 3 at session start, but mid-session toggle to 0 because &quot;the chart looks ready.&quot; The toggle change is the operator hiding from their own discipline. <span className="text-amber-400">Fix</span>: set the threshold once and lock yourself out of it for the session. If it feels wrong, journal it &mdash; do not change it.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15 mb-4">
-          <p className="text-xs font-bold text-red-400 mb-2">MISTAKE 3 &middot; READING SCORE WITHOUT TAG</p>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            A 4/4 Momentum signal feels stronger than a 3/4 Sweep+FVG signal because of the higher number. The opposite is true &mdash; context matters more than score within the Strong band. <span className="text-amber-400">Fix</span>: read the tag first, then the score. Apex with 3/4 beats Momentum with 4/4 in expected value.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15 mb-4">
-          <p className="text-xs font-bold text-red-400 mb-2">MISTAKE 4 &middot; FORCING SYNTHESIS</p>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            The panel is divergent &mdash; modules disagreeing &mdash; but the operator engages anyway, picking the side that feels right. Forcing a synthesis that is not there is the most expensive mistake in the framework. <span className="text-amber-400">Fix</span>: when modules disagree, do nothing. Wait. The next convergence is coming.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15 mb-4">
-          <p className="text-xs font-bold text-red-400 mb-2">MISTAKE 5 &middot; SIZING ABOVE CAP</p>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            An apex signal fires and the operator sizes 2&times; or 3&times; their normal &mdash; treating apex as license to oversize. Apex earns up to 1.5&times; baseline. The cap is the cap. <span className="text-amber-400">Fix</span>: write your max risk per trade on a sticky note. Read it before every entry. Apex is concentration, not abandonment of risk control.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15 mb-6">
-          <p className="text-xs font-bold text-red-400 mb-2">MISTAKE 6 &middot; IMPROVISING THE TRADE PLAN</p>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            The synthesis is clean, the convergence is strong, the operator engages &mdash; and then widens the stop, skips TP1, removes the BE move, holds for &quot;the big one.&quot; Synthesis decided if; mechanics decide where. Mixing the layers is how Strong trades become losing trades. <span className="text-amber-400">Fix</span>: when in doubt, follow the Risk Map exactly. Improvisation is for operators with 500+ trade journals; the rest follow the plan.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-          <p className="text-xs font-bold text-amber-400 mb-2">OPERATOR&apos;S READ</p>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            Six mistakes, six fixes. Each fix is more conservative than the mistake. Every drawdown traceable to one of these is preventable. The protocol is the answer.
-          </p>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* GAME — The Conviction Operator Challenge */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">The Conviction Operator Challenge</p>
-        <h2 className="text-2xl font-extrabold mb-4">Five scenarios. Five decisions.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-8">
-          Each round presents a real synthesis read from the chart. Your job is to read the score, the tag, the convergence, and the edge cases &mdash; then pick the decision a Conviction Operator would make. Wrong answers come with explanations, so even the misses are learning. Pass threshold: get all five correct.
-        </p>
-
-        {!gameComplete ? (
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-            {/* Round indicator */}
+      {/* === S16 — Scenario Game === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">16 &mdash; Scenario Game</p>
+          <h2 className="text-2xl font-extrabold mb-4">Read the Synthesis Like an Operator</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">Five scenarios. Conviction tier sizing, Standard tier handling, Watch tier discipline, mid-trade execution, and the journal-review lesson. Pick the right call. Explanations appear after every answer, including the wrong ones.</p>
+          <div className="p-5 rounded-2xl glass-card">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs tracking-widest uppercase text-amber-400/60">
-                Round {gameRoundIdx + 1} of {gameRounds.length}
-              </span>
-              <span className="text-xs text-gray-500">
-                Score: {gameScore} / {gameRoundIdx + (gameAnswered ? 1 : 0)}
-              </span>
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Round {gameRound + 1} of {gameRounds.length}</p>
+              <p className="text-xs text-gray-500">Score: {gameSelections.filter((sel, i) => sel !== null && gameRounds[i].options.find(o => o.id === sel)?.correct).length}/{gameRounds.length}</p>
             </div>
-
-            {/* Progress bar */}
-            <div className="w-full h-1 bg-white/5 rounded-full mb-6 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-amber-400 to-accent-400 transition-all duration-500"
-                style={{ width: `${((gameRoundIdx + (gameAnswered ? 1 : 0)) / gameRounds.length) * 100}%` }}
-              />
-            </div>
-
-            {/* Scenario */}
-            <div className="p-4 rounded-xl bg-black/30 border border-white/5 mb-4">
-              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">Scenario</p>
-              <p className="text-sm text-gray-300 leading-relaxed">{gameRounds[gameRoundIdx].scenario}</p>
-            </div>
-
-            {/* Prompt */}
-            <p className="text-base font-bold text-white mb-4" dangerouslySetInnerHTML={{ __html: gameRounds[gameRoundIdx].prompt }} />
-
-            {/* Options */}
-            <div className="space-y-3 mb-4">
-              {gameRounds[gameRoundIdx].options.map((opt) => {
-                const isSel = gameSelected === opt.id;
-                const isRight = opt.correct;
-                const showResult = gameAnswered;
-                let cls = 'w-full text-left p-4 rounded-xl border transition-all ';
-                if (!showResult) {
-                  cls += isSel
-                    ? 'border-amber-400 bg-amber-500/10'
-                    : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20';
-                } else {
-                  if (isRight) cls += 'border-accent-400 bg-accent-500/10';
-                  else if (isSel && !isRight) cls += 'border-red-500 bg-red-500/10';
-                  else cls += 'border-white/5 bg-white/[0.01] opacity-50';
-                }
+            <p className="text-sm text-gray-300 leading-relaxed mb-4">{gameRounds[gameRound].scenario}</p>
+            <p className="text-sm font-semibold text-white mb-4">{gameRounds[gameRound].prompt}</p>
+            <div className="space-y-2">
+              {gameRounds[gameRound].options.map((opt) => {
+                const answered = gameSelections[gameRound] !== null;
+                const selected = gameSelections[gameRound] === opt.id;
+                const isCorrect = opt.correct;
+                let cls = 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07]';
+                if (answered && selected && isCorrect) cls = 'bg-green-500/10 border border-green-500/30';
+                if (answered && selected && !isCorrect) cls = 'bg-red-500/10 border border-red-500/30';
+                if (answered && !selected && isCorrect) cls = 'bg-green-500/5 border border-green-500/20';
                 return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    disabled={gameAnswered}
-                    onClick={() => setGameSelected(opt.id)}
-                    className={cls}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs font-bold tracking-widest uppercase text-gray-500 mt-1">{opt.id.toUpperCase()}</span>
-                      <span className="text-sm text-gray-200 flex-1" dangerouslySetInnerHTML={{ __html: opt.text }} />
-                      {showResult && isRight && <span className="text-accent-400 text-lg">&#10003;</span>}
-                      {showResult && isSel && !isRight && <span className="text-red-400 text-lg">&#10005;</span>}
-                    </div>
-                  </button>
+                  <div key={opt.id}>
+                    <button
+                      onClick={() => {
+                        if (gameSelections[gameRound] !== null) return;
+                        const next = [...gameSelections];
+                        next[gameRound] = opt.id;
+                        setGameSelections(next);
+                      }}
+                      disabled={answered}
+                      className={`w-full text-left p-4 rounded-xl transition-all text-sm ${cls}`}
+                    >
+                      <span className="text-gray-200">{opt.text}</span>
+                    </button>
+                    {answered && selected && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-1 p-3 rounded-lg bg-white/[0.02]">
+                        <p className={`text-xs leading-relaxed ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>{isCorrect ? '\u2713' : '\u2717'} {opt.explain}</p>
+                      </motion.div>
+                    )}
+                  </div>
                 );
               })}
             </div>
-
-            {/* Explain block after answer */}
-            {gameAnswered && (
-              <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-4">
-                <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">Explanation</p>
-                <p
-                  className="text-sm text-gray-300 leading-relaxed"
-                  dangerouslySetInnerHTML={{
-                    __html: gameRounds[gameRoundIdx].options.find((o) => o.id === gameSelected)?.explain || '',
-                  }}
-                />
-              </div>
+            {gameSelections[gameRound] !== null && gameRound < gameRounds.length - 1 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5">
+                <button onClick={() => setGameRound(gameRound + 1)} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 text-white text-sm font-bold active:scale-95 transition-transform">Next Round &rarr;</button>
+              </motion.div>
             )}
-
-            {/* Action buttons */}
-            <div className="flex justify-end gap-3">
-              {!gameAnswered ? (
-                <button
-                  type="button"
-                  disabled={!gameSelected}
-                  onClick={() => {
-                    if (!gameSelected) return;
-                    const correct = gameRounds[gameRoundIdx].options.find((o) => o.id === gameSelected)?.correct;
-                    if (correct) setGameScore((s) => s + 1);
-                    setGameAnswered(true);
-                  }}
-                  className="px-5 py-2.5 rounded-lg bg-amber-500 text-black font-bold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-amber-400 transition"
-                >
-                  Submit
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (gameRoundIdx < gameRounds.length - 1) {
-                      setGameRoundIdx((i) => i + 1);
-                      setGameSelected(null);
-                      setGameAnswered(false);
-                    } else {
-                      setGameComplete(true);
-                    }
-                  }}
-                  className="px-5 py-2.5 rounded-lg bg-amber-500 text-black font-bold text-sm hover:bg-amber-400 transition"
-                >
-                  {gameRoundIdx < gameRounds.length - 1 ? 'Next round' : 'Finish challenge'}
-                </button>
-              )}
-            </div>
+            {gameSelections[gameRound] !== null && gameRound === gameRounds.length - 1 && (() => {
+              const finalScore = gameSelections.filter((sel, i) => sel !== null && gameRounds[i].options.find(o => o.id === sel)?.correct).length;
+              return (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
+                  <p className="text-lg font-extrabold text-amber-400">{finalScore}/{gameRounds.length} Correct</p>
+                  <p className="text-xs text-gray-400 mt-1">{finalScore >= 4 ? 'Conviction operator-grade. You read the tier, follow the plan, and skip Watch without override.' : finalScore >= 3 ? 'Solid grasp. Re-read the tier ladder (S09), trade plan handoff (S13), and skip discipline (S12) before the quiz.' : 'Re-study the four factors (S02-S05), the cascade (S07), tier sizing (S09), and the six mistakes (S15) before the quiz.'}</p>
+                </motion.div>
+              );
+            })()}
           </div>
-        ) : (
-          <div className="rounded-2xl border border-accent-400/30 bg-accent-500/5 p-8 text-center">
-            <p className="text-xs font-bold tracking-widest uppercase text-accent-400 mb-3">Challenge Complete</p>
-            <p className="text-5xl font-black text-white mb-2">
-              {gameScore} <span className="text-accent-400">/</span> {gameRounds.length}
-            </p>
-            <p className="text-sm text-gray-400 mb-6">
-              {gameScore === gameRounds.length
-                ? 'Perfect read across all five scenarios. Synthesis discipline confirmed.'
-                : gameScore >= 3
-                ? 'Solid synthesis read. Re-read the scenarios you missed and the relevant section.'
-                : 'The synthesis layer takes practice. Revisit S05 through S14 and try again.'}
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setGameRoundIdx(0);
-                setGameSelected(null);
-                setGameAnswered(false);
-                setGameScore(0);
-                setGameComplete(false);
-              }}
-              className="px-5 py-2.5 rounded-lg border border-white/10 bg-white/[0.03] text-sm text-gray-300 hover:bg-white/[0.05] transition"
-            >
-              Replay challenge
-            </button>
-          </div>
-        )}
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* QUIZ — Knowledge Check */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Knowledge Check</p>
-        <h2 className="text-2xl font-extrabold mb-4">Eight questions. Six to pass.</h2>
-
-        <p className="text-gray-400 leading-relaxed mb-8">
-          The quiz tests recall of the conviction synthesis framework. Six correct out of eight unlocks the Conviction Operator certificate. Take your time &mdash; the questions are concept-level, not memorization-heavy.
-        </p>
-
-        {!quizComplete ? (
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6">
-            {/* Question indicator */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs tracking-widest uppercase text-amber-400/60">
-                Question {quizIdx + 1} of {quizQuestions.length}
-              </span>
-              <span className="text-xs text-gray-500">
-                Score: {quizScore} / {quizIdx + (quizAnswered ? 1 : 0)}
-              </span>
-            </div>
-
-            {/* Progress bar */}
-            <div className="w-full h-1 bg-white/5 rounded-full mb-6 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-amber-400 to-accent-400 transition-all duration-500"
-                style={{ width: `${((quizIdx + (quizAnswered ? 1 : 0)) / quizQuestions.length) * 100}%` }}
-              />
-            </div>
-
-            {/* Question */}
-            <p
-              className="text-base font-bold text-white mb-5"
-              dangerouslySetInnerHTML={{ __html: quizQuestions[quizIdx].question }}
-            />
-
-            {/* Options */}
-            <div className="space-y-3 mb-4">
-              {quizQuestions[quizIdx].options.map((opt) => {
-                const isSel = quizSelected === opt.id;
-                const isRight = opt.correct;
-                const showResult = quizAnswered;
-                let cls = 'w-full text-left p-4 rounded-xl border transition-all ';
-                if (!showResult) {
-                  cls += isSel
-                    ? 'border-amber-400 bg-amber-500/10'
-                    : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20';
-                } else {
-                  if (isRight) cls += 'border-accent-400 bg-accent-500/10';
-                  else if (isSel && !isRight) cls += 'border-red-500 bg-red-500/10';
-                  else cls += 'border-white/5 bg-white/[0.01] opacity-50';
-                }
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    disabled={quizAnswered}
-                    onClick={() => setQuizSelected(opt.id)}
-                    className={cls}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-xs font-bold tracking-widest uppercase text-gray-500 mt-1">{opt.id.toUpperCase()}</span>
-                      <span className="text-sm text-gray-200 flex-1" dangerouslySetInnerHTML={{ __html: opt.text }} />
-                      {showResult && isRight && <span className="text-accent-400 text-lg">&#10003;</span>}
-                      {showResult && isSel && !isRight && <span className="text-red-400 text-lg">&#10005;</span>}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Explain block after answer */}
-            {quizAnswered && (
-              <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15 mb-4">
-                <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">Why</p>
-                <p
-                  className="text-sm text-gray-300 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: quizQuestions[quizIdx].explain }}
-                />
+      {/* === S17 — Final Quiz === */}
+      <section className="max-w-2xl mx-auto px-5 py-16">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">17 &mdash; Knowledge Check</p>
+          <h2 className="text-2xl font-extrabold mb-6">Final Quiz &mdash; {quizQuestions.length} Questions</h2>
+          <div className="space-y-6">
+            {quizQuestions.map((q, qi) => (
+              <div key={qi} className="p-5 rounded-2xl glass-card">
+                <p className="text-xs font-semibold tracking-widest uppercase text-amber-400 mb-2">Question {qi + 1} of {quizQuestions.length}</p>
+                <p className="text-sm font-semibold text-white mb-4">{q.question}</p>
+                <div className="space-y-2">
+                  {q.options.map((opt) => {
+                    const answered = quizAnswers[qi] !== null;
+                    const selected = quizAnswers[qi] === opt.id;
+                    const isCorrect = opt.correct;
+                    let cls = 'bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.07]';
+                    if (answered && selected && isCorrect) cls = 'bg-green-500/10 border border-green-500/30';
+                    if (answered && selected && !isCorrect) cls = 'bg-red-500/10 border border-red-500/30';
+                    if (answered && !selected && isCorrect) cls = 'bg-green-500/5 border border-green-500/20';
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => {
+                          if (quizAnswers[qi] !== null) return;
+                          const next = [...quizAnswers];
+                          next[qi] = opt.id;
+                          setQuizAnswers(next);
+                          if (next.every(a => a !== null)) setQuizSubmitted(true);
+                        }}
+                        disabled={answered}
+                        className={`w-full text-left p-3 rounded-xl transition-all text-sm ${cls}`}
+                      >
+                        {opt.text}
+                      </button>
+                    );
+                  })}
+                </div>
+                {quizAnswers[qi] !== null && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-3 p-3 rounded-lg bg-white/[0.02]">
+                    <p className="text-xs text-amber-400"><span className="font-bold">&#9989;</span> {q.explain}</p>
+                  </motion.div>
+                )}
               </div>
-            )}
-
-            {/* Action buttons */}
-            <div className="flex justify-end gap-3">
-              {!quizAnswered ? (
-                <button
-                  type="button"
-                  disabled={!quizSelected}
-                  onClick={() => {
-                    if (!quizSelected) return;
-                    const correct = quizQuestions[quizIdx].options.find((o) => o.id === quizSelected)?.correct;
-                    if (correct) setQuizScore((s) => s + 1);
-                    setQuizAnswered(true);
-                  }}
-                  className="px-5 py-2.5 rounded-lg bg-amber-500 text-black font-bold text-sm disabled:opacity-30 disabled:cursor-not-allowed hover:bg-amber-400 transition"
-                >
-                  Submit
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (quizIdx < quizQuestions.length - 1) {
-                      setQuizIdx((i) => i + 1);
-                      setQuizSelected(null);
-                      setQuizAnswered(false);
-                    } else {
-                      setQuizComplete(true);
-                    }
-                  }}
-                  className="px-5 py-2.5 rounded-lg bg-amber-500 text-black font-bold text-sm hover:bg-amber-400 transition"
-                >
-                  {quizIdx < quizQuestions.length - 1 ? 'Next question' : 'Finish quiz'}
-                </button>
-              )}
-            </div>
+            ))}
           </div>
-        ) : (
-          <div className="rounded-2xl border border-accent-400/30 bg-accent-500/5 p-8 text-center">
-            <p className="text-xs font-bold tracking-widest uppercase text-accent-400 mb-3">Quiz Complete</p>
-            <p className="text-5xl font-black text-white mb-2">
-              {quizScore} <span className="text-accent-400">/</span> {quizQuestions.length}
-            </p>
-            <p className="text-sm text-gray-400 mb-6">
-              {quizScore >= 6
-                ? 'Pass. Your read of the synthesis framework is solid.'
-                : 'Below pass threshold. Review the lesson sections above and try again \u2014 conviction discipline starts with conceptual fluency.'}
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                setQuizIdx(0);
-                setQuizSelected(null);
-                setQuizAnswered(false);
-                setQuizScore(0);
-                setQuizComplete(false);
-              }}
-              className="px-5 py-2.5 rounded-lg border border-white/10 bg-white/[0.03] text-sm text-gray-300 hover:bg-white/[0.05] transition"
-            >
-              Retake quiz
-            </button>
-          </div>
-        )}
-      </section>
-
-      {/* ============================================================ */}
-      {/* CERT — Conviction Operator */}
-      {/* ============================================================ */}
-      <section className="max-w-2xl mx-auto px-5 py-16 border-t border-white/5">
-        <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">Lesson Complete</p>
-        <h2 className="text-2xl font-extrabold mb-4">{certUnlocked ? 'Conviction Operator \u2014 unlocked.' : 'Complete the quiz to unlock the cert.'}</h2>
-
-        {certUnlocked ? (
-          <>
-            <p className="text-gray-400 leading-relaxed mb-8">
-              You now read CIPHER as a single synthesis layer rather than six independent modules. The score sets the size; the threshold sets the engagement; the plan sets the management; the cap sets the discipline. You have earned the Conviction Operator badge.
-            </p>
-
-            <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-gradient-to-br from-black via-amber-950/20 to-black p-10 mb-8">
-              {/* Conic certificate background */}
-              <div
-                className="absolute inset-0 opacity-30 pointer-events-none"
-                style={{
-                  background: 'conic-gradient(from 90deg at 50% 50%, #FFB300, #26A69A, #FFB300, #26A69A, #FFB300)',
-                }}
-              />
-              <div className="absolute inset-0 bg-black/70 pointer-events-none" />
-
-              <div className="relative text-center">
-                <p className="text-xs tracking-[0.4em] uppercase text-amber-400/80 mb-3">ATLAS Academy &middot; Level 11</p>
-                <p className="text-3xl font-black text-white mb-2">Conviction Operator</p>
-                <p className="text-sm text-gray-400 mb-6">Certificate of Synthesis Mastery</p>
-
-                <div className="w-20 h-px bg-amber-400/40 mx-auto mb-6" />
-
-                <p className="text-xs text-gray-500 mb-1">Awarded for completion of</p>
-                <p className="text-sm font-bold text-white mb-6">Cipher Conviction Synthesis</p>
-
-                <div className="inline-block px-4 py-2 rounded-lg border border-amber-400/30 bg-black/40">
-                  <p className="text-[10px] tracking-widest uppercase text-amber-400/80">Cert ID</p>
-                  <p className="text-xs font-mono text-white">PRO-CERT-L11.22</p>
+          {quizSubmitted && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 text-center">
+              <p className="text-3xl font-extrabold mb-2">{quizPercent}%</p>
+              <p className="text-sm text-gray-400">{quizPassed ? 'You passed! Certificate unlocked below.' : 'You need 66% to earn the certificate. Review and try again.'}</p>
+            </motion.div>
+          )}
+          {certRevealed && (
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="mt-10">
+              <div className="max-w-md mx-auto p-10 rounded-3xl relative overflow-hidden border border-amber-500/20" style={{ background: 'linear-gradient(145deg, rgba(13,19,32,1), rgba(20,28,46,1))' }}>
+                <div className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(245,158,11,0.06),transparent,rgba(14,165,233,0.04),transparent)] animate-spin" style={{ animationDuration: '12s' }} />
+                <div className="relative z-10 text-center">
+                  <div className="w-[72px] h-[72px] mx-auto mb-5 rounded-full bg-gradient-to-br from-amber-500 to-sky-500 flex items-center justify-center text-3xl shadow-lg shadow-amber-500/30">&#9636;</div>
+                  <p className="text-xs tracking-widest uppercase text-gray-500 mb-3">Certificate of Completion</p>
+                  <p className="text-sm text-gray-400">Has successfully completed<br /><strong className="text-white">Level 11.22: Cipher Conviction Synthesis</strong><br />at ATLAS Academy by Interakktive</p>
+                  <p className="bg-gradient-to-r from-amber-400 via-sky-400 to-amber-400 bg-clip-text text-transparent font-bold text-lg mb-1 mt-4" style={{ WebkitTransform: 'translateZ(0)' }}>&mdash; Conviction Operator &mdash;</p>
+                  <p className="font-mono text-[9px] text-amber-600/60 tracking-wider uppercase">{certId}</p>
                 </div>
               </div>
-            </div>
-
-            <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
-              <div>
-                <p className="text-xs font-bold text-amber-400 mb-1">WHAT YOU CAN DO NOW</p>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  Read any CIPHER signal at a glance: glyph for conviction tier, label size for size-up cue, tag for context, score for engagement decision, tooltip for full module verdicts. The six Visual Layer modules consolidate into a single read.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/5">
-                <p className="text-xs font-bold text-amber-400 mb-1">WHAT COMES NEXT</p>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  Cipher Candles. The five candle modes (Trend / Composite Bold / Trend Bold / Tension / Default) are a rendering layer that re-paints existing module reads onto the candles themselves. Lesson 11.23 turns the panel-driven read into a candle-driven read.
-                </p>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8 text-center">
-            <p className="text-sm text-gray-400">
-              Complete the Conviction Operator Challenge and the Knowledge Check (6/8) above to unlock the certificate.
-            </p>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </motion.div>
       </section>
 
-      {/* ============================================================ */}
-      {/* FOOTER */}
-      {/* ============================================================ */}
-      <footer className="max-w-2xl mx-auto px-5 py-12 border-t border-white/5">
-        <div className="flex flex-col gap-6">
-          <div>
-            <p className="text-xs tracking-widest uppercase text-amber-400/60 mb-2">First Capstone Lesson Complete</p>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Lesson 11.22 closes the bridge from the Visual Layer arc into integration. The six Visual Layer modules now read as one synthesis. Six lessons remain in Level 11.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/academy/lesson/cipher-risk-map"
-              className="flex-1 p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] transition"
-            >
-              <p className="text-xs tracking-widest uppercase text-gray-500 mb-1">&larr; Previous</p>
-              <p className="text-sm font-bold text-white">L11.21 &middot; Cipher Risk Map</p>
-            </Link>
-            <Link
-              href="/academy/lesson/cipher-candles"
-              className="flex-1 p-4 rounded-xl border border-amber-400/30 bg-amber-500/5 hover:bg-amber-500/10 transition"
-            >
-              <p className="text-xs tracking-widest uppercase text-amber-400/80 mb-1">Next &rarr;</p>
-              <p className="text-sm font-bold text-white">L11.23 &middot; Cipher Candles</p>
-            </Link>
-          </div>
-
-          <div className="text-center pt-4 border-t border-white/5">
-            <Link href="/academy" className="text-xs tracking-widest uppercase text-gray-500 hover:text-white transition">
-              All Academy lessons
-            </Link>
-          </div>
-        </div>
-      </footer>
-
+      <section className="max-w-2xl mx-auto px-5 py-20 text-center">
+        <Link href="/academy" className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-accent-500 hover:from-amber-600 hover:to-accent-600 text-white font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95">&larr; Back to Academy</Link>
+      </section>
+      {/* === LESSON COMPLETE === */}
     </div>
   );
 }
