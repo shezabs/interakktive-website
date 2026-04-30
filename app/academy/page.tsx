@@ -169,6 +169,9 @@ const liveLessons = new Set([
   'cipher-sweeps',
   'cipher-risk-envelope',
   'cipher-risk-map',
+  'cipher-conviction-synthesis',
+  'cipher-candles',
+  'cipher-war-room-integration',
 ]);
 
 export default function AcademyPage() {
