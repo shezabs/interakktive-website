@@ -92,6 +92,16 @@ export default function DashboardPage() {
   const [savingTraderName, setSavingTraderName] = useState(false);
   const [traderNameSuccess, setTraderNameSuccess] = useState(false);
 
+  // Public profile state (handle + visibility toggle).
+  const [publicHandle, setPublicHandle] = useState<string | null>(null);
+  const [isPublicProfile, setIsPublicProfile] = useState(false);
+  const [editingHandle, setEditingHandle] = useState(false);
+  const [newHandle, setNewHandle] = useState('');
+  const [savingHandle, setSavingHandle] = useState(false);
+  const [handleError, setHandleError] = useState('');
+  const [handleSuccess, setHandleSuccess] = useState(false);
+  const [savingPublicToggle, setSavingPublicToggle] = useState(false);
+
   // Earned certificates (level_id → cert_code)
   const [earnedCerts, setEarnedCerts] = useState<Array<{ level_id: string; cert_code: string; issued_at: string }>>([]);
 
@@ -142,7 +152,7 @@ export default function DashboardPage() {
           const [profileRes, certsRes] = await Promise.all([
             supabase
               .from('trader_profiles')
-              .select('trader_name')
+              .select('trader_name, public_handle, is_public')
               .eq('user_email', currentUser.email)
               .maybeSingle(),
             supabase
@@ -152,6 +162,8 @@ export default function DashboardPage() {
               .order('issued_at', { ascending: false }),
           ]);
           if (profileRes.data?.trader_name) setTraderName(profileRes.data.trader_name);
+          if (profileRes.data?.public_handle) setPublicHandle(profileRes.data.public_handle);
+          if (profileRes.data?.is_public) setIsPublicProfile(true);
           setEarnedCerts(certsRes.data || []);
         } catch {
           // Non-blocking — dashboard renders without certs section if anything fails.
@@ -343,6 +355,66 @@ export default function DashboardPage() {
       // Soft fail — user can retry.
     } finally {
       setSavingTraderName(false);
+    }
+  };
+
+  // Save the public handle (used for /trader/<handle>).
+  const handleSaveHandle = async () => {
+    setHandleError('');
+    const trimmed = newHandle.trim().toLowerCase();
+    if (!user?.email) return;
+    if (!/^[a-z0-9_-]{2,32}$/.test(trimmed)) {
+      setHandleError('Handle must be 2-32 chars: lowercase letters, numbers, dashes, underscores.');
+      return;
+    }
+    setSavingHandle(true);
+    try {
+      // Check uniqueness first (case-insensitive).
+      const { data: existing } = await supabase
+        .from('trader_profiles')
+        .select('user_email')
+        .ilike('public_handle', trimmed)
+        .neq('user_email', user.email)
+        .maybeSingle();
+      if (existing) {
+        setHandleError('That handle is taken. Try a different one.');
+        setSavingHandle(false);
+        return;
+      }
+      await supabase.from('trader_profiles').upsert(
+        { user_email: user.email, public_handle: trimmed, updated_at: new Date().toISOString() },
+        { onConflict: 'user_email' }
+      );
+      setPublicHandle(trimmed);
+      setEditingHandle(false);
+      setHandleSuccess(true);
+      setTimeout(() => setHandleSuccess(false), 4000);
+    } catch (err) {
+      setHandleError('Could not save handle. Try again.');
+    } finally {
+      setSavingHandle(false);
+    }
+  };
+
+  // Toggle public profile visibility.
+  const handleTogglePublicProfile = async (next: boolean) => {
+    if (!user?.email) return;
+    // Can't go public without a handle.
+    if (next && !publicHandle) {
+      setHandleError('Set a public handle first to enable your public profile.');
+      return;
+    }
+    setSavingPublicToggle(true);
+    try {
+      await supabase.from('trader_profiles').upsert(
+        { user_email: user.email, is_public: next, updated_at: new Date().toISOString() },
+        { onConflict: 'user_email' }
+      );
+      setIsPublicProfile(next);
+    } catch (err) {
+      // Soft fail.
+    } finally {
+      setSavingPublicToggle(false);
     }
   };
 
@@ -960,6 +1032,104 @@ export default function DashboardPage() {
                     </div>
                   )}
                   {traderNameSuccess && <p className="text-xs text-green-400 mt-1">Trader name saved.</p>}
+                </div>
+
+                {/* Public Profile */}
+                <div className="pt-3 border-t border-white/5">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-gray-500 text-xs font-medium">Public Profile <span className="text-gray-600 font-normal">(optional)</span></p>
+                    {!editingHandle && (
+                      <button
+                        onClick={() => {
+                          setNewHandle(publicHandle || '');
+                          setEditingHandle(true);
+                          setHandleError('');
+                          setHandleSuccess(false);
+                        }}
+                        className="text-gray-500 hover:text-primary-400 transition-colors"
+                        title="Set or change your public handle"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                  {!editingHandle ? (
+                    <>
+                      {publicHandle ? (
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="text-white text-sm font-mono">@{publicHandle}</p>
+                          {isPublicProfile && (
+                            <Link
+                              href={`/trader/${publicHandle}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[10px] text-primary-400 hover:text-primary-300 transition-colors flex items-center gap-1"
+                            >
+                              View profile
+                              <ExternalLink className="w-2.5 h-2.5" />
+                            </Link>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 text-xs italic mb-2">No public handle set.</p>
+                      )}
+                      {/* Public toggle */}
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleTogglePublicProfile(!isPublicProfile)}
+                          disabled={savingPublicToggle || !publicHandle}
+                          className={`relative inline-flex items-center w-9 h-5 rounded-full transition-colors flex-shrink-0 ${
+                            isPublicProfile ? 'bg-primary-500' : 'bg-gray-600'
+                          } ${(savingPublicToggle || !publicHandle) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          aria-label="Toggle public profile"
+                        >
+                          <span
+                            className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform ${
+                              isPublicProfile ? 'translate-x-4' : 'translate-x-0'
+                            }`}
+                          />
+                        </button>
+                        <span className="text-xs text-gray-400">
+                          {isPublicProfile ? 'Public profile is ON' : 'Public profile is OFF'}
+                        </span>
+                      </div>
+                      {!publicHandle && (
+                        <p className="text-[10px] text-gray-600 mt-1.5">Set a handle first to enable your public profile.</p>
+                      )}
+                    </>
+                  ) : (
+                    <div className="space-y-2 mt-1">
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-400 text-sm font-mono">@</span>
+                        <input
+                          type="text"
+                          value={newHandle}
+                          onChange={(e) => setNewHandle(e.target.value.toLowerCase())}
+                          maxLength={32}
+                          className="flex-1 px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors text-sm font-mono"
+                          placeholder="your-handle"
+                        />
+                      </div>
+                      {handleError && <p className="text-xs text-red-400">{handleError}</p>}
+                      <p className="text-[10px] text-gray-600">2-32 characters. Lowercase letters, numbers, dashes, underscores only.</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleSaveHandle}
+                          disabled={savingHandle || !newHandle.trim()}
+                          className="px-3 py-1 bg-primary-500/20 border border-primary-500/30 text-primary-400 rounded text-xs font-medium hover:bg-primary-500/30 transition-all disabled:opacity-50"
+                        >
+                          {savingHandle ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          onClick={() => { setEditingHandle(false); setHandleError(''); }}
+                          className="px-3 py-1 bg-white/10 rounded text-xs hover:bg-white/20 transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {handleSuccess && <p className="text-xs text-green-400 mt-1">Handle saved.</p>}
                 </div>
 
                 {/* Social Profiles */}

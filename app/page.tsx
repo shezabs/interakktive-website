@@ -33,7 +33,7 @@ export default function HomePage() {
             </FadeIn>
             <FadeIn delay={0.3}>
               <p className="text-base text-gray-500 max-w-2xl mx-auto">
-                13 published indicators &middot; 25,000+ lines of proprietary code &middot; Zero black-box signals
+                13 published indicators &middot; 11 academy levels &middot; Zero black-box signals
               </p>
             </FadeIn>
             <FadeIn delay={0.4}>
@@ -58,6 +58,51 @@ export default function HomePage() {
               </div>
             </FadeIn>
           </div>
+        </div>
+      </section>
+
+      {/* Trust Strip — what we've built */}
+      <section className="py-12 border-y border-white/5 bg-white/[0.01]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeInView>
+            <p className="text-center text-[11px] tracking-[0.3em] uppercase text-gray-500 font-semibold mb-8">
+              Built by traders, for traders
+            </p>
+          </FadeInView>
+          <StaggerContainer staggerDelay={0.08} className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-4">
+            <StaggerItem>
+              <div className="text-center">
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-primary-400 to-accent-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>
+                  13
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Published Indicators</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="text-center">
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-primary-400 to-accent-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>
+                  156
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Academy Lessons</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="text-center">
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-primary-400 to-accent-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>
+                  11
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Curriculum Levels</p>
+              </div>
+            </StaggerItem>
+            <StaggerItem>
+              <div className="text-center">
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-primary-400 to-accent-400 bg-clip-text text-transparent" style={{ WebkitTransform: 'translateZ(0)' }}>
+                  9
+                </p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Free Indicators</p>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
       </section>
 
