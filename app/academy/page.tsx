@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, ArrowRight, Clock, Trophy, BookOpen, GraduationCap, ChevronDown } from 'lucide-react';
 import { academyCourses } from '@/app/lib/academy-data';
+import { useProAccess } from '@/app/lib/use-pro-access';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -175,10 +176,17 @@ const liveLessons = new Set([
 ]);
 
 export default function AcademyPage() {
-  // All levels expanded by default
+  // All levels collapsed by default
   const [expanded, setExpanded] = useState<Record<string, boolean>>(
-    Object.fromEntries(academyCourses.map(c => [c.id, true]))
+    Object.fromEntries(academyCourses.map(c => [c.id, false]))
   );
+
+  // PRO access state. Render the index immediately; lessons reveal as
+  // clickable once auth resolves. While loading, treat as not-paying so the
+  // optimistic render shows correct gating to non-paying users (the common case).
+  // Paying users see a brief locked → unlocked flip (~200ms) which is fine.
+  const { state: accessState } = useProAccess();
+  const isPaying = accessState === 'paying';
 
   const toggle = (id: string) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
 
@@ -235,7 +243,7 @@ export default function AcademyPage() {
       {/* Course Grid */}
       <section className="max-w-3xl mx-auto px-6 pb-32">
         {academyCourses.map((course, ci) => {
-          const isOpen = expanded[course.id] ?? true;
+          const isOpen = expanded[course.id] ?? false;
           const lessonCount = course.lessons.length;
           const freeCount = course.lessons.filter(l => l.isFree).length;
           const proCount = lessonCount - freeCount;
@@ -280,11 +288,13 @@ export default function AcademyPage() {
                     <div className="space-y-2.5 pt-3 pb-4 pl-2">
                       {course.lessons.map((lesson, li) => {
                         const isLive = liveLessons.has(lesson.id);
+                        // Clickable when: lesson is shipped AND (it's free OR user is paying)
+                        const isUnlocked = isLive && (lesson.isFree || isPaying);
                         return (
                           <Link
                             key={lesson.id}
-                            href={isLive ? `/academy/lesson/${lesson.id}` : '#'}
-                            className={`block group ${!isLive ? 'pointer-events-none' : ''}`}
+                            href={isUnlocked ? `/academy/lesson/${lesson.id}` : '#'}
+                            className={`block group ${!isUnlocked ? 'pointer-events-none' : ''}`}
                           >
                             <motion.div
                               initial={{ opacity: 0, x: -20 }}
@@ -292,19 +302,19 @@ export default function AcademyPage() {
                               viewport={{ once: true }}
                               transition={{ duration: 0.4, delay: li * 0.04 }}
                               className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
-                                isLive
+                                isUnlocked
                                   ? 'glass-card hover:translate-x-1'
                                   : 'bg-white/[0.02] border-white/[0.03] opacity-40'
                               }`}
                             >
                               <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-mono text-sm transition-colors ${
-                                isLive ? 'bg-white/5 text-gray-500 group-hover:text-primary-400 group-hover:bg-primary-500/10' : 'bg-white/[0.02] text-gray-700'
+                                isUnlocked ? 'bg-white/5 text-gray-500 group-hover:text-primary-400 group-hover:bg-primary-500/10' : 'bg-white/[0.02] text-gray-700'
                               }`}>
                                 {li + 1}
                               </div>
                               
                               <div className="flex-1 min-w-0">
-                                <h3 className={`font-semibold text-[15px] transition-colors ${isLive ? 'group-hover:text-primary-400' : ''}`}>
+                                <h3 className={`font-semibold text-[15px] transition-colors ${isUnlocked ? 'group-hover:text-primary-400' : ''}`}>
                                   {lesson.title}
                                 </h3>
                                 <p className="text-xs text-gray-500 truncate">{lesson.subtitle}</p>
@@ -317,7 +327,7 @@ export default function AcademyPage() {
                                 ) : (
                                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-accent-500/10 text-accent-400 border border-accent-500/15">PRO</span>
                                 )}
-                                {isLive ? (
+                                {isUnlocked ? (
                                   <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-primary-400 transition-colors" />
                                 ) : (
                                   <Lock className="w-4 h-4 text-gray-700" />
