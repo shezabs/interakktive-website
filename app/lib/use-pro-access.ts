@@ -3,18 +3,24 @@
 // usePro Access — single source of truth for "is the current user a paying
 // subscriber?" Used by Academy index + lesson gate. Any active/cancelling
 // subscription on any tier (Starter/Advantage/Elite) counts as paying.
+//
+// Admin allowlist (see admin-emails.ts) bypasses the subscription check so
+// founders/operators can review the full Academy without buying a plan.
+// Admins also get isAdmin: true so the UI can show an "Admin Access" badge.
 // ============================================================================
 
 'use client';
 
 import { useEffect, useState } from 'react';
 import { supabase } from './supabase';
+import { isAdminEmail } from './admin-emails';
 
 export type ProAccessState = 'loading' | 'paying' | 'not-paying';
 
-export function useProAccess(): { state: ProAccessState; email: string | null } {
+export function useProAccess(): { state: ProAccessState; email: string | null; isAdmin: boolean } {
   const [state, setState] = useState<ProAccessState>('loading');
   const [email, setEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -26,11 +32,20 @@ export function useProAccess(): { state: ProAccessState; email: string | null } 
 
         if (!user?.email) {
           setEmail(null);
+          setIsAdmin(false);
           setState('not-paying');
           return;
         }
 
         setEmail(user.email);
+
+        // Admin bypass — full Academy access without a subscription.
+        if (isAdminEmail(user.email)) {
+          setIsAdmin(true);
+          setState('paying');
+          return;
+        }
+        setIsAdmin(false);
 
         const { data: sub } = await supabase
           .from('subscriptions')
@@ -52,5 +67,5 @@ export function useProAccess(): { state: ProAccessState; email: string | null } 
     return () => { cancelled = true; };
   }, []);
 
-  return { state, email };
+  return { state, email, isAdmin };
 }

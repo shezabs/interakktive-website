@@ -236,14 +236,29 @@ function useHidePerLessonCertificatesAndRecordCompletion(slug: string) {
 
 // Inner component used for the "lesson is unlocked" branches. We wrap children
 // in a fragment + add: cert-stripper effect, level-cert callout, lesson nav.
-function UnlockedLesson({ children, slug }: { children: React.ReactNode; slug: string }) {
+function UnlockedLesson({ children, slug, isAdmin }: { children: React.ReactNode; slug: string; isAdmin: boolean }) {
   useHidePerLessonCertificatesAndRecordCompletion(slug);
   return (
     <>
+      {isAdmin && <AdminAccessBadge />}
       {children}
       <LevelCertCallout slug={slug} />
       <LessonNav slug={slug} />
     </>
+  );
+}
+
+// Floating "Admin Access" badge — visible only to allowlisted admins. Reminds
+// you that you're not seeing the real user paywall behaviour.
+function AdminAccessBadge() {
+  return (
+    <div
+      className="fixed top-20 right-3 z-40 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 backdrop-blur-sm pointer-events-none"
+      style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+      <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">Admin Access</span>
+    </div>
   );
 }
 
@@ -252,11 +267,11 @@ export default function LessonLayout({ children }: { children: React.ReactNode }
   const slug = pathname?.split('/').pop() || '';
   const isFreeLesson = FREE_LESSON_IDS.has(slug);
 
-  const { state } = useProAccess();
+  const { state, isAdmin } = useProAccess();
 
   // FREE lessons render immediately, no auth check.
   if (isFreeLesson) {
-    return <UnlockedLesson slug={slug}>{children}</UnlockedLesson>;
+    return <UnlockedLesson slug={slug} isAdmin={isAdmin}>{children}</UnlockedLesson>;
   }
 
   // PRO lesson — gate based on access state.
@@ -269,7 +284,7 @@ export default function LessonLayout({ children }: { children: React.ReactNode }
   }
 
   if (state === 'paying') {
-    return <UnlockedLesson slug={slug}>{children}</UnlockedLesson>;
+    return <UnlockedLesson slug={slug} isAdmin={isAdmin}>{children}</UnlockedLesson>;
   }
 
   // not-paying → paywall

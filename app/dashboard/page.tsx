@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { FadeIn, FadeInView, SectionWrapper } from '@/app/components/animations';
 import { academyCourses } from '@/app/lib/academy-data';
+import { isAdminEmail } from '@/app/lib/admin-emails';
 
 const INDICATORS = [
   { id: 'CIPHER PRO', icon: Crosshair, role: 'Signal Intelligence', color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', tvUrl: 'https://www.tradingview.com/script/vvf2W2ZG/', docUrl: '/learn/atlas-pro/atlas-cipher-pro' },
@@ -104,6 +105,11 @@ export default function DashboardPage() {
 
   // Earned certificates (level_id → cert_code)
   const [earnedCerts, setEarnedCerts] = useState<Array<{ level_id: string; cert_code: string; issued_at: string }>>([]);
+
+  // Admin-only Academy progress reset
+  const [adminResetConfirm, setAdminResetConfirm] = useState(false);
+  const [adminResetting, setAdminResetting] = useState(false);
+  const [adminResetMessage, setAdminResetMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -415,6 +421,28 @@ export default function DashboardPage() {
       // Soft fail.
     } finally {
       setSavingPublicToggle(false);
+    }
+  };
+
+  // Admin-only: reset the calling user's Academy progress (completions + certs).
+  // Server-side validates admin allowlist. trader_profiles is left intact.
+  const handleAdminResetAcademy = async () => {
+    setAdminResetting(true);
+    setAdminResetMessage(null);
+    try {
+      const res = await fetch('/api/admin-reset-academy', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setAdminResetMessage({ kind: 'err', text: data.error || 'Reset failed.' });
+      } else {
+        setEarnedCerts([]);
+        setAdminResetMessage({ kind: 'ok', text: 'Academy progress reset. Refresh to see changes.' });
+        setAdminResetConfirm(false);
+      }
+    } catch (err) {
+      setAdminResetMessage({ kind: 'err', text: 'Network error.' });
+    } finally {
+      setAdminResetting(false);
     }
   };
 
@@ -1449,6 +1477,61 @@ export default function DashboardPage() {
                 support@interakktive.com
               </a>
             </div>
+
+            {/* Admin Tools — only visible to allowlisted admins */}
+            {isAdminEmail(user?.email) && (
+              <div className="rounded-xl border border-amber-500/15 bg-amber-500/[0.02] p-5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <h3 className="text-sm font-bold text-amber-400 tracking-wider uppercase">Admin Tools</h3>
+                </div>
+                <p className="text-[11px] text-gray-500 mb-4">Visible only to allowlisted accounts. Use these for testing.</p>
+
+                <div className="rounded-lg border border-white/5 bg-black/20 p-4">
+                  <p className="text-sm font-semibold text-white mb-1">Reset Academy Progress</p>
+                  <p className="text-xs text-gray-500 leading-relaxed mb-3">
+                    Wipes your <span className="text-gray-400">lesson_completions</span> and{' '}
+                    <span className="text-gray-400">level_certificates</span> rows. Trader profile, handle, and
+                    public toggle are kept. Lets you re-test the cert flow from zero.
+                  </p>
+
+                  {!adminResetConfirm ? (
+                    <button
+                      onClick={() => { setAdminResetConfirm(true); setAdminResetMessage(null); }}
+                      className="w-full px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-gray-300 transition-colors"
+                    >
+                      Reset my progress…
+                    </button>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs text-amber-400">Are you sure? This is permanent.</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleAdminResetAcademy}
+                          disabled={adminResetting}
+                          className="flex-1 px-3 py-2 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-xs font-bold text-red-400 transition-colors disabled:opacity-50"
+                        >
+                          {adminResetting ? 'Resetting…' : 'Yes, wipe my progress'}
+                        </button>
+                        <button
+                          onClick={() => setAdminResetConfirm(false)}
+                          disabled={adminResetting}
+                          className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-gray-300 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {adminResetMessage && (
+                    <p className={`text-xs mt-2 ${adminResetMessage.kind === 'ok' ? 'text-green-400' : 'text-red-400'}`}>
+                      {adminResetMessage.text}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
