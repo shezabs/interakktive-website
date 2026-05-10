@@ -15,14 +15,14 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Lock, ArrowLeft, ArrowRight, Crown, GraduationCap, Award } from 'lucide-react';
 import { academyCourses } from '@/app/lib/academy-data';
 import { useProAccess } from '@/app/lib/use-pro-access';
-import { findAdjacentLiveLessons, findCourseForLesson, levelShortCode } from '@/app/lib/academy-helpers';
+import { findAdjacentLiveLessons, findCourseForLesson, levelShortCode, LIVE_LESSONS } from '@/app/lib/academy-helpers';
 
 // Build a Set of FREE lesson IDs from the data file. FREE lessons skip the gate.
 const FREE_LESSON_IDS = new Set(
@@ -97,30 +97,115 @@ function LessonNav({ slug }: { slug: string }) {
 
 // Level-cert callout shown at the bottom of every lesson, ABOVE the lesson nav.
 // Replaces the old per-lesson certs with a level-aware one.
-function LevelCertCallout({ slug }: { slug: string }) {
+// Smart cert/progress component shown above the lesson nav.
+// Behaviour:
+//  - Always shows a thin progress strip: "L1 · Lesson 3 of 6 · 50%"
+//  - On the LAST lesson of a level, when all level lessons complete:
+//    show a prominent "Claim your certificate" button
+//  - Otherwise: a faint "Cert unlocks at the end of this level" line
+function LevelProgressStrip({ slug }: { slug: string }) {
   const course = findCourseForLesson(slug);
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const [hasCert, setHasCert] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!course) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { supabase } = await import('@/app/lib/supabase');
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user?.email || cancelled) {
+          if (!cancelled) setLoaded(true);
+          return;
+        }
+        const [completionsRes, certsRes] = await Promise.all([
+          supabase.from('lesson_completions').select('lesson_id').eq('user_email', user.email).eq('level_id', course.id),
+          supabase.from('level_certificates').select('cert_code').eq('user_email', user.email).eq('level_id', course.id).maybeSingle(),
+        ]);
+        if (cancelled) return;
+        const ids = new Set<string>((completionsRes.data || []).map((r: { lesson_id: string }) => r.lesson_id));
+        setCompleted(ids);
+        setHasCert(!!certsRes.data);
+      } catch {
+        // Silent.
+      } finally {
+        if (!cancelled) setLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [slug, course]);
+
   if (!course) return null;
   const code = levelShortCode(course.id);
 
-  return (
-    <section className="px-5 py-12 max-w-3xl mx-auto">
-      <div className="rounded-2xl border border-amber-500/15 bg-gradient-to-br from-amber-500/[0.04] to-amber-500/[0.01] p-6 sm:p-8 text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30 mb-4">
-          <Award className="w-6 h-6 text-amber-400" />
+  // Live lessons only — used for progress.
+  const liveLessonIds = course.lessons
+    .filter(l => LIVE_LESSONS.has(l.id))
+    .map(l => l.id);
+  const liveTotal = liveLessonIds.length;
+  const liveCompletedCount = liveLessonIds.filter(id => completed.has(id)).length;
+  const progressPct = liveTotal > 0 ? Math.round((liveCompletedCount / liveTotal) * 100) : 0;
+
+  // This lesson's position among the live lessons of this level (1-indexed for display).
+  const lessonPosition = liveLessonIds.indexOf(slug) + 1;
+  const isLastLiveInLevel = lessonPosition === liveTotal && liveTotal > 0;
+  const levelComplete = liveTotal > 0 && liveCompletedCount === liveTotal;
+
+  // Don't render until we know — avoids flash of "0%" before completions load.
+  if (!loaded) return null;
+
+  // Last lesson + level complete (or cert already issued) → prominent cert claim
+  if (isLastLiveInLevel && (levelComplete || hasCert)) {
+    return (
+      <section className="px-5 py-10 max-w-2xl mx-auto">
+        <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/[0.06] to-amber-500/[0.02] p-6 sm:p-8 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/30 to-amber-600/10 border border-amber-500/40 mb-4">
+            <Award className="w-7 h-7 text-amber-400" />
+          </div>
+          <p className="text-[10px] tracking-[0.4em] uppercase text-amber-400 font-bold mb-2">{code} Certificate Ready</p>
+          <h3 className="text-xl font-bold text-white mb-2">You finished {course.title}.</h3>
+          <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed mb-5">
+            Every lesson in this level is complete. Claim your certificate to download a printable PDF.
+          </p>
+          <Link
+            href={`/academy/certificate/${course.id}`}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-sm font-semibold transition-all"
+          >
+            <Award className="w-4 h-4" />
+            {hasCert ? 'Download your certificate' : 'Claim your certificate'}
+          </Link>
         </div>
-        <p className="text-[10px] tracking-widest uppercase text-amber-400/70 font-semibold mb-2">{code} Certificate</p>
-        <h3 className="text-lg font-bold text-white mb-2">Earn your {course.title} certificate</h3>
-        <p className="text-sm text-gray-400 max-w-md mx-auto leading-relaxed mb-5">
-          Complete every lesson in this level to unlock a downloadable certificate of completion.
+      </section>
+    );
+  }
+
+  // Otherwise: thin progress strip
+  return (
+    <section className="px-5 py-6 max-w-2xl mx-auto">
+      <Link
+        href={`/academy#${course.id}`}
+        className="block rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10 transition-colors p-4"
+      >
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">
+            {code} · Lesson {lessonPosition || '–'} of {liveTotal}
+          </p>
+          <p className="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">
+            {progressPct}%
+          </p>
+        </div>
+        <div className="h-1 rounded-full bg-white/[0.04] overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-500"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+        <p className="text-[10px] text-gray-600 mt-2 text-center">
+          Tap to view all lessons in this level
         </p>
-        <Link
-          href={`/academy#${course.id}`}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors text-xs font-semibold text-gray-300"
-        >
-          <GraduationCap className="w-3.5 h-3.5" />
-          View Level Progress
-        </Link>
-      </div>
+      </Link>
     </section>
   );
 }
@@ -145,19 +230,28 @@ function useHidePerLessonCertificatesAndRecordCompletion(slug: string) {
 
     const recordCompletion = async () => {
       if (recorded || cancelled || !levelId) return;
-      recorded = true;
       try {
         // Lazy-import to avoid pulling supabase into every lesson bundle.
         const { supabase } = await import('@/app/lib/supabase');
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user?.email) return; // Anonymous viewer — skip silently.
+        if (!user?.email) return; // Anonymous viewer — skip silently. (Don't mark recorded — auth might still load.)
         // Upsert: one row per (user_email, lesson_id). Re-takes don't double-write.
-        await supabase.from('lesson_completions').upsert(
+        const { error } = await supabase.from('lesson_completions').upsert(
           { user_email: user.email, lesson_id: slug, level_id: levelId },
           { onConflict: 'user_email,lesson_id' }
         );
-      } catch {
-        // Silent — if the DB write fails, the user still sees the lesson normally.
+        if (!error) {
+          recorded = true;
+        } else if (typeof window !== 'undefined') {
+          // Surface so admins can debug. Real users: silent.
+          // eslint-disable-next-line no-console
+          console.warn('[lesson_completions write failed]', error.message);
+        }
+      } catch (e) {
+        if (typeof window !== 'undefined') {
+          // eslint-disable-next-line no-console
+          console.warn('[lesson_completions write threw]', e);
+        }
       }
     };
 
@@ -168,19 +262,30 @@ function useHidePerLessonCertificatesAndRecordCompletion(slug: string) {
       //  - 'includes' = element text contains the token (substring match)
       //  - 'unlock'   = element text contains BOTH 'to unlock your' AND 'certificate' — the
       //                 lock card variant (avoids false-positives on lesson prose)
+      //  - 'levelComplete' = "level N — <levelTitle> complete!" pattern (lesson template
+      //                 hardcoded ending block, fires regardless of quiz state — misleading)
+      //  - 'backToAcademy' = the per-lesson "Back to Academy" hardcoded section
       // signalsCompletion: this is the unlocked-cert reveal — write completion.
-      type Pattern = { token: string; matchType: 'equals' | 'includes' | 'unlock'; signalsCompletion: boolean };
+      type Pattern = { token: string; matchType: 'equals' | 'includes' | 'unlock' | 'levelComplete' | 'backToAcademy'; signalsCompletion: boolean };
       const stripPatterns: Pattern[] = [
         { token: 'certificate of completion', matchType: 'equals', signalsCompletion: true },
         { token: 'certificate of mastery', matchType: 'equals', signalsCompletion: true },
         { token: '', matchType: 'unlock', signalsCompletion: false },
         { token: 'up next', matchType: 'equals', signalsCompletion: false },
+        { token: '', matchType: 'levelComplete', signalsCompletion: false },
+        { token: 'back to academy', matchType: 'equals', signalsCompletion: false },
       ];
 
       const matches = (txt: string, p: Pattern): boolean => {
         if (p.matchType === 'equals') return txt === p.token;
         if (p.matchType === 'includes') return txt.includes(p.token);
         if (p.matchType === 'unlock') return txt.includes('to unlock your') && txt.includes('certificate');
+        if (p.matchType === 'levelComplete') {
+          // Matches "level 1 — foundations complete!" or "level 11 — cipher mastery complete!"
+          // The em-dash and exclamation are unique enough that we can broaden safely.
+          return /^level\s+\d+\s*[—-].*complete!$/i.test(txt);
+        }
+        if (p.matchType === 'backToAcademy') return txt === 'back to academy';
         return false;
       };
 
@@ -242,7 +347,7 @@ function UnlockedLesson({ children, slug, isAdmin }: { children: React.ReactNode
     <>
       {isAdmin && <AdminAccessBadge />}
       {children}
-      <LevelCertCallout slug={slug} />
+      <LevelProgressStrip slug={slug} />
       <LessonNav slug={slug} />
     </>
   );
@@ -304,8 +409,11 @@ export default function LessonLayout({ children }: { children: React.ReactNode }
         <p className="text-gray-400 text-sm leading-relaxed mb-2">
           This lesson is part of the ATLAS PRO Academy — available to all paying subscribers.
         </p>
-        <p className="text-gray-500 text-xs leading-relaxed mb-8">
+        <p className="text-gray-500 text-xs leading-relaxed mb-2">
           Starter, Advantage, and Elite all unlock the full Academy curriculum.
+        </p>
+        <p className="text-gray-600 text-[11px] leading-relaxed mb-8">
+          If you&apos;ve subscribed before, your progress and certificates are saved — they&apos;ll restore the moment you resubscribe.
         </p>
 
         <Link

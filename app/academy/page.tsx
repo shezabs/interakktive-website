@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, ArrowRight, Clock, Trophy, BookOpen, GraduationCap, ChevronDown, Award, Download } from 'lucide-react';
+import { Lock, ArrowRight, Clock, Trophy, BookOpen, GraduationCap, ChevronDown, Award, Download, Check } from 'lucide-react';
 import { academyCourses } from '@/app/lib/academy-data';
 import { useProAccess } from '@/app/lib/use-pro-access';
 import { LIVE_LESSONS, isLevelCompleteByCompletions, levelShortCode } from '@/app/lib/academy-helpers';
@@ -138,6 +138,12 @@ export default function AcademyPage() {
           const levelComplete = isLevelCompleteByCompletions(course.id, completed);
           const hasCert = !!certs[course.id];
 
+          // Live lessons in this level, in order — used for sequential gating.
+          const liveInLevel = course.lessons.filter(l => LIVE_LESSONS.has(l.id));
+          const liveCompletedCount = liveInLevel.filter(l => completed.has(l.id)).length;
+          const liveTotal = liveInLevel.length;
+          const progressPct = liveTotal > 0 ? Math.round((liveCompletedCount / liveTotal) * 100) : 0;
+
           return (
             <motion.div
               key={course.id}
@@ -195,16 +201,67 @@ export default function AcademyPage() {
                     transition={{ duration: 0.35, ease: 'easeInOut' }}
                     className="overflow-hidden"
                   >
-                    <div className="space-y-2.5 pt-3 pb-4 pl-2">
+                    {/* Level progress bar */}
+                    {liveTotal > 0 && (
+                      <div className="mx-2 mt-3 mb-4">
+                        <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-gray-500 mb-2">
+                          <span>{liveCompletedCount} / {liveTotal} complete</span>
+                          <span className={progressPct === 100 ? 'text-amber-400 font-bold' : 'text-gray-500'}>{progressPct}%</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-500"
+                            style={{ width: `${progressPct}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-2.5 pt-1 pb-4 pl-2">
                       {course.lessons.map((lesson, li) => {
                         const isLive = LIVE_LESSONS.has(lesson.id);
-                        // Clickable when: lesson is shipped AND (it's free OR user is paying)
-                        const isUnlocked = isLive && (lesson.isFree || isPaying);
+                        const hasAccess = lesson.isFree || isPaying;
+                        const isCompleted = completed.has(lesson.id);
+
+                        // Sequential gate INSIDE a level: a live lesson is reachable
+                        // when (a) it's the first live lesson, or (b) the previous live
+                        // lesson is completed, or (c) this lesson itself was already
+                        // completed (free revisits forever).
+                        // Lessons further along the path are locked until the user
+                        // walks through sequentially.
+                        // Find this lesson's position among the live lessons of this level.
+                        const liveIdx = liveInLevel.findIndex(l => l.id === lesson.id);
+                        const prevLiveLesson = liveIdx > 0 ? liveInLevel[liveIdx - 1] : null;
+                        const sequentiallyUnlocked =
+                          isCompleted ||
+                          liveIdx === 0 ||
+                          (prevLiveLesson !== null && completed.has(prevLiveLesson.id));
+
+                        const isUnlocked = isLive && hasAccess && sequentiallyUnlocked;
+
+                        // Reason this lesson is locked (used for alt-state visual).
+                        const lockReason: 'not-live' | 'no-access' | 'sequence' | null = !isLive
+                          ? 'not-live'
+                          : !hasAccess
+                          ? 'no-access'
+                          : !sequentiallyUnlocked
+                          ? 'sequence'
+                          : null;
+
                         return (
                           <Link
                             key={lesson.id}
                             href={isUnlocked ? `/academy/lesson/${lesson.id}` : '#'}
                             className={`block group ${!isUnlocked ? 'pointer-events-none' : ''}`}
+                            title={
+                              lockReason === 'sequence'
+                                ? `Complete the previous lesson to unlock this one.`
+                                : lockReason === 'no-access'
+                                ? `Subscribe to unlock PRO lessons.`
+                                : lockReason === 'not-live'
+                                ? `Coming soon.`
+                                : ''
+                            }
                           >
                             <motion.div
                               initial={{ opacity: 0, x: -20 }}
@@ -212,24 +269,30 @@ export default function AcademyPage() {
                               viewport={{ once: true }}
                               transition={{ duration: 0.4, delay: li * 0.04 }}
                               className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
-                                isUnlocked
+                                isCompleted
+                                  ? 'glass-card border-amber-500/15 hover:translate-x-1'
+                                  : isUnlocked
                                   ? 'glass-card hover:translate-x-1'
                                   : 'bg-white/[0.02] border-white/[0.03] opacity-40'
                               }`}
                             >
                               <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-mono text-sm transition-colors ${
-                                isUnlocked ? 'bg-white/5 text-gray-500 group-hover:text-primary-400 group-hover:bg-primary-500/10' : 'bg-white/[0.02] text-gray-700'
+                                isCompleted
+                                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                  : isUnlocked
+                                  ? 'bg-white/5 text-gray-500 group-hover:text-primary-400 group-hover:bg-primary-500/10'
+                                  : 'bg-white/[0.02] text-gray-700'
                               }`}>
-                                {li + 1}
+                                {isCompleted ? <Check className="w-4 h-4" /> : (li + 1)}
                               </div>
-                              
+
                               <div className="flex-1 min-w-0">
                                 <h3 className={`font-semibold text-[15px] transition-colors ${isUnlocked ? 'group-hover:text-primary-400' : ''}`}>
                                   {lesson.title}
                                 </h3>
                                 <p className="text-xs text-gray-500 truncate">{lesson.subtitle}</p>
                               </div>
-                              
+
                               <div className="flex items-center gap-2 flex-shrink-0">
                                 <span className="text-xs text-gray-600">{lesson.estimatedMinutes} min</span>
                                 {lesson.isFree ? (
