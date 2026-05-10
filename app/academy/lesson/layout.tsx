@@ -260,17 +260,20 @@ function useHidePerLessonCertificatesAndRecordCompletion(slug: string) {
       // Patterns we strip from lessons. matchType:
       //  - 'equals'   = element text equals the token (after trim/lowercase)
       //  - 'includes' = element text contains the token (substring match)
-      //  - 'unlock'   = element text contains BOTH 'to unlock your' AND 'certificate' — the
-      //                 lock card variant (avoids false-positives on lesson prose)
+      //  - 'lockCard' = the small "this is the locked cert" card. Tightly scoped to
+      //                 avoid eating the quiz intro (which also mentions "to unlock
+      //                 your certificate"). Lock cards START with "complete the quiz"
+      //                 or "score" (e.g. "Score 66%+ to unlock your..."). Quiz intros
+      //                 START with "answer" (e.g. "Answer all 3 to unlock your...").
       //  - 'levelComplete' = "level N — <levelTitle> complete!" pattern (lesson template
       //                 hardcoded ending block, fires regardless of quiz state — misleading)
       //  - 'backToAcademy' = the per-lesson "Back to Academy" hardcoded section
       // signalsCompletion: this is the unlocked-cert reveal — write completion.
-      type Pattern = { token: string; matchType: 'equals' | 'includes' | 'unlock' | 'levelComplete' | 'backToAcademy'; signalsCompletion: boolean };
+      type Pattern = { token: string; matchType: 'equals' | 'includes' | 'lockCard' | 'levelComplete' | 'backToAcademy'; signalsCompletion: boolean };
       const stripPatterns: Pattern[] = [
         { token: 'certificate of completion', matchType: 'equals', signalsCompletion: true },
         { token: 'certificate of mastery', matchType: 'equals', signalsCompletion: true },
-        { token: '', matchType: 'unlock', signalsCompletion: false },
+        { token: '', matchType: 'lockCard', signalsCompletion: false },
         { token: 'up next', matchType: 'equals', signalsCompletion: false },
         { token: '', matchType: 'levelComplete', signalsCompletion: false },
         { token: 'back to academy', matchType: 'equals', signalsCompletion: false },
@@ -279,7 +282,13 @@ function useHidePerLessonCertificatesAndRecordCompletion(slug: string) {
       const matches = (txt: string, p: Pattern): boolean => {
         if (p.matchType === 'equals') return txt === p.token;
         if (p.matchType === 'includes') return txt.includes(p.token);
-        if (p.matchType === 'unlock') return txt.includes('to unlock your') && txt.includes('certificate');
+        if (p.matchType === 'lockCard') {
+          // Lock card always contains "to unlock your" AND "certificate", AND
+          // starts with either "complete the quiz" or "score" (e.g. "Score 66%+ to...").
+          // The quiz intro starts with "answer" so it won't match here.
+          if (!txt.includes('to unlock your') || !txt.includes('certificate')) return false;
+          return txt.startsWith('complete the quiz') || txt.startsWith('score');
+        }
         if (p.matchType === 'levelComplete') {
           // Matches "level 1 — foundations complete!" or "level 11 — cipher mastery complete!"
           // The em-dash and exclamation are unique enough that we can broaden safely.
