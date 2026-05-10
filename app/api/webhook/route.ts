@@ -66,9 +66,23 @@ export async function POST(request: NextRequest) {
       const indicatorsRaw = session.metadata?.selected_indicators || '';
       const indicators = indicatorsRaw ? indicatorsRaw.split(',').map(s => s.trim()) : [];
 
-      // If elite, ensure all 5 indicators
+      // Sanitise indicators per plan (defense-in-depth — also enforced by /api/checkout).
+      // Starter and Advantage: drop any non-core indicators (e.g. OPTIONS PRO is Elite-only).
+      // Elite: full suite always granted regardless of metadata.
       const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
-      const finalIndicators = plan === 'suite' || plan === 'elite' ? allIndicators : indicators;
+      const coreIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+      const isEliteCheckout = plan === 'suite' || plan === 'elite';
+
+      let finalIndicators: string[];
+      if (isEliteCheckout) {
+        finalIndicators = allIndicators;
+      } else {
+        // Drop anything not in the core 4 — silently strips OPTIONS PRO if it ever appears
+        finalIndicators = indicators.filter(i => coreIndicators.includes(i));
+        // Cap at the plan's allowed count (Starter=1, Advantage=2)
+        const cap = plan === 'single' || plan === 'starter' ? 1 : 2;
+        finalIndicators = finalIndicators.slice(0, cap);
+      }
 
       const stripeCustomerId = typeof session.customer === 'string'
         ? session.customer

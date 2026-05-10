@@ -44,6 +44,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate indicator selection against plan rules.
+    // - Starter (single): exactly 1 indicator, from the 4 core indicators only.
+    // - Advantage (duo): exactly 2 indicators, from the 4 core indicators only.
+    // - Elite (suite): selection ignored on backend (full suite is granted by webhook).
+    const CORE_INDICATORS = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
+    const ELITE_ONLY = ['OPTIONS PRO'];
+
+    if (plan === 'single' || plan === 'duo') {
+      const expected = plan === 'single' ? 1 : 2;
+      const provided = Array.isArray(indicators) ? indicators : [];
+
+      if (provided.length !== expected) {
+        return NextResponse.json(
+          { error: `${plan === 'single' ? 'Starter' : 'Advantage'} plan requires exactly ${expected} indicator${expected > 1 ? 's' : ''}.` },
+          { status: 400 }
+        );
+      }
+
+      // Reject any indicator that is not in the core 4
+      const invalid = provided.filter(name => !CORE_INDICATORS.includes(name));
+      if (invalid.length > 0) {
+        const offending = invalid.join(', ');
+        const isEliteOnly = invalid.some(name => ELITE_ONLY.includes(name));
+        return NextResponse.json(
+          {
+            error: isEliteOnly
+              ? `${offending} is only available on the Elite plan. Starter and Advantage select from CIPHER PRO, PHANTOM PRO, PULSE PRO, or RADAR PRO.`
+              : `Invalid indicator selection: ${offending}. Choose from CIPHER PRO, PHANTOM PRO, PULSE PRO, or RADAR PRO.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      // Reject duplicates (e.g. user submits ['CIPHER PRO', 'CIPHER PRO'] for duo)
+      if (new Set(provided).size !== provided.length) {
+        return NextResponse.json(
+          { error: 'Duplicate indicator selection. Please choose distinct indicators.' },
+          { status: 400 }
+        );
+      }
+    }
+
     // Check for existing active subscription with this email
     const supabaseAdmin = getSupabaseAdmin();
     const { data: existingSub } = await supabaseAdmin

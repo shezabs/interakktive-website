@@ -69,6 +69,9 @@ export default function PricingPage() {
                   </span>
                 )}
               </div>
+              <p className="text-xs text-gray-500 mt-1 text-center">
+                All sales are final. No refunds or adjustments after purchase.
+              </p>
             </div>
           </FadeIn>
         </div>
@@ -101,7 +104,9 @@ export default function PricingPage() {
                     {/* Tier Header - fixed height so all cards align */}
                     <div className="mb-6 min-h-[72px]">
                       <h3 className="text-xl font-bold mb-1">{tier.name}</h3>
-                      <p className="text-gray-400 text-sm">{tier.description}</p>
+                      {tier.description && (
+                        <p className="text-gray-400 text-sm">{tier.description}</p>
+                      )}
                     </div>
 
                     {/* Price - fixed height for alignment */}
@@ -136,7 +141,7 @@ export default function PricingPage() {
                     </div>
 
                     {/* Indicators - fixed height for alignment */}
-                    <div className="mb-6 min-h-[200px]">
+                    <div className="mb-6 min-h-[80px]">
                       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
                         Includes
                       </p>
@@ -289,20 +294,28 @@ export default function PricingPage() {
           <div className="space-y-6">
             {[
               {
+                q: 'Which indicators can I choose from on Starter and Advantage?',
+                a: 'Starter and Advantage subscribers select from the 4 core ATLAS PRO indicators: CIPHER PRO, PHANTOM PRO, PULSE PRO, and RADAR PRO. OPTIONS PRO and any future indicators we add to the suite are reserved for Elite subscribers.',
+              },
+              {
                 q: 'How do I get access to the indicators after paying?',
                 a: 'After checkout, you\'ll provide your TradingView username. We grant access within 4 hours of payment. You\'ll receive an email confirmation once your indicators are live.',
               },
               {
                 q: 'Can I switch which indicators I have access to?',
-                a: 'Advantage plan subscribers can swap their indicator selection once per billing cycle. Starter plan selections are locked for the billing period — upgrade to Advantage or Elite if you want flexibility. Elite subscribers have access to the full suite, so no swapping needed.',
+                a: 'Advantage subscribers can swap their indicator selection once per month (12 swaps per year on annual). Starter selections are locked for the billing period — upgrade to Advantage or Elite if you want flexibility. Elite subscribers have access to the full suite, so no swapping needed.',
               },
               {
                 q: 'What happens if I cancel?',
-                a: 'Your access continues until the end of your current billing period. After that, TradingView access is revoked. You can re-subscribe at any time. All purchases are final — we do not offer refunds.',
+                a: 'Your access continues until the end of your current billing period. After that, TradingView access is revoked. You can re-subscribe at any time. All sales are final — we do not offer refunds or adjustments after purchase.',
               },
               {
                 q: 'What does the Elite plan include?',
-                a: 'The Elite plan gives you access to every indicator that is part of the ATLAS suite — currently CIPHER PRO, PHANTOM PRO, PULSE PRO, RADAR PRO, and OPTIONS PRO. As we add new indicators to the suite, you get access to those too, plus all future updates.',
+                a: 'Elite gives you the Full ATLAS PRO Suite — every current indicator (CIPHER, PHANTOM, PULSE, RADAR, OPTIONS) and every indicator we add to the suite in the future, automatically. You also get the Elite Lounge on Discord with open-mic voice access, live signals posted by management, extended live sessions covering every indicator, and management Q&A.',
+              },
+              {
+                q: 'What\'s the difference between Discord access on Starter, Advantage, and Elite?',
+                a: 'Starter and Advantage subscribers join our private community channels and can attend live training sessions covering the 4 core indicators. Elite subscribers also get the Elite Lounge — an open-mic voice room where you can speak up at any time, plus live signals posted by management and extended sessions covering every indicator with a Q&A.',
               },
               {
                 q: 'Can I try before I buy?',

@@ -16,7 +16,12 @@ const INDICATORS = [
   { id: 'PHANTOM PRO', icon: Eye, role: 'Structure Intelligence', color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10', tvUrl: 'https://www.tradingview.com/script/fMZJJ8FQ/', docUrl: '/learn/atlas-pro/atlas-phantom-pro' },
   { id: 'PULSE PRO', icon: Activity, role: 'Momentum Intelligence', color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', tvUrl: 'https://www.tradingview.com/script/nHfT0sXk/', docUrl: '/learn/atlas-pro/atlas-pulse-pro' },
   { id: 'RADAR PRO', icon: Radio, role: 'Screening Intelligence', color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10', tvUrl: 'https://www.tradingview.com/script/V6tg80MI-Atlas-Radar-Pro-Interakktive/', docUrl: '/learn/atlas-pro/atlas-radar-pro' },
+  { id: 'OPTIONS PRO', icon: Activity, role: 'Options Intelligence', color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', tvUrl: 'https://www.tradingview.com/script/9D3jLsLj-Atlas-Options-Pro-Interakktive/', docUrl: '/learn/atlas-pro/atlas-options-pro' },
 ];
+
+// Core 4 indicators selectable by Starter and Advantage plans.
+// OPTIONS PRO is excluded — it's Elite-only.
+const CORE_INDICATORS = INDICATORS.filter(i => i.id !== 'OPTIONS PRO');
 
 interface Subscription {
   id: string;
@@ -374,11 +379,12 @@ export default function DashboardPage() {
 
   const handleUpgrade = async () => {
     if (!subscription) return;
-    const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
-    
+    // Pool of all 5 indicators (Elite gets all). Core 4 are for Starter/Advantage.
+    const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
+
     // For billing switch (same plan): keep current indicators
     const effectiveTarget = isBillingSwitch ? subscription.plan as 'advantage' | 'elite' : upgradeTarget;
-    const newIndicators = effectiveTarget === 'elite' ? allIndicators : 
+    const newIndicators = effectiveTarget === 'elite' ? allIndicators :
       isBillingSwitch ? subscription.indicators : upgradeSelections;
 
     if (effectiveTarget === 'advantage' && newIndicators.length !== 2) {
@@ -1252,9 +1258,9 @@ export default function DashboardPage() {
               {upgradeTarget === 'advantage' && !isBillingSwitch && (
                 <div className="mb-4">
                   <p className="text-sm font-medium mb-1">Choose your 2 indicators</p>
-                  <p className="text-xs text-gray-500 mb-3">Select any 2 indicators for your Advantage plan.</p>
+                  <p className="text-xs text-gray-500 mb-3">Select 2 from the 4 core ATLAS PRO indicators.</p>
                   <div className="grid grid-cols-2 gap-3">
-                    {INDICATORS.map((ind) => {
+                    {CORE_INDICATORS.map((ind) => {
                       const Icon = ind.icon;
                       const isSelected = upgradeSelections.includes(ind.id);
                       const isFull = !isSelected && upgradeSelections.length >= 2;
@@ -1302,10 +1308,10 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Elite shows all 5 */}
+              {/* Elite gets the Full ATLAS PRO Suite */}
               {upgradeTarget === 'elite' && !isBillingSwitch && (
                 <div className="mb-4">
-                  <p className="text-sm font-medium mb-2">All 5 indicators included</p>
+                  <p className="text-sm font-medium mb-2">Full ATLAS PRO Suite included</p>
                   <div className="grid grid-cols-2 gap-2">
                     {INDICATORS.map((ind) => {
                       const Icon = ind.icon;
@@ -1354,14 +1360,14 @@ export default function DashboardPage() {
             <div className="glass-card p-8 rounded-xl max-w-md w-full">
               <h2 className="text-xl font-bold mb-2">Swap Indicators</h2>
               <p className="text-sm text-gray-400 mb-1">
-                Choose your 2 indicators.
+                Choose 2 from the 4 core ATLAS PRO indicators.
               </p>
               <p className="text-xs text-amber-400 mb-4">
                 You can swap once per month. Your next swap will be available after the reset date.
               </p>
 
               <div className="grid grid-cols-2 gap-3 mb-6">
-                {INDICATORS.map((ind) => {
+                {CORE_INDICATORS.map((ind) => {
                   const Icon = ind.icon;
                   const isSelected = swapSelections.includes(ind.id);
                   const isFull = !isSelected && swapSelections.length >= 2;

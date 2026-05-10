@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Validate indicators
     const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
+    const coreIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
     if (targetPlan === 'advantage' && indicators.length !== 2) {
       return NextResponse.json({ error: 'Advantage plan requires exactly 2 indicators' }, { status: 400 });
     }
@@ -52,6 +53,17 @@ export async function POST(request: NextRequest) {
     }
     if (!indicators.every(i => allIndicators.includes(i))) {
       return NextResponse.json({ error: 'Invalid indicator selection' }, { status: 400 });
+    }
+    // Starter and Advantage are restricted to the 4 core indicators (OPTIONS PRO is Elite-only)
+    if ((targetPlan === 'starter' || targetPlan === 'advantage') && !indicators.every(i => coreIndicators.includes(i))) {
+      return NextResponse.json(
+        { error: 'Starter and Advantage plans select from CIPHER PRO, PHANTOM PRO, PULSE PRO, or RADAR PRO. OPTIONS PRO is Elite-only.' },
+        { status: 400 }
+      );
+    }
+    // Reject duplicates
+    if (new Set(indicators).size !== indicators.length) {
+      return NextResponse.json({ error: 'Duplicate indicator selection. Please choose distinct indicators.' }, { status: 400 });
     }
 
     const supabaseAdmin = getSupabaseAdmin();

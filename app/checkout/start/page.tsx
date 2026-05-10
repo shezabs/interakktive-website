@@ -9,11 +9,11 @@ import { supabase } from '@/app/lib/supabase';
 import { FadeIn, SectionWrapper } from '@/app/components/animations';
 
 const INDICATORS = [
-  { id: 'cipher', name: 'CIPHER PRO', role: 'Signal Intelligence', icon: Crosshair, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10' },
-  { id: 'phantom', name: 'PHANTOM PRO', role: 'Structure Intelligence', icon: Eye, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10' },
-  { id: 'pulse', name: 'PULSE PRO', role: 'Momentum Intelligence', icon: Activity, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10' },
-  { id: 'radar', name: 'RADAR PRO', role: 'Screening Intelligence', icon: Radio, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10' },
-  { id: 'options', name: 'OPTIONS PRO', role: 'Options Intelligence', icon: Activity, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10' },
+  { id: 'cipher', name: 'CIPHER PRO', role: 'Signal Intelligence', icon: Crosshair, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', eliteOnly: false },
+  { id: 'phantom', name: 'PHANTOM PRO', role: 'Structure Intelligence', icon: Eye, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10', eliteOnly: false },
+  { id: 'pulse', name: 'PULSE PRO', role: 'Momentum Intelligence', icon: Activity, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', eliteOnly: false },
+  { id: 'radar', name: 'RADAR PRO', role: 'Screening Intelligence', icon: Radio, color: 'text-accent-400', borderColor: 'border-accent-400', bgColor: 'bg-accent-400/10', eliteOnly: false },
+  { id: 'options', name: 'OPTIONS PRO', role: 'Options Intelligence', icon: Activity, color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', eliteOnly: true },
 ];
 
 export default function CheckoutStartPage() {
@@ -64,9 +64,15 @@ export default function CheckoutStartPage() {
     : (tier?.monthlyPrice || 0);
 
   // How many indicators can they pick?
-  const maxSelections = planId === 'single' ? 1 : planId === 'duo' ? 2 : 4;
   const isElite = planId === 'suite';
+  const maxSelections = planId === 'single' ? 1 : planId === 'duo' ? 2 : INDICATORS.length;
   const needsSelection = !isElite;
+
+  // Indicators visible to this plan. Starter/Advantage see only the 4 core indicators
+  // (no OPTIONS PRO — Elite only). Elite sees all.
+  const selectableIndicators = isElite
+    ? INDICATORS
+    : INDICATORS.filter(i => !i.eliteOnly);
 
   const toggleIndicator = (id: string) => {
     if (isElite) return; // Elite gets all, no toggling
@@ -212,17 +218,17 @@ export default function CheckoutStartPage() {
                 {needsSelection && (
                   <p className="text-xs text-gray-500 mb-3">
                     {planId === 'single' 
-                      ? 'Select 1 indicator.'
-                      : 'Select 2 indicators. You can swap once per month.'
+                      ? 'Select 1 indicator from the 4 core ATLAS PRO indicators.'
+                      : 'Select 2 indicators from the 4 core ATLAS PRO indicators. You can swap once per month.'
                     }
                   </p>
                 )}
                 {isElite && (
-                  <p className="text-xs text-gray-500 mb-3">All 5 indicators included with Elite.</p>
+                  <p className="text-xs text-gray-500 mb-3">Full ATLAS PRO Suite included with Elite — all current and future indicators.</p>
                 )}
 
                 <div className="grid grid-cols-2 gap-3">
-                  {INDICATORS.map((indicator) => {
+                  {selectableIndicators.map((indicator) => {
                     const Icon = indicator.icon;
                     const isSelected = selectedIndicators.includes(indicator.id);
                     const isDisabled = isElite;
