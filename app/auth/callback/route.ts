@@ -1,18 +1,69 @@
-import { createClient } from '@supabase/supabase-js';
+// ==========================================================================
+// AUTH CALLBACK — exchanges OAuth code for a session and writes cookies
+// ==========================================================================
+// Critical: this MUST use createServerClient with cookie write hooks,
+// otherwise the session cookie is never set on the response and the
+// dashboard redirect loops back to /signin.
+//
+// Symptom of the bug this fixes:
+//   Google sign-in → "Welcome Back" briefly → bounced back to /signin
+// ==========================================================================
+
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { sendSignupWelcomeEmail } from '@/app/lib/email';
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
+  const next = requestUrl.searchParams.get('next') || '/dashboard';
+
+  // Build the redirect response up front so we can attach Set-Cookie headers to it.
+  const redirectResponse = NextResponse.redirect(new URL(next, requestUrl.origin));
 
   if (code) {
-    const supabase = createClient(
+    const cookieStore = cookies();
+
+    const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            // Write to BOTH the request cookie store (for any downstream reads
+            // in this same handler) and the redirect response (so the browser
+            // gets the Set-Cookie header).
+            try {
+              cookieStore.set({ name, value, ...options });
+            } catch {
+              // cookieStore is read-only in some contexts — fall through
+            }
+            redirectResponse.cookies.set({ name, value, ...options });
+          },
+          remove(name: string, options: CookieOptions) {
+            try {
+              cookieStore.set({ name, value: '', ...options });
+            } catch {
+              // no-op
+            }
+            redirectResponse.cookies.set({ name, value: '', ...options });
+          },
+        },
+      }
     );
 
-    const { data } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (error) {
+      console.error('OAuth code exchange failed:', error.message);
+      return NextResponse.redirect(
+        new URL(`/signin?error=${encodeURIComponent(error.message)}`, requestUrl.origin)
+      );
+    }
 
     // Send welcome email for first-time sign-ups (Google OAuth or email confirmation)
     if (data?.user) {
@@ -43,6 +94,5 @@ export async function GET(request: Request) {
     }
   }
 
-  // Redirect to dashboard after auth
-  return NextResponse.redirect(new URL('/dashboard', requestUrl.origin));
+  return redirectResponse;
 }
