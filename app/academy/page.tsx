@@ -59,6 +59,23 @@ export default function AcademyPage() {
     return () => { cancelled = true; };
   }, []);
 
+  // Handle deep-link via hash (e.g. /academy#level-1-foundations from a lesson's
+  // "View Level Progress" button). Expands the targeted level and scrolls to it.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    const target = academyCourses.find(c => c.id === hash);
+    if (!target) return;
+    setExpanded(prev => ({ ...prev, [target.id]: true }));
+    // Scroll into view after the expand animation has a chance to render.
+    const t = setTimeout(() => {
+      const el = document.getElementById(target.id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+    return () => clearTimeout(t);
+  }, []);
+
   const toggle = (id: string) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
 
   return (
@@ -124,11 +141,12 @@ export default function AcademyPage() {
           return (
             <motion.div
               key={course.id}
+              id={course.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.6, delay: ci * 0.1 }}
-              className="mb-8"
+              className="mb-8 scroll-mt-24"
             >
               {/* Course Header — clickable to collapse/expand */}
               <button

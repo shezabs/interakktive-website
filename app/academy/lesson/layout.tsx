@@ -33,7 +33,7 @@ function LessonNav({ slug }: { slug: string }) {
   const { prev, next } = findAdjacentLiveLessons(slug);
 
   return (
-    <nav className="border-t border-white/5 bg-black/40 backdrop-blur-sm">
+    <div className="lesson-footer-nav border-t border-white/5 bg-black/40 backdrop-blur-sm">
       <div className="max-w-5xl mx-auto px-5 py-5 grid grid-cols-3 items-center gap-3">
         {/* PREV */}
         <div className="flex justify-start">
@@ -91,7 +91,7 @@ function LessonNav({ slug }: { slug: string }) {
           ) : <span />}
         </div>
       </div>
-    </nav>
+    </div>
   );
 }
 
@@ -114,7 +114,7 @@ function LevelCertCallout({ slug }: { slug: string }) {
           Complete every lesson in this level to unlock a downloadable certificate of completion.
         </p>
         <Link
-          href="/academy"
+          href={`/academy#${course.id}`}
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-colors text-xs font-semibold text-gray-300"
         >
           <GraduationCap className="w-3.5 h-3.5" />
@@ -163,18 +163,45 @@ function useHidePerLessonCertificatesAndRecordCompletion(slug: string) {
 
     const tryHideAndRecord = () => {
       if (cancelled) return;
-      const all = document.querySelectorAll<HTMLElement>('p, h2, h3, h4, span');
-      let found = false;
+      // Patterns we strip from lessons. matchType:
+      //  - 'equals'   = element text equals the token (after trim/lowercase)
+      //  - 'includes' = element text contains the token (substring match)
+      //  - 'unlock'   = element text contains BOTH 'to unlock your' AND 'certificate' — the
+      //                 lock card variant (avoids false-positives on lesson prose)
+      // signalsCompletion: this is the unlocked-cert reveal — write completion.
+      type Pattern = { token: string; matchType: 'equals' | 'includes' | 'unlock'; signalsCompletion: boolean };
+      const stripPatterns: Pattern[] = [
+        { token: 'certificate of completion', matchType: 'equals', signalsCompletion: true },
+        { token: 'certificate of mastery', matchType: 'equals', signalsCompletion: true },
+        { token: '', matchType: 'unlock', signalsCompletion: false },
+        { token: 'up next', matchType: 'equals', signalsCompletion: false },
+      ];
+
+      const matches = (txt: string, p: Pattern): boolean => {
+        if (p.matchType === 'equals') return txt === p.token;
+        if (p.matchType === 'includes') return txt.includes(p.token);
+        if (p.matchType === 'unlock') return txt.includes('to unlock your') && txt.includes('certificate');
+        return false;
+      };
+
+      const all = document.querySelectorAll<HTMLElement>('p, h2, h3, h4, span, strong');
+      let foundCert = false;
       all.forEach(el => {
         if (el.dataset.certHidden === '1') return;
         const txt = (el.textContent || '').trim().toLowerCase();
-        if (txt !== 'certificate of completion') return;
-        found = true;
-        // Walk up to the nearest section / motion.div wrapper.
+        if (!txt) return;
+        const match = stripPatterns.find(p => matches(txt, p));
+        if (!match) return;
+        if (match.signalsCompletion) foundCert = true;
+        // Walk up to the nearest section / glass-card wrapper.
         let cur: HTMLElement | null = el;
-        for (let i = 0; i < 8 && cur; i++) {
+        for (let i = 0; i < 10 && cur; i++) {
           const tag = cur.tagName.toLowerCase();
-          if (tag === 'section' || cur.classList.contains('glass-card') || (cur.parentElement && cur.parentElement.tagName.toLowerCase() === 'section')) {
+          if (
+            tag === 'section' ||
+            cur.classList.contains('glass-card') ||
+            (cur.parentElement && cur.parentElement.tagName.toLowerCase() === 'section')
+          ) {
             const target = tag === 'section' ? cur : (cur.closest('section') || cur);
             (target as HTMLElement).style.display = 'none';
             (target as HTMLElement).dataset.certHidden = '1';
@@ -184,7 +211,7 @@ function useHidePerLessonCertificatesAndRecordCompletion(slug: string) {
         }
         el.dataset.certHidden = '1';
       });
-      if (found) recordCompletion();
+      if (foundCert) recordCompletion();
     };
 
     // Initial pass + polling for cert markup that animates in via framer-motion.
