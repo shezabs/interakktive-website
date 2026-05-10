@@ -1,179 +1,20 @@
 // app/academy/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, ArrowRight, Clock, Trophy, BookOpen, GraduationCap, ChevronDown } from 'lucide-react';
+import { Lock, ArrowRight, Clock, Trophy, BookOpen, GraduationCap, ChevronDown, Award, Download } from 'lucide-react';
 import { academyCourses } from '@/app/lib/academy-data';
 import { useProAccess } from '@/app/lib/use-pro-access';
+import { LIVE_LESSONS, isLevelCompleteByCompletions, levelShortCode } from '@/app/lib/academy-helpers';
+import { supabase } from '@/app/lib/supabase';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
-const liveLessons = new Set([
-  'what-is-trading', 'asset-classes', 'candlestick-anatomy',
-  'reading-charts', 'risk-basics', 'position-sizing',
-  'support-resistance',
-  'trendlines-channels',
-  'moving-averages',
-  'rsi',
-  'macd',
-  'bollinger-bands',
-  'volume-analysis',
-  'candlestick-advanced',
-  'chart-patterns',
-  'fibonacci',
-  'multi-timeframe',
-  'first-strategy',
-  'who-are-smart-money',
-  'market-structure-smc',
-  'liquidity',
-  'liquidity-sweeps',
-  'order-blocks',
-  'fair-value-gaps',
-  'premium-discount',
-  'optimal-trade-entry',
-  'breaker-blocks',
-  'kill-zones',
-  'power-of-three',
-  'smc-trade-models',
-  'smc-phantom-pro',
-  'sessions-deep-dive',
-  'smc-strategy',
-  'traders-mind',
-  'fear-and-greed',
-  'fomo',
-  'revenge-trading',
-  'loss-acceptance',
-  'confidence-overconfidence',
-  'process-over-outcome',
-  'patience-skill',
-  'trading-routine',
-  'trading-journal',
-  'drawdown-psychology',
-  'mental-reset',
-  'performance-pressure',
-  'mental-edge-capstone',
-  // Level 5 — Indicator Intelligence (5.1–5.8)
-  'what-indicators-are',
-  'leading-vs-lagging',
-  'anatomy-of-oscillator',
-  'signal-vs-noise',
-  'momentum-hidden-force',
-  'rsi-masterclass',
-  'macd-deep-dive',
-  'stochastic-cci',
-  // Level 5 — Indicator Intelligence (5.9-5.14)
-  'volume-intelligence',
-  'moving-averages-advanced',
-  'volatility-intelligence',
-  'confluence-matrix',
-  'indicator-smc-fusion',
-  'indicator-stack-capstone',
-  // Level 6 — Strategy Engineering (COMPLETE — 6.1-6.14)
-  'anatomy-of-strategy',
-  'choosing-your-battlefield',
-  'model-1-trend-continuation',
-  'model-2-reversal',
-  'entry-trigger-mastery',
-  'stop-placement-science',
-  'target-selection',
-  'trade-management',
-  'backtesting-fundamentals',
-  'expectancy-edge',
-  'strategy-journal',
-  'common-strategy-killers',
-  'strategy-stress-test',
-  'strategy-engineering-capstone',
-  // Level 7 — Advanced Execution & Live Trading Mastery (7.1+)
-  'execution-gap',
-  'pre-session-routine',
-  'reading-live-price-action',
-  'first-five-seconds',
-  'execution-timing',
-  'multi-timeframe-execution',
-  'managing-open-trades',
-  'reading-the-tape',
-  'session-transitions',
-  'trade-autopsy',
-  'scaling-when-and-how',
-  'trading-multiple-instruments',
-  'weekly-performance-review',
-  'level-7-capstone',
-  // Level 8
-  'why-technicals-alone-arent-enough',
-  'economic-calendar',
-  'interest-rates-central-banks',
-  'inflation-data',
-  'employment-data',
-  'gdp-pmi-leading-indicators',
-  'geopolitical-risk',
-  'currency-correlations',
-  'intermarket-analysis',
-  'macro-informed-bias',
-  'news-trading-strategies',
-  'risk-management-around-events',
-  'sentiment-positioning',
-  'level-8-capstone',
-  // Level 9
-  'what-is-prop-trading',
-  'how-prop-firms-work',
-  'choosing-your-firm',
-  'challenge-mathematics',
-  'challenge-strategy-design',
-  'challenge-mindset',
-  'passing-the-challenge',
-  'funded-account-management',
-  'daily-vs-overall-drawdown',
-  'scaling-funded-accounts',
-  'payout-optimisation',
-  'when-challenges-fail',
-  'building-a-prop-business',
-  'level-9-capstone',
-  // Level 10 — The Free Indicator Arsenal
-  'atlas-philosophy',
-  'sessions-plus-deep-dive',
-  'market-acceptance-envelope-deep-dive',
-  'market-state-intelligence-deep-dive',
-  'market-acceptance-zones-deep-dive',
-  'market-participation-gradient-deep-dive',
-  'market-pressure-regime-deep-dive',
-  'volatility-state-index-deep-dive',
-  'effort-result-divergence-deep-dive',
-  'market-efficiency-ratio-deep-dive',
-  'reading-an-atlas-dashboard',
-  'stacking-free-indicators',
-  'alert-architecture-free-tier',
-  'free-indicator-playbook-capstone',
-  // Level 11 — CIPHER PRO Mastery
-  'why-cipher-operator-contract',
-  'cipher-command-center-anatomy',
-  'cipher-inputs-anatomy-part-1',
-  'cipher-inputs-anatomy-part-2',
-  'cipher-regime-engine',
-  'cipher-regime-transitions',
-  'cipher-executive-summary',
-  'cipher-regime-sizing',
-  'cipher-signal-philosophy',
-  'cipher-pulse-factor',
-  'cipher-px-pipeline',
-  'cipher-ts-system',
-  'cipher-which-signals-to-take',
-  'cipher-coil-mechanics',
-  'cipher-coil-reading',
-  'cipher-ribbon-engine',
-  'cipher-structure-spine',
-  'cipher-imbalance',
-  'cipher-sweeps',
-  'cipher-risk-envelope',
-  'cipher-risk-map',
-  'cipher-conviction-synthesis',
-  'cipher-candles',
-  'cipher-war-room-integration',
-]);
 
 export default function AcademyPage() {
   // All levels collapsed by default
@@ -187,6 +28,36 @@ export default function AcademyPage() {
   // Paying users see a brief locked → unlocked flip (~200ms) which is fine.
   const { state: accessState } = useProAccess();
   const isPaying = accessState === 'paying';
+
+  // Set of lesson IDs the current user has completed.
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  // Map of levelId → cert_code for already-issued certs.
+  const [certs, setCerts] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user?.email || cancelled) return;
+        const [completionsRes, certsRes] = await Promise.all([
+          supabase.from('lesson_completions').select('lesson_id').eq('user_email', user.email),
+          supabase.from('level_certificates').select('level_id, cert_code').eq('user_email', user.email),
+        ]);
+        if (cancelled) return;
+        const ids = new Set<string>((completionsRes.data || []).map((r: { lesson_id: string }) => r.lesson_id));
+        setCompleted(ids);
+        const certMap: Record<string, string> = {};
+        for (const row of (certsRes.data || []) as { level_id: string; cert_code: string }[]) {
+          certMap[row.level_id] = row.cert_code;
+        }
+        setCerts(certMap);
+      } catch {
+        // Silent — user just sees no progress badges.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const toggle = (id: string) => setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
 
@@ -247,6 +118,8 @@ export default function AcademyPage() {
           const lessonCount = course.lessons.length;
           const freeCount = course.lessons.filter(l => l.isFree).length;
           const proCount = lessonCount - freeCount;
+          const levelComplete = isLevelCompleteByCompletions(course.id, completed);
+          const hasCert = !!certs[course.id];
 
           return (
             <motion.div
@@ -270,10 +143,29 @@ export default function AcademyPage() {
                   <p className="text-xs text-gray-500 truncate">{course.description}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
+                  {(levelComplete || hasCert) && (
+                    <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <Award className="w-3 h-3" />
+                      Cert ready
+                    </span>
+                  )}
                   <span className="text-[10px] text-gray-600 font-mono">{lessonCount} lessons</span>
                   <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                 </div>
               </button>
+
+              {/* Cert button (only when level is complete or already issued) */}
+              {(levelComplete || hasCert) && (
+                <div className="px-3 -mt-1 mb-2">
+                  <Link
+                    href={`/academy/certificate/${course.id}`}
+                    className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-600/5 border border-amber-500/30 hover:border-amber-400/50 hover:from-amber-500/20 hover:to-amber-600/10 text-amber-400 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    {hasCert ? 'Download your certificate' : 'Claim your certificate'}
+                  </Link>
+                </div>
+              )}
 
               {/* Lesson Cards — collapsible */}
               <AnimatePresence initial={false}>
@@ -287,7 +179,7 @@ export default function AcademyPage() {
                   >
                     <div className="space-y-2.5 pt-3 pb-4 pl-2">
                       {course.lessons.map((lesson, li) => {
-                        const isLive = liveLessons.has(lesson.id);
+                        const isLive = LIVE_LESSONS.has(lesson.id);
                         // Clickable when: lesson is shipped AND (it's free OR user is paying)
                         const isUnlocked = isLive && (lesson.isFree || isPaying);
                         return (

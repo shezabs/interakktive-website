@@ -8,8 +8,10 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   ArrowRight, User, Crown, LogOut, Crosshair, Eye, Activity, Radio,
   ExternalLink, BookOpen, RefreshCw, Check, AlertCircle, Loader2, ArrowLeftRight, Pencil,
+  Award, Download,
 } from 'lucide-react';
 import { FadeIn, FadeInView, SectionWrapper } from '@/app/components/animations';
+import { academyCourses } from '@/app/lib/academy-data';
 
 const INDICATORS = [
   { id: 'CIPHER PRO', icon: Crosshair, role: 'Signal Intelligence', color: 'text-primary-400', borderColor: 'border-primary-400', bgColor: 'bg-primary-400/10', tvUrl: 'https://www.tradingview.com/script/vvf2W2ZG/', docUrl: '/learn/atlas-pro/atlas-cipher-pro' },
@@ -83,6 +85,16 @@ export default function DashboardPage() {
   const [savingSocials, setSavingSocials] = useState(false);
   const [socialsSuccess, setSocialsSuccess] = useState(false);
 
+  // Trader name (used on certificates) — overrides the OAuth name if set.
+  const [traderName, setTraderName] = useState<string | null>(null);
+  const [editingTraderName, setEditingTraderName] = useState(false);
+  const [newTraderName, setNewTraderName] = useState('');
+  const [savingTraderName, setSavingTraderName] = useState(false);
+  const [traderNameSuccess, setTraderNameSuccess] = useState(false);
+
+  // Earned certificates (level_id → cert_code)
+  const [earnedCerts, setEarnedCerts] = useState<Array<{ level_id: string; cert_code: string; issued_at: string }>>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -124,6 +136,26 @@ export default function DashboardPage() {
         }
 
         if (subData) setSubscription(subData);
+
+        // Load trader profile (name override for certificates) + earned certificates
+        try {
+          const [profileRes, certsRes] = await Promise.all([
+            supabase
+              .from('trader_profiles')
+              .select('trader_name')
+              .eq('user_email', currentUser.email)
+              .maybeSingle(),
+            supabase
+              .from('level_certificates')
+              .select('level_id, cert_code, issued_at')
+              .eq('user_email', currentUser.email)
+              .order('issued_at', { ascending: false }),
+          ]);
+          if (profileRes.data?.trader_name) setTraderName(profileRes.data.trader_name);
+          setEarnedCerts(certsRes.data || []);
+        } catch {
+          // Non-blocking — dashboard renders without certs section if anything fails.
+        }
       } catch (err) {
         console.error('Error:', err);
       } finally {
@@ -290,6 +322,27 @@ export default function DashboardPage() {
       setTvUsernameError(err.message || 'Failed to update username.');
     } finally {
       setSavingTvUsername(false);
+    }
+  };
+
+  // Save the trader name override (used on certificate displays).
+  const handleSaveTraderName = async () => {
+    const trimmed = newTraderName.trim();
+    if (!trimmed || !user?.email) return;
+    setSavingTraderName(true);
+    try {
+      await supabase.from('trader_profiles').upsert(
+        { user_email: user.email, trader_name: trimmed, updated_at: new Date().toISOString() },
+        { onConflict: 'user_email' }
+      );
+      setTraderName(trimmed);
+      setEditingTraderName(false);
+      setTraderNameSuccess(true);
+      setTimeout(() => setTraderNameSuccess(false), 4000);
+    } catch (err) {
+      // Soft fail — user can retry.
+    } finally {
+      setSavingTraderName(false);
     }
   };
 
@@ -852,6 +905,63 @@ export default function DashboardPage() {
                   <p className="text-white">{new Date(user.created_at).toLocaleDateString()}</p>
                 </div>
 
+                {/* Trader Name — appears on certificates */}
+                <div className="pt-3 border-t border-white/5">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-gray-500 text-xs font-medium">Trader Name <span className="text-gray-600 font-normal">(on certificates)</span></p>
+                    {!editingTraderName && (
+                      <button
+                        onClick={() => {
+                          const meta = (user as any)?.user_metadata || {};
+                          const fallback = traderName || meta.full_name || meta.name || (user.email?.split('@')[0] ?? '');
+                          setNewTraderName(fallback);
+                          setEditingTraderName(true);
+                          setTraderNameSuccess(false);
+                        }}
+                        className="text-gray-500 hover:text-primary-400 transition-colors"
+                        title="Edit trader name shown on certificates"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                  {!editingTraderName ? (
+                    <p className="text-white text-sm">
+                      {traderName
+                        || (user as any)?.user_metadata?.full_name
+                        || (user as any)?.user_metadata?.name
+                        || (user.email?.split('@')[0] ?? 'Trader')}
+                    </p>
+                  ) : (
+                    <div className="space-y-2 mt-1">
+                      <input
+                        type="text"
+                        value={newTraderName}
+                        onChange={(e) => setNewTraderName(e.target.value)}
+                        maxLength={60}
+                        className="w-full px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg focus:outline-none focus:border-primary-500 transition-colors text-sm"
+                        placeholder="Your name as it should appear on certificates"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleSaveTraderName}
+                          disabled={savingTraderName || !newTraderName.trim()}
+                          className="px-3 py-1 bg-primary-500/20 border border-primary-500/30 text-primary-400 rounded text-xs font-medium hover:bg-primary-500/30 transition-all disabled:opacity-50"
+                        >
+                          {savingTraderName ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          onClick={() => setEditingTraderName(false)}
+                          className="px-3 py-1 bg-white/10 rounded text-xs hover:bg-white/20 transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {traderNameSuccess && <p className="text-xs text-green-400 mt-1">Trader name saved.</p>}
+                </div>
+
                 {/* Social Profiles */}
                 <div className="pt-3 border-t border-white/5">
                   <div className="flex items-center justify-between mb-2">
@@ -983,6 +1093,41 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
+
+            {/* Your Certificates */}
+            {earnedCerts.length > 0 && (
+              <div className="glass p-6 rounded-xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <Award className="w-5 h-5 text-amber-400" />
+                  <h3 className="font-semibold">Your Certificates</h3>
+                </div>
+                <div className="space-y-2">
+                  {earnedCerts.map((c) => {
+                    const course = academyCourses.find(x => x.id === c.level_id);
+                    if (!course) return null;
+                    return (
+                      <Link
+                        key={c.cert_code}
+                        href={`/academy/certificate/${c.level_id}`}
+                        className="group flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/[0.04] to-amber-500/[0.01] border border-amber-500/20 hover:border-amber-400/40 hover:from-amber-500/10 hover:to-amber-500/[0.03] transition-colors"
+                      >
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-amber-500/20">
+                          {course.level}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-white truncate">{course.title}</p>
+                          <p className="text-[11px] text-gray-500 font-mono">{c.cert_code}</p>
+                        </div>
+                        <Download className="w-4 h-4 text-amber-400 group-hover:text-amber-300 transition-colors" />
+                      </Link>
+                    );
+                  })}
+                </div>
+                <p className="text-[11px] text-gray-500 mt-3">
+                  Click any certificate to view and download as PDF.
+                </p>
+              </div>
+            )}
 
             {/* Manage Subscription */}
             {hasSubscription && (
