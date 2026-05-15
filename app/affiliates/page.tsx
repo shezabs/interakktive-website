@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   Crown, Target, Award, ShieldCheck, TrendingUp,
   CheckCircle2, AlertCircle, ArrowRight, Loader2, Mail,
+  BookOpen, GraduationCap, MessageCircle, Youtube,
 } from 'lucide-react';
 
 // =============================================================================
@@ -40,9 +41,9 @@ const INITIAL_FORM: FormState = {
 // Plan pricing used by the calculator. Mirrors /pricing.
 // (We compute commission off the cash-collected price the customer pays.)
 const PLAN_PRICING = {
-  starter:   { monthly: 50,  annual: 480 },   // $40/mo billed annually
-  advantage: { monthly: 75,  annual: 720 },
-  elite:     { monthly: 100, annual: 960 },
+  starter:   { monthly: 50,  annual: 500 },
+  advantage: { monthly: 75,  annual: 750 },
+  elite:     { monthly: 100, annual: 1000 },
 };
 
 const ANNUAL_BONUS = {
@@ -57,11 +58,15 @@ export default function AffiliatesPage() {
   // ── Calculator state ──
   const [salesPerMonth, setSalesPerMonth] = useState(5);
   const [planMix, setPlanMix] = useState<'starter' | 'advantage' | 'elite'>('advantage');
-  const [annualPct, setAnnualPct] = useState(60);  // 0=all monthly, 100=all annual
+  const [billingMix, setBillingMix] = useState<'mostly_monthly' | 'fifty_fifty' | 'mostly_annual'>('mostly_monthly');
 
   // Compute monthly earnings per tier
   const calc = useMemo(() => {
-    const annualShare = annualPct / 100;
+    // Translate three-bucket choice into a numeric share
+    const annualShare =
+      billingMix === 'mostly_monthly' ? 0.20 :
+      billingMix === 'fifty_fifty'    ? 0.50 :
+                                        0.80;
     const monthlyShare = 1 - annualShare;
 
     // Per-sale revenue based on plan + billing mix
@@ -84,7 +89,7 @@ export default function AffiliatesPage() {
       partner:    computeTier('partner'),
       ambassador: computeTier('ambassador'),
     };
-  }, [salesPerMonth, planMix, annualPct]);
+  }, [salesPerMonth, planMix, billingMix]);
 
   // ── Form state ──
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
@@ -207,7 +212,7 @@ export default function AffiliatesPage() {
               <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Real revenue</p>
             </div>
             <p className="text-gray-300 leading-relaxed text-sm">
-              Interakktive plans are $50 to $100 per month. Annual subscriptions are $480 to $960. Your 5–15% lands on real money — not $5 trial signups that churn in a week.
+              Interakktive plans are $50 to $100 per month. Annual subscriptions are $500 to $1,000. Your 5–15% lands on real money — not $5 trial signups that churn in a week.
             </p>
           </div>
 
@@ -233,11 +238,134 @@ export default function AffiliatesPage() {
         </div>
       </section>
 
-      {/* ───────────────── S02 — WHO THIS IS FOR ───────────────── */}
+      {/* ─────────────── S02 — WHAT YOU'D BE RECOMMENDING ─────────────── */}
       <section className="max-w-5xl mx-auto px-5 py-20 border-t border-white/[0.06]">
         <div className="text-center mb-12">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
-            02 · Who it&apos;s for
+            02 · What you&apos;d be recommending
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            More than a few indicators.
+          </h2>
+          <p className="text-gray-400 mt-4 max-w-2xl mx-auto leading-relaxed">
+            Interakktive isn&apos;t a script-rental business. It&apos;s a full trading intelligence stack — the tools, the education, the certifications, and the prop framework. Affiliates do better here because customers stay longer.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* ATLAS PRO Suite */}
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-3">
+              <TrendingUp className="w-5 h-5 text-amber-400" />
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">ATLAS PRO Suite</p>
+            </div>
+            <p className="text-gray-300 leading-relaxed text-sm mb-3">
+              Premium TradingView indicators built on a unified intelligence architecture — CIPHER, PHANTOM, PULSE, RADAR, OPTIONS PRO and more.
+            </p>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Diagnostic, transparent, no black-box signals. Customers see <em>why</em>, not just what.
+            </p>
+          </div>
+
+          {/* ATLAS Prop */}
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-3">
+              <Crown className="w-5 h-5 text-amber-400" />
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">ATLAS Prop</p>
+            </div>
+            <p className="text-gray-300 leading-relaxed text-sm mb-3">
+              Built for traders going through prop firm evaluations. Account tracking, drawdown discipline, kill lines, journal, R:R zones — and a dashboard that enforces the rules.
+            </p>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Bigger audience than retail because every prop trader needs this kind of structure.
+            </p>
+          </div>
+
+          {/* ATLAS Academy */}
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-3">
+              <GraduationCap className="w-5 h-5 text-amber-400" />
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">ATLAS Academy</p>
+            </div>
+            <p className="text-gray-300 leading-relaxed text-sm mb-3">
+              156 lessons and counting across 11 levels — from market mechanics to advanced operator-level methodology. Verifiable certifications in trading methodology, issued on lesson completion.
+            </p>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              Customers don&apos;t just rent tools — they&apos;re learning a system. That&apos;s what makes them stay.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─────────────── S03 — WHY CUSTOMERS STAY ─────────────── */}
+      <section className="max-w-5xl mx-auto px-5 py-20 border-t border-white/[0.06]">
+        <div className="text-center mb-12">
+          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
+            03 · Why customers stay
+          </p>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Tools alone don&apos;t build retention.
+          </h2>
+          <p className="text-gray-400 mt-4 max-w-2xl mx-auto leading-relaxed">
+            Every Interakktive customer gets ongoing access to the people building these tools. That&apos;s the difference between a one-off purchase and a recurring relationship — and it&apos;s why your commissions keep paying.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-3">
+              <MessageCircle className="w-5 h-5 text-amber-400" />
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Live Discord discussions</p>
+            </div>
+            <p className="text-gray-300 leading-relaxed text-sm">
+              Active community on Discord where customers exchange setups, ask questions, and join scheduled discussions with the Interakktive team. Real humans, real answers — not a feedback form.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-3">
+              <Youtube className="w-5 h-5 text-amber-400" />
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">YouTube channel</p>
+            </div>
+            <p className="text-gray-300 leading-relaxed text-sm">
+              The Interakktive YouTube channel publishes structured educational content — from fundamentals for absolute beginners to deep dives on advanced setups. Open to the public; customers get the deeper material on-site.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-3">
+              <BookOpen className="w-5 h-5 text-amber-400" />
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Recorded video library</p>
+            </div>
+            <p className="text-gray-300 leading-relaxed text-sm">
+              Past discussions, walk-throughs, and setup reviews — all archived inside the platform. Customers binge through them at their own pace, which deepens their use of the indicators.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.08]">
+            <div className="flex items-center gap-3 mb-3">
+              <Mail className="w-5 h-5 text-amber-400" />
+              <p className="text-xs font-bold tracking-widest uppercase text-amber-400">Direct messaging access</p>
+            </div>
+            <p className="text-gray-300 leading-relaxed text-sm">
+              On-site messaging, email, and Discord DMs all reach the team directly. Customers can ask methodology questions and get personal responses — which is rare in this space at this price point.
+            </p>
+          </div>
+        </div>
+
+        {/* Retention payoff closing line */}
+        <div className="mt-8 p-6 rounded-2xl bg-amber-500/[0.04] border border-amber-500/20 text-center">
+          <p className="text-gray-200 leading-relaxed">
+            <strong className="text-amber-200">People don&apos;t churn from an ecosystem.</strong> They cancel one-off purchases. They keep paying for a community, a curriculum, and a credential. That&apos;s the math behind your commissions.
+          </p>
+        </div>
+      </section>
+
+      {/* ───────────────── S04 — WHO THIS IS FOR ───────────────── */}
+      <section className="max-w-5xl mx-auto px-5 py-20 border-t border-white/[0.06]">
+        <div className="text-center mb-12">
+          <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
+            04 · Who it&apos;s for
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Three kinds of partners thrive here.
@@ -268,11 +396,11 @@ export default function AffiliatesPage() {
         </div>
       </section>
 
-      {/* ─────────────────── S03 — THE TIERS ─────────────────── */}
+      {/* ─────────────────── S05 — THE TIERS ─────────────────── */}
       <section id="tiers" className="max-w-6xl mx-auto px-5 py-20 border-t border-white/[0.06]">
         <div className="text-center mb-12">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
-            03 · The tiers
+            05 · The tiers
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Three tiers. Climb by selling.
@@ -390,11 +518,11 @@ export default function AffiliatesPage() {
         </div>
       </section>
 
-      {/* ───────────────── S04 — EARNINGS CALCULATOR ───────────────── */}
+      {/* ───────────────── S06 — EARNINGS CALCULATOR ───────────────── */}
       <section className="max-w-5xl mx-auto px-5 py-20 border-t border-white/[0.06]">
         <div className="text-center mb-10">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
-            04 · The math
+            06 · The math
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             What you&apos;d actually earn.
@@ -405,48 +533,52 @@ export default function AffiliatesPage() {
         </div>
 
         <div className="rounded-3xl bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-white/[0.08] p-6 sm:p-10">
-          {/* Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-            {/* Sales per month slider */}
-            <div className="md:col-span-2">
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-xs font-bold tracking-widest uppercase text-amber-400/80">Sales per month</label>
-                <span className="text-3xl font-black text-white tabular-nums">{salesPerMonth}</span>
-              </div>
-              <input
-                type="range"
-                min={1}
-                max={25}
-                value={salesPerMonth}
-                onChange={(e) => setSalesPerMonth(Number(e.target.value))}
-                className="w-full accent-amber-400"
-                aria-label="Sales per month"
-              />
-              <div className="flex justify-between text-[10px] text-gray-500 mt-1 tabular-nums">
-                <span>1</span><span>10</span><span>25</span>
-              </div>
+          {/* Sales per month — full width */}
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-xs font-bold tracking-widest uppercase text-amber-400/80">Sales per month</label>
+              <span className="text-3xl font-black text-white tabular-nums">{salesPerMonth}</span>
             </div>
+            <input
+              type="range"
+              min={1}
+              max={25}
+              value={salesPerMonth}
+              onChange={(e) => setSalesPerMonth(Number(e.target.value))}
+              className="w-full accent-amber-400"
+              aria-label="Sales per month"
+            />
+            <div className="flex justify-between text-[10px] text-gray-500 mt-1 tabular-nums">
+              <span>1</span><span>10</span><span>25</span>
+            </div>
+          </div>
 
-            {/* Annual % */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-xs font-bold tracking-widest uppercase text-amber-400/80">% annual sales</label>
-                <span className="text-3xl font-black text-white tabular-nums">{annualPct}%</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={10}
-                value={annualPct}
-                onChange={(e) => setAnnualPct(Number(e.target.value))}
-                className="w-full accent-amber-400"
-                aria-label="Annual sale percentage"
-              />
-              <div className="flex justify-between text-[10px] text-gray-500 mt-1">
-                <span>All monthly</span><span>All annual</span>
-              </div>
+          {/* Billing mix — three buttons */}
+          <div className="mb-10">
+            <label className="text-xs font-bold tracking-widest uppercase text-amber-400/80 block mb-3">How your referrals tend to pay</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {([
+                { key: 'mostly_monthly', label: 'Mostly monthly' },
+                { key: 'fifty_fifty',    label: '50 / 50' },
+                { key: 'mostly_annual',  label: 'Mostly annual' },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => setBillingMix(opt.key)}
+                  className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    billingMix === opt.key
+                      ? 'bg-amber-400 text-black'
+                      : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
+            <p className="text-[11px] text-gray-500 mt-2 leading-relaxed">
+              Annual plans trigger cash bonuses at Partner ($25) and Ambassador ($25–$50) — so an &ldquo;annual-heavy&rdquo; mix pays more.
+            </p>
           </div>
 
           {/* Plan mix */}
@@ -503,11 +635,11 @@ export default function AffiliatesPage() {
         </div>
       </section>
 
-      {/* ───────────────── S05 — WHAT YOU GET ───────────────── */}
+      {/* ───────────────── S07 — WHAT YOU GET ───────────────── */}
       <section className="max-w-5xl mx-auto px-5 py-20 border-t border-white/[0.06]">
         <div className="text-center mb-12">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
-            05 · What you get
+            07 · What you get
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             When you&apos;re approved.
@@ -530,11 +662,11 @@ export default function AffiliatesPage() {
         </div>
       </section>
 
-      {/* ───────────────── S06 — THE RULES ───────────────── */}
+      {/* ───────────────── S08 — THE RULES ───────────────── */}
       <section className="max-w-3xl mx-auto px-5 py-20 border-t border-white/[0.06]">
         <div className="text-center mb-10">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
-            06 · The rules
+            08 · The rules
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Honest fine print.
@@ -559,11 +691,11 @@ export default function AffiliatesPage() {
         </div>
       </section>
 
-      {/* ───────────────── S07 — FAQ ───────────────── */}
+      {/* ───────────────── S09 — FAQ ───────────────── */}
       <section className="max-w-3xl mx-auto px-5 py-20 border-t border-white/[0.06]">
         <div className="text-center mb-12">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
-            07 · Common questions
+            09 · Common questions
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             FAQ.
@@ -596,11 +728,11 @@ export default function AffiliatesPage() {
         </div>
       </section>
 
-      {/* ───────────────── S08 — APPLICATION FORM ───────────────── */}
+      {/* ───────────────── S10 — APPLICATION FORM ───────────────── */}
       <section id="apply" className="max-w-2xl mx-auto px-5 py-20 border-t border-white/[0.06]">
         <div className="text-center mb-10">
           <p className="text-xs font-bold tracking-[0.2em] uppercase text-amber-400/60 mb-3">
-            08 · Apply
+            10 · Apply
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Ready to partner with us?
@@ -770,7 +902,7 @@ export default function AffiliatesPage() {
         )}
       </section>
 
-      {/* ───────────────── S09 — FOOTER NOTE ───────────────── */}
+      {/* ───────────────── S11 — FOOTER NOTE ───────────────── */}
       <section className="max-w-3xl mx-auto px-5 py-16 text-center border-t border-white/[0.06]">
         <Mail className="w-6 h-6 text-amber-400/60 mx-auto mb-4" />
         <p className="text-gray-400 text-sm leading-relaxed">
