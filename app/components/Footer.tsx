@@ -107,6 +107,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/affiliates" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Affiliates
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://www.tradingview.com/u/Interakktive/"
                   target="_blank"

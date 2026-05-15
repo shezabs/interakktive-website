@@ -380,3 +380,105 @@ export async function sendSignupWelcomeEmail(data: {
     `),
   });
 }
+
+// ============================================================================
+// AFFILIATE PROGRAM
+// ============================================================================
+
+export async function notifyAffiliateApplication(data: {
+  email: string;
+  fullName: string;
+  tvUsername: string | null;
+  promotionUrls: string;
+  audienceSize: string;
+  niche: string;
+  pitch: string;
+  customerPlan: string | null;
+  customerStatus: string | null;
+  applicationId: string;
+}) {
+  const {
+    email, fullName, tvUsername, promotionUrls,
+    audienceSize, niche, pitch, customerPlan, customerStatus, applicationId,
+  } = data;
+
+  const audienceLabel: Record<string, string> = {
+    'under_500': 'Under 500',
+    '500_5k':    '500 — 5K',
+    '5k_50k':    '5K — 50K',
+    '50k_500k':  '50K — 500K',
+    '500k_plus': '500K+',
+  };
+
+  const nicheLabel: Record<string, string> = {
+    'forex':       'Forex',
+    'crypto':      'Crypto',
+    'indices':     'Indices',
+    'commodities': 'Commodities',
+    'mixed':       'Mixed',
+    'educational': 'Educational',
+    'other':       'Other',
+  };
+
+  // Admin notification email
+  await sendEmail({
+    to: ADMIN_EMAIL,
+    subject: `🤝 AFFILIATE APPLICATION: ${fullName} (${email})`,
+    html: emailTemplate(`
+      <h2 style="color: #fbbf24; margin: 0 0 20px;">🤝 New Affiliate Application</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px 0; color: #9ca3af; width: 35%;">Name</td><td style="padding: 8px 0; color: #fff; font-weight: bold;">${fullName}</td></tr>
+        <tr><td style="padding: 8px 0; color: #9ca3af;">Email</td><td style="padding: 8px 0; color: #fff; font-weight: bold;">${email}</td></tr>
+        <tr><td style="padding: 8px 0; color: #9ca3af;">TradingView Username</td><td style="padding: 8px 0; color: #fff;">${tvUsername || '—'}</td></tr>
+        <tr><td style="padding: 8px 0; color: #9ca3af;">Customer Plan</td><td style="padding: 8px 0; color: #fff;">${customerPlan || 'unknown'} (${customerStatus || 'unknown'})</td></tr>
+        <tr><td style="padding: 8px 0; color: #9ca3af;">Audience Size</td><td style="padding: 8px 0; color: #fff;">${audienceLabel[audienceSize] || audienceSize}</td></tr>
+        <tr><td style="padding: 8px 0; color: #9ca3af;">Niche</td><td style="padding: 8px 0; color: #fff;">${nicheLabel[niche] || niche}</td></tr>
+      </table>
+
+      <div style="margin-top: 20px;">
+        <p style="color: #9ca3af; margin: 0 0 6px;">Where they'd promote</p>
+        <div style="padding: 12px; background-color: #0f172a; border: 1px solid #374151; border-radius: 8px; color: #d1d5db; white-space: pre-wrap; font-size: 13px;">${escapeHtml(promotionUrls)}</div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <p style="color: #9ca3af; margin: 0 0 6px;">Their pitch</p>
+        <div style="padding: 12px; background-color: #0f172a; border: 1px solid #374151; border-radius: 8px; color: #d1d5db; white-space: pre-wrap; font-size: 13px;">${escapeHtml(pitch)}</div>
+      </div>
+
+      <div style="margin-top: 20px; padding: 15px; background-color: #1f1810; border: 1px solid #92400e; border-radius: 8px;">
+        <p style="color: #fbbf24; margin: 0; font-weight: bold;">⚡ NEXT STEP</p>
+        <p style="color: #d1d5db; margin: 8px 0 0;">Review at <a href="${SITE_URL}/admin/affiliates" style="color: #fbbf24;">/admin/affiliates</a> — approve or reject. Application ID: ${applicationId}</p>
+      </div>
+    `),
+  });
+
+  // Applicant confirmation email
+  await sendEmail({
+    to: email,
+    subject: 'Application received — Interakktive Affiliate Program',
+    html: emailTemplate(`
+      <h2 style="color: #fbbf24; margin: 0 0 20px;">Thanks for applying, ${escapeHtml(fullName.split(' ')[0])}.</h2>
+      <p style="color: #d1d5db; line-height: 1.6;">We've received your application to join the Interakktive Affiliate Program.</p>
+      <p style="color: #d1d5db; line-height: 1.6;">We review every application personally — usually within 48 hours. You'll hear back at this email address with our decision.</p>
+
+      <div style="margin: 24px 0; padding: 16px; background-color: #0f172a; border: 1px solid #374151; border-radius: 8px;">
+        <p style="color: #9ca3af; margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Application summary</p>
+        <p style="color: #fff; margin: 0; font-size: 14px;"><strong>Name:</strong> ${escapeHtml(fullName)}</p>
+        <p style="color: #fff; margin: 4px 0 0; font-size: 14px;"><strong>Audience:</strong> ${audienceLabel[audienceSize] || audienceSize} · ${nicheLabel[niche] || niche}</p>
+      </div>
+
+      <p style="color: #9ca3af; font-size: 13px; line-height: 1.6; margin-top: 24px;">If you don't hear from us within 5 business days, reply to this email and we'll chase the application internally.</p>
+      <p style="color: #9ca3af; font-size: 13px;">— The Interakktive team</p>
+    `),
+  });
+}
+
+// Tiny HTML-escape helper used inside affiliate notification (user-supplied text)
+function escapeHtml(s: string): string {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}

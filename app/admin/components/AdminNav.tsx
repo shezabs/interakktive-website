@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Shield, Users, CreditCard, FileText, Home, Settings, BarChart3, BookOpen, DollarSign, LogOut, Search } from 'lucide-react';
+import { Shield, Users, CreditCard, FileText, Home, Settings, BarChart3, BookOpen, DollarSign, LogOut, Search, Award } from 'lucide-react';
 import { supabase } from '@/app/lib/supabase';
 import { useAdmin } from '../admin-context';
 
@@ -13,6 +13,7 @@ const TABS = [
   { href: '/admin/subscriptions', label: 'Subs',          icon: CreditCard,  exact: false },
   { href: '/admin/prop',          label: 'Prop',          icon: BarChart3,   exact: false },
   { href: '/admin/academy',       label: 'Academy',       icon: BookOpen,    exact: false },
+  { href: '/admin/affiliates',    label: 'Affiliates',    icon: Award,       exact: false },
   { href: '/admin/audit',         label: 'Audit',         icon: FileText,    exact: false },
   { href: '/admin/settings',      label: 'Settings',      icon: Settings,    exact: false },
 ];

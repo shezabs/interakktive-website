@@ -13,7 +13,8 @@ export type Capability =
   | 'sub.cancel_immediate' | 'sub.reactivate' | 'sub.delete_record' | 'sub.refund' | 'sub.stripe_sync'
   | 'prop.view' | 'prop.delete_account'
   | 'audit.view' | 'audit.export'
-  | 'settings.view' | 'settings.change_own_password' | 'settings.change_other_password';
+  | 'settings.view' | 'settings.change_own_password' | 'settings.change_other_password'
+  | 'affiliate.view' | 'affiliate.review';
 
 export type AdminRole = 'owner' | 'operator';
 
@@ -24,6 +25,7 @@ const OPERATOR_CAPS = new Set<Capability>([
   'sub.edit_notes', 'sub.mark_tv_invite', 'sub.reset_swap', 'sub.grant_comp',
   'sub.change_indicators', 'sub.extend_period', 'sub.reactivate',
   'settings.change_own_password',
+  'affiliate.view', 'affiliate.review',
 ]);
 
 interface AdminUser {

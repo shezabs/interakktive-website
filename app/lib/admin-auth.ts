@@ -77,7 +77,10 @@ export type Capability =
   // Settings
   | 'settings.view'
   | 'settings.change_own_password'
-  | 'settings.change_other_password';
+  | 'settings.change_other_password'
+  // Affiliate program
+  | 'affiliate.view'
+  | 'affiliate.review';
 
 const OPERATOR_CAPS: ReadonlySet<Capability> = new Set<Capability>([
   // Read everywhere
@@ -96,6 +99,9 @@ const OPERATOR_CAPS: ReadonlySet<Capability> = new Set<Capability>([
   'sub.reactivate',
   // Own password only
   'settings.change_own_password',
+  // Affiliate program — Mustafa can review applications too
+  'affiliate.view',
+  'affiliate.review',
 ]);
 
 /**
