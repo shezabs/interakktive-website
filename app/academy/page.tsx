@@ -233,6 +233,9 @@ export default function AcademyPage() {
                         const liveIdx = liveInLevel.findIndex(l => l.id === lesson.id);
                         const prevLiveLesson = liveIdx > 0 ? liveInLevel[liveIdx - 1] : null;
                         const sequentiallyUnlocked =
+                          // Paying subscribers + admins skip the sequential gate.
+                          // Cert remains gated by lesson_completions (see academy-helpers.ts).
+                          isPaying ||
                           isCompleted ||
                           liveIdx === 0 ||
                           (prevLiveLesson !== null && completed.has(prevLiveLesson.id));
