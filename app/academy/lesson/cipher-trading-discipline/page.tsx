@@ -4,7 +4,7 @@
 // Discipline Is a Boolean — Yours or the Engine's
 // Covers: The shared boolean equation (engine_correct AND operator_discipline),
 //         the 8/3/5 skip pile, the discipline pyramid (Process → Plan → Execution → Review),
-//         Pine-encoded discipline (min_conviction gate, TS cooldown, preset philosophies),
+//         Encoded discipline (the conviction threshold, TS cooldown, preset philosophies),
 //         pre-session / mid-session / post-session protocols, override doctrine,
 //         operator personality types, failure cascade, asset-class differences,
 //         the 30-day discipline test, and the 30-session process loop
@@ -25,7 +25,7 @@ const gameRounds = [
   {
     id: 'r1',
     scenario:
-      'You are on EURUSD 15m, Sniper preset (min_conviction=3). A PX LONG fires but reads 2/4 conviction — Ribbon stack ✓, ADX ✓, Volume ✗, Momentum ✗. The signal label prints because you have "Strong Only" off in inputs even though preset is Sniper. Chart looks promising — you feel the trade.',
+      'You are on EURUSD 15m, Sniper preset (threshold 3-of-4). A PX LONG fires but reads 2/4 conviction — Ribbon stack ✓, ADX ✓, Volume ✗, Momentum ✗. The signal label prints because you have "Strong Signals Only" off in inputs even though preset is Sniper. Chart looks promising — you feel the trade.',
     prompt: 'What does discipline say to do?',
     options: [
       {
@@ -33,14 +33,14 @@ const gameRounds = [
         text: 'Take it — the chart looks good and 2/4 is close to 3/4.',
         correct: false,
         explain:
-          'This is the override doctrine failure. The Pine code at line 200 reads min_conviction = 3 for Sniper preset; the signal printed because of an inputs-level override you toggled. Taking the trade means trusting your gut over your own selected discipline configuration. "2/4 is close to 3/4" is not a discipline argument — it is a rationalisation. The Sniper philosophy is "few trades, only the best." Either you are running it or you are not.',
+          'This is the override doctrine failure. The Sniper preset enforces a 3-of-4 conviction threshold; the signal printed because of an inputs-level override you toggled (Strong Signals Only off). Taking the trade means trusting your gut over your own selected discipline configuration. "2/4 is close to 3/4" is not a discipline argument — it is a rationalisation. The Sniper philosophy is "few trades, only the best." Either you are running it or you are not.',
       },
       {
         id: 'b',
         text: 'Skip — you selected the Sniper philosophy. 2/4 is not 3/4.',
         correct: true,
         explain:
-          'Correct. Discipline is mechanical, not interpretive. You set the bar (min_conviction = 3 via the Sniper preset). The engine printed a signal that did not meet that bar because your Strong Only toggle was off. Reading the conviction count is your job. Skipping is not "missing a trade" — it is honouring the discipline configuration you chose. Re-enabling Strong Only would make the engine enforce it for you on the next bar.',
+          'Correct. Discipline is mechanical, not interpretive. You set the bar (threshold 3-of-4 via the Sniper preset). The engine printed a signal that did not meet that bar because your Strong Signals Only toggle was off. Reading the conviction count is your job. Skipping is not "missing a trade" — it is honouring the discipline configuration you chose. Re-enabling Strong Signals Only would make the engine enforce it for you on the next bar.',
       },
       {
         id: 'c',
@@ -69,14 +69,14 @@ const gameRounds = [
         text: 'Take it — the previous loss is independent of this signal. Each trade stands alone.',
         correct: false,
         explain:
-          'Statistically defensible, behaviourally a trap. "Each trade stands alone" is true mathematically and false psychologically. Re-entering the same direction within 4 bars of stop-out at the same level is the classic revenge re-entry pattern. CIPHER itself encodes anti-spam logic at line 2632-48 — the TS cooldown — because the Pine designer knew same-level clustered signals carry low expected value. The system has a built-in cooldown; you should too.',
+          'Statistically defensible, behaviourally a trap. "Each trade stands alone" is true mathematically and false psychologically. Re-entering the same direction within 4 bars of stop-out at the same level is the classic revenge re-entry pattern. CIPHER itself encodes anti-spam logic for exactly this reason — the TS cooldown — because clustered same-level same-direction signals carry low expected value. The system has a built-in cooldown; you should too.',
       },
       {
         id: 'b',
         text: 'Skip and apply a 30-minute personal cooldown. Same-level same-direction re-entry within 4 bars is the revenge pattern.',
         correct: true,
         explain:
-          'Correct. The Pine TS cooldown is direction-specific: (bar_index - ts_last_long_bar) >= ts_cooldown. CIPHER will not refire the same TS direction within 8-12 bars depending on TF. Your personal discipline mirrors this. Same-level same-direction within bars of a stop-out is the highest-base-rate losing pattern in the dataset. The fact that the setup "looks identical" is the warning, not the case for taking it.',
+          'Correct. The TS cooldown is direction-specific: the engine tracks the most recent TS LONG fire and blocks any further TS LONG until the cooldown window elapses. CIPHER will not refire the same TS direction within 8-12 bars depending on TF. Your personal discipline mirrors this. Same-level same-direction within bars of a stop-out is the highest-base-rate losing pattern in the dataset. The fact that the setup "looks identical" is the warning, not the case for taking it.',
       },
       {
         id: 'c',
@@ -112,7 +112,7 @@ const gameRounds = [
         text: 'Only the 2/4 conviction skip — that is the discretionary one. The other two were rule-based.',
         correct: false,
         explain:
-          'All skips are rule-based in a disciplined operator workflow. The 2/4 skip is a min_conviction rule. The news skip is a hard-skip-criterion rule. The VOLATILE regime skip is a regime-fit rule from Lesson 11.13. None of them are discretionary. The reason to log all three is to build the dataset that lets you audit which rules are pulling weight and which might be too restrictive in retrospect.',
+          'All skips are rule-based in a disciplined operator workflow. The 2/4 skip is a conviction-threshold rule. The news skip is a hard-skip-criterion rule. The VOLATILE regime skip is a regime-fit rule from Lesson 11.13. None of them are discretionary. The reason to log all three is to build the dataset that lets you audit which rules are pulling weight and which might be too restrictive in retrospect.',
       },
       {
         id: 'c',
@@ -206,7 +206,7 @@ const gameRounds = [
 
 // ============================================================
 // QUIZ — 13 questions (capstone floor: 13 correct: true)
-// Covers: GC, the equation, Pine line 200, TS cooldown, presets,
+// Covers: GC, the equation, the conviction threshold, TS cooldown, presets,
 //         pyramid, pre-session, mid-session, journaling, 30-session loop,
 //         override doctrine, personality types, failure cascade
 // ============================================================
@@ -216,29 +216,29 @@ const quizQuestions = [
     question:
       'The Groundbreaking Concept for this lesson states that every signal you trade is the output of which equation?',
     options: [
-      { id: 'a', text: 'engine_output OR operator_discipline', correct: false },
-      { id: 'b', text: 'engine_correctness AND operator_discipline', correct: true },
-      { id: 'c', text: 'engine_output XOR operator_discipline', correct: false },
-      { id: 'd', text: 'engine_output NAND operator_discipline', correct: false },
+      { id: 'a', text: 'engine correctness OR operator discipline', correct: false },
+      { id: 'b', text: 'engine correctness AND operator discipline', correct: true },
+      { id: 'c', text: 'engine correctness XOR operator discipline', correct: false },
+      { id: 'd', text: 'engine correctness NAND operator discipline', correct: false },
     ],
     explain:
       'AND is the operator. Both must be true. The engine fires correctly OR not at all — the operator either honours the configuration OR they do not. There is no scenario where bad engine output and good discipline produce a good trade; equally, no scenario where good engine output and broken discipline produces a sustained edge. Both gates must pass.',
   },
   {
     id: 'q2',
-    question: 'What is the literal Pine line 200 expression that encodes min_conviction in CIPHER?',
+    question: 'CIPHER\'s conviction threshold is determined by two configuration paths. Which statement correctly describes how the threshold is set?',
     options: [
-      { id: 'a', text: 'int min_conviction = i_strong_only ? 3 : 0', correct: false },
+      { id: 'a', text: 'Strong Signals Only toggle is the only way to set the threshold; presets do not affect it.', correct: false },
       {
         id: 'b',
-        text: 'int min_conviction = use_preset ? ((i_preset == "Swing Trader" or i_preset == "Sniper") ? 3 : 0) : (i_strong_only ? 3 : 0)',
+        text: 'When a preset is active, Swing Trader and Sniper alone enforce a 3-of-4 threshold; all other presets leave it at zero. When no preset is active (None), the Strong Signals Only toggle decides.',
         correct: true,
       },
-      { id: 'c', text: 'int min_conviction = (i_preset == "Sniper") ? 4 : 0', correct: false },
-      { id: 'd', text: 'int min_conviction = bull_conviction >= 3', correct: false },
+      { id: 'c', text: 'Every preset enforces a 4-of-4 threshold; Strong Signals Only adds a fifth required factor.', correct: false },
+      { id: 'd', text: 'The threshold equals the average conviction score over the previous 20 signals.', correct: false },
     ],
     explain:
-      'Line 200 of the Pine source. Two paths: if a preset is active, Swing Trader and Sniper alone force min_conviction = 3; otherwise the manual Strong Only toggle decides. This single line encodes the entire conviction-discipline architecture in the engine.',
+      'Two paths configure the conviction threshold. Preset path: Swing Trader and Sniper alone force the threshold to 3-of-4, all other presets leave it at zero. Manual path: when no preset is active, the Strong Signals Only toggle decides (ON = threshold 3, OFF = threshold 0). Both paths lead to the same gate. This single mechanism encodes the entire conviction-discipline architecture in the engine.',
   },
   {
     id: 'q3',
@@ -267,7 +267,7 @@ const quizQuestions = [
       },
     ],
     explain:
-      'The TS cooldown is direction-specific and asset/TF-routed (8 bars on retail TFs, 12 on intraday). The Pine designer encoded it because the empirical base rate on clustered same-direction TS signals is low. The operator mirror is a 30-minute personal cooldown after a stop-out at the same level in the same direction.',
+      'The TS cooldown is direction-specific and asset/TF-routed (8 bars on retail TFs, 12 on intraday). It was encoded because the empirical base rate on clustered same-direction TS signals is low. The operator mirror is a 30-minute personal cooldown after a stop-out at the same level in the same direction.',
   },
   {
     id: 'q4',
@@ -275,27 +275,27 @@ const quizQuestions = [
     options: [
       {
         id: 'a',
-        text: 'min_conviction = 0, pulse_mult = 1.0 — same as defaults but with different visuals.',
+        text: 'Threshold zero, default engine width — same as defaults but with different visuals.',
         correct: false,
       },
       {
         id: 'b',
-        text: 'min_conviction = 3, pulse_mult = 1.3 — few trades, only the best, widest waiting window.',
+        text: 'Threshold 3-of-4, widest signal-engine width — few trades, only the best, widest waiting window.',
         correct: true,
       },
       {
         id: 'c',
-        text: 'min_conviction = 4, pulse_mult = 0.8 — all conviction factors required, tight Pulse.',
+        text: 'Threshold 4-of-4, tight signal-engine width — all conviction factors required, tight engine.',
         correct: false,
       },
       {
         id: 'd',
-        text: 'min_conviction = 2, pulse_mult = 1.5 — medium threshold, very wide Pulse.',
+        text: 'Threshold 2-of-4, very wide signal-engine width — medium threshold, very wide engine.',
         correct: false,
       },
     ],
     explain:
-      'Sniper raises the conviction bar to 3 (Strong Only) and widens Pulse Factor to 1.3× — the widest of any preset. The philosophy is encoded in two integers. Each preset is a discipline philosophy expressed as code.',
+      'Sniper raises the conviction bar to 3-of-4 and widens the signal engine to the widest setting of any preset. The philosophy is encoded in those two configuration choices. Each preset is a discipline philosophy bundled into a single selection.',
   },
   {
     id: 'q5',
@@ -348,7 +348,7 @@ const quizQuestions = [
       },
     ],
     explain:
-      'The doctrine is precise: parameter changes via inputs (which preset, which signal type, which conviction threshold) are legitimate operator variables. Per-trade adjustments (moving a SL, raising a TP, taking a signal that did not pass min_conviction) are overrides. The Pine architecture exists precisely so that operator decisions happen at the configuration layer, not the trade layer.',
+      'The doctrine is precise: parameter changes via inputs (which preset, which signal type, which conviction threshold) are legitimate operator variables. Per-trade adjustments (moving a SL, raising a TP, taking a signal that did not pass the threshold) are overrides. The engine architecture exists precisely so that operator decisions happen at the configuration layer, not the trade layer.',
   },
   {
     id: 'q8',
@@ -384,7 +384,7 @@ const quizQuestions = [
     question:
       'Which of these is NOT a legitimate "skipped signal" log entry per the journaling protocol?',
     options: [
-      { id: 'a', text: '"PX LONG fired, 2/4 conviction, min_conviction was 3 — skipped per rule."', correct: false },
+      { id: 'a', text: '"PX LONG fired, 2/4 conviction, threshold was 3 — skipped per rule."', correct: false },
       { id: 'b', text: '"TS SHORT fired, NFP in 20 minutes — hard skip per news rule."', correct: false },
       { id: 'c', text: '"PX LONG fired, VOLATILE regime — skipped per regime-fit rule."', correct: false },
       {
@@ -778,11 +778,11 @@ function BooleanEquationAnim() {
 
 // ============================================================
 // ANIMATION 2 — PineGateFireAnim (S01 The Equation)
-// Renders the literal Pine line 200 expression on top, then below it
-// animates a Pulse flip → conviction counter ticks 0→1→2→3 → boolean
-// evaluates → signal label emits (or doesn't, depending on threshold)
-// 10-second loop, two scenarios: pass (3/4 with min_conv=3) and fail
-// (2/4 with min_conv=3)
+// Shows your active configuration on top, then below it animates a
+// Pulse flip → conviction counter ticks 0→1→2→3 → the gate evaluates
+// → signal label emits (or doesn't, depending on threshold)
+// 10-second loop, two scenarios: pass (3/4 with threshold=3) and fail
+// (2/4 with threshold=3)
 // ============================================================
 function PineGateFireAnim() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => {
@@ -800,7 +800,7 @@ function PineGateFireAnim() {
     ctx.fillStyle = AMBER;
     ctx.font = 'bold 11px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('PINE LINE 200 — THE GATE FIRING', w / 2, 22);
+    ctx.fillText('THE CONVICTION GATE — HOW SIGNALS ARE FILTERED', w / 2, 22);
 
     const cycleDur = 10;
     const ct = t % cycleDur;
@@ -808,7 +808,7 @@ function PineGateFireAnim() {
     const scenarioPasses = ct < 5;
     const sct = scenarioPasses ? ct : ct - 5; // scenario-local time (0..5)
 
-    // ── Pine code block at top ──
+    // ── Configuration block at top ──
     const codeY = 50;
     ctx.fillStyle = 'rgba(255,255,255,0.04)';
     ctx.fillRect(w * 0.08, codeY - 14, w * 0.84, 36);
@@ -816,18 +816,16 @@ function PineGateFireAnim() {
     ctx.lineWidth = 1;
     ctx.strokeRect(w * 0.08, codeY - 14, w * 0.84, 36);
 
-    ctx.font = 'bold 10px "JetBrains Mono", monospace';
+    ctx.font = 'bold 10px Inter, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillStyle = DIM;
-    ctx.fillText('// Pine line 200', w * 0.1, codeY - 2);
+    ctx.fillText('YOUR CONFIG', w * 0.1, codeY - 2);
     ctx.fillStyle = AMBER;
-    ctx.fillText('int', w * 0.1, codeY + 12);
+    ctx.fillText('Threshold:', w * 0.1, codeY + 12);
     ctx.fillStyle = WHITE;
-    ctx.fillText('min_conviction', w * 0.1 + 22, codeY + 12);
-    ctx.fillStyle = DIM;
-    ctx.fillText('= 3', w * 0.1 + 122, codeY + 12);
+    ctx.fillText('3-of-4 required', w * 0.1 + 70, codeY + 12);
     ctx.fillStyle = AMBER;
-    ctx.fillText('// Sniper preset active', w * 0.1 + 150, codeY + 12);
+    ctx.fillText('(Sniper preset active)', w * 0.1 + 175, codeY + 12);
 
     // ── Conviction factors row ──
     const factorsY = h * 0.42;
@@ -892,7 +890,7 @@ function PineGateFireAnim() {
     ctx.textAlign = 'center';
     ctx.fillStyle = WHITE;
     ctx.font = 'bold 11px Inter, sans-serif';
-    ctx.fillText('bull_conviction =', w / 2 - 50, counterY);
+    ctx.fillText('conviction score =', w / 2 - 50, counterY);
 
     ctx.fillStyle = litSoFar >= 3 ? TEAL : litSoFar === 2 ? AMBER : DIM;
     ctx.font = 'bold 20px Inter, sans-serif';
@@ -901,10 +899,10 @@ function PineGateFireAnim() {
     // ── Boolean eval — only after all 4 factors tick ──
     if (sct > 3.5) {
       const evalT = Math.min(1, (sct - 3.5) / 0.5);
-      ctx.font = 'bold 10px "JetBrains Mono", monospace';
+      ctx.font = 'bold 10px Inter, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillStyle = `rgba(255,179,0,${evalT})`;
-      ctx.fillText(`bull_conviction >= min_conviction  →  ${litSoFar} >= 3  →  ${litSoFar >= 3 ? 'TRUE' : 'FALSE'}`, w / 2, counterY + 30);
+      ctx.fillText(`score \u2265 threshold  \u2192  ${litSoFar} \u2265 3  \u2192  ${litSoFar >= 3 ? 'TRUE' : 'FALSE'}`, w / 2, counterY + 30);
 
       // Signal output
       const sigT = Math.max(0, (sct - 4) / 0.5);
@@ -967,7 +965,7 @@ function SkipPileAnim() {
     type Signal = { passes: boolean; reason: string; verdict: string };
     const signals: Signal[] = [
       { passes: true, reason: '', verdict: 'PX LONG · 4/4 · TRADE' },
-      { passes: false, reason: '2/4', verdict: 'PX LONG · 2/4 · skip (below min_conviction)' },
+      { passes: false, reason: '2/4', verdict: 'PX LONG · 2/4 · skip (below threshold)' },
       { passes: true, reason: '', verdict: 'TS SHORT · 3/4 · TRADE' },
       { passes: false, reason: 'news', verdict: 'PX SHORT · NFP ±30m · skip (news window)' },
       { passes: false, reason: 'regime', verdict: 'PX LONG · VOLATILE · skip (regime fit)' },
@@ -1225,7 +1223,7 @@ function DisciplinePyramidAnim() {
 // THE FIRST OF THREE AMBITIOUS ANIMATIONS.
 //
 // A TS LONG signal fires. A circular cooldown clock starts a countdown
-// from ts_cooldown bars (8 on retail TFs). A second TS LONG attempts
+// from the cooldown window (8 on retail TFs). A second TS LONG attempts
 // to fire during the cooldown — it's REJECTED in real-time with a
 // magenta ✕ marker on the chart. After the clock completes, a third
 // TS LONG fires successfully.
@@ -1250,17 +1248,17 @@ function TSCooldownClockAnim() {
     ctx.fillStyle = AMBER;
     ctx.font = 'bold 11px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('★ TS COOLDOWN CLOCK — PINE LINES 2632-2648', w / 2, 22);
+    ctx.fillText('\u2605 TS COOLDOWN CLOCK \u2014 SAME-DIRECTION LOCKOUT', w / 2, 22);
 
     const cycleDur = 14;
     const ct = t % cycleDur;
 
-    // ── Pine code reminder (top-right small) ──
-    ctx.font = '8px "JetBrains Mono", monospace';
+    // ── Mechanism reminder (top-right small) ──
+    ctx.font = '8px Inter, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillStyle = DIM;
-    ctx.fillText('ts_cooldown = 8 bars', w - 10, 40);
-    ctx.fillText('(bar_index - ts_last_long_bar) >= ts_cooldown', w - 10, 50);
+    ctx.fillText('Cooldown window: 8 bars (this TF)', w - 10, 40);
+    ctx.fillText('Same-direction TS blocked until window elapses', w - 10, 50);
 
     // ── Layout ──
     const clockCx = w * 0.28;
@@ -1461,8 +1459,8 @@ function TSCooldownClockAnim() {
 //
 // 6 presets arranged in a radial. Each cycle, the "selector" rotates
 // to one preset, and the entire visual state below the ring re-configures:
-//  - min_conviction value
-//  - pulse_mult value
+//  - conviction threshold value
+//  - signal engine width
 //  - active visual layers (badges light up: Ribbon, Pulse, Structure, etc.)
 //  - personality archetype name
 //  - one-line philosophy summary
@@ -1485,7 +1483,7 @@ function PresetPhilosophyRingAnim() {
     ctx.fillStyle = AMBER;
     ctx.font = 'bold 11px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('★★ PRESET PHILOSOPHY RING — DISCIPLINE EXPRESSED AS CODE', w / 2, 22);
+    ctx.fillText('\u2605\u2605 PRESET PHILOSOPHY RING \u2014 EACH PRESET IS A DISCIPLINE', w / 2, 22);
 
     type Preset = {
       name: string;
@@ -1584,20 +1582,20 @@ function PresetPhilosophyRingAnim() {
     ctx.textAlign = 'left';
     ctx.fillText(preset.personality, panelX, panelTop);
 
-    // min_conviction + pulse_mult atoms
+    // Threshold + signal-engine width atoms
     ctx.fillStyle = DIM;
-    ctx.font = '8px "JetBrains Mono", monospace';
-    ctx.fillText('min_conviction =', panelX, panelTop + 22);
+    ctx.font = '8px Inter, sans-serif';
+    ctx.fillText('Conviction threshold:', panelX, panelTop + 22);
     ctx.fillStyle = preset.minConv >= 3 ? TEAL : WHITE;
-    ctx.font = 'bold 11px "JetBrains Mono", monospace';
-    ctx.fillText(String(preset.minConv), panelX + 88, panelTop + 22);
+    ctx.font = 'bold 11px Inter, sans-serif';
+    ctx.fillText(preset.minConv >= 3 ? '3-of-4' : 'open', panelX + 110, panelTop + 22);
 
     ctx.fillStyle = DIM;
-    ctx.font = '8px "JetBrains Mono", monospace';
-    ctx.fillText('pulse_mult     =', panelX, panelTop + 38);
+    ctx.font = '8px Inter, sans-serif';
+    ctx.fillText('Signal engine width:', panelX, panelTop + 38);
     ctx.fillStyle = WHITE;
-    ctx.font = 'bold 11px "JetBrains Mono", monospace';
-    ctx.fillText(preset.pulseMult.toFixed(1) + '×', panelX + 88, panelTop + 38);
+    ctx.font = 'bold 11px Inter, sans-serif';
+    ctx.fillText(preset.pulseMult < 1 ? 'tight' : preset.pulseMult > 1.2 ? 'widest' : preset.pulseMult > 1 ? 'wide' : 'default', panelX + 110, panelTop + 38);
 
     // Active layer badges
     ctx.fillStyle = DIM;
@@ -1647,7 +1645,7 @@ function PresetPhilosophyRingAnim() {
     ctx.fillStyle = DIM;
     ctx.font = '7px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Each preset = (min_conviction, pulse_mult) = a discipline philosophy as code', w / 2, h - 8);
+    ctx.fillText('Each preset bundles a threshold, a signal-engine width, and a visual layer set into one choice', w / 2, h - 8);
   }, []);
 
   return <AnimScene draw={draw} aspectRatio={2.0} />;
@@ -2053,8 +2051,8 @@ function JournalComposerAnim() {
         { label: 'ASSET / TF', value: 'EURUSD 5m' },
         { label: 'PRESET', value: 'Sniper' },
         { label: 'CONVICTION', value: '2 / 4 — below min' },
-        { label: 'SKIP REASON', value: 'Conviction below min_conviction' },
-        { label: 'RULE FIRED', value: 'min_conviction = 3 (Sniper)' },
+        { label: 'SKIP REASON', value: 'Conviction below threshold' },
+        { label: 'RULE FIRED', value: '3-of-4 threshold (Sniper)' },
         { label: 'OUTCOME', value: 'Hindsight: -0.6R loss (skip saved)' },
         { label: 'PROTOCOL', value: 'Discipline rule held correctly' },
       ];
@@ -2453,7 +2451,7 @@ function OverrideReplayAnim() {
     ctx.fillStyle = TEAL;
     ctx.font = 'bold 8px Inter, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('ENGINE — Pine line 200 → silent', chartLeft1 + 6, chartTopY + 12);
+    ctx.fillText('ENGINE \u2014 conviction gate \u2192 silent', chartLeft1 + 6, chartTopY + 12);
 
     // Right chart: operator perspective (took the trade)
     ctx.fillStyle = 'rgba(239,83,80,0.04)';
@@ -2575,7 +2573,7 @@ function OverrideReplayAnim() {
     ctx.fillStyle = DIM;
     ctx.font = '8px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Every override is a single boolean — engine_silent AND operator_entered. Multiply by 20.', w / 2, h - 8);
+    ctx.fillText('Every override is a single discipline failure \u2014 engine silent, operator entered. Multiply by 20.', w / 2, h - 8);
   }, []);
 
   return <AnimScene draw={draw} aspectRatio={1.5} />;
@@ -2992,7 +2990,7 @@ export default function CipherTradingDisciplineLesson() {
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400 mb-6">First &mdash; Why This Matters</p>
           <div className="p-6 rounded-2xl glass-card mb-6">
             <p className="text-xl font-extrabold mb-3">Two operators. Same CIPHER. Different P&amp;L.</p>
-            <p className="text-gray-400 leading-relaxed mb-4">Operator A and Operator B both use CIPHER PRO. Same indicators, same Pine source, same charts. They see the same Pulse line, the same Risk Envelope bands, the same conviction labels. Over 30 sessions they take roughly the same signals. <strong className="text-white">A finishes the month +12R. B finishes the month -8R.</strong></p>
+            <p className="text-gray-400 leading-relaxed mb-4">Operator A and Operator B both use CIPHER PRO. Same indicators, same engine, same charts. They see the same Pulse line, the same Risk Envelope bands, the same conviction labels. Over 30 sessions they take roughly the same signals. <strong className="text-white">A finishes the month +12R. B finishes the month -8R.</strong></p>
             <p className="text-gray-400 leading-relaxed mb-4">The engine fired correctly for both. The chart was identical for both. <strong className="text-amber-400">The difference is not what they saw &mdash; it is what they did with what they saw.</strong> A skipped 5 of every 8 signals. B took all 8. A logged every skipped trade. B logged only winners. A had a circuit breaker after -3R weeks. B doubled size on Mondays after losing Fridays. A executed the framework mechanically. B overrode the framework whenever the chart "felt different."</p>
             <p className="text-gray-400 leading-relaxed">The edge in CIPHER is not visible in any candle. It lives in the <strong className="text-white">boolean equation</strong> that runs above the engine &mdash; the AND-gate between what the indicator says and what the operator does. This is the lesson where that equation becomes mechanical.</p>
           </div>
@@ -3000,7 +2998,7 @@ export default function CipherTradingDisciplineLesson() {
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4 mt-6">
             <div>
               <p className="text-xs font-bold text-amber-400 mb-1">&#11088; THE GROUNDBREAKING CONCEPT</p>
-              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Discipline is a boolean &mdash; yours or the engine&apos;s.</strong> Every signal you trade is the output of <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">signal = engine_correctness AND operator_discipline</code>. CIPHER&apos;s half is encoded in Pine: <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">min_conviction</code>, the TS cooldown, the preset philosophies, the filtered-vs-raw signal tracking. Your half is the same equation in human form: <strong className="text-white">which signals you don&apos;t take, when you don&apos;t re-enter, when you don&apos;t override.</strong></p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Discipline is a boolean &mdash; yours or the engine&apos;s.</strong> Every signal you trade is the output of <strong className="text-amber-400">engine correctness AND operator discipline</strong>. CIPHER&apos;s half is encoded directly into the engine: the conviction threshold gate, the TS cooldown, the preset philosophies, the filtered-vs-raw signal tracking. Your half is the same equation in human form: <strong className="text-white">which signals you don&apos;t take, when you don&apos;t re-enter, when you don&apos;t override.</strong></p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-1">THE EDGE IS IN THE SKIP PILE</p>
@@ -3009,7 +3007,7 @@ export default function CipherTradingDisciplineLesson() {
           </div>
           <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
             <p className="text-xs font-bold text-amber-400 mb-2">&#11088; THE DISCIPLINE OPERATOR PROMISE</p>
-            <p className="text-sm text-gray-400 leading-relaxed">By the end of this lesson, you will know the <strong className="text-white">four-layer discipline pyramid</strong> (Process, Plan, Execution, Review), the <strong className="text-white">three Pine-encoded discipline mechanisms</strong> (min_conviction, TS cooldown, preset philosophies) and their behavioural mirrors, the <strong className="text-white">5-stage failure cascade</strong> that ends accounts, the <strong className="text-white">override doctrine</strong> that protects deterministic edge, the <strong className="text-white">six operator personalities</strong> and their characteristic failures, and the <strong className="text-white">30-day discipline test</strong> that proves you can run the framework mechanically. You stop trading the market and start trading the discipline.</p>
+            <p className="text-sm text-gray-400 leading-relaxed">By the end of this lesson, you will know the <strong className="text-white">four-layer discipline pyramid</strong> (Process, Plan, Execution, Review), the <strong className="text-white">three encoded discipline mechanisms</strong> (the conviction threshold, the TS cooldown, the preset philosophies) and their behavioural mirrors, the <strong className="text-white">5-stage failure cascade</strong> that ends accounts, the <strong className="text-white">override doctrine</strong> that protects deterministic edge, the <strong className="text-white">six operator personalities</strong> and their characteristic failures, and the <strong className="text-white">30-day discipline test</strong> that proves you can run the framework mechanically. You stop trading the market and start trading the discipline.</p>
           </div>
         </motion.div>
       </section>
@@ -3019,17 +3017,17 @@ export default function CipherTradingDisciplineLesson() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">01 &mdash; The Equation</p>
           <h2 className="text-2xl font-extrabold mb-4">Signal Equals Engine AND Discipline</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">CIPHER&apos;s edge is not in the indicator alone. It lives in the boolean equation that runs above the engine on every signal. <strong className="text-amber-400">signal = engine_correctness AND operator_discipline.</strong> Both gates must pass. Engine alone fires too many signals to be a strategy. Discipline alone has nothing to filter. The pair is the product.</p>
+          <p className="text-gray-400 leading-relaxed mb-6">CIPHER&apos;s edge is not in the indicator alone. It lives in the boolean equation that runs above the engine on every signal. <strong className="text-amber-400">Signal = engine correctness AND operator discipline.</strong> Both gates must pass. Engine alone fires too many signals to be a strategy. Discipline alone has nothing to filter. The pair is the product.</p>
           <PineGateFireAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation. Scenario 1: four conviction factors check sequentially. Three pass &mdash; <strong className="text-white">bull_conviction = 3</strong>. The boolean evaluates <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">3 &gt;= 3 → TRUE</code>. The PX LONG label fires. Scenario 2: only two factors pass &mdash; <strong className="text-white">bull_conviction = 2</strong>. The boolean evaluates <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">2 &gt;= 3 → FALSE</code>. The signal is silent. The engine did its job. The discipline gate did its job. No trade, no override.</p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the animation. Scenario 1: four conviction factors check sequentially. Three pass &mdash; <strong className="text-white">conviction score = 3</strong>. The boolean evaluates <strong className="text-amber-400">3 &ge; 3 &rarr; TRUE</strong>. The PX LONG label fires. Scenario 2: only two factors pass &mdash; <strong className="text-white">conviction score = 2</strong>. The boolean evaluates <strong className="text-amber-400">2 &ge; 3 &rarr; FALSE</strong>. The signal is silent. The engine did its job. The discipline gate did its job. No trade, no override.</p>
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
             <div>
               <p className="text-xs font-bold text-amber-400 mb-1">THE ENGINE HALF</p>
-              <p className="text-sm text-gray-400 leading-relaxed">CIPHER&apos;s side of the equation is locked in Pine source: <strong className="text-white">Gate 1 body filter</strong>, <strong className="text-white">Gate 2 pre-cross distance</strong>, <strong className="text-white">Gate 3 chop suppression</strong>, <strong className="text-white">Gate 4 failed-flip override</strong>, plus the four conviction factors (Ribbon stack, ADX&gt;20, Volume&gt;1×, Momentum&gt;50%). You did not write this code. You can read it and trust it.</p>
+              <p className="text-sm text-gray-400 leading-relaxed">CIPHER&apos;s side of the equation is locked in the engine: <strong className="text-white">Gate 1 body filter</strong>, <strong className="text-white">Gate 2 pre-cross distance</strong>, <strong className="text-white">Gate 3 chop suppression</strong>, <strong className="text-white">Gate 4 failed-flip override</strong>, plus the four conviction factors (Ribbon stack, ADX&gt;20, Volume&gt;1×, Momentum&gt;50%). The mechanics are deterministic. You can trust the gates to fire correctly.</p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-1">THE DISCIPLINE HALF</p>
-              <p className="text-sm text-gray-400 leading-relaxed">Your side of the equation is the configuration you set (preset, signal type, min_conviction toggle) PLUS the behaviour you bring to qualified signals (sizing, skip discipline, override discipline, journaling). The engine half is deterministic. <strong className="text-white">Your half is where the variance lives.</strong> Two operators with identical engine output and different discipline produce different account curves.</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Your side of the equation is the configuration you set (preset, signal type, Strong Signals Only toggle) PLUS the behaviour you bring to qualified signals (sizing, skip discipline, override discipline, journaling). The engine half is deterministic. <strong className="text-white">Your half is where the variance lives.</strong> Two operators with identical engine output and different discipline produce different account curves.</p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-1">THE AND-GATE IS NON-NEGOTIABLE</p>
@@ -3052,7 +3050,7 @@ export default function CipherTradingDisciplineLesson() {
               <p className="text-xs font-bold text-amber-400 mb-1">THE FIVE CATEGORIES OF SKIP</p>
               <p className="text-sm text-gray-400 leading-relaxed mb-2">Every skip lands in one of five categories. Memorise them &mdash; they are the operator filter:</p>
               <ul className="text-sm text-gray-400 leading-relaxed space-y-1.5 ml-4">
-                <li><strong className="text-white">1. Conviction skip.</strong> Signal printed but conviction &lt; min_conviction. The engine&apos;s own filter is wider than your preset; either tighten Strong Only or skip manually.</li>
+                <li><strong className="text-white">1. Conviction skip.</strong> Signal printed but conviction is below your chosen threshold. The engine&apos;s own filter is wider than your preset; either enable Strong Signals Only or skip manually.</li>
                 <li><strong className="text-white">2. Regime skip.</strong> Signal type does not fit the active regime. PX continuation in VOLATILE, TS reversal in STRONG TREND, anything in regime transition.</li>
                 <li><strong className="text-white">3. Structure skip.</strong> Fresh counter-FVG, untested liquidity ahead, choppy Pulse flag set, no clear room to target.</li>
                 <li><strong className="text-white">4. Context skip.</strong> News window (±30m around high-impact), session boundary (London/NY open first 30m), thin-liquidity Asia.</li>
@@ -3082,7 +3080,7 @@ export default function CipherTradingDisciplineLesson() {
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
             <div>
               <p className="text-xs font-bold text-amber-400 mb-1">TIER 1 &mdash; PROCESS (THE FOUNDATION)</p>
-              <p className="text-sm text-gray-400 leading-relaxed">Process is how you study, prepare, and calibrate between sessions. The lessons you review. The Pine source you re-read. The chart replays you walk through. The journal entries from previous weeks you scan for patterns. Process is the only tier that does not happen during the trading day &mdash; and it is the foundation of everything that does. <strong className="text-white">Without Process you have no calibration loop.</strong></p>
+              <p className="text-sm text-gray-400 leading-relaxed">Process is how you study, prepare, and calibrate between sessions. The lessons you review. The framework documentation you re-read. The chart replays you walk through. The journal entries from previous weeks you scan for patterns. Process is the only tier that does not happen during the trading day &mdash; and it is the foundation of everything that does. <strong className="text-white">Without Process you have no calibration loop.</strong></p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-1">TIER 2 &mdash; PLAN (THE BENCHMARK)</p>
@@ -3104,71 +3102,65 @@ export default function CipherTradingDisciplineLesson() {
         </motion.div>
       </section>
 
-      {/* === S04 — Pine-Encoded Discipline #1: min_conviction === */}
+      {/* === S04 — Encoded Discipline #1: The Conviction Threshold === */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Pine-Encoded Discipline #1</p>
-          <h2 className="text-2xl font-extrabold mb-4">min_conviction &mdash; A Single Line of Code</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">CIPHER&apos;s first encoded discipline mechanism sits at Pine line 200. <strong className="text-amber-400">One line.</strong> It defines the conviction threshold every signal must clear before printing. Read it and the entire min_conviction discipline becomes mechanical.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">04 &mdash; Encoded Discipline #1</p>
+          <h2 className="text-2xl font-extrabold mb-4">The Conviction Threshold &mdash; The First Gate</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">CIPHER&apos;s first encoded discipline mechanism is the conviction threshold. <strong className="text-amber-400">A single number, set once per session by your preset choice.</strong> It defines the score every signal must clear before printing on your chart. Set it, and the entire conviction discipline becomes mechanical.</p>
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
             <div>
-              <p className="text-xs font-bold text-amber-400 mb-2">PINE LINE 200 &mdash; THE GATE</p>
-              <pre className="text-xs bg-black/40 border border-white/5 rounded-lg p-3 overflow-x-auto"><code className="text-amber-300 font-mono">int min_conviction = use_preset
-    ? ((i_preset == &quot;Swing Trader&quot; or i_preset == &quot;Sniper&quot;) ? 3 : 0)
-    : (i_strong_only ? 3 : 0)</code></pre>
-              <p className="text-sm text-gray-400 leading-relaxed mt-3">Two paths through this expression. Path A: a preset is active &mdash; then Swing Trader and Sniper alone force min_conviction to 3, all other presets leave it at 0. Path B: no preset is active &mdash; then the manual Strong Only toggle decides. <strong className="text-white">No other code anywhere in CIPHER overrides this.</strong> Whatever this line evaluates to is the threshold every signal must beat.</p>
+              <p className="text-xs font-bold text-amber-400 mb-2">THE GATE</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Every potential signal that survives CIPHER&apos;s upstream engines (Pulse Cross or Tension Snap, plus the four-gate pipeline from L11.11) must then pass one more check before its label prints: <strong className="text-white">the conviction score must equal or exceed your chosen threshold.</strong> If it does, the label prints, the Last Signal row updates, the trade is in play. If it doesn&apos;t, the engine stays silent &mdash; no label, no entry, no row update. Same potential signal, different outcome, decided by a single threshold you set.</p>
             </div>
             <div className="pt-4 border-t border-white/5">
-              <p className="text-xs font-bold text-amber-400 mb-2">PINE LINES 2681-2682 &mdash; THE GATE FIRING</p>
-              <pre className="text-xs bg-black/40 border border-white/5 rounded-lg p-3 overflow-x-auto"><code className="text-amber-300 font-mono">bool buy_signal  = (buy_px or buy_ts) and bull_conviction &gt;= min_conviction
-bool sell_signal = (sell_px or sell_ts) and bear_conviction &gt;= min_conviction</code></pre>
-              <p className="text-sm text-gray-400 leading-relaxed mt-3">Here is the boolean that decides whether the label prints on your chart. <strong className="text-white">Two conditions, AND-gated.</strong> Either a PX or TS engine fired (the engine half), AND the conviction score met or exceeded the threshold (the discipline half). If either side is false, no label, no entry, no Last Signal row update. The engine&apos;s output is literally filtered through your discipline configuration before it ever reaches your eye.</p>
+              <p className="text-xs font-bold text-amber-400 mb-2">HOW THE THRESHOLD IS SET</p>
+              <p className="text-sm text-gray-400 leading-relaxed mb-2">Two legitimate paths configure this discipline:</p>
+              <ul className="text-sm text-gray-400 leading-relaxed space-y-1.5 ml-4">
+                <li><strong className="text-white">Via Preset.</strong> Swing Trader and Sniper presets force the threshold to 3-out-of-4. Trend Trader, Scalper, Reversal, and Structure leave it at zero (every qualified signal prints).</li>
+                <li><strong className="text-white">Via Strong Signals Only toggle.</strong> When no preset is active (None), the manual Strong Signals Only switch in the inputs decides. ON = threshold 3, OFF = threshold 0.</li>
+              </ul>
+              <p className="text-sm text-gray-400 leading-relaxed mt-3">Both routes lead to the same gate. Whatever the threshold evaluates to is the bar every signal must beat. <strong className="text-white">Nothing else in CIPHER overrides this.</strong></p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">THE FOUR CONVICTION FACTORS</p>
-              <p className="text-sm text-gray-400 leading-relaxed mb-2">bull_conviction (and its bear counterpart) sums four binary factors:</p>
+              <p className="text-sm text-gray-400 leading-relaxed mb-2">The conviction score (and its bearish counterpart) sums four binary factors:</p>
               <ul className="text-sm text-gray-400 leading-relaxed space-y-1.5 ml-4">
                 <li><strong className="text-white">F1 &middot; Ribbon stacked with signal direction.</strong> The trend engine agrees with the signal.</li>
                 <li><strong className="text-white">F2 &middot; ADX &gt; 20.</strong> Trend strength threshold &mdash; sub-20 ADX = no-trend conditions.</li>
-                <li><strong className="text-white">F3 &middot; Volume &gt; 1.0× average.</strong> Participation is at or above baseline.</li>
+                <li><strong className="text-white">F3 &middot; Volume &gt; 1.0&times; average.</strong> Participation is at or above baseline.</li>
                 <li><strong className="text-white">F4 &middot; Momentum health &gt; 50%.</strong> The composite health score is above midpoint.</li>
               </ul>
-              <p className="text-sm text-gray-400 leading-relaxed mt-3">Each factor is binary &mdash; satisfied or not. Conviction is the sum: 0, 1, 2, 3, or 4. <strong className="text-white">A "3/4 Strong" signal has any three of the four; a "Full Strong 4/4" has all four.</strong> Below min_conviction the signal is silent on chart but tracked internally (the raw signals are kept for diagnostic and failed-flip logic, per L11.11).</p>
+              <p className="text-sm text-gray-400 leading-relaxed mt-3">Each factor is binary &mdash; satisfied or not. Conviction is the sum: 0, 1, 2, 3, or 4. <strong className="text-white">A &quot;3/4 Strong&quot; signal has any three of the four; a &quot;Full Strong 4/4&quot; has all four.</strong> Below the threshold the signal is filtered &mdash; silent on chart but tracked internally so the engine&apos;s diagnostic and failed-flip logic still works (per L11.11).</p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">THE OPERATOR&apos;S CHOICE</p>
-              <p className="text-sm text-gray-400 leading-relaxed">You have two legitimate ways to configure this discipline: pick a preset that encodes it (Swing Trader or Sniper) or run None and toggle Strong Only manually. <strong className="text-white">The illegitimate path is to leave the threshold at 0 and decide which signals are "really strong" by feel.</strong> Strong Only is the mechanical version of that feel; line 200 is the code that enforces it. Use the code, not the feel.</p>
+              <p className="text-sm text-gray-400 leading-relaxed">You have two legitimate ways to configure this discipline: pick a preset that encodes it (Swing Trader or Sniper) or run None and toggle Strong Signals Only manually. <strong className="text-white">The illegitimate path is to leave the threshold at zero and decide which signals are &quot;really strong&quot; by feel.</strong> Strong Signals Only is the mechanical version of that feel; the threshold is the gate that enforces it. Use the gate, not the feel.</p>
             </div>
           </div>
         </motion.div>
       </section>
 
-      {/* === S05 — Pine-Encoded Discipline #2: TS Cooldown (★) === */}
+      {/* === S05 — Encoded Discipline #2: The Cooldown (★) === */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Pine-Encoded Discipline #2 &middot; &#9733; the cooldown clock</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">05 &mdash; Encoded Discipline #2 &middot; &#9733; the cooldown clock</p>
           <h2 className="text-2xl font-extrabold mb-4">The TS Cooldown &mdash; CIPHER&apos;s Built-in Anti-Spam</h2>
           <p className="text-gray-400 leading-relaxed mb-6">PX has no cooldown &mdash; Pulse flips are naturally self-limiting (a flip cannot re-fire until Pulse flips back the other way and then back again). TS is different. Tension can repeatedly snap at the same level within minutes. <strong className="text-amber-400">If left unfiltered, TS would spam signals during choppy reversals.</strong> CIPHER fixes this with an explicit cooldown.</p>
           <TSCooldownClockAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the clock. A TS LONG fires at bar 0 &mdash; clean signal, teal arrow. Three bars later, the engine wants to fire another TS LONG at the same direction. <strong className="text-white">The cooldown blocks it.</strong> Magenta ✕ marks the ghost signal that would have printed without the discipline gate. At bar 9, cooldown completes; the next qualified TS LONG fires successfully.</p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the clock. A TS LONG fires at bar 0 &mdash; clean signal, teal arrow. Three bars later, the engine wants to fire another TS LONG at the same direction. <strong className="text-white">The cooldown blocks it.</strong> Magenta &times; marks the ghost signal that would have printed without the discipline gate. At bar 9, cooldown completes; the next qualified TS LONG fires successfully.</p>
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
             <div>
-              <p className="text-xs font-bold text-amber-400 mb-2">PINE LINES 2632-2648 &mdash; THE COOLDOWN CODE</p>
-              <pre className="text-xs bg-black/40 border border-white/5 rounded-lg p-3 overflow-x-auto"><code className="text-amber-300 font-mono">int ts_cooldown = tf_num &lt;= 1 ? 8 : tf_num &lt;= 3 ? 12 : 8
-
-bool ts_long  = ts_was_bear_stretch and ts_snap_bull and ts_bull_candle and ts_vel_shift_bull
-                  and (bar_index - ts_last_long_bar)  &gt;= ts_cooldown
-bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_vel_shift_bear
-                  and (bar_index - ts_last_short_bar) &gt;= ts_cooldown</code></pre>
-              <p className="text-sm text-gray-400 leading-relaxed mt-3">Direction-specific. <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">ts_last_long_bar</code> tracks the most recent TS LONG fire; the same direction cannot re-fire until <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">ts_cooldown</code> bars have elapsed. <strong className="text-white">Opposite-direction TS is not gated by this lockout</strong> &mdash; the cooldown is direction-specific because clustered SAME-direction TS at the same level is what carries negative expected value.</p>
+              <p className="text-xs font-bold text-amber-400 mb-2">HOW THE COOLDOWN WORKS</p>
+              <p className="text-sm text-gray-400 leading-relaxed">After every TS LONG fires, the engine starts a counter for the LONG direction. Until that counter elapses, no second TS LONG will print on your chart, even if the conditions to fire one are met. <strong className="text-white">The cooldown is direction-specific</strong> &mdash; an opposite-direction TS SHORT can still fire during the lockout, because clustered SAME-direction TS at the same level is what carries negative expected value. The block isn&apos;t about pace; it&apos;s about preventing the engine from re-confirming itself on the same liquidity event.</p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">TIMEFRAME ROUTING</p>
-              <p className="text-sm text-gray-400 leading-relaxed">Read the ternary: <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">tf_num &lt;= 1</code> means scalp/intra (1m, 5m) gets <strong className="text-white">8 bars</strong>; <code className="text-amber-400 text-xs bg-black/30 px-1.5 py-0.5 rounded">tf_num &lt;= 3</code> means retail (15m, 1H) gets <strong className="text-white">12 bars</strong>; everything else (4H+) reverts to 8. Lower timeframes get tighter cooldowns because the bars are shorter; higher TFs get longer cooldowns because each bar carries more weight. <strong className="text-white">Each bar is a unit of confirmation that the prior snap is not just clustering at the same level.</strong></p>
+              <p className="text-sm text-gray-400 leading-relaxed">The cooldown length adapts to your timeframe. Scalp/intra timeframes (1m, 5m) get a tighter window of <strong className="text-white">8 bars</strong>. Retail timeframes (15m, 1H) get a longer window of <strong className="text-white">12 bars</strong>. Higher TFs (4H+) revert to 8 because each of those bars already carries more weight individually. <strong className="text-white">Each bar is a unit of confirmation that the prior snap is not just clustering at the same level.</strong></p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">THE OPERATOR MIRROR &mdash; A PERSONAL COOLDOWN</p>
-              <p className="text-sm text-gray-400 leading-relaxed">The Pine cooldown teaches the behavioural rule. After ANY stop-out, the same-direction same-level re-entry within 30-90 minutes is the highest-base-rate losing pattern in the data. <strong className="text-white">Operate a personal cooldown identical in spirit to the engine&apos;s</strong>:</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The engine&apos;s cooldown teaches the behavioural rule. After ANY stop-out, the same-direction same-level re-entry within 30-90 minutes is the highest-base-rate losing pattern in the data. <strong className="text-white">Operate a personal cooldown identical in spirit to the engine&apos;s</strong>:</p>
               <ul className="text-sm text-gray-400 leading-relaxed space-y-1.5 ml-4 mt-2">
                 <li><strong className="text-white">30 minutes</strong> after any stop-out on the same asset, regardless of direction</li>
                 <li><strong className="text-white">8-12 bars</strong> on the timeframe you trade before re-engaging the same direction at the same level</li>
@@ -3180,25 +3172,25 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
         </motion.div>
       </section>
 
-      {/* === S06 — Pine-Encoded Discipline #3: Preset Philosophy Ring (★★) === */}
+      {/* === S06 — Encoded Discipline #3: Preset Philosophy Ring (★★) === */}
       <section className="max-w-2xl mx-auto px-5 py-16">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Pine-Encoded Discipline #3 &middot; &#9733;&#9733; the philosophy ring</p>
-          <h2 className="text-2xl font-extrabold mb-4">Presets &mdash; Discipline Philosophies Expressed as Code</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">CIPHER&apos;s third encoded discipline mechanism is the preset system. Each preset is not a visual configuration &mdash; it is a <strong className="text-amber-400">discipline philosophy expressed as two integers</strong> (min_conviction, pulse_mult) plus a curated visual layer set. Pick the preset whose philosophy matches your personality, and let the code enforce the discipline you would otherwise have to manually maintain.</p>
+          <p className="text-xs font-bold tracking-widest uppercase text-amber-400/60 mb-3">06 &mdash; Encoded Discipline #3 &middot; &#9733;&#9733; the philosophy ring</p>
+          <h2 className="text-2xl font-extrabold mb-4">Presets &mdash; Discipline Philosophies in a Single Choice</h2>
+          <p className="text-gray-400 leading-relaxed mb-6">CIPHER&apos;s third encoded discipline mechanism is the preset system. Each preset is not a visual configuration &mdash; it is a <strong className="text-amber-400">complete discipline philosophy</strong>, bundling conviction threshold, signal-engine width, and the visual layers most relevant to that trading style. Pick the preset whose philosophy matches your personality, and the engine enforces the discipline you would otherwise have to manually maintain.</p>
           <PresetPhilosophyRingAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the ring. Each of the six presets activates in turn. <strong className="text-white">Below the ring, the configuration reshapes:</strong> min_conviction switches between 0 and 3, pulse_mult shifts between 0.8 (Scalper, tight) and 1.3 (Sniper, widest), the active visual-layer badges change, the personality archetype updates, and the one-line philosophy summarises what the preset enforces.</p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the ring. Each of the six presets activates in turn. <strong className="text-white">Below the ring, the configuration reshapes:</strong> conviction threshold switches between zero and 3-out-of-4, the signal engine width shifts between tight (Scalper) and widest (Sniper), the active visual-layer badges change, the personality archetype updates, and the one-line philosophy summarises what the preset enforces.</p>
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
             <div>
-              <p className="text-xs font-bold text-amber-400 mb-2">THE TWO-INTEGER ENCODING</p>
-              <p className="text-sm text-gray-400 leading-relaxed mb-2">Every preset is reducible to two numbers that define its discipline:</p>
+              <p className="text-xs font-bold text-amber-400 mb-2">THE SIX PHILOSOPHIES</p>
+              <p className="text-sm text-gray-400 leading-relaxed mb-2">Each preset defines its discipline in a single sentence:</p>
               <ul className="text-sm text-gray-400 leading-relaxed space-y-1.5 ml-4">
-                <li><strong className="text-white">TREND TRADER</strong> &middot; min_conviction = 0, pulse_mult = 1.0 &middot; <em>Many trades, default Pulse, follow the stack</em></li>
-                <li><strong className="text-white">SCALPER</strong> &middot; min_conviction = 0, pulse_mult = 0.8 &middot; <em>High frequency, tight Pulse, scalp from levels</em></li>
-                <li><strong className="text-white">SWING TRADER</strong> &middot; min_conviction = 3, pulse_mult = 1.2 &middot; <em>Few trades, wide Pulse, Strong Only enforced</em></li>
-                <li><strong className="text-white">REVERSAL</strong> &middot; min_conviction = 0, pulse_mult = 1.0 &middot; <em>Tension over trend, mean-reversion bias</em></li>
-                <li><strong className="text-white">SNIPER</strong> &middot; min_conviction = 3, pulse_mult = 1.3 &middot; <em>Apex predator: few, only the best, widest waiting window</em></li>
-                <li><strong className="text-white">STRUCTURE</strong> &middot; min_conviction = 0, pulse_mult = 1.0 &middot; <em>No signals printed &mdash; pure chart reading</em></li>
+                <li><strong className="text-white">TREND TRADER</strong> &middot; <em>Many trades, default signal width, follow the stack. Threshold zero.</em></li>
+                <li><strong className="text-white">SCALPER</strong> &middot; <em>High frequency, tight signal engine, scalp from levels. Threshold zero.</em></li>
+                <li><strong className="text-white">SWING TRADER</strong> &middot; <em>Few trades, wide signal engine, Strong-only enforced. Threshold 3-of-4.</em></li>
+                <li><strong className="text-white">REVERSAL</strong> &middot; <em>Tension over trend, mean-reversion bias. Threshold zero.</em></li>
+                <li><strong className="text-white">SNIPER</strong> &middot; <em>Apex predator: few, only the best, widest waiting window. Threshold 3-of-4.</em></li>
+                <li><strong className="text-white">STRUCTURE</strong> &middot; <em>No signals printed &mdash; pure chart reading. Threshold zero.</em></li>
               </ul>
             </div>
             <div className="pt-4 border-t border-white/5">
@@ -3207,7 +3199,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">THE 20-SESSION COMMITMENT</p>
-              <p className="text-sm text-gray-400 leading-relaxed">From L11.23: 20 sessions per chosen preset before any switch. <strong className="text-white">Mid-session preset switching is mode-hopping for confirmation</strong> &mdash; the worst discipline failure because it disguises itself as flexibility. If you opened the session as Sniper and signals are not firing, that is the philosophy doing its job, not failing. Switching to Scalper to "find a trade" is breaking the boolean equation in the worst possible way.</p>
+              <p className="text-sm text-gray-400 leading-relaxed">From L11.23: 20 sessions per chosen preset before any switch. <strong className="text-white">Mid-session preset switching is mode-hopping for confirmation</strong> &mdash; the worst discipline failure because it disguises itself as flexibility. If you opened the session as Sniper and signals are not firing, that is the philosophy doing its job, not failing. Switching to Scalper to &quot;find a trade&quot; is breaking the boolean equation in the worst possible way.</p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">WHEN PRESET SWITCHING IS LEGITIMATE</p>
@@ -3273,7 +3265,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">BRANCH 3 &mdash; CONVICTION TIER</p>
-              <p className="text-sm text-gray-400 leading-relaxed">Read the conviction count from the signal label or tooltip. <strong className="text-white">4/4 Full Strong</strong> = full size, ENGAGE. <strong className="text-white">3/4 Strong with the &quot;+&quot;</strong> = standard size, ENGAGE. <strong className="text-white">2/4 Standard</strong> = half size, WAIT (only engage if Branches 1 &amp; 2 are exceptionally clean and you are in an active position window). <strong className="text-white">Sub-2</strong> = SKIP (filtered out by min_conviction if Strong Only is active, manual skip if not).</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Read the conviction count from the signal label or tooltip. <strong className="text-white">4/4 Full Strong</strong> = full size, ENGAGE. <strong className="text-white">3/4 Strong with the &quot;+&quot;</strong> = standard size, ENGAGE. <strong className="text-white">2/4 Standard</strong> = half size, WAIT (only engage if Branches 1 &amp; 2 are exceptionally clean and you are in an active position window). <strong className="text-white">Sub-2</strong> = SKIP (filtered out by the threshold if Strong Signals Only is active, manual skip if not).</p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">THE SECONDS MATTER &mdash; WHY MECHANICAL BEATS ANALYTICAL</p>
@@ -3317,7 +3309,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
                 <li><strong className="text-white">Preset</strong> &middot; same as taken</li>
                 <li><strong className="text-white">Conviction</strong> &middot; the 0-4 score at the time of the skip</li>
                 <li><strong className="text-white">Skip reason</strong> &middot; one of the 5 categories from Section 2 (conviction / regime / structure / context / personal)</li>
-                <li><strong className="text-white">Rule fired</strong> &middot; the specific rule that triggered the skip (e.g. "min_conviction = 3 enforced by Sniper preset")</li>
+                <li><strong className="text-white">Rule fired</strong> &middot; the specific rule that triggered the skip (e.g. &quot;Threshold 3-of-4 enforced by Sniper preset&quot;)</li>
                 <li><strong className="text-white">Hindsight outcome</strong> &middot; what happened next on the chart (winning skip / losing skip / break-even skip)</li>
                 <li><strong className="text-white">Protocol adherence</strong> &middot; did the discipline framework call this skip correctly?</li>
               </ul>
@@ -3363,7 +3355,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">DO NOT MAKE FRAMEWORK CHANGES MID-CYCLE</p>
-              <p className="text-sm text-gray-400 leading-relaxed">Mid-cycle adjustments contaminate the dataset. If session 12 had two stops in a row, the temptation is to tighten min_conviction or switch preset. <strong className="text-white">Resist.</strong> A 12-session sample is not enough information to act on. Stay mechanical until session 30, journal the impulse, audit at the cycle boundary. The framework cannot calibrate to changes that happen DURING the measurement window.</p>
+              <p className="text-sm text-gray-400 leading-relaxed">Mid-cycle adjustments contaminate the dataset. If session 12 had two stops in a row, the temptation is to tighten the conviction threshold or switch preset. <strong className="text-white">Resist.</strong> A 12-session sample is not enough information to act on. Stay mechanical until session 30, journal the impulse, audit at the cycle boundary. The framework cannot calibrate to changes that happen DURING the measurement window.</p>
             </div>
           </div>
         </motion.div>
@@ -3376,7 +3368,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
           <h2 className="text-2xl font-extrabold mb-4">Sizing Is the Only Legitimate Variable</h2>
           <p className="text-gray-400 leading-relaxed mb-6">The override doctrine is the most important rule in this lesson. Read it three times: <strong className="text-amber-400">Parameter changes via inputs are legitimate operator variables. Per-trade adjustments are not.</strong> Choosing Sniper over Trend Trader is legitimate. Moving a stop-loss "because the chart looks like it has more room" is an override. The first is configuration; the second is breaking the boolean equation in real-time.</p>
           <OverrideReplayAnim />
-          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the replay. Left chart: the engine&apos;s perspective. The conviction gate evaluated FALSE; Pine line 200 kept the signal silent. Right chart: the operator&apos;s perspective. They saw the same chart, didn&apos;t see a signal, and entered anyway with their own thesis. Bar 13 stops them out at -1R. <strong className="text-white">The aggregate panel below shows 20 such overrides over a 90-session period: cumulative -14.3R.</strong> One override is anecdote. Twenty are a doctrine.</p>
+          <p className="text-gray-400 leading-relaxed mt-4 mb-6">Watch the replay. Left chart: the engine&apos;s perspective. The conviction gate evaluated FALSE; the engine kept the signal silent. Right chart: the operator&apos;s perspective. They saw the same chart, didn&apos;t see a signal, and entered anyway with their own thesis. Bar 13 stops them out at -1R. <strong className="text-white">The aggregate panel below shows 20 such overrides over a 90-session period: cumulative -14.3R.</strong> One override is anecdote. Twenty are a doctrine.</p>
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
             <div>
               <p className="text-xs font-bold text-amber-400 mb-2">LEGITIMATE OPERATOR VARIABLES</p>
@@ -3384,7 +3376,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
                 <li><strong className="text-white">Preset selection.</strong> Trend Trader vs Scalper vs Sniper, etc.</li>
                 <li><strong className="text-white">Signal Type.</strong> Trend only, Reversal only, All, Visuals Only.</li>
                 <li><strong className="text-white">Direction filter.</strong> Long only / Short only / Both.</li>
-                <li><strong className="text-white">Strong Only toggle.</strong> Manual enforcement of min_conviction = 3.</li>
+                <li><strong className="text-white">Strong Signals Only toggle.</strong> Manual enforcement of the 3-of-4 conviction threshold.</li>
                 <li><strong className="text-white">Position size baseline.</strong> 1R = 0.5% of equity, or 1%, or 0.25% per personal risk policy. Set once per cycle.</li>
                 <li><strong className="text-white">Sizing within qualified tiers.</strong> 2/4 = half size, 3/4 = standard, 4/4 = up to 1.5× cap (per L11.22). Sizing IS your one moment of legitimate trade-level discretion &mdash; but only WITHIN qualified setups.</li>
               </ul>
@@ -3392,7 +3384,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">ILLEGITIMATE OVERRIDES</p>
               <ul className="text-sm text-gray-400 leading-relaxed space-y-1.5 ml-4">
-                <li><strong className="text-white">Taking a signal that did not pass min_conviction.</strong> The engine refused; you accepted anyway.</li>
+                <li><strong className="text-white">Taking a signal that did not pass the conviction threshold.</strong> The engine refused; you accepted anyway.</li>
                 <li><strong className="text-white">Moving a stop-loss post-entry.</strong> Risk Map computed the SL; you "gave it room" because price approached.</li>
                 <li><strong className="text-white">Raising a TP target.</strong> Holding past TP3 hoping for more is the override that erases the average 1.75R winner.</li>
                 <li><strong className="text-white">Switching preset mid-session.</strong> Hunting for a configuration that legitimises a trade you wanted to take anyway.</li>
@@ -3406,7 +3398,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-2">THE LEGITIMATE PATH TO FRAMEWORK CHANGE</p>
-              <p className="text-sm text-gray-400 leading-relaxed">If during a 30-session cycle you notice the framework is producing systematically poor signals on a specific asset, the legitimate change is at the configuration layer: blacklist the asset, switch preset, tighten min_conviction. <strong className="text-white">All at the cycle boundary, not mid-trade.</strong> Per-trade adjustments are emotional. Configuration adjustments are operational.</p>
+              <p className="text-sm text-gray-400 leading-relaxed">If during a 30-session cycle you notice the framework is producing systematically poor signals on a specific asset, the legitimate change is at the configuration layer: blacklist the asset, switch preset, tighten the conviction threshold. <strong className="text-white">All at the cycle boundary, not mid-trade.</strong> Per-trade adjustments are emotional. Configuration adjustments are operational.</p>
             </div>
           </div>
         </motion.div>
@@ -3431,7 +3423,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-1">3 &middot; THE HERO OVERRIDE</p>
-              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Failure mode:</strong> after a streak of wins, decides their read exceeds the engine&apos;s. Starts overriding min_conviction. Sizes up because they "feel it." First losses interpreted as variance; size grows; drawdown lands; revenge begins.<br /><strong className="text-white">Mechanical defence:</strong> sizing rules that do not flex with confidence. Baseline R is set once per cycle and does not change mid-cycle regardless of win streak.</p>
+              <p className="text-sm text-gray-400 leading-relaxed"><strong className="text-white">Failure mode:</strong> after a streak of wins, decides their read exceeds the engine&apos;s. Starts overriding the conviction threshold. Sizes up because they &quot;feel it.&quot; First losses interpreted as variance; size grows; drawdown lands; revenge begins.<br /><strong className="text-white">Mechanical defence:</strong> sizing rules that do not flex with confidence. Baseline R is set once per cycle and does not change mid-cycle regardless of win streak.</p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-1">4 &middot; THE SIZE CREEPER</p>
@@ -3464,7 +3456,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
           <div className="p-5 rounded-2xl glass-card mb-6 space-y-4">
             <div>
               <p className="text-xs font-bold text-amber-400 mb-1">STAGE 1 &middot; OVERRIDE (-1R typical)</p>
-              <p className="text-sm text-gray-400 leading-relaxed">A sub-threshold signal is taken. The conviction was 2/4. min_conviction was 3. The chart "looked good." Loss feels small &mdash; -1R, recoverable. But the precedent has been set: the boolean equation has been broken once. <strong className="text-white">The mental discount between "engine-qualified trade" and "anything I want to take" has narrowed.</strong></p>
+              <p className="text-sm text-gray-400 leading-relaxed">A sub-threshold signal is taken. The conviction was 2/4. Your threshold was 3. The chart &quot;looked good.&quot; Loss feels small &mdash; -1R, recoverable. But the precedent has been set: the boolean equation has been broken once. <strong className="text-white">The mental discount between &quot;engine-qualified trade&quot; and &quot;anything I want to take&quot; has narrowed.</strong></p>
             </div>
             <div className="pt-4 border-t border-white/5">
               <p className="text-xs font-bold text-amber-400 mb-1">STAGE 2 &middot; SIZE CREEP (-2R cumulative)</p>
@@ -3538,7 +3530,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
                 <li><strong className="text-white">Paper or live, your choice.</strong> Paper is fine for the test; live adds emotional pressure that paper cannot simulate. If your goal is prop funding, run it live with strict size control.</li>
                 <li><strong className="text-white">Pick one preset.</strong> Commit to it for 30 sessions. No mid-cycle switching.</li>
                 <li><strong className="text-white">Run the pre-session checklist daily.</strong> Honour kill criteria when they fire (HALT failure, drawdown circuit).</li>
-                <li><strong className="text-white">Engage only qualified signals.</strong> No 2/4 conviction trades on a min_conviction=3 preset. No mid-session preset switching to legitimise an unqualified trade.</li>
+                <li><strong className="text-white">Engage only qualified signals.</strong> No 2/4 conviction trades on a 3-of-4 threshold preset. No mid-session preset switching to legitimise an unqualified trade.</li>
                 <li><strong className="text-white">Journal every trade and every skip.</strong> Equal weight, in-the-moment capture, append outcome later.</li>
                 <li><strong className="text-white">Hold sizing constant.</strong> Baseline R does not change across the 30 sessions regardless of win/loss streaks.</li>
                 <li><strong className="text-white">Do not edit framework rules mid-cycle.</strong> The 30-day window is a single measurement.</li>
@@ -3586,7 +3578,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
           <div className="space-y-4">
             <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
               <p className="text-sm font-bold text-red-400 mb-1.5">MISTAKE 1  &middot;  TAKING SUB-THRESHOLD SIGNALS BECAUSE &ldquo;THE CHART LOOKS RIGHT&rdquo;</p>
-              <p className="text-sm text-gray-400 leading-relaxed">The conviction is 2/4. min_conviction is 3. You take it anyway because &ldquo;the structure looks clean.&rdquo; This is Stage 1 of the failure cascade. <strong className="text-white">Your gut is not a fifth conviction factor.</strong> The Pine line 200 boolean evaluated FALSE for a reason. Either tighten Strong Only at the input level, or accept the silent reject. The third option &mdash; trading it anyway &mdash; is the override doctrine violation that ends accounts at scale.</p>
+              <p className="text-sm text-gray-400 leading-relaxed">The conviction is 2/4. Your threshold is 3. You take it anyway because &ldquo;the structure looks clean.&rdquo; This is Stage 1 of the failure cascade. <strong className="text-white">Your gut is not a fifth conviction factor.</strong> The engine&apos;s gate evaluated FALSE for a reason. Either enable Strong Signals Only at the input level, or accept the silent reject. The third option &mdash; trading it anyway &mdash; is the override doctrine violation that ends accounts at scale.</p>
             </div>
 
             <div className="p-4 rounded-xl bg-red-500/5 border border-red-500/15">
@@ -3628,7 +3620,7 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             <div className="border-b border-white/5 pb-4">
               <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">The Equation</p>
               <div className="text-sm text-gray-400 leading-relaxed space-y-1">
-                <p><strong className="text-white">signal = engine_correctness AND operator_discipline</strong></p>
+                <p><strong className="text-white">Signal = engine correctness AND operator discipline</strong></p>
                 <p>Both gates must pass. Either gate failing = no trade.</p>
               </div>
             </div>
@@ -3649,11 +3641,11 @@ bool ts_short = ts_was_bull_stretch and ts_snap_bear and ts_bear_candle and ts_v
             </div>
 
             <div className="border-b border-white/5 pb-4">
-              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">Pine-Encoded Discipline (Three Mechanisms)</p>
+              <p className="text-xs font-bold text-amber-400 mb-2 tracking-widest uppercase">Encoded Discipline (Three Mechanisms)</p>
               <div className="text-sm text-gray-400 leading-relaxed space-y-1">
-                <p><strong className="text-white">1. min_conviction</strong> &mdash; Line 200. Swing/Sniper enforce 3. Sub-3 signals silent.</p>
-                <p><strong className="text-white">2. TS Cooldown</strong> &mdash; Lines 2632-48. 8-12 bars by TF. Direction-specific.</p>
-                <p><strong className="text-white">3. Preset Philosophies</strong> &mdash; (min_conv, pulse_mult) tuples. Discipline-as-code.</p>
+                <p><strong className="text-white">1. Conviction Threshold</strong> &mdash; Swing/Sniper enforce 3-of-4. Sub-threshold signals silent.</p>
+                <p><strong className="text-white">2. TS Cooldown</strong> &mdash; 8-12 bars by TF. Direction-specific.</p>
+                <p><strong className="text-white">3. Preset Philosophies</strong> &mdash; each preset bundles threshold + engine width into one choice.</p>
               </div>
             </div>
 
