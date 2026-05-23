@@ -155,6 +155,17 @@ export default function AcademyPage() {
               className="mb-8 scroll-mt-24"
             >
               {/* Course Header — clickable to collapse/expand */}
+              {/* L11_COMPLETE_BADGE_INSERTED — special celebration banner for Level 11 terminal completion */}
+              {course.id === 'level-11-cipher-pro-mastery' && levelComplete && (
+                <div className="mb-3 p-4 rounded-2xl text-center" style={{
+                  background: 'linear-gradient(135deg, rgba(38,166,154,0.12), rgba(255,179,0,0.12), rgba(14,165,233,0.08))',
+                  border: '1px solid rgba(255,179,0,0.4)',
+                }}>
+                  <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-amber-400 mb-1">&#9733; LEVEL 11 COMPLETE &#9733;</p>
+                  <p className="text-sm font-bold text-white">CIPHER PRO MASTERY &middot; ALL 27 LESSONS</p>
+                  <p className="text-xs text-gray-400 mt-1 italic">The framework holds for as long as the practice holds.</p>
+                </div>
+              )}
               <button
                 onClick={() => toggle(course.id)}
                 className="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-white/[0.02] transition-all text-left group"
