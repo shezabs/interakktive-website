@@ -67,7 +67,8 @@ export const LIVE_LESSONS = new Set<string>([
   'cipher-coil-mechanics', 'cipher-coil-reading', 'cipher-ribbon-engine',
   'cipher-structure-spine', 'cipher-imbalance', 'cipher-sweeps',
   'cipher-risk-envelope', 'cipher-risk-map', 'cipher-conviction-synthesis',
-  'cipher-candles', 'cipher-war-room-integration', 'cipher-trading-discipline',
+  'cipher-candles', 'cipher-war-room-integration',
+  'cipher-asset-class-adaptation', 'cipher-operator', 'cipher-trading-discipline',
 ]);
 
 // Find which course (level) a lesson belongs to.
