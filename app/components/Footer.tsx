@@ -152,7 +152,7 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:support@interakktive.com"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white text-xs transition-colors break-all"
                 >
                   <Mail className="w-4 h-4 flex-shrink-0" />
                   support@interakktive.com
@@ -163,7 +163,7 @@ export default function Footer() {
                   href="https://wa.me/447576068038?text=Hi%20Interakktive%2C%20I%20have%20a%20question%20about..."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white text-xs transition-colors"
                 >
                   <Phone className="w-4 h-4 flex-shrink-0" />
                   +44 7576 068038
