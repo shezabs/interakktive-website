@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Youtube, Instagram, Mail, Phone, MessageCircle } from 'lucide-react';
+import { Youtube, Instagram, Mail, Phone } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 // WhatsApp icon component
@@ -62,7 +62,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-black/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-x-12 gap-y-8">
           {/* Brand */}
           <div className="space-y-2">
             <div className="h-14 overflow-hidden flex items-center">
@@ -167,17 +167,6 @@ export default function Footer() {
                 >
                   <Phone className="w-4 h-4 flex-shrink-0" />
                   +44 7576 068038
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://chat.whatsapp.com/LY0GqSynVZPDIE7Zz9JNPw?mode=gi_t"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4 flex-shrink-0" />
-                  Join the Interakktive Hub
                 </a>
               </li>
             </ul>
