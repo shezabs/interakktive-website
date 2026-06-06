@@ -62,7 +62,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-black/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-x-12 gap-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-x-10 gap-y-8">
           {/* Brand */}
           <div className="space-y-2">
             <div className="h-14 overflow-hidden flex items-center">
@@ -146,13 +146,13 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:col-span-2">
             <h4 className="font-semibold text-white">Contact</h4>
             <ul className="space-y-3">
               <li>
                 <a
                   href="mailto:support@interakktive.com"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white text-xs transition-colors break-all"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors whitespace-nowrap"
                 >
                   <Mail className="w-4 h-4 flex-shrink-0" />
                   support@interakktive.com
@@ -163,7 +163,7 @@ export default function Footer() {
                   href="https://wa.me/447576068038?text=Hi%20Interakktive%2C%20I%20have%20a%20question%20about..."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white text-xs transition-colors"
+                  className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition-colors whitespace-nowrap"
                 >
                   <Phone className="w-4 h-4 flex-shrink-0" />
                   +44 7576 068038
