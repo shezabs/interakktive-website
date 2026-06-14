@@ -222,43 +222,40 @@ export async function POST(request: NextRequest) {
       const currentPlan = fullSub.plan;
       const billing = fullSub.billing;
 
-      // Determine target plan — use requested or default to next tier
-      let targetPlan = requestedPlan || (currentPlan === 'starter' ? 'advantage' : 'elite');
+      // ------------------------------------------------------------------
+      // UPGRADE LOGIC — CLEARED 2026-06-14 for pricing rebuild.
+      // Old starter→advantage→elite tier ordering, price map, default-next-tier
+      // logic, and advantage/elite indicator rules removed. Repopulate with the
+      // new tiers once defined.
+      // ------------------------------------------------------------------
+      let targetPlan = requestedPlan;
+      if (!targetPlan) {
+        return NextResponse.json({ error: 'Target plan required' }, { status: 400 });
+      }
 
-      // Validate upgrade direction
-      const planOrder: Record<string, number> = { starter: 1, advantage: 2, elite: 3 };
+      // Plan ranking — repopulate with new tiers' upgrade ranking.
+      const planOrder: Record<string, number> = {};
       if ((planOrder[targetPlan] || 0) <= (planOrder[currentPlan] || 0)) {
         return NextResponse.json({ error: 'Can only upgrade to a higher plan' }, { status: 400 });
       }
 
-      // Determine target price
+      // Target price — repopulate with new tiers' Stripe price IDs.
       const priceMap: Record<string, string> = {
-        'advantage_monthly': process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY || '',
-        'advantage_annual': process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL || '',
-        'elite_monthly': process.env.STRIPE_PRICE_ELITE_MONTHLY || '',
-        'elite_annual': process.env.STRIPE_PRICE_ELITE_ANNUAL || '',
+        // e.g. 'newtier_monthly': process.env.STRIPE_PRICE_NEWTIER_MONTHLY || '',
       };
       const newPriceId = priceMap[`${targetPlan}_${billing}`];
       if (!newPriceId) {
         return NextResponse.json({ error: 'Target price not configured' }, { status: 500 });
       }
 
-      // Determine new indicators
+      // New indicators — re-add per-tier grant rules once new tiers are defined.
       const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
       let newIndicators: string[];
-      if (targetPlan === 'elite') {
-        newIndicators = allIndicators;
-      } else if (requestedIndicators && requestedIndicators.length > 0) {
-        newIndicators = requestedIndicators;
+      if (requestedIndicators && requestedIndicators.length > 0) {
+        newIndicators = Array.from(new Set(requestedIndicators.filter((i: string) => allIndicators.includes(i))));
       } else {
         newIndicators = fullSub.indicators;
       }
-
-      // Validate indicator count
-      if (targetPlan === 'advantage' && newIndicators.length !== 2) {
-        return NextResponse.json({ error: 'Advantage plan requires exactly 2 indicators' }, { status: 400 });
-      }
-
       if (sub.stripe_subscription_id) {
         // Get the current Stripe subscription to find the item ID
         const stripeSub = await stripe.subscriptions.retrieve(sub.stripe_subscription_id);

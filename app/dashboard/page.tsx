@@ -487,11 +487,17 @@ export default function DashboardPage() {
   const [upgradeBilling, setUpgradeBilling] = useState<'monthly' | 'annual'>('monthly');
   const [isBillingSwitch, setIsBillingSwitch] = useState(false); // Same plan, different billing
 
-  const PLAN_PRICES: Record<string, { monthly: number; annual: number }> = {
-    starter: { monthly: 50, annual: 500 },
-    advantage: { monthly: 75, annual: 750 },
-    elite: { monthly: 100, annual: 1000 },
-  };
+  // ----------------------------------------------------------------------
+  // PLAN CHANGES TEMPORARILY DISABLED — 2026-06-14 pricing rebuild.
+  // While the new pricing structure is being built, the in-app upgrade /
+  // billing-switch flow is hidden so no old prices are shown. Flip this back
+  // to true (and rebuild the modal against the new tiers) when ready.
+  // ----------------------------------------------------------------------
+  const UPGRADES_ENABLED = false;
+
+  // PLAN_PRICES — CLEARED 2026-06-14 for pricing rebuild. Repopulate with the
+  // new tiers' amounts when the upgrade flow is rebuilt.
+  const PLAN_PRICES: Record<string, { monthly: number; annual: number }> = {};
 
   const openUpgradeModal = () => {
     if (!subscription) return;
@@ -868,7 +874,7 @@ export default function DashboardPage() {
                     })}
                   </div>
 
-                  {(subscription.plan !== 'elite' || (subscription.plan === 'elite' && subscription.billing === 'monthly')) && subscription.status === 'active' && (
+                  {UPGRADES_ENABLED && (subscription.plan !== 'elite' || (subscription.plan === 'elite' && subscription.billing === 'monthly')) && subscription.status === 'active' && (
                     <div className="mt-6 pt-6 border-t border-white/10">
                       <p className="text-sm text-gray-400 mb-2">
                         {subscription.plan === 'elite' ? 'Save with annual billing' : 'Want access to more indicators?'}
@@ -880,6 +886,13 @@ export default function DashboardPage() {
                         {subscription.plan === 'elite' ? 'Switch to Annual' : 'Upgrade your plan'}
                         <ArrowRight className="w-3 h-3" />
                       </button>
+                    </div>
+                  )}
+                  {!UPGRADES_ENABLED && subscription.status === 'active' && (
+                    <div className="mt-6 pt-6 border-t border-white/10">
+                      <p className="text-sm text-gray-500">
+                        Plan changes are temporarily unavailable while we update our pricing. Your current plan and access are unaffected.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1333,7 +1346,7 @@ export default function DashboardPage() {
                 <h3 className="font-semibold mb-4">Manage Subscription</h3>
                 <div className="space-y-3">
                   {/* Upgrade / Billing switch */}
-                  {(subscription!.plan !== 'elite' || (subscription!.plan === 'elite' && subscription!.billing === 'monthly')) && subscription!.status === 'active' && (
+                  {UPGRADES_ENABLED && (subscription!.plan !== 'elite' || (subscription!.plan === 'elite' && subscription!.billing === 'monthly')) && subscription!.status === 'active' && (
                     <button
                       onClick={openUpgradeModal}
                       className="block w-full text-center py-2 px-4 bg-gradient-to-r from-primary-500 to-accent-500 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-all text-sm font-medium"
@@ -1537,7 +1550,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Upgrade Modal ── */}
-      {showUpgradeModal && subscription && (
+      {UPGRADES_ENABLED && showUpgradeModal && subscription && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
           <FadeIn>
             <div className="glass-card p-8 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto custom-scrollbar">

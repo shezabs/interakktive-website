@@ -9,19 +9,15 @@ function getSupabaseAdmin() {
   return createClient(url, serviceKey);
 }
 
+// PRICE_MAP / PLAN_PRICES — CLEARED 2026-06-14 for pricing rebuild.
+// Old starter/advantage/elite maps removed. Repopulate with new tiers' Stripe
+// price IDs (Vercel env vars) and amounts once the new structure is defined.
 const PRICE_MAP: Record<string, string | undefined> = {
-  'starter_monthly': process.env.STRIPE_PRICE_STARTER_MONTHLY,
-  'starter_annual': process.env.STRIPE_PRICE_STARTER_ANNUAL,
-  'advantage_monthly': process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY,
-  'advantage_annual': process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL,
-  'elite_monthly': process.env.STRIPE_PRICE_ELITE_MONTHLY,
-  'elite_annual': process.env.STRIPE_PRICE_ELITE_ANNUAL,
+  // e.g. 'newtier_monthly': process.env.STRIPE_PRICE_NEWTIER_MONTHLY,
 };
 
 const PLAN_PRICES: Record<string, { monthly: number; annual: number }> = {
-  starter: { monthly: 50, annual: 500 },
-  advantage: { monthly: 75, annual: 750 },
-  elite: { monthly: 100, annual: 1000 },
+  // e.g. newtier: { monthly: 0, annual: 0 },
 };
 
 export async function POST(request: NextRequest) {
@@ -29,7 +25,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { subscriptionId, targetPlan, indicators, billing, isBillingSwitch } = body as {
       subscriptionId: string;
-      targetPlan: 'starter' | 'advantage' | 'elite';
+      targetPlan: string;
       indicators: string[];
       billing: 'monthly' | 'annual';
       isBillingSwitch?: boolean;
@@ -39,29 +35,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Validate indicators
+    // ----------------------------------------------------------------------
+    // INDICATOR VALIDATION — CLEARED 2026-06-14 for pricing rebuild.
+    // Old rules removed: starter=1, advantage=2, elite=5; OPTIONS PRO Elite-only.
+    // Re-add per-tier rules here once new tiers are defined. For now just
+    // validate that any provided indicators are real and de-duplicated.
+    // ----------------------------------------------------------------------
     const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
-    const coreIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
-    if (targetPlan === 'advantage' && indicators.length !== 2) {
-      return NextResponse.json({ error: 'Advantage plan requires exactly 2 indicators' }, { status: 400 });
-    }
-    if (targetPlan === 'elite' && indicators.length !== 5) {
-      return NextResponse.json({ error: 'Elite plan requires all 5 indicators' }, { status: 400 });
-    }
-    if (targetPlan === 'starter' && indicators.length !== 1) {
-      return NextResponse.json({ error: 'Starter plan requires exactly 1 indicator' }, { status: 400 });
-    }
     if (!indicators.every(i => allIndicators.includes(i))) {
       return NextResponse.json({ error: 'Invalid indicator selection' }, { status: 400 });
     }
-    // Starter and Advantage are restricted to the 4 core indicators (OPTIONS PRO is Elite-only)
-    if ((targetPlan === 'starter' || targetPlan === 'advantage') && !indicators.every(i => coreIndicators.includes(i))) {
-      return NextResponse.json(
-        { error: 'Starter and Advantage plans select from CIPHER PRO, PHANTOM PRO, PULSE PRO, or RADAR PRO. OPTIONS PRO is Elite-only.' },
-        { status: 400 }
-      );
-    }
-    // Reject duplicates
     if (new Set(indicators).size !== indicators.length) {
       return NextResponse.json({ error: 'Duplicate indicator selection. Please choose distinct indicators.' }, { status: 400 });
     }
@@ -80,7 +63,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate upgrade direction — allow same plan only if billing is changing
-    const planOrder: Record<string, number> = { starter: 1, advantage: 2, elite: 3 };
+    // Plan ranking — CLEARED 2026-06-14 for pricing rebuild.
+    // Old { starter:1, advantage:2, elite:3 } ordering removed. Repopulate with
+    // the new tiers' upgrade ranking once defined.
+    const planOrder: Record<string, number> = {};
     const isSamePlan = targetPlan === currentSub.plan;
     const isBillingChange = billing !== currentSub.billing;
     
@@ -103,7 +89,10 @@ export async function POST(request: NextRequest) {
     // Store old subscription info in metadata so webhook can handle the swap
 
     // Create new Stripe checkout session for the upgrade
-    const planIdMap: Record<string, string> = { advantage: 'duo', elite: 'suite' };
+    // Plan id mapping — CLEARED 2026-06-14 for pricing rebuild.
+    // Old { advantage:'duo', elite:'suite' } map removed. New checkout uses
+    // canonical plan ids directly; repopulate only if new ids differ.
+    const planIdMap: Record<string, string> = {};
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',

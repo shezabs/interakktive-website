@@ -4,12 +4,18 @@ import { getAdminEmail, getSupabaseAdmin } from '@/app/lib/admin-auth';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Plan prices in cents (USD) — mirrors pricing page.
-// Source of truth: app/lib/indicators-data.ts
+// Plan prices in cents (USD) used to value subscription rows for revenue/MRR.
+// LEGACY (old Starter/Advantage/Elite structure) — retained 2026-06-14 so that
+// HISTORICAL subscription rows still value correctly in the admin revenue
+// charts. ADD the new tiers' amounts here when the new pricing goes live so
+// new rows are valued too. Do not delete the legacy entries — past rows
+// reference them.
 const PLAN_PRICES = {
+  // legacy tiers (pre-2026-06-14)
   starter:   { monthly: 5000,  annual: 50000  },
   advantage: { monthly: 7500,  annual: 75000  },
   elite:     { monthly: 10000, annual: 100000 },
+  // new tiers go here, e.g. newtier: { monthly: 0, annual: 0 },
 } as const;
 
 function monthlyValueCents(plan: string, billing: string): number {

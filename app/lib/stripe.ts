@@ -15,20 +15,21 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-// Price IDs — set in Vercel environment variables
-export const PRICE_IDS = {
-  single_monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY || '',
-  single_annual: process.env.STRIPE_PRICE_STARTER_ANNUAL || '',
-  duo_monthly: process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY || '',
-  duo_annual: process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL || '',
-  suite_monthly: process.env.STRIPE_PRICE_ELITE_MONTHLY || '',
-  suite_annual: process.env.STRIPE_PRICE_ELITE_ANNUAL || '',
-} as const;
+// ==========================================================================
+// PRICE IDs — CLEARED 2026-06-14 for pricing rebuild.
+// Old single/duo/suite (Starter/Advantage/Elite) map removed.
+// Repopulate this map with the new tiers' Stripe price IDs (set as Vercel
+// env vars) once the new structure is defined.
+// ==========================================================================
+export const PRICE_IDS: Record<string, string> = {
+  // e.g. newtier_monthly: process.env.STRIPE_PRICE_NEWTIER_MONTHLY || '',
+};
 
-export type PlanId = 'single' | 'duo' | 'suite';
+// Plan + billing types — repopulate union members for the new tiers.
+export type PlanId = string;
 export type BillingInterval = 'monthly' | 'annual';
 
 export function getPriceId(plan: PlanId, billing: BillingInterval): string {
-  const key = `${plan}_${billing}` as keyof typeof PRICE_IDS;
-  return PRICE_IDS[key];
+  const key = `${plan}_${billing}`;
+  return PRICE_IDS[key] || '';
 }

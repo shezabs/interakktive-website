@@ -482,63 +482,12 @@ export interface PricingTier {
   stripePriceIdAnnual?: string;
 }
 
-export const pricingTiers: PricingTier[] = [
-  {
-    id: 'single',
-    name: 'Starter',
-    description: '',
-    monthlyPrice: 50,
-    annualPrice: 500,
-    annualOriginalPrice: 600,
-    indicators: ['1 indicator from selected ATLAS PRO indicators (CIPHER, PHANTOM, PULSE, RADAR)'],
-    features: [
-      'Full access to your chosen indicator with all features',
-      'All future updates included for that indicator',
-      'ATLAS PRO Academy access (full curriculum)',
-      'Private Discord — community channels',
-      'Live training sessions covering the 4 core indicators',
-      'Recordings of every live session',
-      'Priority support via email',
-    ],
-  },
-  {
-    id: 'duo',
-    name: 'Advantage',
-    description: '',
-    monthlyPrice: 75,
-    annualPrice: 750,
-    annualOriginalPrice: 900,
-    indicators: ['2 indicators from selected ATLAS PRO indicators (CIPHER, PHANTOM, PULSE, RADAR)'],
-    features: [
-      'Everything in Starter, plus:',
-      'Full access to your 2 chosen indicators',
-      'Save vs buying individually',
-      'Swap indicators once per month',
-      'Annual plan: 12 swaps per year',
-    ],
-  },
-  {
-    id: 'suite',
-    name: 'Elite',
-    description: 'Full ATLAS PRO Suite — every current and future indicator, plus the Elite Lounge.',
-    monthlyPrice: 100,
-    annualPrice: 1000,
-    annualOriginalPrice: 1200,
-    indicators: ['Full ATLAS PRO Suite (all current and future indicators)'],
-    features: [
-      'Everything in Advantage, plus:',
-      'OPTIONS PRO included',
-      'Every future indicator added to the suite — automatic',
-      'Elite Lounge on Discord — open-mic voice, speak any time',
-      'Live signals posted by management in the Elite Lounge',
-      'Extended live sessions covering every indicator',
-      'Management Q&A in live sessions',
-      'Priority feature requests',
-      'Early access to beta features',
-    ],
-    isPopular: true,
-  },
-];
+// ==========================================================================
+// PRICING TIERS — CLEARED 2026-06-14 for pricing rebuild.
+// Old 3-tier structure (Starter/Advantage/Elite, single/duo/suite) removed.
+// New tiers to be defined here. Interface retained below for the rebuild.
+// ==========================================================================
+export const pricingTiers: PricingTier[] = [];
 
 export const allIndicators = [...freeIndicators, ...proIndicators];
 

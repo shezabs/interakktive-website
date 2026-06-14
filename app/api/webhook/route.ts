@@ -16,15 +16,12 @@ function getSupabaseAdmin() {
   return createClient(url, serviceKey);
 }
 
-// Map Stripe plan IDs to our plan names
+// Map Stripe price IDs to our plan names.
+// CLEARED 2026-06-14 for pricing rebuild — repopulate with the new tiers'
+// Stripe price IDs (Vercel env vars) once the new structure is defined.
 function getPlanFromPriceId(priceId: string): { plan: string; billing: string } | null {
   const map: Record<string, { plan: string; billing: string }> = {
-    [process.env.STRIPE_PRICE_STARTER_MONTHLY || '']: { plan: 'starter', billing: 'monthly' },
-    [process.env.STRIPE_PRICE_STARTER_ANNUAL || '']: { plan: 'starter', billing: 'annual' },
-    [process.env.STRIPE_PRICE_ADVANTAGE_MONTHLY || '']: { plan: 'advantage', billing: 'monthly' },
-    [process.env.STRIPE_PRICE_ADVANTAGE_ANNUAL || '']: { plan: 'advantage', billing: 'annual' },
-    [process.env.STRIPE_PRICE_ELITE_MONTHLY || '']: { plan: 'elite', billing: 'monthly' },
-    [process.env.STRIPE_PRICE_ELITE_ANNUAL || '']: { plan: 'elite', billing: 'annual' },
+    // e.g. [process.env.STRIPE_PRICE_NEWTIER_MONTHLY || '']: { plan: 'newtier', billing: 'monthly' },
   };
   return map[priceId] || null;
 }
@@ -61,28 +58,19 @@ export async function POST(request: NextRequest) {
 
       const email = session.customer_email || '';
       const tradingViewUsername = session.metadata?.tradingview_username || '';
-      const plan = session.metadata?.plan || 'starter';
+      const plan = session.metadata?.plan || '';
       const billing = session.metadata?.billing || 'monthly';
       const indicatorsRaw = session.metadata?.selected_indicators || '';
       const indicators = indicatorsRaw ? indicatorsRaw.split(',').map(s => s.trim()) : [];
 
-      // Sanitise indicators per plan (defense-in-depth — also enforced by /api/checkout).
-      // Starter and Advantage: drop any non-core indicators (e.g. OPTIONS PRO is Elite-only).
-      // Elite: full suite always granted regardless of metadata.
+      // ----------------------------------------------------------------------
+      // INDICATOR GRANT LOGIC — CLEARED 2026-06-14 for pricing rebuild.
+      // Old per-plan rules (Starter=pick 1, Advantage=pick 2, Elite=full suite,
+      // OPTIONS PRO Elite-only) removed. Repopulate once new tiers are defined.
+      // For now, grant exactly what checkout passed through, de-duplicated.
+      // ----------------------------------------------------------------------
       const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
-      const coreIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
-      const isEliteCheckout = plan === 'suite' || plan === 'elite';
-
-      let finalIndicators: string[];
-      if (isEliteCheckout) {
-        finalIndicators = allIndicators;
-      } else {
-        // Drop anything not in the core 4 — silently strips OPTIONS PRO if it ever appears
-        finalIndicators = indicators.filter(i => coreIndicators.includes(i));
-        // Cap at the plan's allowed count (Starter=1, Advantage=2)
-        const cap = plan === 'single' || plan === 'starter' ? 1 : 2;
-        finalIndicators = finalIndicators.slice(0, cap);
-      }
+      let finalIndicators: string[] = Array.from(new Set(indicators.filter(i => allIndicators.includes(i))));
 
       const stripeCustomerId = typeof session.customer === 'string'
         ? session.customer
@@ -104,8 +92,11 @@ export async function POST(request: NextRequest) {
         periodEnd.setMonth(periodEnd.getMonth() + 1);
       }
 
-      // Normalise plan name (checkout sends 'single'/'duo'/'suite', db expects 'starter'/'advantage'/'elite')
-      const planMap: Record<string, string> = { single: 'starter', duo: 'advantage', suite: 'elite' };
+      // Plan name normalisation — CLEARED 2026-06-14 for pricing rebuild.
+      // Old single→starter / duo→advantage / suite→elite map removed.
+      // New checkout passes the canonical plan id directly; repopulate a map
+      // here only if new checkout ids differ from the stored db plan names.
+      const planMap: Record<string, string> = {};
       const normalisedPlan = planMap[plan] || plan;
 
       // Calculate swap reset date — always 1 month from now regardless of billing cycle

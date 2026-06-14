@@ -28,62 +28,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate plan
-    if (!['single', 'duo', 'suite'].includes(plan)) {
-      return NextResponse.json(
-        { error: 'Invalid plan. Must be single, duo, or suite.' },
-        { status: 400 }
-      );
-    }
-
-    // Validate billing
+    // ------------------------------------------------------------------
+    // PLAN VALIDATION — CLEARED 2026-06-14 for pricing rebuild.
+    // Old rules removed: plan ∈ {single,duo,suite}; Starter=pick 1 / Advantage
+    // =pick 2 from the core 4; Elite=full suite; OPTIONS PRO Elite-only.
+    // Re-add validation here once the new tiers + their indicator rules exist.
+    // For now: require a billing interval and a non-empty plan; trust getPriceId
+    // to reject any plan that isn't configured in the new PRICE_IDS map.
+    // ------------------------------------------------------------------
     if (!['monthly', 'annual'].includes(billing)) {
       return NextResponse.json(
         { error: 'Invalid billing interval. Must be monthly or annual.' },
         { status: 400 }
       );
-    }
-
-    // Validate indicator selection against plan rules.
-    // - Starter (single): exactly 1 indicator, from the 4 core indicators only.
-    // - Advantage (duo): exactly 2 indicators, from the 4 core indicators only.
-    // - Elite (suite): selection ignored on backend (full suite is granted by webhook).
-    const CORE_INDICATORS = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO'];
-    const ELITE_ONLY = ['OPTIONS PRO'];
-
-    if (plan === 'single' || plan === 'duo') {
-      const expected = plan === 'single' ? 1 : 2;
-      const provided = Array.isArray(indicators) ? indicators : [];
-
-      if (provided.length !== expected) {
-        return NextResponse.json(
-          { error: `${plan === 'single' ? 'Starter' : 'Advantage'} plan requires exactly ${expected} indicator${expected > 1 ? 's' : ''}.` },
-          { status: 400 }
-        );
-      }
-
-      // Reject any indicator that is not in the core 4
-      const invalid = provided.filter(name => !CORE_INDICATORS.includes(name));
-      if (invalid.length > 0) {
-        const offending = invalid.join(', ');
-        const isEliteOnly = invalid.some(name => ELITE_ONLY.includes(name));
-        return NextResponse.json(
-          {
-            error: isEliteOnly
-              ? `${offending} is only available on the Elite plan. Starter and Advantage select from CIPHER PRO, PHANTOM PRO, PULSE PRO, or RADAR PRO.`
-              : `Invalid indicator selection: ${offending}. Choose from CIPHER PRO, PHANTOM PRO, PULSE PRO, or RADAR PRO.`,
-          },
-          { status: 400 }
-        );
-      }
-
-      // Reject duplicates (e.g. user submits ['CIPHER PRO', 'CIPHER PRO'] for duo)
-      if (new Set(provided).size !== provided.length) {
-        return NextResponse.json(
-          { error: 'Duplicate indicator selection. Please choose distinct indicators.' },
-          { status: 400 }
-        );
-      }
     }
 
     // Check for existing active subscription with this email
@@ -112,12 +69,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Plan display names for the checkout
-    const planNames: Record<PlanId, string> = {
-      single: 'ATLAS PRO — Starter',
-      duo: 'ATLAS PRO — Advantage',
-      suite: 'ATLAS PRO — Elite',
-    };
+    // Plan display names — CLEARED 2026-06-14 for pricing rebuild.
+    // Repopulate with the new tiers' display names if needed for the checkout.
+    const planNames: Record<string, string> = {};
 
     // Create Stripe Checkout Session
     const session = await getStripe().checkout.sessions.create({
