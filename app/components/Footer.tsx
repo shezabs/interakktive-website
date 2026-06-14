@@ -150,6 +150,21 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/disclaimer" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Risk Disclaimer
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy-rights" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Privacy Rights
+                </Link>
+              </li>
+              <li>
+                <Link href="/do-not-sell" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Do Not Sell
+                </Link>
+              </li>
+              <li>
                 <button
                   onClick={openPreferences}
                   className="text-gray-400 hover:text-white text-sm transition-colors text-left"
