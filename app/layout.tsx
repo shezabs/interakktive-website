@@ -4,6 +4,7 @@ import './globals.css'
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
 import GlobalUI from './components/GlobalUI'
+import { CookieConsentProvider } from './components/CookieConsent'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   keywords: ['trading indicators', 'TradingView', 'ATLAS suite', 'smart money concepts', 'market structure', 'trading signals', 'momentum analysis', 'order blocks', 'Pine Script', 'diagnostic trading', 'Ghost Performance', 'narrative engine'],
   authors: [{ name: 'Interakktive' }],
   creator: 'Interakktive',
-  publisher: 'Interakktive Ltd',
+  publisher: 'Shezab MediaWorx Ltd',
   robots: {
     index: true,
     follow: true,
@@ -56,12 +57,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <GlobalUI />
-        <Navigation />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <CookieConsentProvider>
+          <GlobalUI />
+          <Navigation />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </CookieConsentProvider>
       </body>
     </html>
   )

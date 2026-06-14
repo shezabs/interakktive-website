@@ -2,6 +2,7 @@
 
 import { ScrollProgress, BackToTop } from './animations';
 import ChatWidget from './ChatWidget';
+import CookieConsentBanner from './CookieConsentBanner';
 
 export default function GlobalUI() {
   return (
@@ -9,6 +10,7 @@ export default function GlobalUI() {
       <ScrollProgress />
       <BackToTop />
       <ChatWidget />
+      <CookieConsentBanner />
     </>
   );
 }

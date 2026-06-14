@@ -25,18 +25,15 @@ export default function TermsOfServicePage() {
             <h1 className="text-3xl md:text-4xl font-bold">Terms of Service</h1>
           </div>
 
-          <p className="text-gray-400 mb-8">Last updated: June 2026</p>
+          <p className="text-gray-400 mb-8">Last updated: January 2026</p>
 
           <div className="prose prose-invert max-w-none space-y-8">
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-white">1. Agreement to Terms</h2>
               <p className="text-gray-300 leading-relaxed">
-                By accessing or using Interakktive&rsquo;s website and services, including our TradingView indicators
-                (&ldquo;Services&rdquo;), you agree to be bound by these Terms of Service (&ldquo;Terms&rdquo;).
-                Interakktive is a brand operated by <strong className="text-white">Shezab MediaWorx Ltd</strong>,
-                a company registered in England and Wales (company number 16364787, registered office:
-                Apartment 45 Dock Office, Furness Quay, Salford, England, M50 3AA) (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;).
-                If you do not agree to these Terms, please do not use our Services.
+                By accessing or using Interakktive's website and services, including our TradingView indicators
+                ("Services"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree
+                to these Terms, please do not use our Services.
               </p>
             </section>
 
@@ -87,7 +84,7 @@ export default function TermsOfServicePage() {
             <section>
               <h2 className="text-2xl font-semibold mb-4 text-white">5. Intellectual Property</h2>
               <p className="text-gray-300 leading-relaxed mb-4">
-                All content, indicators, code, designs, and materials on our platform are owned by Shezab MediaWorx Ltd (Interakktive)
+                All content, indicators, code, designs, and materials on our platform are owned by Interakktive
                 and protected by intellectual property laws. You may not:
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-300 ml-4">
@@ -113,48 +110,20 @@ export default function TermsOfServicePage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">7. Subscriptions, billing and renewals</h2>
-              <p className="text-gray-300 leading-relaxed mb-4">
-                Access to ATLAS PRO indicators is provided through paid subscription plans. By subscribing you agree that:
-              </p>
+              <h2 className="text-2xl font-semibold mb-4 text-white">7. ATLAS PRO Access</h2>
+              <p className="text-gray-300 leading-relaxed mb-4">ATLAS PRO indicators are provided on an invite-only basis. We reserve the right to:</p>
               <ul className="list-disc list-inside space-y-2 text-gray-300 ml-4">
-                <li>Subscription fees are charged in US dollars (USD) and processed securely by Stripe.</li>
-                <li>Subscriptions renew automatically at the end of each billing period (monthly or annual) unless cancelled before the renewal date.</li>
-                <li>You authorise us, via Stripe, to charge your payment method for each renewal until you cancel.</li>
-                <li>You can cancel at any time from your account dashboard; cancellation stops future renewals and your access continues until the end of the current paid period.</li>
-                <li>We may change our prices, and will give reasonable notice of changes that affect your renewals. Price changes do not affect the period you have already paid for.</li>
-                <li>We may approve, deny, modify, or discontinue access or features at our reasonable discretion.</li>
+                <li>Approve or deny access requests at our discretion</li>
+                <li>Revoke access for violations of these Terms</li>
+                <li>Modify or discontinue ATLAS PRO features</li>
+                <li>Introduce pricing for premium features in the future</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">8. Refunds and cancellation</h2>
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
-                <p className="text-yellow-200 font-semibold mb-2">All sales are final</p>
-                <p className="text-gray-300 text-sm">
-                  Subscription fees are non-refundable. By subscribing you receive immediate access to digital
-                  content, and all payments — including renewals and partial billing periods — are final.
-                </p>
-              </div>
-              <p className="text-gray-300 leading-relaxed mb-4">
-                Our Services provide immediate digital access. By subscribing and gaining access to the
-                indicators and digital content, you expressly request that we begin supplying them straight
-                away and you acknowledge that you lose any statutory 14-day right of withdrawal once access
-                has been granted. You agree that no refunds will be given for change of mind, lack of use, or
-                dissatisfaction with results.
-              </p>
+              <h2 className="text-2xl font-semibold mb-4 text-white">8. Limitation of Liability</h2>
               <p className="text-gray-300 leading-relaxed">
-                Cancelling stops future renewals; your access continues until the end of the period you have
-                already paid for. Nothing in this section limits the rights you have under applicable consumer
-                protection law where we are at fault — for example, if the Services are faulty, not as
-                described, or you were charged in error.
-              </p>
-            </section>
-
-            <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">9. Limitation of Liability</h2>
-              <p className="text-gray-300 leading-relaxed">
-                TO THE MAXIMUM EXTENT PERMITTED BY LAW, SHEZAB MEDIA WORX LIMITED SHALL NOT BE LIABLE FOR ANY INDIRECT,
+                TO THE MAXIMUM EXTENT PERMITTED BY LAW, INTERAKKTIVE SHALL NOT BE LIABLE FOR ANY INDIRECT,
                 INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING BUT NOT LIMITED TO LOSS
                 OF PROFITS, DATA, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR USE OF OUR SERVICES OR
                 ANY TRADING DECISIONS MADE BASED ON OUR INDICATORS.
@@ -162,7 +131,7 @@ export default function TermsOfServicePage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">10. Disclaimer of Warranties</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-white">9. Disclaimer of Warranties</h2>
               <p className="text-gray-300 leading-relaxed">
                 OUR SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND,
                 EITHER EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT OUR SERVICES WILL BE UNINTERRUPTED,
@@ -171,16 +140,16 @@ export default function TermsOfServicePage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">11. Indemnification</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-white">10. Indemnification</h2>
               <p className="text-gray-300 leading-relaxed">
-                You agree to indemnify and hold harmless Shezab MediaWorx Ltd and its officers, directors, employees,
+                You agree to indemnify and hold harmless Interakktive and its officers, directors, employees,
                 and agents from any claims, damages, losses, or expenses arising from your use of our Services
                 or violation of these Terms.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">12. Termination</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-white">11. Termination</h2>
               <p className="text-gray-300 leading-relaxed">
                 We may terminate or suspend your access to our Services immediately, without prior notice,
                 for any reason, including breach of these Terms. Upon termination, your right to use our
@@ -189,7 +158,7 @@ export default function TermsOfServicePage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">13. Changes to Terms</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-white">12. Changes to Terms</h2>
               <p className="text-gray-300 leading-relaxed">
                 We reserve the right to modify these Terms at any time. We will provide notice of significant
                 changes by posting the updated Terms on our website. Your continued use of our Services after
@@ -198,31 +167,29 @@ export default function TermsOfServicePage() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">14. Governing Law</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-white">13. Governing Law</h2>
               <p className="text-gray-300 leading-relaxed">
-                These Terms are governed by and construed in accordance with the laws of England and Wales,
-                and any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales,
+                These Terms shall be governed by and construed in accordance with applicable laws,
                 without regard to conflict of law principles.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mb-4 text-white">15. Contact Information</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-white">14. Contact Information</h2>
               <p className="text-gray-300 leading-relaxed">
                 If you have any questions about these Terms, please contact us at:
               </p>
-              <p className="text-primary-400 mt-2">shezabmediaworxltd@gmail.com</p>
+              <p className="text-primary-400 mt-2">support@interakktive.com</p>
             </section>
           </div>
         </div>
 
-        <div className="mt-8 text-center flex items-center justify-center gap-4">
-          <Link href="/privacy" className="text-primary-400 hover:text-primary-300 transition-colors">
-            Privacy Policy
-          </Link>
-          <span className="text-gray-600">|</span>
-          <Link href="/cookies" className="text-primary-400 hover:text-primary-300 transition-colors">
-            Cookie Policy
+        <div className="mt-8 text-center">
+          <Link
+            href="/privacy"
+            className="text-primary-400 hover:text-primary-300 transition-colors"
+          >
+            View Privacy Policy
           </Link>
         </div>
       </div>

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Youtube, Instagram, Mail, Phone } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useConsent } from './CookieConsent';
 
 // WhatsApp icon component
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -57,6 +58,7 @@ function XIcon({ className }: { className?: string }) {
 
 export default function Footer() {
   const pathname = usePathname();
+  const { openPreferences } = useConsent();
   if (pathname?.startsWith('/admin')) return null;
 
   return (
@@ -141,6 +143,19 @@ export default function Footer() {
                 <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
                   Terms of Service
                 </Link>
+              </li>
+              <li>
+                <Link href="/cookies" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <button
+                  onClick={openPreferences}
+                  className="text-gray-400 hover:text-white text-sm transition-colors text-left"
+                >
+                  Cookie settings
+                </button>
               </li>
             </ul>
           </div>
@@ -254,6 +269,10 @@ export default function Footer() {
             <span className="text-gray-600">|</span>
             <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
               Terms
+            </Link>
+            <span className="text-gray-600">|</span>
+            <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">
+              Cookies
             </Link>
           </div>
         </div>
