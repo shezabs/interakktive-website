@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import {
   ArrowRight, User, Crown, LogOut, Crosshair, Eye, Activity, Radio,
-  ExternalLink, BookOpen, RefreshCw, Check, AlertCircle, Loader2, ArrowLeftRight, Pencil,
+  ExternalLink, BookOpen, RefreshCw, Check, AlertCircle, Loader2, ArrowLeftRight, Pencil, Lock,
   Award, Download,
 } from 'lucide-react';
 import { FadeIn, FadeInView, SectionWrapper } from '@/app/components/animations';
@@ -28,7 +28,7 @@ const CORE_INDICATORS = INDICATORS.filter(i => i.id !== 'OPTIONS PRO');
 
 interface Subscription {
   id: string;
-  plan: 'starter' | 'advantage' | 'elite';
+  plan: string;
   billing: 'monthly' | 'annual';
   indicators: string[];
   status: string;
@@ -36,9 +36,10 @@ interface Subscription {
   swap_reset_date: string | null;
   current_period_end: string | null;
   tradingview_username: string;
+  username_change_used?: boolean;
 }
 
-const PLAN_NAMES: Record<string, string> = { starter: 'Starter', advantage: 'Advantage', elite: 'Elite' };
+const PLAN_NAMES: Record<string, string> = { free: 'FREE', pro: 'ATLAS PRO', max: 'ATLAS MAX' };
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -296,6 +297,12 @@ export default function DashboardPage() {
       setEditingTvUsername(false);
       return;
     }
+    // One free self-service change. After that the field is locked and the
+    // user must email support; an admin can reset username_change_used.
+    if (subscription && subscription.username_change_used) {
+      setTvUsernameError('You have already used your free username change. Please email support@interakktive.com to change it again.');
+      return;
+    }
     setSavingTvUsername(true);
     setTvUsernameError('');
     setTvUsernameSuccess(false);
@@ -305,12 +312,13 @@ export default function DashboardPage() {
         data: { tradingview_username: newTvUsername.trim() },
       });
 
-      // If they have a subscription, update that too
+      // If they have a subscription, update that too (and mark the free change used)
       if (subscription) {
         const { error: updateErr } = await supabase
           .from('subscriptions')
           .update({
             tradingview_username: newTvUsername.trim(),
+            username_change_used: true,
             updated_at: new Date().toISOString(),
           })
           .eq('id', subscription.id);
@@ -328,7 +336,7 @@ export default function DashboardPage() {
           }),
         });
 
-        setSubscription(prev => prev ? { ...prev, tradingview_username: newTvUsername.trim() } : null);
+        setSubscription(prev => prev ? { ...prev, tradingview_username: newTvUsername.trim(), username_change_used: true } : null);
       }
 
       // Update local user state
@@ -945,13 +953,19 @@ export default function DashboardPage() {
                     {!editingTvUsername ? (
                       <div className="flex items-center gap-2">
                         <p className="text-white">{subscription?.tradingview_username || user?.user_metadata?.tradingview_username}</p>
-                        <button
-                          onClick={() => { setNewTvUsername(subscription?.tradingview_username || user?.user_metadata?.tradingview_username || ''); setEditingTvUsername(true); setTvUsernameError(''); }}
-                          className="text-gray-500 hover:text-primary-400 transition-colors"
-                          title="Edit TradingView username"
-                        >
-                          <Pencil className="w-3 h-3" />
-                        </button>
+                        {!subscription?.username_change_used ? (
+                          <button
+                            onClick={() => { setNewTvUsername(subscription?.tradingview_username || user?.user_metadata?.tradingview_username || ''); setEditingTvUsername(true); setTvUsernameError(''); }}
+                            className="text-gray-500 hover:text-primary-400 transition-colors"
+                            title="Edit TradingView username (one free change)"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        ) : (
+                          <span className="text-gray-600" title="Username change used">
+                            <Lock className="w-3 h-3" />
+                          </span>
+                        )}
                       </div>
                     ) : (
                       <div className="space-y-2 mt-1">
@@ -982,6 +996,12 @@ export default function DashboardPage() {
                     )}
                     {tvUsernameSuccess && (
                       <p className="text-xs text-green-400 mt-1">Updated! We'll update your TradingView access within 4 hours.</p>
+                    )}
+                    {subscription?.username_change_used && !editingTvUsername && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        You&rsquo;ve used your free username change. To change it again, email{' '}
+                        <a href="mailto:support@interakktive.com" className="text-primary-400 hover:text-primary-300">support@interakktive.com</a>.
+                      </p>
                     )}
                   </div>
                 )}

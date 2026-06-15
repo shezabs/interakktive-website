@@ -553,7 +553,7 @@ export const pricingTiers: PricingTier[] = [
     seats: 4,
     ctaLabel: 'Get Started',
     activationNote:
-      'After checkout, email your 4 TradingView usernames to shezabmediaworxltd@gmail.com to activate your seats. You can request username changes anytime; your plan always includes 4 seats.',
+      'After checkout, email your 4 TradingView usernames to support@interakktive.com to activate your seats. You can request username changes anytime; your plan always includes 4 seats.',
     features: [
       'Everything included in ATLAS PRO, plus:',
       '4 TradingView seats (4 usernames)',

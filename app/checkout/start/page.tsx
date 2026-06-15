@@ -131,7 +131,7 @@ function CheckoutStartInner() {
                   <div className="rounded-lg border border-primary-500/20 bg-primary-500/[0.05] p-4">
                     <p className="text-sm text-gray-300 leading-relaxed">
                       After checkout, email your <strong className="text-white">4 TradingView usernames</strong> to{' '}
-                      <span className="text-primary-400">shezabmediaworxltd@gmail.com</span> to activate your seats.
+                      <span className="text-primary-400">support@interakktive.com</span> to activate your seats.
                       You can request username changes anytime; your plan always includes 4 seats.
                     </p>
                   </div>

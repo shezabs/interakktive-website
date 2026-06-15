@@ -83,6 +83,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       force_cancel:        'sub.cancel_immediate', // also covers cancel_period_end; we check immediate vs period below
       reactivate:          'sub.reactivate',
       reset_swap:          'sub.reset_swap',
+      reset_username_change: 'sub.reset_swap',
       extend_period:       'sub.extend_period',
       mark_tv_invite:      'sub.mark_tv_invite',
       update_notes:        'sub.edit_notes',
@@ -236,6 +237,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       if (error) throw error;
       await writeAuditLog({
         adminEmail, action: 'subscription.reset_swap', targetType: 'subscription', targetId: params.id,
+        before, after, ipAddress: getClientIp(req),
+      });
+      return NextResponse.json({ subscription: after });
+    }
+
+    if (action === 'reset_username_change') {
+      const { data: after, error } = await supabase
+        .from('subscriptions')
+        .update({ username_change_used: false, updated_at: new Date().toISOString() })
+        .eq('id', params.id)
+        .select()
+        .single();
+      if (error) throw error;
+      await writeAuditLog({
+        adminEmail, action: 'subscription.reset_username_change', targetType: 'subscription', targetId: params.id,
         before, after, ipAddress: getClientIp(req),
       });
       return NextResponse.json({ subscription: after });

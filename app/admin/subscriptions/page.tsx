@@ -29,6 +29,7 @@ interface Subscription {
   current_period_start: string | null;
   current_period_end: string | null;
   tv_invite_sent: boolean;
+  username_change_used?: boolean;
   admin_notes: string | null;
   created_at: string;
   updated_at: string;
@@ -514,6 +515,14 @@ export default function AdminSubscriptionsPage() {
                   onClick={() => runAction('reset_swap')}
                   loading={actionLoading === 'reset_swap'}
                 />
+                {selected.username_change_used && (
+                  <ActionBtn
+                    icon={RotateCcw}
+                    label="Reset username change"
+                    onClick={() => runAction('reset_username_change')}
+                    loading={actionLoading === 'reset_username_change'}
+                  />
+                )}
                 {selected.status === 'active' && (
                   <>
                     {can('sub.cancel_period_end') && (
