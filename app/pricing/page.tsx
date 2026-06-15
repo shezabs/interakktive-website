@@ -166,7 +166,12 @@ function PriceCard({
         )}
       </div>
 
-      <div className="mb-6 min-h-[76px]">
+      <div className="mb-6">
+        <div className="h-9 flex items-end">
+          {tier.priceNote && (
+            <p className="text-xs text-gray-400 leading-tight">{tier.priceNote}</p>
+          )}
+        </div>
         <div className="flex items-baseline gap-1">
           <span className="text-4xl font-bold text-white">${fmtPrice(price)}</span>
           {!tier.isFree && <span className="text-gray-400">{period}</span>}
