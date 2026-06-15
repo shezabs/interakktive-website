@@ -167,7 +167,7 @@ function PriceCard({
       </div>
 
       <div className="mb-6">
-        <div className="h-9 flex items-end">
+        <div className="h-7 flex items-start">
           {tier.priceNote && (
             <p className="text-xs text-gray-400 leading-tight">{tier.priceNote}</p>
           )}
@@ -175,7 +175,6 @@ function PriceCard({
         <div className="flex items-baseline gap-1">
           <span className="text-4xl font-bold text-white">${fmtPrice(price)}</span>
           {!tier.isFree && <span className="text-gray-400">{period}</span>}
-          {tier.isFree && <span className="text-gray-400">/year</span>}
         </div>
         {showStrikethrough ? (
           <div className="flex items-center gap-2 mt-1">

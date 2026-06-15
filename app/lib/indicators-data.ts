@@ -508,7 +508,7 @@ export const pricingTiers: PricingTier[] = [
     ctaLabel: 'Sign Up Free',
     ctaHref: '/signup',
     features: [
-      '9 basic indicators',
+      'All Free Indicators',
       '3 lessons of Trading Academy',
       'Free trading calculators (position size, risk-to-reward, pip value, lot size & more)',
       'Free YouTube videos',
@@ -523,7 +523,7 @@ export const pricingTiers: PricingTier[] = [
     description: 'The complete ATLAS PRO toolkit for the individual trader.',
     recommendedFor: 'Individual Clients',
     badge: 'MOST POPULAR',
-    priceNote: 'Discounts applicable on promotional campaigns',
+    priceNote: 'Pre-Discount',
     monthlyPrice: 99.99,
     annualPrice: 999.99,
     annualOriginalPrice: 1199.99,
@@ -532,7 +532,7 @@ export const pricingTiers: PricingTier[] = [
     ctaLabel: 'Get Started',
     features: [
       'Everything included in FREE, plus:',
-      'All 5 premium indicators on TradingView (1 seat)',
+      'All premium indicators on TradingView (1 seat)',
       'Full trading calculator suite + premium calculators (prop-firm challenge, drawdown recovery, risk-of-ruin)',
       'Personal trade journal & performance tracker',
       'Full Trading Academy + Prop Firm Manager',
