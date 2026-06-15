@@ -93,7 +93,7 @@ function CheckoutStartInner() {
             <div className="glass-card rounded-xl p-7">
               <h1 className="text-2xl font-bold mb-1">Checkout</h1>
               <p className="text-gray-400 mb-6">
-                {tier.name} — ${price.toLocaleString()}/{period}
+                {tier.name} — ${price.toLocaleString('en-US', { minimumFractionDigits: (Math.round(price * 100) % 100 !== 0) ? 2 : 0, maximumFractionDigits: 2 })}/{period}
                 {billingParam === 'annual' && tier.annualOriginalPrice && (
                   <span className="text-primary-400"> (2 months free)</span>
                 )}

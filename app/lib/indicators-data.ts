@@ -482,6 +482,7 @@ export interface PricingTier {
   features: string[];
   isPopular?: boolean;
   isFree?: boolean;
+  hideCta?: boolean;
   ctaLabel?: string;
   ctaHref?: string;          // overrides checkout for free/contact tiers
   activationNote?: string;   // shown post-purchase guidance (e.g. MAX seats by email)
@@ -504,7 +505,7 @@ export const pricingTiers: PricingTier[] = [
     monthlyPrice: 0,
     annualPrice: 0,
     isFree: true,
-    ctaLabel: 'Get Started',
+    ctaLabel: 'Sign Up Free',
     ctaHref: '/signup',
     features: [
       '9 basic indicators',
@@ -512,7 +513,8 @@ export const pricingTiers: PricingTier[] = [
       'Free trading calculators (position size, risk-to-reward, pip value, lot size & more)',
       'Free YouTube videos',
       'Free Discord groups',
-      'WhatsApp public "Interakktive Hub" group',
+      'WhatsApp "Interakktive Hub" group',
+      'WhatsApp broadcast channels',
     ],
   },
   {
@@ -521,9 +523,9 @@ export const pricingTiers: PricingTier[] = [
     description: 'The complete ATLAS PRO toolkit for the individual trader.',
     recommendedFor: 'Individual Clients',
     badge: 'MOST POPULAR',
-    monthlyPrice: 100,
-    annualPrice: 1000,
-    annualOriginalPrice: 1200,
+    monthlyPrice: 99.99,
+    annualPrice: 999.99,
+    annualOriginalPrice: 1199.99,
     seats: 1,
     isPopular: true,
     ctaLabel: 'Get Started',
@@ -537,8 +539,7 @@ export const pricingTiers: PricingTier[] = [
       'Unlisted (private) YouTube videos',
       'Premium (private) Discord groups',
       'Live (recorded) trading & learning sessions',
-      'WhatsApp private "ATLAS Inner Circle" group',
-      'WhatsApp private broadcast channels',
+      'WhatsApp "ATLAS Inner Circle" group',
     ],
   },
   {
@@ -547,9 +548,9 @@ export const pricingTiers: PricingTier[] = [
     description: 'Multi-seat access and weekly educational commentary for teams and institutions.',
     recommendedFor: 'Institutional Clients',
     badge: 'BEST FOR TEAMS',
-    monthlyPrice: 300,
-    annualPrice: 3000,
-    annualOriginalPrice: 3600,
+    monthlyPrice: 299.99,
+    annualPrice: 2999.99,
+    annualOriginalPrice: 3599.99,
     seats: 4,
     ctaLabel: 'Get Started',
     activationNote:
