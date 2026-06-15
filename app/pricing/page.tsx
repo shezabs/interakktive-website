@@ -166,13 +166,13 @@ function PriceCard({
         )}
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 min-h-[76px]">
         <div className="flex items-baseline gap-1">
           <span className="text-4xl font-bold text-white">${fmtPrice(price)}</span>
           {!tier.isFree && <span className="text-gray-400">{period}</span>}
           {tier.isFree && <span className="text-gray-400">/year</span>}
         </div>
-        {showStrikethrough && (
+        {showStrikethrough ? (
           <div className="flex items-center gap-2 mt-1">
             <span className="text-sm text-gray-500 line-through">
               ${fmtPrice(tier.annualOriginalPrice!)}/year
@@ -181,6 +181,8 @@ function PriceCard({
               Save ${fmtPrice(Math.round((tier.annualOriginalPrice! - tier.annualPrice) * 100) / 100)}
             </span>
           </div>
+        ) : (
+          <div className="mt-1 h-5" aria-hidden="true" />
         )}
       </div>
 
