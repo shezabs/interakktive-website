@@ -12,36 +12,41 @@ function getSupabaseAdmin() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { plan, billing, email, tradingViewUsername, indicators } = body as {
+    const { plan, billing, email, tradingViewUsername } = body as {
       plan: PlanId;
       billing: BillingInterval;
       email: string;
-      tradingViewUsername: string;
-      indicators?: string[];
+      tradingViewUsername?: string;
     };
 
-    // Validate required fields
-    if (!plan || !billing || !email || !tradingViewUsername) {
+    // Validate plan + billing
+    if (!plan || !billing || !email) {
       return NextResponse.json(
-        { error: 'Missing required fields: plan, billing, email, tradingViewUsername' },
+        { error: 'Missing required fields: plan, billing, email' },
         { status: 400 }
       );
     }
-
-    // ------------------------------------------------------------------
-    // PLAN VALIDATION — CLEARED 2026-06-14 for pricing rebuild.
-    // Old rules removed: plan ∈ {single,duo,suite}; Starter=pick 1 / Advantage
-    // =pick 2 from the core 4; Elite=full suite; OPTIONS PRO Elite-only.
-    // Re-add validation here once the new tiers + their indicator rules exist.
-    // For now: require a billing interval and a non-empty plan; trust getPriceId
-    // to reject any plan that isn't configured in the new PRICE_IDS map.
-    // ------------------------------------------------------------------
+    if (!['pro', 'max'].includes(plan)) {
+      return NextResponse.json(
+        { error: 'Invalid plan. Must be pro or max.' },
+        { status: 400 }
+      );
+    }
     if (!['monthly', 'annual'].includes(billing)) {
       return NextResponse.json(
         { error: 'Invalid billing interval. Must be monthly or annual.' },
         { status: 400 }
       );
     }
+    // PRO requires a TradingView username at checkout (single seat, applied automatically).
+    // MAX collects its 4 usernames by email after checkout, so it is not required here.
+    if (plan === 'pro' && !tradingViewUsername) {
+      return NextResponse.json(
+        { error: 'TradingView username is required for the ATLAS PRO plan.' },
+        { status: 400 }
+      );
+    }
+    const tvUsername = tradingViewUsername || '';
 
     // Check for existing active subscription with this email
     const supabaseAdmin = getSupabaseAdmin();
@@ -69,9 +74,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Plan display names — CLEARED 2026-06-14 for pricing rebuild.
-    // Repopulate with the new tiers' display names if needed for the checkout.
-    const planNames: Record<string, string> = {};
+    // Plan display names (new pricing 2026-06-14)
+    const planNames: Record<string, string> = {
+      pro: 'ATLAS PRO Suite',
+      max: 'ATLAS MAX Suite',
+    };
+    void planNames;
 
     // Create Stripe Checkout Session
     const session = await getStripe().checkout.sessions.create({
@@ -87,14 +95,12 @@ export async function POST(request: NextRequest) {
       metadata: {
         plan,
         billing,
-        tradingview_username: tradingViewUsername,
-        selected_indicators: indicators ? indicators.join(',') : '',
+        tradingview_username: tvUsername,
       },
       subscription_data: {
         metadata: {
           plan,
-          tradingview_username: tradingViewUsername,
-          selected_indicators: indicators ? indicators.join(',') : '',
+          tradingview_username: tvUsername,
         },
       },
       success_url: `${request.nextUrl.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,

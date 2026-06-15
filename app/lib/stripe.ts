@@ -16,17 +16,18 @@ export function getStripe(): Stripe {
 }
 
 // ==========================================================================
-// PRICE IDs — CLEARED 2026-06-14 for pricing rebuild.
-// Old single/duo/suite (Starter/Advantage/Elite) map removed.
-// Repopulate this map with the new tiers' Stripe price IDs (set as Vercel
-// env vars) once the new structure is defined.
+// PRICE IDs — new pricing (2026-06-14): ATLAS PRO + ATLAS MAX.
+// Create these 4 prices in Stripe (USD) and set the matching Vercel env vars.
+// FREE has no price (sign-up only).
 // ==========================================================================
 export const PRICE_IDS: Record<string, string> = {
-  // e.g. newtier_monthly: process.env.STRIPE_PRICE_NEWTIER_MONTHLY || '',
+  pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || '',
+  pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL || '',
+  max_monthly: process.env.STRIPE_PRICE_MAX_MONTHLY || '',
+  max_annual: process.env.STRIPE_PRICE_MAX_ANNUAL || '',
 };
 
-// Plan + billing types — repopulate union members for the new tiers.
-export type PlanId = string;
+export type PlanId = 'pro' | 'max';
 export type BillingInterval = 'monthly' | 'annual';
 
 export function getPriceId(plan: PlanId, billing: BillingInterval): string {

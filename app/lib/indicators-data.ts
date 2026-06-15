@@ -472,22 +472,100 @@ export interface PricingTier {
   id: string;
   name: string;
   description: string;
+  recommendedFor?: string;
+  badge?: string;
   monthlyPrice: number;
   annualPrice: number;
   annualOriginalPrice?: number;
-  indicators: string[];
+  priceNote?: string;        // e.g. "Starting from" or activation note
+  seats?: number;
   features: string[];
   isPopular?: boolean;
+  isFree?: boolean;
+  ctaLabel?: string;
+  ctaHref?: string;          // overrides checkout for free/contact tiers
+  activationNote?: string;   // shown post-purchase guidance (e.g. MAX seats by email)
   stripePriceIdMonthly?: string;
   stripePriceIdAnnual?: string;
 }
 
 // ==========================================================================
-// PRICING TIERS — CLEARED 2026-06-14 for pricing rebuild.
-// Old 3-tier structure (Starter/Advantage/Elite, single/duo/suite) removed.
-// New tiers to be defined here. Interface retained below for the rebuild.
+// PRICING TIERS — rebuilt 2026-06-14.
+// FREE / ATLAS PRO / ATLAS MAX. No indicator pick-and-choose: each paid tier
+// grants a fixed set. Annual = 2 months free. All commentary framed as
+// educational, not financial advice.
 // ==========================================================================
-export const pricingTiers: PricingTier[] = [];
+export const pricingTiers: PricingTier[] = [
+  {
+    id: 'free',
+    name: 'FREE Suite',
+    description: 'Get started with our core tools and community at no cost.',
+    recommendedFor: 'General Public',
+    monthlyPrice: 0,
+    annualPrice: 0,
+    isFree: true,
+    ctaLabel: 'Get Started',
+    ctaHref: '/signup',
+    features: [
+      '9 basic indicators',
+      '3 lessons of Trading Academy',
+      'Free trading calculators (position size, risk-to-reward, pip value, lot size & more)',
+      'Free YouTube videos',
+      'Free Discord groups',
+      'WhatsApp public "Interakktive Hub" group',
+    ],
+  },
+  {
+    id: 'pro',
+    name: 'ATLAS PRO Suite',
+    description: 'The complete ATLAS PRO toolkit for the individual trader.',
+    recommendedFor: 'Individual Clients',
+    badge: 'MOST POPULAR',
+    monthlyPrice: 100,
+    annualPrice: 1000,
+    annualOriginalPrice: 1200,
+    seats: 1,
+    isPopular: true,
+    ctaLabel: 'Get Started',
+    features: [
+      'Everything included in FREE, plus:',
+      'All 5 premium indicators on TradingView (1 seat)',
+      'Full trading calculator suite + premium calculators (prop-firm challenge, drawdown recovery, risk-of-ruin)',
+      'Personal trade journal & performance tracker',
+      'Full Trading Academy + Prop Firm Manager',
+      'Support team facility',
+      'Unlisted (private) YouTube videos',
+      'Premium (private) Discord groups',
+      'Live (recorded) trading & learning sessions',
+      'WhatsApp private "ATLAS Inner Circle" group',
+      'WhatsApp private broadcast channels',
+    ],
+  },
+  {
+    id: 'max',
+    name: 'ATLAS MAX Suite',
+    description: 'Multi-seat access and weekly educational commentary for teams and institutions.',
+    recommendedFor: 'Institutional Clients',
+    badge: 'BEST FOR TEAMS',
+    monthlyPrice: 300,
+    annualPrice: 3000,
+    annualOriginalPrice: 3600,
+    seats: 4,
+    ctaLabel: 'Get Started',
+    activationNote:
+      'After checkout, email your 4 TradingView usernames to shezabmediaworxltd@gmail.com to activate your seats. You can request username changes anytime; your plan always includes 4 seats.',
+    features: [
+      'Everything included in ATLAS PRO, plus:',
+      '4 TradingView seats (4 usernames)',
+      'Priority support team facility',
+      'Weekly educational market recap & roundup',
+      'Weekly technical education & market recap',
+      'Weekly session open/close commentary',
+      'Weekly general market commentary',
+      'WhatsApp private "Custom-Built Requests" group',
+    ],
+  },
+];
 
 export const allIndicators = [...freeIndicators, ...proIndicators];
 

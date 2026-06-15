@@ -16,12 +16,13 @@ function getSupabaseAdmin() {
   return createClient(url, serviceKey);
 }
 
-// Map Stripe price IDs to our plan names.
-// CLEARED 2026-06-14 for pricing rebuild — repopulate with the new tiers'
-// Stripe price IDs (Vercel env vars) once the new structure is defined.
+// Map Stripe price IDs to our plan names (new pricing 2026-06-14).
 function getPlanFromPriceId(priceId: string): { plan: string; billing: string } | null {
   const map: Record<string, { plan: string; billing: string }> = {
-    // e.g. [process.env.STRIPE_PRICE_NEWTIER_MONTHLY || '']: { plan: 'newtier', billing: 'monthly' },
+    [process.env.STRIPE_PRICE_PRO_MONTHLY || 'x_pro_m']: { plan: 'pro', billing: 'monthly' },
+    [process.env.STRIPE_PRICE_PRO_ANNUAL || 'x_pro_a']: { plan: 'pro', billing: 'annual' },
+    [process.env.STRIPE_PRICE_MAX_MONTHLY || 'x_max_m']: { plan: 'max', billing: 'monthly' },
+    [process.env.STRIPE_PRICE_MAX_ANNUAL || 'x_max_a']: { plan: 'max', billing: 'annual' },
   };
   return map[priceId] || null;
 }
@@ -60,17 +61,15 @@ export async function POST(request: NextRequest) {
       const tradingViewUsername = session.metadata?.tradingview_username || '';
       const plan = session.metadata?.plan || '';
       const billing = session.metadata?.billing || 'monthly';
-      const indicatorsRaw = session.metadata?.selected_indicators || '';
-      const indicators = indicatorsRaw ? indicatorsRaw.split(',').map(s => s.trim()) : [];
 
       // ----------------------------------------------------------------------
-      // INDICATOR GRANT LOGIC — CLEARED 2026-06-14 for pricing rebuild.
-      // Old per-plan rules (Starter=pick 1, Advantage=pick 2, Elite=full suite,
-      // OPTIONS PRO Elite-only) removed. Repopulate once new tiers are defined.
-      // For now, grant exactly what checkout passed through, de-duplicated.
+      // INDICATOR GRANT — new pricing 2026-06-14. No pick-and-choose.
+      // PRO and MAX both grant the full premium suite (all 5). MAX's 4 seats
+      // are applied manually from the 4 TradingView usernames the customer
+      // emails in after checkout.
       // ----------------------------------------------------------------------
       const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
-      let finalIndicators: string[] = Array.from(new Set(indicators.filter(i => allIndicators.includes(i))));
+      let finalIndicators: string[] = (plan === 'pro' || plan === 'max') ? [...allIndicators] : [];
 
       const stripeCustomerId = typeof session.customer === 'string'
         ? session.customer
