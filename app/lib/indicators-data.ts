@@ -2,6 +2,37 @@ import { Indicator } from '@/app/types/indicator';
 
 export const freeIndicators: Indicator[] = [
   {
+    id: 'market-adaptive-trend',
+    title: 'Market Adaptive Trend [Interakktive]',
+    shortTitle: 'Market Adaptive Trend',
+    description: 'A diagnostic trend baseline that re-tunes its own responsiveness to the live volatility regime — and narrates why, in plain English. Reveals how the trend is behaving, not where price "should" go.',
+    features: [
+      'Regime governor classifies volatility as RIDING, TIGHTENING, or GUARDED',
+      'Adaptive baseline that loosens in calm markets and damps when volatility stretches',
+      'Plain-English HUD: trend, regime, responsiveness, and a one-line state summary',
+      'Gradient fill, edge glow, and regime-aware candle tinting (amber when GUARDED)',
+      'Configurable calm/volatile thresholds and adaptation strength',
+      'Trend-flip alert conditions for awareness, not automation',
+    ],
+    useCases: [
+      'Use as a trend backdrop and context for your own setups',
+      'Read the regime to set expectations before acting',
+      'Treat the GUARDED state as a caution signal in volatile conditions',
+      'Tune responsiveness to match your instrument and timeframe',
+      'Combine with other free Interakktive diagnostics for fuller context',
+    ],
+    technicalDetails: 'Adaptive baseline driven by an error-feedback step scaled to the volatility regime. Relative volatility (ATR vs its own average) governs responsiveness. Closed-bar data only — no lookahead. Plain-English narrative, never raw scores.',
+    tradingViewUrl: 'https://www.tradingview.com/script/SOZioJML-Market-Adaptive-Trend-Interakktive/',
+    category: 'free',
+    stats: {
+      favorites: 0,
+      publishedDate: 'June 2026',
+    },
+    isPro: false,
+    isPublished: true,
+    image: '/images/Market_Adaptive_Trend_SS.png',
+  },
+  {
     id: 'sessions-plus',
     title: 'Sessions + [Interakktive]',
     shortTitle: 'Sessions +',
