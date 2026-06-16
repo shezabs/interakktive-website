@@ -4,7 +4,7 @@ import { SectionWrapper, GradientDivider, FadeInView, StaggerContainer, StaggerI
 
 export const metadata = {
   title: 'Free Indicators Documentation',
-  description: 'Complete documentation for all 9 free Interakktive trading indicators. Learn settings, calculations, and practical trading applications.',
+  description: 'Complete documentation for all 10 free Interakktive trading indicators. Learn settings, calculations, and practical trading applications.',
 };
 
 const indicators = [
@@ -71,6 +71,13 @@ const indicators = [
     icon: Activity,
     category: 'Session Intelligence',
   },
+  {
+    id: 'market-adaptive-trend',
+    title: 'Market Adaptive Trend',
+    description: 'A trend baseline that re-tunes its responsiveness to the live volatility regime and narrates why, in plain English.',
+    icon: TrendingUp,
+    category: 'Adaptive Trend',
+  },
 ];
 
 export default function FreeIndicatorsDocsPage() {
@@ -90,7 +97,7 @@ export default function FreeIndicatorsDocsPage() {
           <FadeInView>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/10 border border-primary-500/20 rounded-full text-primary-400 text-sm mb-6">
               <BookOpen className="w-4 h-4" />
-              9 Free Indicators
+              10 Free Indicators
             </div>
           </FadeInView>
 

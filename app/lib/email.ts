@@ -353,7 +353,7 @@ export async function sendSignupWelcomeEmail(data: {
       <h2 style="color: #0ea5e9; margin: 0 0 20px;">${greeting}! 👋</h2>
       <p style="color: #d1d5db; line-height: 1.6;">Thanks for creating your Interakktive account. You now have access to:</p>
       <ul style="color: #d1d5db; line-height: 1.8; padding-left: 20px;">
-        <li><strong style="color: #fff;">9 free diagnostic indicators</strong> on TradingView — no subscription needed</li>
+        <li><strong style="color: #fff;">10 free diagnostic indicators</strong> on TradingView — no subscription needed</li>
         <li><strong style="color: #fff;">Documentation & guides</strong> for all ATLAS indicators</li>
         <li>Your personal <strong style="color: #fff;">dashboard</strong> to manage your account</li>
       </ul>

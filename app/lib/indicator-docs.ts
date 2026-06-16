@@ -3619,5 +3619,179 @@ Z-Score = (ERD - ERD Mean) ÷ ERD StdDev</pre>
       },
     ],
     prevIndicator: { slug: 'market-efficiency-ratio', title: 'Market Efficiency Ratio' },
+    nextIndicator: { slug: 'market-adaptive-trend', title: 'Market Adaptive Trend' },
+  },
+
+  'market-adaptive-trend': {
+    title: 'Market Adaptive Trend',
+    subtitle: 'A trend baseline that re-tunes its own responsiveness to the live volatility regime — and narrates why, in plain English. Diagnostic, not a signal.',
+    tradingViewUrl: 'https://www.tradingview.com/script/SOZioJML-Market-Adaptive-Trend-Interakktive/',
+    sections: [
+      {
+        id: 'overview',
+        title: 'Overview',
+        icon: 'overview',
+        content: `
+          <p><strong>Market Adaptive Trend (MAT)</strong> is a diagnostic trend baseline that changes how responsive it is depending on the market's current volatility regime. It is built to reveal <em>how the trend is behaving</em> — not to predict where price "should" go.</p>
+
+          <h3>Core Idea</h3>
+          <p>A fixed moving average is always a compromise: too fast in calm markets, too jumpy in volatile ones. MAT addresses this by reading the live volatility regime and adjusting how strongly a fast estimate leads the trend line. In calm conditions it leans into the trend; when volatility stretches, it damps down and becomes slow to flip.</p>
+
+          <h3>What MAT is NOT</h3>
+          <ul>
+            <li><strong>NOT a buy/sell signal</strong> — there is no "cross = trade" logic</li>
+            <li><strong>NOT a simple moving average</strong> — its responsiveness is governed by volatility, not fixed</li>
+            <li><strong>NOT predictive</strong> — it describes the current trend state, it does not forecast price</li>
+          </ul>
+
+          <h3>What MAT IS</h3>
+          <p>A single adaptive line plus a plain-English HUD that tells you three things at a glance: which way the trend is leaning, what volatility regime you are in, and how responsive the line currently is. The colour and fill make the trend state immediately readable, and an amber candle tint warns when conditions are stretched.</p>
+
+          <h3>The Three Regimes</h3>
+          <ul>
+            <li><strong>RIDING</strong> (calm) — volatility is below normal; the line loosens and rides the trend</li>
+            <li><strong>TIGHTENING</strong> (mid) — volatility is coiling; the line takes a balanced stance</li>
+            <li><strong>GUARDED</strong> (volatile) — volatility is elevated; the line damps and becomes slow to flip, and candles tint amber</li>
+          </ul>
+
+          <h3>Key Properties</h3>
+          <ul>
+            <li><strong>Regime-aware</strong> — responsiveness is driven by relative volatility</li>
+            <li><strong>Plain-English HUD</strong> — states are narrated, never shown as raw scores</li>
+            <li><strong>Diagnostic only</strong> — no signals, no performance claims</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'calculation',
+        title: 'How It Works',
+        icon: 'calculation',
+        content: `
+          <h3>1. Reading the Volatility Regime</h3>
+          <p>MAT measures <strong>relative volatility</strong> — current ATR divided by its own longer-term average. A value near 1.0 means volatility is around its normal baseline; below 1.0 is calmer than usual, above 1.0 is more volatile than usual.</p>
+          <p>Two thresholds classify the regime:</p>
+          <ul>
+            <li>Below the <strong>calm threshold</strong> → <strong>RIDING</strong></li>
+            <li>Above the <strong>volatile threshold</strong> → <strong>GUARDED</strong></li>
+            <li>Between the two → <strong>TIGHTENING</strong></li>
+          </ul>
+
+          <h3>2. Setting Responsiveness</h3>
+          <p>Each regime maps to a responsiveness weight that controls how much a fast estimate leads the blend against a slower one. RIDING and GUARDED both lean slower (so the line stays smooth and is slow to flip), while TIGHTENING keeps a more balanced lean. The <strong>Adaptation strength</strong> input scales how far the regime is allowed to move responsiveness away from a neutral midpoint.</p>
+
+          <h3>3. The Adaptive Baseline</h3>
+          <p>Rather than a plain average, MAT pulls its line toward a regime-weighted target using an error-feedback step: each bar, the line moves a fraction of the distance between itself and the target. The size of that step is scaled by the current responsiveness, so the line reacts faster when responsiveness is high and more gently when it is low. It uses closed-bar values only — no lookahead.</p>
+
+          <h3>4. Trend State</h3>
+          <p>The trend is simply read from the slope of the adaptive line: rising = UP, falling = DOWN. This drives the line colour, the fill, and the candle tint.</p>
+        `,
+      },
+      {
+        id: 'settings',
+        title: 'Input Settings',
+        icon: 'settings',
+        content: `
+          <h3>Adaptive Baseline</h3>
+          <ul>
+            <li><strong>Source</strong> — the price series used (default: close)</li>
+            <li><strong>Fast estimate length</strong> — the responsive component of the blend (default: 10)</li>
+            <li><strong>Slow estimate length</strong> — the smooth component of the blend (default: 50)</li>
+            <li><strong>Adaptation strength</strong> — how strongly the regime governs responsiveness. 0 = fixed blend, 1 = full regime governance (default: 0.7)</li>
+          </ul>
+
+          <h3>Regime Governor</h3>
+          <ul>
+            <li><strong>Volatility baseline length</strong> — the lookback for the relative-volatility baseline (default: 50)</li>
+            <li><strong>ATR length</strong> — the ATR period (default: 14)</li>
+            <li><strong>Calm threshold</strong> — below this, the regime is RIDING (default: 0.85)</li>
+            <li><strong>Volatile threshold</strong> — above this, the regime is GUARDED (default: 1.30)</li>
+          </ul>
+
+          <h3>Visual</h3>
+          <ul>
+            <li><strong>Show adaptive line</strong>, <strong>Gradient fill</strong>, <strong>Edge glow</strong>, <strong>Color candles</strong> — toggle each visual layer</li>
+            <li><strong>Line width</strong> — thickness of the adaptive line (default: 3)</li>
+          </ul>
+
+          <h3>HUD</h3>
+          <ul>
+            <li><strong>Show HUD</strong> — toggle the on-chart status panel</li>
+            <li><strong>Position</strong> — Top Right / Top Left / Bottom Right / Bottom Left</li>
+            <li><strong>Size</strong> — tiny / small / normal / large</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'interpretation',
+        title: 'Reading the HUD',
+        icon: 'interpretation',
+        content: `
+          <p>The HUD reports the current state in plain language. Each row tells you something specific:</p>
+          <ul>
+            <li><strong>Trend · UP / DOWN / FLAT</strong> — the direction the adaptive line is leaning</li>
+            <li><strong>Regime · RIDING / TIGHTENING / GUARDED</strong> — paired with a plain-English volatility descriptor (very calm, below normal, near normal, slightly elevated, high)</li>
+            <li><strong>Responsiveness · HIGH / MED / LOW</strong> — how reactive the line currently is</li>
+            <li><strong>State line</strong> — a one-line summary such as "Trend clean — riding", "Volatility coiling — line tightening", or "Stretched — guarding, slow to flip"</li>
+            <li><strong>Diagnostic — not a signal</strong> — a permanent reminder of how to use the tool</li>
+          </ul>
+          <h3>Colour Cues</h3>
+          <ul>
+            <li><strong>Teal</strong> — trend leaning up</li>
+            <li><strong>Magenta</strong> — trend leaning down</li>
+            <li><strong>Amber candles</strong> — the GUARDED regime is active; treat continuation with extra caution</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'trading',
+        title: 'Practical Use',
+        icon: 'trading',
+        content: `
+          <h3>As a Trend Backdrop</h3>
+          <p>Use MAT as context for whatever you trade. When the line is rising and the regime reads RIDING, the trend is clean and the tool is leaning with it. That is a constructive backdrop for trend-following ideas you generate elsewhere.</p>
+
+          <h3>Respecting GUARDED</h3>
+          <p>When candles tint amber and the HUD reads GUARDED, volatility is stretched and the line is deliberately slow to flip. This is a caution state — a moment to expect noise, false starts, and sharp reversals, and to size and manage accordingly.</p>
+
+          <h3>Tuning Responsiveness</h3>
+          <p>If the line feels too sluggish for your style, raise the Adaptation strength or shorten the fast estimate. If it flips around too much, lower the Adaptation strength or lengthen the slow estimate. The thresholds let you define what "calm" and "volatile" mean for the specific instrument and timeframe you trade.</p>
+
+          <h3>Combining With Other Tools</h3>
+          <p>MAT pairs naturally with the other free Interakktive diagnostics — for example, using a volatility or pressure read alongside the regime here to build a fuller picture of context before you act.</p>
+        `,
+      },
+      {
+        id: 'mistakes',
+        title: 'Common Mistakes',
+        icon: 'warning',
+        content: `
+          <ul>
+            <li><strong>Treating a colour flip as a trade trigger</strong> — MAT is a diagnostic backdrop, not an entry signal. A flip tells you the trend lean changed, nothing more.</li>
+            <li><strong>Ignoring the GUARDED warning</strong> — when the regime is GUARDED, the line is intentionally slow. Expecting it to react quickly in volatile conditions misreads the design.</li>
+            <li><strong>Setting Adaptation strength to extremes blindly</strong> — 0 turns off the adaptive behaviour entirely; 1 hands full control to the regime. Most instruments sit comfortably in between.</li>
+            <li><strong>Using one threshold set everywhere</strong> — what counts as "volatile" differs across instruments and timeframes. Calibrate the calm/volatile thresholds per market.</li>
+          </ul>
+        `,
+      },
+      {
+        id: 'tips',
+        title: 'Pro Tips',
+        icon: 'tips',
+        content: `
+          <h3>Tip 1: Let the Regime Set Your Expectation</h3>
+          <p>Before reacting to the line, read the regime. RIDING means trust the slope more; GUARDED means expect chop and slower confirmation.</p>
+
+          <h3>Tip 2: The State Line Is the Fastest Read</h3>
+          <p>If you only glance at one thing, read the state line. It compresses trend and regime into a single plain-English sentence.</p>
+
+          <h3>Tip 3: Match Lengths to Your Timeframe</h3>
+          <p>The default 10/50 blend suits many intraday charts. On higher timeframes, lengthen both estimates so the line reflects the swing you actually trade.</p>
+
+          <h3>Tip 4: Use the Alerts as Awareness, Not Automation</h3>
+          <p>The "turned UP" and "turned DOWN" alerts are there to bring your attention to a change in trend lean — use them as a prompt to look, not as a command to act.</p>
+        `,
+      },
+    ],
+    prevIndicator: { slug: 'sessions-plus', title: 'Sessions +' },
   },
 };

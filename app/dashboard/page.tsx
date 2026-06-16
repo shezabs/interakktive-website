@@ -912,7 +912,7 @@ export default function DashboardPage() {
               <div className="glass p-8 rounded-xl">
                 <h2 className="text-2xl font-bold mb-3">Free Indicators</h2>
                 <p className="text-gray-300 mb-4">
-                  Access all 9 free diagnostic indicators on TradingView — no subscription needed.
+                  Access all 10 free diagnostic indicators on TradingView — no subscription needed.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Link
