@@ -519,6 +519,16 @@ export interface PricingTier {
   activationNote?: string;   // shown post-purchase guidance (e.g. MAX seats by email)
   stripePriceIdMonthly?: string;
   stripePriceIdAnnual?: string;
+  customCycles?: CustomCycle[];   // PRO "Custom" side: weekly / bi-weekly / monthly
+}
+
+// Custom billing cycles shown under the ATLAS PRO price on the "Custom" toggle side.
+// `id` flows through checkout as ?billing=<id> and maps to a Stripe price on the backend.
+export interface CustomCycle {
+  id: 'weekly' | 'biweekly' | 'monthly';
+  label: string;    // e.g. "Weekly"
+  sublabel: string; // e.g. "7 days"
+  price: number;    // display price
 }
 
 // ==========================================================================
@@ -561,6 +571,11 @@ export const pricingTiers: PricingTier[] = [
     seats: 1,
     isPopular: true,
     ctaLabel: 'Get Started',
+    customCycles: [
+      { id: 'weekly', label: 'Weekly', sublabel: '7 days', price: 29.99 },
+      { id: 'biweekly', label: 'Bi-Weekly', sublabel: '14 days', price: 54.99 },
+      { id: 'monthly', label: 'Monthly', sublabel: '1 month', price: 99.99 },
+    ],
     features: [
       'Everything included in FREE, plus:',
       'All premium indicators on TradingView (1 seat)',

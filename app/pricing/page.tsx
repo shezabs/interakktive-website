@@ -4,12 +4,18 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Check, ArrowRight } from 'lucide-react';
-import { pricingTiers, PricingTier } from '@/app/lib/indicators-data';
+import { pricingTiers, PricingTier, CustomCycle } from '@/app/lib/indicators-data';
 import { FadeIn, SectionWrapper, GradientDivider } from '@/app/components/animations';
+
+// Billing view: 'custom' (left, default) shows PRO custom cycles; 'annual' (right) unchanged.
+type BillingView = 'custom' | 'annual';
+type CycleId = 'weekly' | 'biweekly' | 'monthly';
 
 export default function PricingPage() {
   const router = useRouter();
-  const [billing, setBilling] = useState<'monthly' | 'annual'>('monthly');
+  const [billing, setBilling] = useState<BillingView>('custom');
+  // Which custom cycle is selected for the ATLAS PRO card. Defaults to monthly.
+  const [proCycle, setProCycle] = useState<CycleId>('monthly');
 
   const handleCta = (tier: PricingTier) => {
     if (tier.ctaHref) {
@@ -20,7 +26,17 @@ export default function PricingPage() {
       router.push('/signup');
       return;
     }
-    router.push(`/checkout/start?plan=${tier.id}&billing=${billing}`);
+    // On the annual side, everything bills annually.
+    // On the custom side, PRO uses the selected cycle; MAX (no custom cycles) bills monthly.
+    let billingParam: string;
+    if (billing === 'annual') {
+      billingParam = 'annual';
+    } else if (tier.customCycles && tier.customCycles.length > 0) {
+      billingParam = proCycle;
+    } else {
+      billingParam = 'monthly';
+    }
+    router.push(`/checkout/start?plan=${tier.id}&billing=${billingParam}`);
   };
 
   return (
@@ -42,17 +58,17 @@ export default function PricingPage() {
             </p>
           </FadeIn>
 
-          {/* Billing toggle */}
+          {/* Billing toggle: Custom (left, default) / Annual (right) */}
           <FadeIn delay={0.15}>
             <div className="flex items-center justify-center gap-4 mb-2">
-              <span className={billing === 'monthly' ? 'text-white font-medium' : 'text-gray-400'}>
-                Monthly
+              <span className={billing === 'custom' ? 'text-white font-medium' : 'text-gray-400'}>
+                Custom
               </span>
               <button
-                onClick={() => setBilling(billing === 'monthly' ? 'annual' : 'monthly')}
+                onClick={() => setBilling(billing === 'custom' ? 'annual' : 'custom')}
                 role="switch"
                 aria-checked={billing === 'annual'}
-                aria-label="Toggle annual billing"
+                aria-label="Toggle between custom and annual billing"
                 className={`relative w-14 h-7 rounded-full transition-colors ${
                   billing === 'annual' ? 'bg-primary-500' : 'bg-white/15'
                 }`}
@@ -91,7 +107,13 @@ export default function PricingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
             {pricingTiers.map((tier, i) => (
               <FadeIn key={tier.id} delay={0.1 * i} className="h-full">
-                <PriceCard tier={tier} billing={billing} onCta={() => handleCta(tier)} />
+                <PriceCard
+                  tier={tier}
+                  billing={billing}
+                  proCycle={proCycle}
+                  onSelectCycle={setProCycle}
+                  onCta={() => handleCta(tier)}
+                />
               </FadeIn>
             ))}
           </div>
@@ -127,14 +149,41 @@ function fmtPrice(n: number): string {
 function PriceCard({
   tier,
   billing,
+  proCycle,
+  onSelectCycle,
   onCta,
 }: {
   tier: PricingTier;
-  billing: 'monthly' | 'annual';
+  billing: BillingView;
+  proCycle: CycleId;
+  onSelectCycle: (c: CycleId) => void;
   onCta: () => void;
 }) {
-  const price = billing === 'monthly' ? tier.monthlyPrice : tier.annualPrice;
-  const period = billing === 'monthly' ? '/month' : '/year';
+  // Does this card show the custom-cycle selector? Only PRO, only on the custom side.
+  const hasCustomCycles = billing === 'custom' && !!tier.customCycles && tier.customCycles.length > 0;
+  const selectedCycle: CustomCycle | undefined = hasCustomCycles
+    ? tier.customCycles!.find((c) => c.id === proCycle)
+    : undefined;
+
+  // Resolve the displayed price + period.
+  let price: number;
+  let period: string;
+  if (billing === 'annual') {
+    price = tier.annualPrice;
+    period = '/year';
+  } else if (selectedCycle) {
+    price = selectedCycle.price;
+    period =
+      selectedCycle.id === 'weekly'
+        ? '/week'
+        : selectedCycle.id === 'biweekly'
+        ? '/2 weeks'
+        : '/month';
+  } else {
+    price = tier.monthlyPrice;
+    period = '/month';
+  }
+
   const showStrikethrough = billing === 'annual' && tier.annualOriginalPrice;
 
   return (
@@ -189,6 +238,46 @@ function PriceCard({
           <div className="mt-1 h-5" aria-hidden="true" />
         )}
       </div>
+
+      {/* Alignment spacer — on the custom side, the non-PRO cards (FREE, MAX)
+          reserve the same vertical space the PRO cycle selector occupies, so
+          all three "Get Started" buttons land on the same horizontal line. */}
+      {billing === 'custom' && !hasCustomCycles && (
+        <div className="mb-5 h-[84px]" aria-hidden="true" />
+      )}
+
+      {/* Custom billing cycle selector — ATLAS PRO only, custom side only */}
+      {hasCustomCycles && (
+        <div className="mb-5">
+          <p className="text-sm text-gray-300 mb-2.5">Select your custom billing cycle:</p>
+          <div className="grid grid-cols-3 gap-2">
+            {tier.customCycles!.map((cycle) => {
+              const isSelected = cycle.id === proCycle;
+              return (
+                <button
+                  key={cycle.id}
+                  onClick={() => onSelectCycle(cycle.id)}
+                  aria-pressed={isSelected}
+                  className={`flex flex-col items-center justify-center py-2.5 px-1 rounded-lg border text-center transition-all ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-primary-500 to-accent-500 border-transparent text-white'
+                      : 'bg-white/[0.03] border-white/10 text-gray-300 hover:border-white/20'
+                  }`}
+                >
+                  <span className="text-sm font-semibold leading-tight">{cycle.label}</span>
+                  <span
+                    className={`text-xs leading-tight mt-0.5 ${
+                      isSelected ? 'text-white/90' : 'text-gray-400'
+                    }`}
+                  >
+                    ${fmtPrice(cycle.price)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {tier.hideCta ? (
         <div className="w-full py-3 mb-6" aria-hidden="true" />
