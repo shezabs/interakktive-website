@@ -21,6 +21,8 @@ export function getStripe(): Stripe {
 // FREE has no price (sign-up only).
 // ==========================================================================
 export const PRICE_IDS: Record<string, string> = {
+  pro_weekly: process.env.STRIPE_PRICE_PRO_WEEKLY || '',
+  pro_biweekly: process.env.STRIPE_PRICE_PRO_BIWEEKLY || '',
   pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || '',
   pro_annual: process.env.STRIPE_PRICE_PRO_ANNUAL || '',
   max_monthly: process.env.STRIPE_PRICE_MAX_MONTHLY || '',
@@ -28,7 +30,7 @@ export const PRICE_IDS: Record<string, string> = {
 };
 
 export type PlanId = 'pro' | 'max';
-export type BillingInterval = 'monthly' | 'annual';
+export type BillingInterval = 'weekly' | 'biweekly' | 'monthly' | 'annual';
 
 export function getPriceId(plan: PlanId, billing: BillingInterval): string {
   const key = `${plan}_${billing}`;

@@ -12,7 +12,11 @@ function CheckoutStartInner() {
   const router = useRouter();
 
   const planId = searchParams.get('plan') || '';
-  const billingParam = searchParams.get('billing') === 'annual' ? 'annual' : 'monthly';
+  const rawBilling = searchParams.get('billing') || 'monthly';
+  // Accept all four cycles; anything unexpected falls back to monthly.
+  const billingParam = (['weekly', 'biweekly', 'monthly', 'annual'].includes(rawBilling)
+    ? rawBilling
+    : 'monthly') as 'weekly' | 'biweekly' | 'monthly' | 'annual';
 
   const tier = pricingTiers.find((t) => t.id === planId);
 
@@ -34,8 +38,20 @@ function CheckoutStartInner() {
   }
 
   const isMax = tier.id === 'max';
-  const price = billingParam === 'monthly' ? tier.monthlyPrice : tier.annualPrice;
-  const period = billingParam === 'monthly' ? 'month' : 'year';
+  // Resolve display price + period for the selected cycle.
+  const cycle = tier.customCycles?.find((c) => c.id === billingParam);
+  let price: number;
+  let period: string;
+  if (billingParam === 'annual') {
+    price = tier.annualPrice;
+    period = 'year';
+  } else if (cycle) {
+    price = cycle.price;
+    period = billingParam === 'weekly' ? 'week' : billingParam === 'biweekly' ? '2 weeks' : 'month';
+  } else {
+    price = tier.monthlyPrice;
+    period = 'month';
+  }
 
   const canSubmit =
     email.trim().length > 3 &&

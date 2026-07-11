@@ -19,6 +19,8 @@ function getSupabaseAdmin() {
 // Map Stripe price IDs to our plan names (new pricing 2026-06-14).
 function getPlanFromPriceId(priceId: string): { plan: string; billing: string } | null {
   const map: Record<string, { plan: string; billing: string }> = {
+    [process.env.STRIPE_PRICE_PRO_WEEKLY || 'x_pro_w']: { plan: 'pro', billing: 'weekly' },
+    [process.env.STRIPE_PRICE_PRO_BIWEEKLY || 'x_pro_bw']: { plan: 'pro', billing: 'biweekly' },
     [process.env.STRIPE_PRICE_PRO_MONTHLY || 'x_pro_m']: { plan: 'pro', billing: 'monthly' },
     [process.env.STRIPE_PRICE_PRO_ANNUAL || 'x_pro_a']: { plan: 'pro', billing: 'annual' },
     [process.env.STRIPE_PRICE_MAX_MONTHLY || 'x_max_m']: { plan: 'max', billing: 'monthly' },
@@ -82,11 +84,15 @@ export async function POST(request: NextRequest) {
       const { data: userList } = await supabaseAdmin.auth.admin.listUsers();
       const matchedUser = userList?.users?.find(u => u.email === email);
 
-      // Calculate period end
+      // Calculate period end (fallback; Stripe's current_period_end is authoritative on sync)
       const now = new Date();
       const periodEnd = new Date(now);
       if (billing === 'annual') {
         periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+      } else if (billing === 'weekly') {
+        periodEnd.setDate(periodEnd.getDate() + 7);
+      } else if (billing === 'biweekly') {
+        periodEnd.setDate(periodEnd.getDate() + 14);
       } else {
         periodEnd.setMonth(periodEnd.getMonth() + 1);
       }
@@ -230,6 +236,10 @@ export async function POST(request: NextRequest) {
             correctedPeriodEnd = new Date(periodStart);
             if (existingSub.billing === 'annual') {
               correctedPeriodEnd.setFullYear(correctedPeriodEnd.getFullYear() + 1);
+            } else if (existingSub.billing === 'weekly') {
+              correctedPeriodEnd.setDate(correctedPeriodEnd.getDate() + 7);
+            } else if (existingSub.billing === 'biweekly') {
+              correctedPeriodEnd.setDate(correctedPeriodEnd.getDate() + 14);
             } else {
               correctedPeriodEnd.setMonth(correctedPeriodEnd.getMonth() + 1);
             }

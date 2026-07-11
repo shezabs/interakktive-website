@@ -32,9 +32,16 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    if (!['monthly', 'annual'].includes(billing)) {
+    if (!['weekly', 'biweekly', 'monthly', 'annual'].includes(billing)) {
       return NextResponse.json(
-        { error: 'Invalid billing interval. Must be monthly or annual.' },
+        { error: 'Invalid billing interval. Must be weekly, biweekly, monthly, or annual.' },
+        { status: 400 }
+      );
+    }
+    // Weekly and bi-weekly cycles are PRO-only (MAX has no short cycles).
+    if ((billing === 'weekly' || billing === 'biweekly') && plan !== 'pro') {
+      return NextResponse.json(
+        { error: 'Weekly and bi-weekly billing are only available on the ATLAS PRO plan.' },
         { status: 400 }
       );
     }
