@@ -8,13 +8,27 @@ export const dynamic = 'force-dynamic';
 // Plan price in cents, by plan name. Used for MRR fallback if Stripe is unreachable.
 // This matches the pricing shown on /pricing — keep in sync manually.
 const PLAN_PRICE_CENTS: Record<string, { monthly: number; annual: number }> = {
+  // legacy tiers — retained so historical rows still value
   starter:   { monthly: 2999, annual: 24999 },
   advantage: { monthly: 4999, annual: 44999 },
   elite:     { monthly: 7999, annual: 69999 },
+  // current tiers (2026-07 pricing), amounts in cents
+  pro:       { monthly: 9999,  annual: 99999  },
+  max:       { monthly: 29999, annual: 299999 },
 };
 
-// MRR contribution per sub: monthly -> price, annual -> price / 12
+// PRO-only short cycles, in cents, plus weeks-per-month for monthly normalisation.
+const PRO_SHORT_CYCLE_CENTS = { weekly: 2999, biweekly: 5499 };
+const WEEKS_PER_MONTH = 52 / 12;
+
+// MRR contribution per sub, normalised to a monthly value.
 function mrrContribution(plan: string, billing: string): number {
+  if (plan === 'pro' && billing === 'weekly') {
+    return Math.round(PRO_SHORT_CYCLE_CENTS.weekly * WEEKS_PER_MONTH);
+  }
+  if (plan === 'pro' && billing === 'biweekly') {
+    return Math.round(PRO_SHORT_CYCLE_CENTS.biweekly * (WEEKS_PER_MONTH / 2));
+  }
   const p = PLAN_PRICE_CENTS[plan];
   if (!p) return 0;
   if (billing === 'annual') return Math.round(p.annual / 12);

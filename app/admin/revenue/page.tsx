@@ -9,7 +9,7 @@ interface RevenueData {
   mrrTrend: { month: string; mrrCents: number; activeCount: number }[];
   cohortRetention: { cohort: string; size: number; retention: (number | null)[] }[];
   ltvByPlan: Record<string, { avgLifetimeMonths: number; avgMonthlyValueCents: number; ltvCents: number; subCount: number }>;
-  billingMix: { monthly: number; annual: number; totalActive: number };
+  billingMix: { weekly: number; biweekly: number; monthly: number; annual: number; totalActive: number };
   churnReasons: { code: string; count: number }[];
   recentChurn: any[];
   totalChurnCount: number;
@@ -245,11 +245,29 @@ export default function AdminRevenuePage() {
             <div className="py-4 text-center text-sm text-gray-500">No active subscriptions yet.</div>
           ) : (
             <div className="space-y-3">
-              <div className="flex justify-between text-sm">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                <span className="text-gray-400">Weekly: <span className="text-white font-bold">{data.billingMix.weekly}</span></span>
+                <span className="text-gray-400">Bi-Weekly: <span className="text-white font-bold">{data.billingMix.biweekly}</span></span>
                 <span className="text-gray-400">Monthly: <span className="text-white font-bold">{data.billingMix.monthly}</span></span>
                 <span className="text-gray-400">Annual: <span className="text-white font-bold">{data.billingMix.annual}</span></span>
               </div>
               <div className="h-6 rounded-full overflow-hidden bg-white/5 flex">
+                <div
+                  className="bg-teal-500/70 h-full flex items-center justify-center text-xs text-white font-semibold"
+                  style={{ width: `${(data.billingMix.weekly / data.billingMix.totalActive) * 100}%` }}
+                >
+                  {data.billingMix.totalActive > 0 && ((data.billingMix.weekly / data.billingMix.totalActive) * 100) > 10 && (
+                    <span>{Math.round((data.billingMix.weekly / data.billingMix.totalActive) * 100)}%</span>
+                  )}
+                </div>
+                <div
+                  className="bg-amber-500/70 h-full flex items-center justify-center text-xs text-white font-semibold"
+                  style={{ width: `${(data.billingMix.biweekly / data.billingMix.totalActive) * 100}%` }}
+                >
+                  {data.billingMix.totalActive > 0 && ((data.billingMix.biweekly / data.billingMix.totalActive) * 100) > 10 && (
+                    <span>{Math.round((data.billingMix.biweekly / data.billingMix.totalActive) * 100)}%</span>
+                  )}
+                </div>
                 <div
                   className="bg-sky-500/70 h-full flex items-center justify-center text-xs text-white font-semibold"
                   style={{ width: `${(data.billingMix.monthly / data.billingMix.totalActive) * 100}%` }}

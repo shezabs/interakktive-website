@@ -11,14 +11,30 @@ export const dynamic = 'force-dynamic';
 // new rows are valued too. Do not delete the legacy entries — past rows
 // reference them.
 const PLAN_PRICES = {
-  // legacy tiers (pre-2026-06-14)
+  // legacy tiers (pre-2026-06-14) — retained so historical rows still value
   starter:   { monthly: 5000,  annual: 50000  },
   advantage: { monthly: 7500,  annual: 75000  },
   elite:     { monthly: 10000, annual: 100000 },
-  // new tiers go here, e.g. newtier: { monthly: 0, annual: 0 },
+  // current tiers (2026-07 pricing rebuild), amounts in cents
+  pro:       { monthly: 9999,  annual: 99999  },
+  max:       { monthly: 29999, annual: 299999 },
 } as const;
 
+// Per-cycle amounts in cents for the PRO short cycles (weekly / bi-weekly).
+// Only PRO offers these; MAX does not.
+const PRO_SHORT_CYCLE_CENTS = { weekly: 2999, biweekly: 5499 } as const;
+
+// Average weeks per month, used to normalise weekly/bi-weekly to a monthly value.
+const WEEKS_PER_MONTH = 52 / 12; // ≈ 4.3333
+
 function monthlyValueCents(plan: string, billing: string): number {
+  // Short cycles are PRO-only; convert their per-period price to a monthly equivalent.
+  if (plan === 'pro' && billing === 'weekly') {
+    return Math.round(PRO_SHORT_CYCLE_CENTS.weekly * WEEKS_PER_MONTH);
+  }
+  if (plan === 'pro' && billing === 'biweekly') {
+    return Math.round(PRO_SHORT_CYCLE_CENTS.biweekly * (WEEKS_PER_MONTH / 2));
+  }
   const p = (PLAN_PRICES as any)[plan];
   if (!p) return 0;
   if (billing === 'annual') return Math.round(p.annual / 12);
@@ -188,6 +204,8 @@ export async function GET(req: NextRequest) {
 
     // ── 4. Billing mix ──
     const active = allSubs.filter((s: any) => s.status === 'active' || s.status === 'cancelling');
+    const weeklyActive = active.filter((s: any) => s.billing === 'weekly').length;
+    const biweeklyActive = active.filter((s: any) => s.billing === 'biweekly').length;
     const monthlyActive = active.filter((s: any) => s.billing === 'monthly').length;
     const annualActive = active.filter((s: any) => s.billing === 'annual').length;
 
@@ -210,6 +228,8 @@ export async function GET(req: NextRequest) {
       cohortRetention: cohortRows.slice(-12), // last 12 cohorts max
       ltvByPlan,
       billingMix: {
+        weekly: weeklyActive,
+        biweekly: biweeklyActive,
         monthly: monthlyActive,
         annual: annualActive,
         totalActive: active.length,

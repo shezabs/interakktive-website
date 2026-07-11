@@ -46,22 +46,27 @@ export async function POST(req: NextRequest) {
     if (!email || !plan || !billing) {
       return NextResponse.json({ error: 'Missing required fields: email, plan, billing' }, { status: 400 });
     }
-    if (!['starter', 'advantage', 'elite'].includes(plan)) {
+    if (!['starter', 'advantage', 'elite', 'pro', 'max'].includes(plan)) {
       return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
     }
-    if (!['monthly', 'annual'].includes(billing)) {
+    if (!['weekly', 'biweekly', 'monthly', 'annual'].includes(billing)) {
       return NextResponse.json({ error: 'Invalid billing' }, { status: 400 });
+    }
+    // Weekly and bi-weekly are PRO-only.
+    if ((billing === 'weekly' || billing === 'biweekly') && plan !== 'pro') {
+      return NextResponse.json({ error: 'Weekly and bi-weekly billing are only available on the PRO plan' }, { status: 400 });
     }
 
     // Normalise indicators
     const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
     let finalIndicators: string[];
-    if (plan === 'elite') {
+    if (plan === 'elite' || plan === 'pro' || plan === 'max') {
+      // Current plans (and legacy elite) grant the full premium suite.
       finalIndicators = allIndicators;
     } else if (Array.isArray(indicators) && indicators.length > 0) {
       finalIndicators = indicators;
     } else {
-      return NextResponse.json({ error: 'Indicators required for non-elite plans' }, { status: 400 });
+      return NextResponse.json({ error: 'Indicators required for this plan' }, { status: 400 });
     }
 
     if (plan === 'starter' && finalIndicators.length !== 1) {
@@ -80,6 +85,10 @@ export async function POST(req: NextRequest) {
     const periodEnd = new Date(now);
     if (billing === 'annual') {
       periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+    } else if (billing === 'weekly') {
+      periodEnd.setDate(periodEnd.getDate() + 7);
+    } else if (billing === 'biweekly') {
+      periodEnd.setDate(periodEnd.getDate() + 14);
     } else {
       periodEnd.setMonth(periodEnd.getMonth() + 1);
     }

@@ -18,8 +18,8 @@ interface Subscription {
   user_id: string | null;
   user_email: string;
   tradingview_username: string;
-  plan: 'starter' | 'advantage' | 'elite';
-  billing: 'monthly' | 'annual';
+  plan: 'starter' | 'advantage' | 'elite' | 'pro' | 'max';
+  billing: 'weekly' | 'biweekly' | 'monthly' | 'annual';
   indicators: string[];
   status: string;
   stripe_customer_id: string | null;
@@ -703,8 +703,8 @@ export default function AdminSubscriptionsPage() {
 function GrantCompModal({ open, onClose, onGranted }: { open: boolean; onClose: () => void; onGranted: () => void }) {
   const [email, setEmail] = useState('');
   const [tvUsername, setTvUsername] = useState('');
-  const [plan, setPlan] = useState<'starter' | 'advantage' | 'elite'>('elite');
-  const [billing, setBilling] = useState<'monthly' | 'annual'>('annual');
+  const [plan, setPlan] = useState<'starter' | 'advantage' | 'elite' | 'pro' | 'max'>('pro');
+  const [billing, setBilling] = useState<'weekly' | 'biweekly' | 'monthly' | 'annual'>('monthly');
   const [indicators, setIndicators] = useState<string[]>([]);
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
@@ -712,7 +712,7 @@ function GrantCompModal({ open, onClose, onGranted }: { open: boolean; onClose: 
 
   useEffect(() => {
     if (!open) {
-      setEmail(''); setTvUsername(''); setPlan('elite'); setBilling('annual');
+      setEmail(''); setTvUsername(''); setPlan('pro'); setBilling('monthly');
       setIndicators([]); setNote(''); setLoading(false); setErr(null);
     }
   }, [open]);
@@ -726,7 +726,9 @@ function GrantCompModal({ open, onClose, onGranted }: { open: boolean; onClose: 
     setLoading(true); setErr(null);
     try {
       const payload: any = { email: email.trim(), plan, billing, note, tradingviewUsername: tvUsername.trim() };
-      if (plan !== 'elite') payload.indicators = indicators;
+      // Full-suite plans (elite/pro/max) grant all indicators server-side; only the
+      // legacy tiered plans (starter/advantage) need an explicit indicator selection.
+      if (plan === 'starter' || plan === 'advantage') payload.indicators = indicators;
       const res = await adminFetch('/api/admin/subscriptions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -768,8 +770,8 @@ function GrantCompModal({ open, onClose, onGranted }: { open: boolean; onClose: 
           <div>
             <label className="text-xs text-gray-400 mb-1 block">Plan</label>
             <div className="flex gap-2">
-              {(['starter', 'advantage', 'elite'] as const).map((p) => (
-                <button key={p} onClick={() => { setPlan(p); if (p === 'elite') setIndicators(ALL_INDICATORS); }} className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${plan === p ? 'bg-amber-500/20 border border-amber-500/30 text-amber-300' : 'bg-white/5 border border-white/10 text-gray-400'}`}>{p}</button>
+              {(['pro', 'max', 'starter', 'advantage', 'elite'] as const).map((p) => (
+                <button key={p} onClick={() => { setPlan(p); if (p === 'elite' || p === 'pro' || p === 'max') setIndicators(ALL_INDICATORS); if ((p !== 'pro') && (billing === 'weekly' || billing === 'biweekly')) setBilling('monthly'); }} className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${plan === p ? 'bg-amber-500/20 border border-amber-500/30 text-amber-300' : 'bg-white/5 border border-white/10 text-gray-400'}`}>{p}</button>
               ))}
             </div>
           </div>
@@ -777,13 +779,16 @@ function GrantCompModal({ open, onClose, onGranted }: { open: boolean; onClose: 
           <div>
             <label className="text-xs text-gray-400 mb-1 block">Billing cycle</label>
             <div className="flex gap-2">
-              {(['monthly', 'annual'] as const).map((b) => (
+              {(plan === 'pro'
+                ? (['weekly', 'biweekly', 'monthly', 'annual'] as const)
+                : (['monthly', 'annual'] as const)
+              ).map((b) => (
                 <button key={b} onClick={() => setBilling(b)} className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${billing === b ? 'bg-amber-500/20 border border-amber-500/30 text-amber-300' : 'bg-white/5 border border-white/10 text-gray-400'}`}>{b}</button>
               ))}
             </div>
           </div>
 
-          {plan !== 'elite' && (
+          {(plan === 'starter' || plan === 'advantage') && (
             <div>
               <label className="text-xs text-gray-400 mb-1 block">
                 Indicators {plan === 'starter' && '(pick 1)'} {plan === 'advantage' && '(pick 2)'}

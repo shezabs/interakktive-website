@@ -29,7 +29,7 @@ const CORE_INDICATORS = INDICATORS.filter(i => i.id !== 'OPTIONS PRO');
 interface Subscription {
   id: string;
   plan: string;
-  billing: 'monthly' | 'annual';
+  billing: 'weekly' | 'biweekly' | 'monthly' | 'annual';
   indicators: string[];
   status: string;
   swap_used: boolean;
@@ -40,6 +40,15 @@ interface Subscription {
 }
 
 const PLAN_NAMES: Record<string, string> = { free: 'FREE', pro: 'ATLAS PRO', max: 'ATLAS MAX' };
+
+// Human-readable label for a billing cycle, covering all four cycles.
+const BILLING_LABELS: Record<string, string> = {
+  weekly: 'Weekly',
+  biweekly: 'Bi-Weekly',
+  monthly: 'Monthly',
+  annual: 'Annual',
+};
+const billingLabel = (b: string): string => BILLING_LABELS[b] || 'Monthly';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -520,7 +529,7 @@ export default function DashboardPage() {
       // Advantage — can switch billing or upgrade to Elite
       setUpgradeTarget('elite');
       setIsBillingSwitch(false);
-      setUpgradeBilling(subscription.billing);
+      setUpgradeBilling(subscription.billing as 'monthly' | 'annual');
       setUpgradeSelections(['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO']);
     } else {
       // Starter — can go to Advantage or Elite
@@ -723,7 +732,7 @@ export default function DashboardPage() {
             <h1 className="text-4xl font-bold mb-2">Dashboard</h1>
             <p className="text-gray-400">
               {hasSubscription
-                ? `${PLAN_NAMES[subscription.plan]} plan · ${subscription.billing === 'annual' ? 'Annual' : 'Monthly'} billing`
+                ? `${PLAN_NAMES[subscription.plan]} plan · ${billingLabel(subscription.billing)} billing`
                 : 'Welcome to Interakktive'
               }
             </p>
@@ -1009,7 +1018,7 @@ export default function DashboardPage() {
                   <>
                     <div>
                       <p className="text-gray-500">Plan</p>
-                      <p className="text-white">{PLAN_NAMES[subscription!.plan]} · {subscription!.billing === 'annual' ? 'Annual' : 'Monthly'}</p>
+                      <p className="text-white">{PLAN_NAMES[subscription!.plan]} · {billingLabel(subscription!.billing)}</p>
                     </div>
                     <div>
                       <p className="text-gray-500">Status</p>
@@ -1664,7 +1673,7 @@ export default function DashboardPage() {
               <div className="p-3 bg-white/5 rounded-lg mb-4">
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-400">Current plan</span>
-                  <span className="text-white">{subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} — ${PLAN_PRICES[subscription.plan]?.[subscription.billing]}/{subscription.billing === 'annual' ? 'yr' : 'mo'}</span>
+                  <span className="text-white">{subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} — ${PLAN_PRICES[subscription.plan]?.[subscription.billing as 'monthly' | 'annual']}/{subscription.billing === 'annual' ? 'yr' : 'mo'}</span>
                 </div>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-400">New plan</span>
