@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { subscriptionId, action } = body as {
       subscriptionId: string;
-      action: 'cancel' | 'reactivate' | 'upgrade';
+      action: 'cancel' | 'reactivate';
     };
 
     if (!subscriptionId || !action) {
@@ -43,26 +43,6 @@ export async function POST(request: NextRequest) {
           .update({ status: 'cancelled', updated_at: new Date().toISOString() })
           .eq('id', subscriptionId);
         return NextResponse.json({ status: 'cancelled', message: 'Subscription cancelled.' });
-      }
-      if (action === 'upgrade') {
-        // Get current plan
-        const { data: fullSub } = await supabaseAdmin
-          .from('subscriptions')
-          .select('plan, indicators')
-          .eq('id', subscriptionId)
-          .single();
-        if (!fullSub) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-
-        const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
-        const targetPlan = fullSub.plan === 'starter' ? 'advantage' : 'elite';
-        const newIndicators = targetPlan === 'elite' ? allIndicators : fullSub.indicators;
-
-        await supabaseAdmin
-          .from('subscriptions')
-          .update({ plan: targetPlan, indicators: newIndicators, updated_at: new Date().toISOString() })
-          .eq('id', subscriptionId);
-
-        return NextResponse.json({ status: 'upgraded', plan: targetPlan, message: `Upgraded to ${targetPlan}. Contact support for billing adjustment.` });
       }
       if (action === 'reactivate') {
         await supabaseAdmin
@@ -202,98 +182,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (action === 'upgrade') {
-      const { targetPlan: requestedPlan, indicators: requestedIndicators } = body as {
-        targetPlan?: string;
-        indicators?: string[];
-      };
-
-      // Get full subscription from Supabase for plan info
-      const { data: fullSub } = await supabaseAdmin
-        .from('subscriptions')
-        .select('plan, billing, indicators')
-        .eq('id', subscriptionId)
-        .single();
-
-      if (!fullSub) {
-        return NextResponse.json({ error: 'Subscription details not found' }, { status: 404 });
-      }
-
-      const currentPlan = fullSub.plan;
-      const billing = fullSub.billing;
-
-      // ------------------------------------------------------------------
-      // UPGRADE LOGIC — CLEARED 2026-06-14 for pricing rebuild.
-      // Old starter→advantage→elite tier ordering, price map, default-next-tier
-      // logic, and advantage/elite indicator rules removed. Repopulate with the
-      // new tiers once defined.
-      // ------------------------------------------------------------------
-      let targetPlan = requestedPlan;
-      if (!targetPlan) {
-        return NextResponse.json({ error: 'Target plan required' }, { status: 400 });
-      }
-
-      // Plan ranking — repopulate with new tiers' upgrade ranking.
-      const planOrder: Record<string, number> = {};
-      if ((planOrder[targetPlan] || 0) <= (planOrder[currentPlan] || 0)) {
-        return NextResponse.json({ error: 'Can only upgrade to a higher plan' }, { status: 400 });
-      }
-
-      // Target price — repopulate with new tiers' Stripe price IDs.
-      const priceMap: Record<string, string> = {
-        // e.g. 'newtier_monthly': process.env.STRIPE_PRICE_NEWTIER_MONTHLY || '',
-      };
-      const newPriceId = priceMap[`${targetPlan}_${billing}`];
-      if (!newPriceId) {
-        return NextResponse.json({ error: 'Target price not configured' }, { status: 500 });
-      }
-
-      // New indicators — re-add per-tier grant rules once new tiers are defined.
-      const allIndicators = ['CIPHER PRO', 'PHANTOM PRO', 'PULSE PRO', 'RADAR PRO', 'OPTIONS PRO'];
-      let newIndicators: string[];
-      if (requestedIndicators && requestedIndicators.length > 0) {
-        newIndicators = Array.from(new Set(requestedIndicators.filter((i: string) => allIndicators.includes(i))));
-      } else {
-        newIndicators = fullSub.indicators;
-      }
-      if (sub.stripe_subscription_id) {
-        // Get the current Stripe subscription to find the item ID
-        const stripeSub = await stripe.subscriptions.retrieve(sub.stripe_subscription_id);
-        const itemId = stripeSub.items.data[0]?.id;
-
-        if (!itemId) {
-          return NextResponse.json({ error: 'Could not find subscription item' }, { status: 500 });
-        }
-
-        // Update Stripe subscription with proration — Stripe charges the difference automatically
-        await stripe.subscriptions.update(sub.stripe_subscription_id, {
-          items: [{
-            id: itemId,
-            price: newPriceId,
-          }],
-          proration_behavior: 'create_prorations',
-        });
-      }
-
-      // Update Supabase
-      await supabaseAdmin
-        .from('subscriptions')
-        .update({
-          plan: targetPlan,
-          indicators: newIndicators,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', subscriptionId);
-
-      console.log(`✅ Upgrade: ${currentPlan} → ${targetPlan} | Indicators: ${newIndicators.join(', ')} (${subscriptionId})`);
-
-      return NextResponse.json({
-        status: 'upgraded',
-        plan: targetPlan,
-        indicators: newIndicators,
-        message: `Upgraded to ${targetPlan}. The prorated difference has been charged to your card.`,
-      });
-    }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
